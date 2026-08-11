@@ -139,7 +139,7 @@ package 'Time Slice and Snapshot Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "1ae2c21196ef608b95b70bd4a73b17064068e75082b840dc7df97c69560e323d") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "dd0616e7b95c3d6d4fe2c8c05cec33f4ed4c846803f8b803f3c7cdd55e6784d6") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Time Slice and Snapshot Example"))) (kind "package") (name "Time Slice and Snapshot Example") (declared-name "Time Slice and Snapshot Example") (range (start (line 0) (character 0)) (end (line 0) (character 442))))
     (element (id (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Date"))) (kind "attribute def") (name "Date") (declared-name "Date") (range (start (line 2) (character 1)) (end (line 2) (character 20))) (parent (node (document "d0") (qualified-name "Time Slice and Snapshot Example"))))

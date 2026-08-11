@@ -152,7 +152,7 @@ package '15_07-System of Units and Scales' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "44a6fbcd597ba7dca13c30bd4195ef065484ed824840db86206f793f6e4c3f53") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "bee86478630525c941e2a70ee23760925b518f5cce05f0cb421e98d35aed5a03") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "15_07-System of Units and Scales"))) (kind "package") (name "15_07-System of Units and Scales") (declared-name "15_07-System of Units and Scales") (range (start (line 0) (character 0)) (end (line 0) (character 3588))))
     (element (id (node (document "d0") (qualified-name "15_07-System of Units and Scales::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 4)) (end (line 1) (character 26))) (parent (node (document "d0") (qualified-name "15_07-System of Units and Scales"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 19)) (end (line 1) (character 22))))))

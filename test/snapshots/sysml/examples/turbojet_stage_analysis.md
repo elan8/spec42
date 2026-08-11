@@ -665,7 +665,7 @@ package 'Turbojet Stage Analysis' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "f079a5a4fc9bd8fec34f51818578ea1806fb17aaf5eb2d458d6e358f7d6d6b41") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "fd9324ab4ba4577b38c23c8f5dbb963c0c8ffb5532916479a74aef2accc97e4f") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Turbojet Stage Analysis"))) (kind "package") (name "Turbojet Stage Analysis") (declared-name "Turbojet Stage Analysis") (range (start (line 0) (character 0)) (end (line 0) (character 4250))))
     (element (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 3) (character 1)) (end (line 3) (character 23))) (parent (node (document "d0") (qualified-name "Turbojet Stage Analysis"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 3) (character 16)) (end (line 3) (character 19))))))

@@ -39,7 +39,7 @@ NIL
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d3a0016c7eb42f3bc7248f478468d13a3100c306984e7d2aa1f927676d352f6e") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1549f253e83e7ef1793b8438c839915f3a33541c0e142914a5bf28b7325802fd") (contract-version "canonical-resolution-v1"))
   (structure
   )
   (references

@@ -331,7 +331,7 @@ package '13b-Safety and Security Features Element Group-1' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "3a05f034884803a1468aeafad4c918ef30b358fac4d37c2bf0361e95ca49f405") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "eab81f71dee12d469ccb9770ef988284868f5b978554bf42b83c609b90ab697e") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1"))) (kind "package") (name "13b-Safety and Security Features Element Group-1") (declared-name "13b-Safety and Security Features Element Group-1") (range (start (line 0) (character 0)) (end (line 0) (character 1335))))
     (element (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))

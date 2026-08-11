@@ -117,7 +117,7 @@ package VerificationMetadataExample {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "15b5c9627f1f83096660022dd21564323245ad6f2bdf081dc74cb40d821b677d") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "822800e1d7f96b08660982aa7e650dd15ed67acf64ead1ec4e157dc5de7fcda1") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "VerificationMetadataExample"))) (kind "package") (name "VerificationMetadataExample") (declared-name "VerificationMetadataExample") (range (start (line 0) (character 0)) (end (line 0) (character 368))))
     (element (id (node (document "d0") (qualified-name "VerificationMetadataExample::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 37))) (parent (node (document "d0") (qualified-name "VerificationMetadataExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "VerificationCases::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 33))))))

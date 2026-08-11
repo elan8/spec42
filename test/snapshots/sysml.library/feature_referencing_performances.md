@@ -794,7 +794,7 @@ standard library package FeatureReferencingPerformances {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f8e1ab2dc8f4b28eaf3e3111a5d009f3375a15ae2efb83e9542645f9b9ab3e1e") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1ea58d02d5828e68fce4f9372d43088716ef5daeaa8a04e14cdf42fed82486b9") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "FeatureReferencingPerformances"))) (kind "package") (name "FeatureReferencingPerformances") (declared-name "FeatureReferencingPerformances") (range (start (line 0) (character 0)) (end (line 0) (character 7575))))
     (element (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::Anything"))) (kind "import") (name "Anything") (declared-name "Anything") (range (start (line 7) (character 1)) (end (line 7) (character 31))) (parent (node (document "d0") (qualified-name "FeatureReferencingPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::Anything") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 30))))))

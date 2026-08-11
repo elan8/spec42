@@ -244,7 +244,7 @@ package 'Decision Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "4b9e65d83b7d03c38bd47d21224bb1d0f80caec108a362bda9dca40fa17377f6") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "7457f55d7a17f29f9b868ffc1bf9de9986d3943f35fcef39c96ecc03b22fb12c") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Decision Example"))) (kind "package") (name "Decision Example") (declared-name "Decision Example") (range (start (line 0) (character 0)) (end (line 0) (character 687))))
     (element (id (node (document "d0") (qualified-name "Decision Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "Decision Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))

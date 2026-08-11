@@ -494,7 +494,7 @@ standard library package SampledFunctions {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "312f2afc57caaaf6e8612f1f02dd59dd378ec9da15e9476b9078bbd7af889ff8") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b78a9fc2eed441add4b15a734520051ab4c74323f5e558dcb4c41189c6415ff3") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "SampledFunctions"))) (kind "package") (name "SampledFunctions") (declared-name "SampledFunctions") (range (start (line 0) (character 0)) (end (line 0) (character 4021))))
     (element (id (node (document "d0") (qualified-name "SampledFunctions::Anything"))) (kind "import") (name "Anything") (declared-name "Anything") (range (start (line 6) (character 1)) (end (line 6) (character 31))) (parent (node (document "d0") (qualified-name "SampledFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::Anything") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 30))))))

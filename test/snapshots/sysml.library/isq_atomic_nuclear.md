@@ -11089,7 +11089,7 @@ standard library package ISQAtomicNuclear {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "cf7908a5b9254d86e14a00ae93ebbc6c295376f5600909ee4b98dc319e5792da") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "931086b6f8c63ea10b07e7c679967d55c3f69b16d63119a0643e339839e818d9") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ISQAtomicNuclear"))) (kind "package") (name "ISQAtomicNuclear") (declared-name "ISQAtomicNuclear") (range (start (line 0) (character 0)) (end (line 0) (character 151606))))
     (element (id (node (document "d0") (qualified-name "ISQAtomicNuclear::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 15) (character 4)) (end (line 15) (character 33))) (parent (node (document "d0") (qualified-name "ISQAtomicNuclear"))) (authored (membership (kind Import) (visibility "private") (import (reference "Quantities::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 15) (character 19)) (end (line 15) (character 29))))))

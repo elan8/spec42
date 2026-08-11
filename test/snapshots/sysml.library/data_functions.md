@@ -383,7 +383,7 @@ standard library package DataFunctions {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "bc9dbf1d624b8f86a4d21276ccfb2381b1074d0406bc82f40e4bb9806509e166") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ff9911b06ae7a78efebbc6e8c6b386614c56a10add04946989d7e35e8ccf314d") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "DataFunctions"))) (kind "package") (name "DataFunctions") (declared-name "DataFunctions") (range (start (line 0) (character 0)) (end (line 0) (character 2341))))
     (element (id (node (document "d0") (qualified-name "DataFunctions::Boolean"))) (kind "import") (name "Boolean") (declared-name "Boolean") (range (start (line 8) (character 1)) (end (line 8) (character 38))) (parent (node (document "d0") (qualified-name "DataFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Boolean") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 37))))))

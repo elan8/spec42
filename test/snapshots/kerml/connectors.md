@@ -164,7 +164,7 @@ package Connectors {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1abfbd474987d8a5beaeb9a1f6dc96b1f219375bf11126d32974ab2caa045a5c") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a584141b68b061427b7446ce41755100e73ae0a8daef9b7f35906542c67f2bb3") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Connectors"))) (kind "package") (name "Connectors") (declared-name "Connectors") (range (start (line 0) (character 0)) (end (line 0) (character 546))))
     (element (id (node (document "d0") (qualified-name "Connectors::A"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 2) (character 1)) (end (line 2) (character 440))) (parent (node (document "d0") (qualified-name "Connectors"))))

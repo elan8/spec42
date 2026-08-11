@@ -213,7 +213,7 @@ package Vehicles_1 {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "02f511967dbd700da35471f9ae3ce58e2885ed4093bd5c2cf900f5359e876ef6") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "2d6cd38c606521b11ebe60d31365cc337262c51ed2b57e6f68b31b661bd40284") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Vehicles_1"))) (kind "package") (name "Vehicles_1") (declared-name "Vehicles_1") (range (start (line 0) (character 0)) (end (line 0) (character 890))))
     (element (id (node (document "d0") (qualified-name "Vehicles_1::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 32))) (parent (node (document "d0") (qualified-name "Vehicles_1"))) (authored (membership (kind Import) (visibility "private") (import (reference "MassRollup_1::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 28))))))

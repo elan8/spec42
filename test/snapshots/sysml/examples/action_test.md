@@ -345,7 +345,7 @@ package ActionTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "19495e52d200b17946170d418fdf33f8ca80fd90be5b4f11b2a4f5d818455a7f") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "252f11a5d2075ba44fdae38a0d002660973f4315bc1627810929603ee9c82202") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ActionTest"))) (kind "package") (name "ActionTest") (declared-name "ActionTest") (range (start (line 0) (character 0)) (end (line 0) (character 809))))
     (element (id (node (document "d0") (qualified-name "ActionTest::A"))) (kind "action def") (name "A") (declared-name "A") (range (start (line 1) (character 1)) (end (line 1) (character 22))) (parent (node (document "d0") (qualified-name "ActionTest"))))

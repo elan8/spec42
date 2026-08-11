@@ -130,7 +130,7 @@ package Associations {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b2d0a45b7a30118211360596d3b1aa2db3a94970b470b3d46c9cb306c9c126a6") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6dbd1ee2ee4067baf63619d64fb6aadcd23df9def32b99f65ab68ebc4b86b1fe") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Associations"))) (kind "package") (name "Associations") (declared-name "Associations") (range (start (line 0) (character 0)) (end (line 0) (character 388))))
     (element (id (node (document "d0") (qualified-name "Associations::A"))) (kind "kermlDecl") (name "A") (declared-name "A") (range (start (line 4) (character 1)) (end (line 4) (character 86))) (parent (node (document "d0") (qualified-name "Associations"))))

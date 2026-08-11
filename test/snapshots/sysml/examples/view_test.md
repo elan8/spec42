@@ -197,7 +197,7 @@ package ViewTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "427f53e5cbd58f9291f7aaba3a1ce45185acdbc75e2194461afe8b5474355773") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "66ec1604a6986754b1782da039f5a86ad738e4656070aa7f5550d928f4fb5520") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ViewTest"))) (kind "package") (name "ViewTest") (declared-name "ViewTest") (range (start (line 0) (character 0)) (end (line 0) (character 546))))
     (element (id (node (document "d0") (qualified-name "ViewTest::C"))) (kind "concern def") (name "C") (declared-name "C") (range (start (line 8) (character 1)) (end (line 8) (character 54))) (parent (node (document "d0") (qualified-name "ViewTest"))))

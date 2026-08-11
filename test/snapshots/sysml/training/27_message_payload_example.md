@@ -226,7 +226,7 @@ package 'Message Payload Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "fe77d90c35754c43a7dbb1aa965db0993fcfa6b94626b02741f02e592d3e14a5") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "1011612846701b7cc778c30020f6a34b071e6eabffa20a993f55a06865656cb8") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Message Payload Example"))) (kind "package") (name "Message Payload Example") (declared-name "Message Payload Example") (range (start (line 0) (character 0)) (end (line 0) (character 1141))))
     (element (id (node (document "d0") (qualified-name "Message Payload Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 46))) (parent (node (document "d0") (qualified-name "Message Payload Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "Event Occurrence Example::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 42))))))

@@ -531,7 +531,7 @@ package '1a-Parts Tree' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1351407536e82e6abc1b0195d30d925c07364b80ccc1f4324aa80dbdd5429eaa") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "df89070b07d5fb10d9425e31b276f36215876f47099c2c46e3d3ec0cfa9bac19") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "1a-Parts Tree"))) (kind "package") (name "1a-Parts Tree") (declared-name "1a-Parts Tree") (range (start (line 0) (character 0)) (end (line 0) (character 3110))))
     (element (id (node (document "d0") (qualified-name "1a-Parts Tree::Definitions"))) (kind "package") (name "Definitions") (declared-name "Definitions") (range (start (line 3) (character 1)) (end (line 3) (character 502))) (parent (node (document "d0") (qualified-name "1a-Parts Tree"))))

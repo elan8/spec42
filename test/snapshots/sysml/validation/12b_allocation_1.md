@@ -261,7 +261,7 @@ package '12b-Allocation-1' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1fc2b4705868e4fb2ea182857431dc1a632f912b138577a137d543d8a2727056") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d6f6c48a9d1623c96251490305d9045664f536f1d93997e6a3152c3ee0b2feb2") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "12b-Allocation-1"))) (kind "package") (name "12b-Allocation-1") (declared-name "12b-Allocation-1") (range (start (line 0) (character 0)) (end (line 0) (character 1318))))
     (element (id (node (document "d0") (qualified-name "12b-Allocation-1::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 22))) (parent (node (document "d0") (qualified-name "12b-Allocation-1"))) (authored (membership (kind Import) (visibility "private") (import (reference "SI::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 18))))))

@@ -4697,7 +4697,7 @@ standard library package ISQCondensedMatter {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c7dd6d24b92a86bd7d6966cfac8a44f5a07b497e8edbdb25b3d4ad05fd564569") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f98422a683043b9ad359842a0eec9299843f8eb5e327a93910a18809523524b4") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ISQCondensedMatter"))) (kind "package") (name "ISQCondensedMatter") (declared-name "ISQCondensedMatter") (range (start (line 0) (character 0)) (end (line 0) (character 59984))))
     (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 15) (character 4)) (end (line 15) (character 33))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Import) (visibility "private") (import (reference "Quantities::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 15) (character 19)) (end (line 15) (character 29))))))

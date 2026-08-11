@@ -116,7 +116,7 @@ package Dependencies {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "cec8ca3df0b780859e21e230000039acdc4e6b8c2255fc3b35cd9acf44e4cebb") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "5fe9c42d152813184ba3dc882d2f0b9a527835ca4ea89e5714a943e257efac47") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Dependencies"))) (kind "package") (name "Dependencies") (declared-name "Dependencies") (range (start (line 0) (character 0)) (end (line 0) (character 352))))
     (element (id (node (document "d0") (qualified-name "Dependencies::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 8) (character 1)) (end (line 8) (character 25))) (parent (node (document "d0") (qualified-name "Dependencies"))) (authored (membership (kind Import) (visibility "public") (import (reference "System::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 8) (character 15)) (end (line 8) (character 21))))))

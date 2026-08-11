@@ -54,7 +54,7 @@ package Demo {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "cc8fb6c6d740e44143e359d1774862b4d5d3fa6acfefddb455d468f4b37481ed") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5e80663601dffb82579b8d2337846829e51adad908e8b13e5c748e1e919d0b33") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Demo"))) (kind "package") (name "Demo") (declared-name "Demo") (range (start (line 0) (character 0)) (end (line 0) (character 269))))
     (element (id (node (document "d0") (qualified-name "Demo::Base"))) (kind "part def") (name "Base") (declared-name "Base") (range (start (line 5) (character 4)) (end (line 5) (character 68))) (parent (node (document "d0") (qualified-name "Demo"))))

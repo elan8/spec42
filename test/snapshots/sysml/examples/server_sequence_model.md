@@ -197,7 +197,7 @@ package ServerSequenceModel {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "849356439cf8878314be2366969a0b870873141ef069acfb4daedc60467f42fb") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f19545ba2a294d4d76e584f66ab00461ebca62055c1f95ef9479f95f220e7cb2") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ServerSequenceModel"))) (kind "package") (name "ServerSequenceModel") (declared-name "ServerSequenceModel") (range (start (line 0) (character 0)) (end (line 0) (character 1028))))
     (element (id (node (document "d0") (qualified-name "ServerSequenceModel::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 36))) (parent (node (document "d0") (qualified-name "ServerSequenceModel"))) (authored (membership (kind Import) (visibility "public") (import (reference "SignalDefinitions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 15)) (end (line 2) (character 32))))))

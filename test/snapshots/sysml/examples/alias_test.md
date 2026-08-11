@@ -139,7 +139,7 @@ package AliasTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "4bd940919a1905d4146e94fce91bd1e6c3477b1dc2409c4722f024c65ab6eb3b") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "b306919f2a8536fea2a1d4af6b189b9e92083b49bb706c4eabb2ea1d36dc52e5") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "AliasTest"))) (kind "package") (name "AliasTest") (declared-name "AliasTest") (range (start (line 0) (character 0)) (end (line 0) (character 372))))
     (element (id (node (document "d0") (qualified-name "AliasTest::P1"))) (kind "part def") (name "P1") (declared-name "P1") (range (start (line 4) (character 4)) (end (line 4) (character 74))) (parent (node (document "d0") (qualified-name "AliasTest"))))

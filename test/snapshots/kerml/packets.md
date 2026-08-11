@@ -180,7 +180,7 @@ package Packets {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5b3b7218d242fdd14919c73c78d9b8c86362a42922e03aa7ceaf0d0f663e13f3") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1b0a3aec22c5ca757c2a4d135c42ac784a6b0231d4d3086fd76e47bb12bca31c") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 0) (character 0)) (end (line 0) (character 31))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 0) (character 15)) (end (line 0) (character 27))))))
     (element (id (node (document "d0") (qualified-name "DateTime"))) (kind "import") (name "DateTime") (declared-name "DateTime") (range (start (line 1) (character 0)) (end (line 1) (character 30))) (authored (membership (kind Import) (visibility "private") (import (reference "Time::DateTime") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 1) (character 15)) (end (line 1) (character 29))))))

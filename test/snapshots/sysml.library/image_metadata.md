@@ -261,7 +261,7 @@ standard library package ImageMetadata {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "842025e7b715504af5ad292a9128c7d6a47e15de0297fb3ef47449751a774a1c") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "18e4e734c7d7ba1946daab05e6a58be06e9ca96f3a023410fb3bc824171fc676") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ImageMetadata"))) (kind "package") (name "ImageMetadata") (declared-name "ImageMetadata") (range (start (line 0) (character 0)) (end (line 0) (character 2099))))
     (element (id (node (document "d0") (qualified-name "ImageMetadata::Icon"))) (kind "metadata def") (name "Icon") (declared-name "Icon") (range (start (line 50) (character 1)) (end (line 50) (character 896))) (parent (node (document "d0") (qualified-name "ImageMetadata"))))

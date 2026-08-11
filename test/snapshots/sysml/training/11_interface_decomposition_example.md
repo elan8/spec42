@@ -155,7 +155,7 @@ package 'Interface Decomposition Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "394d5b64f288d97bc28984dda6c1a7790eacd26a0c4b55b0cc3f4474e7485a6e") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "6c9357abe308f76bfcc9447b4287bc69eb0e8243b450c0016900356f31c05763") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Interface Decomposition Example"))) (kind "package") (name "Interface Decomposition Example") (declared-name "Interface Decomposition Example") (range (start (line 0) (character 0)) (end (line 0) (character 453))))
     (element (id (node (document "d0") (qualified-name "Interface Decomposition Example::Faucet"))) (kind "port def") (name "Faucet") (declared-name "Faucet") (range (start (line 5) (character 1)) (end (line 5) (character 17))) (parent (node (document "d0") (qualified-name "Interface Decomposition Example"))))

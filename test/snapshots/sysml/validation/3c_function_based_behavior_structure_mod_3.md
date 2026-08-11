@@ -153,7 +153,7 @@ package '3c-Function-based Behavior-structure mod-3' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "89cf6dd096b5861af53dcb6f8a1dc8d4f446bb435dbfc4c70206cc36c08f9c50") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f49c7cb008f6aff299264700fa67d8a07814c7998b90d873d9d7136b526d1199") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3"))) (kind "package") (name "3c-Function-based Behavior-structure mod-3") (declared-name "3c-Function-based Behavior-structure mod-3") (range (start (line 0) (character 0)) (end (line 0) (character 782))))
     (element (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::"))) (kind "action") (name "") (range (start (line 23) (character 1)) (end (line 23) (character 341))) (parent (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3"))) (authored (membership (kind Feature)) (relationships (perform (reference "3c-Function-based Behavior-structure mod-3::::connect trailer to vehicle") (range none)) (perform (reference "3c-Function-based Behavior-structure mod-3::::disconnect trailer from vehicle") (range none)))))

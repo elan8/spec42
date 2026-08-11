@@ -59,7 +59,7 @@ package AyPkpowerTrain {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "9c0ee1daa6cee75fb9ccedddd0cb85589549f14d5627c0ec19dbf3dc659cecf4") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "8433b897766392db984a54288bbf7143b364edb565325e63c3e63cb7531afc30") (contract-version "canonical-resolution-v1"))
   (structure
   )
   (references

@@ -186,7 +186,7 @@ package CircularImport {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "200843948f3c319c50caec4d848b139ebc3165a39a233769a1cc880ab211184f") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c737ea67cef5a2ebf5d4ee93708e32cf1dc0c8f5daea844419f1cd7f2709f5f1") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "CircularImport"))) (kind "package") (name "CircularImport") (declared-name "CircularImport") (range (start (line 0) (character 0)) (end (line 0) (character 346))))
     (element (id (node (document "d0") (qualified-name "CircularImport::P1"))) (kind "package") (name "P1") (declared-name "P1") (range (start (line 2) (character 1)) (end (line 2) (character 53))) (parent (node (document "d0") (qualified-name "CircularImport"))))

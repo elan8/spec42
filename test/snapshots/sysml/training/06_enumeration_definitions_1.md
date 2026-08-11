@@ -101,7 +101,7 @@ package 'Enumeration Definitions-1' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "24ce7cfa0e0259640fd94de20b0a720342e610eed72f96597528100b29de26e7") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6ea693ded4275f5369f0d34c6f0b5e8e7b8907a8ba91204166be4fe0cb116fc4") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Enumeration Definitions-1"))) (kind "package") (name "Enumeration Definitions-1") (declared-name "Enumeration Definitions-1") (range (start (line 0) (character 0)) (end (line 0) (character 347))))
     (element (id (node (document "d0") (qualified-name "Enumeration Definitions-1::Real"))) (kind "import") (name "Real") (declared-name "Real") (range (start (line 1) (character 1)) (end (line 1) (character 35))) (parent (node (document "d0") (qualified-name "Enumeration Definitions-1"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 34))))))

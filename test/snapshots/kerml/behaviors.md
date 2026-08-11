@@ -124,7 +124,7 @@ package Behaviors {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "064c204138ff4566abef35592ad2725319e611e2bb3e378176cd6a44d346775b") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b5c9d6443f1b681e2709c68027980f11ffaa284da08b6b62635da2d377644d03") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Behaviors"))) (kind "package") (name "Behaviors") (declared-name "Behaviors") (range (start (line 0) (character 0)) (end (line 0) (character 381))))
     (element (id (node (document "d0") (qualified-name "Behaviors::A"))) (kind "kermlDecl") (name "A") (declared-name "A") (range (start (line 1) (character 4)) (end (line 1) (character 125))) (parent (node (document "d0") (qualified-name "Behaviors"))))

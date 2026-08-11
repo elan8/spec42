@@ -93,7 +93,7 @@ package PictureTaking {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d31c8db1ba9dbd9481b053119165b30dc1451b77578544971937a3871f854a59") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d8729fb09d38ed5ef917192bc888ff4f6d24446c820cd13993065900ea79b7a9") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "PictureTaking"))) (kind "package") (name "PictureTaking") (declared-name "PictureTaking") (range (start (line 0) (character 0)) (end (line 0) (character 261))))
     (element (id (node (document "d0") (qualified-name "PictureTaking::Exposure"))) (kind "part def") (name "Exposure") (declared-name "Exposure") (range (start (line 1) (character 1)) (end (line 1) (character 19))) (parent (node (document "d0") (qualified-name "PictureTaking"))))

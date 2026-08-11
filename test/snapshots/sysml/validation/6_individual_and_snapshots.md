@@ -806,7 +806,7 @@ package '6-Individual and Snapshots' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "cc432d1ecfc7057c0e13cde683c60e459393d15283333e6ac89c00903a62d098") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "877ea71df30e2d34511f6bc18bd99b788012f8fd100cbaacee42b85d67b27874") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "6-Individual and Snapshots"))) (kind "package") (name "6-Individual and Snapshots") (declared-name "6-Individual and Snapshots") (range (start (line 0) (character 0)) (end (line 0) (character 3689))))
     (element (id (node (document "d0") (qualified-name "6-Individual and Snapshots::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 3) (character 1)) (end (line 3) (character 23))) (parent (node (document "d0") (qualified-name "6-Individual and Snapshots"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 3) (character 16)) (end (line 3) (character 19))))))

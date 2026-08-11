@@ -1806,7 +1806,7 @@ standard library package KerML {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "8745eb0431996170b2ab900fbb4f3f2d6ff7667af3f7e91f80999d02fe6e9bb4") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d8fa15e3ed0a81b77992a7a038f2c5106b08b5bf07dc3d05cdd95ede54e8bf6e") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "KerML"))) (kind "package") (name "KerML") (declared-name "KerML") (range (start (line 0) (character 0)) (end (line 0) (character 21439))))
     (element (id (node (document "d0") (qualified-name "KerML::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 6) (character 1)) (end (line 6) (character 32))) (parent (node (document "d0") (qualified-name "KerML"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 28))))))

@@ -154,7 +154,7 @@ package CoverageIndividual {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "a4ab8954b93d875131cf769715c915b1a59efe22ba01d9e61c06e5c5c8ce2f26") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "e6303e694313bae52dbf13599fc1cb9173f27ad8ffb059a92daa7cacae3dc96b") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "CoverageIndividual"))) (kind "package") (name "CoverageIndividual") (declared-name "CoverageIndividual") (range (start (line 0) (character 0)) (end (line 0) (character 664))))
     (element (id (node (document "d0") (qualified-name "CoverageIndividual::D1"))) (kind "individual def") (name "D1") (declared-name "D1") (range (start (line 1) (character 1)) (end (line 1) (character 19))) (parent (node (document "d0") (qualified-name "CoverageIndividual"))))

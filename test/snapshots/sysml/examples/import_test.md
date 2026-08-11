@@ -138,7 +138,7 @@ package ImportTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "960ac6c14c91fb3ed81156173668a8a1ed0c2e79738395308fb31dc5303979bc") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ac49382b186853d45439cc023bebec1edddaf15371002a768dc4245ec60fa309") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ImportTest"))) (kind "package") (name "ImportTest") (declared-name "ImportTest") (range (start (line 0) (character 0)) (end (line 0) (character 381))))
     (element (id (node (document "d0") (qualified-name "ImportTest::Pkg1"))) (kind "package") (name "Pkg1") (declared-name "Pkg1") (range (start (line 1) (character 4)) (end (line 1) (character 197))) (parent (node (document "d0") (qualified-name "ImportTest"))))

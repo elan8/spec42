@@ -7115,7 +7115,7 @@ standard library package ISQLight {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b2edc4789c3a74ce50012f5fa4c1a91f645394a9eae6909d53f3ddb0acf1f5df") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "23d6e2488ab7d1a60b8bd75ba622527bab7a30e2108c49f3bdb0aa58d220a42c") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ISQLight"))) (kind "package") (name "ISQLight") (declared-name "ISQLight") (range (start (line 0) (character 0)) (end (line 0) (character 100170))))
     (element (id (node (document "d0") (qualified-name "ISQLight::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 15) (character 4)) (end (line 15) (character 33))) (parent (node (document "d0") (qualified-name "ISQLight"))) (authored (membership (kind Import) (visibility "private") (import (reference "Quantities::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 15) (character 19)) (end (line 15) (character 29))))))

@@ -68,7 +68,7 @@ alias Foo for Bar {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "b98bf4b3cf95c8d75123ce2be6913783c39b32a8390936da5ec4b5aa78e7ebf8") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "a616379595f2ffb66a7aeaeb9c7b7dff19a0fb726be4922a105dcc3896fb7238") (contract-version "canonical-resolution-v1"))
   (structure
   )
   (references

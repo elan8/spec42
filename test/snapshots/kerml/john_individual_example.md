@@ -357,7 +357,7 @@ package JohnIndividualExample {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "aa44726e42492d30cda5088df30dac8db4d759ccaee4cc908ffecd66686a0dd2") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "8eb783316dec38b0f043f94f76b428c3e221d609b9ac4e66a950f0dcee863b3a") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "JohnIndividualExample"))) (kind "package") (name "JohnIndividualExample") (declared-name "JohnIndividualExample") (range (start (line 0) (character 0)) (end (line 0) (character 2830))))
     (element (id (node (document "d0") (qualified-name "JohnIndividualExample::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 27))) (parent (node (document "d0") (qualified-name "JohnIndividualExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "Objects::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 23))))))

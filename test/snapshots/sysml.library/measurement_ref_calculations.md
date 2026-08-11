@@ -315,7 +315,7 @@ standard library package MeasurementRefCalculations {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "0d95acb35771bf6e0496fdd9fe5c8d07d7bd303a1c1358d4fcefbf02872d38a4") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1501347aec9c648148b7c97ef5a4211165d7b1c31fadaca4b0f7441513ee555c") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "MeasurementRefCalculations"))) (kind "package") (name "MeasurementRefCalculations") (declared-name "MeasurementRefCalculations") (range (start (line 0) (character 0)) (end (line 0) (character 1599))))
     (element (id (node (document "d0") (qualified-name "MeasurementRefCalculations::*"))) (kind "calc def") (name "*") (declared-name "*") (range (start (line 13) (character 4)) (end (line 13) (character 132))) (parent (node (document "d0") (qualified-name "MeasurementRefCalculations"))))

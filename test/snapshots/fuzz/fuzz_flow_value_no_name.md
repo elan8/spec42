@@ -91,7 +91,7 @@ package P {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "21cf7b67153dc9766ed6fc2832f399dc9bf7530f3c9cc850337c6edcfe9ecf62") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "c7a97b9d18e0ee31e371a3fdb03948e6160f424e7052f92c690b270f16f6721b") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P") (range (start (line 0) (character 0)) (end (line 0) (character 180))))
     (element (id (node (document "d0") (qualified-name "P::vehicle"))) (kind "part") (name "vehicle") (declared-name "vehicle") (range (start (line 1) (character 4)) (end (line 1) (character 166))) (parent (node (document "d0") (qualified-name "P"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle") (range (start (line 1) (character 19)) (end (line 1) (character 26)))))))

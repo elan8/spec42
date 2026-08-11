@@ -165,7 +165,7 @@ package 'Action Definition Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "bfc2bd3c1ab2e6199d69fdd785b785291c60e889308b40872c4a9e0201754d78") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "9d8dca45241100c382dab3228b1f3e0f080c0df647b6594db215b027cce5a31c") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Action Definition Example"))) (kind "package") (name "Action Definition Example") (declared-name "Action Definition Example") (range (start (line 0) (character 0)) (end (line 0) (character 529))))
     (element (id (node (document "d0") (qualified-name "Action Definition Example::Focus"))) (kind "action def") (name "Focus") (declared-name "Focus") (range (start (line 5) (character 1)) (end (line 5) (character 58))) (parent (node (document "d0") (qualified-name "Action Definition Example"))))

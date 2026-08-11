@@ -144,7 +144,7 @@ package IssueMetadataExample {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b91cb20e66bb52f0c3ad40ed1e6b53eac5591e9c94cdf5118597d2bef940024e") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "de05d39fdb2a90f994710914c673e37be8ecb894485a96f175a16eb939717532") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "IssueMetadataExample"))) (kind "package") (name "IssueMetadataExample") (declared-name "IssueMetadataExample") (range (start (line 0) (character 0)) (end (line 0) (character 1116))))
     (element (id (node (document "d0") (qualified-name "IssueMetadataExample::ClutchPort"))) (kind "port def") (name "ClutchPort") (declared-name "ClutchPort") (range (start (line 17) (character 4)) (end (line 17) (character 24))) (parent (node (document "d0") (qualified-name "IssueMetadataExample"))))

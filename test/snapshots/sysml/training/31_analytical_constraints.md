@@ -284,7 +284,7 @@ package 'Analytical Constraints' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "23a0f36f372e5d295b2dad574ab51d22f5544437b9694b1b0fbd43cc15d15b02") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "2e1952a783ac476627600549c28ed42542fff5d7924080e0dd29fd5e9a9c43ce") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Analytical Constraints"))) (kind "package") (name "Analytical Constraints") (declared-name "Analytical Constraints") (range (start (line 0) (character 0)) (end (line 0) (character 969))))
     (element (id (node (document "d0") (qualified-name "Analytical Constraints::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 23))) (parent (node (document "d0") (qualified-name "Analytical Constraints"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 19))))))

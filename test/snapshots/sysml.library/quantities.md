@@ -483,7 +483,7 @@ standard library package Quantities {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "7ccd9e9ef43a0c116d7ac347ca8a40fb9ddcf84614b79fe1ef5f6fd2a73b3813") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e8916d04f1eb7651314aab3357c53aedf8e4b28f70518653e47a63797ef3ed6a") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Quantities"))) (kind "package") (name "Quantities") (declared-name "Quantities") (range (start (line 0) (character 0)) (end (line 0) (character 4579))))
     (element (id (node (document "d0") (qualified-name "Quantities::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 6) (character 1)) (end (line 6) (character 31))) (parent (node (document "d0") (qualified-name "Quantities"))) (authored (membership (kind Import) (visibility "private") (import (reference "Collections::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 27))))))

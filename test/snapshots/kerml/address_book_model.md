@@ -87,7 +87,7 @@ package AddressBookModel {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b0db5e21381ed95110b40738eb8c63b431055aa129ba475d17d4ce2bee130059") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a2ff6b0a789622e7b61c47aef47962fbd74aae35fa27bc344be488833f10354e") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 0) (character 0)) (end (line 0) (character 31))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 0) (character 15)) (end (line 0) (character 27))))))
     (element (id (node (document "d0") (qualified-name "AddressBookModel"))) (kind "package") (name "AddressBookModel") (declared-name "AddressBookModel") (range (start (line 1) (character 0)) (end (line 1) (character 132))))

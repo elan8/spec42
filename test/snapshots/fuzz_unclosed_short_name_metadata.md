@@ -73,7 +73,7 @@ package ion {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "737c6b795e252a604f4cfeb40674533c83f52646c33cc691720014c50670e3a8") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6ff7ebad902c219bba7c5c4bd8f1ca67afd5d511bfbc3787ef7f1790d9dfdd85") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ion"))) (kind "package") (name "ion") (declared-name "ion") (range (start (line 0) (character 0)) (end (line 0) (character 68))))
     (element (id (node (document "d0") (qualified-name "ion::A"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 1) (character 2)) (end (line 1) (character 25))) (parent (node (document "d0") (qualified-name "ion"))))

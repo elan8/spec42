@@ -194,7 +194,7 @@ package 'Transition Actions' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e3c3139fc695139faeeeb04dcc22fa827d7f469ba773bd9da64c166ed544feab") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "3522b43ef6a5749334eb09326fd6ce6985906fcd4abe5a4baa71ba1f03f1b21b") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Transition Actions"))) (kind "package") (name "Transition Actions") (declared-name "Transition Actions") (range (start (line 0) (character 0)) (end (line 0) (character 917))))
     (element (id (node (document "d0") (qualified-name "Transition Actions::ControllerStartSignal"))) (kind "attribute def") (name "ControllerStartSignal") (declared-name "ControllerStartSignal") (range (start (line 6) (character 1)) (end (line 6) (character 37))) (parent (node (document "d0") (qualified-name "Transition Actions"))))

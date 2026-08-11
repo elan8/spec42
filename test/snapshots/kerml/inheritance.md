@@ -106,7 +106,7 @@ package Inheritance {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c8d8ea15824d8120598173f78bb6c114ed22abbc959a478d10a2e26794bbba32") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "11c9649ec23a10bc21a040a438dd1d7f8f7ed187b86045d1a00cc1008019a78e") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Inheritance"))) (kind "package") (name "Inheritance") (declared-name "Inheritance") (range (start (line 0) (character 0)) (end (line 0) (character 235))))
     (element (id (node (document "d0") (qualified-name "Inheritance::A"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 1) (character 1)) (end (line 1) (character 26))) (parent (node (document "d0") (qualified-name "Inheritance"))))

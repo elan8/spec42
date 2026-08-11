@@ -225,7 +225,7 @@ package EnumerationTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "31c0709f6fa84bca2258743674e93ae53c22d34be099770b788268a904f3ccef") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6066b3ef25bb9631b834e7c40f5f8479ae66011271433fcaae24456b020dc372") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "EnumerationTest"))) (kind "package") (name "EnumerationTest") (declared-name "EnumerationTest") (range (start (line 0) (character 0)) (end (line 0) (character 1030))))
     (element (id (node (document "d0") (qualified-name "EnumerationTest::Color"))) (kind "attribute def") (name "Color") (declared-name "Color") (range (start (line 2) (character 1)) (end (line 2) (character 66))) (parent (node (document "d0") (qualified-name "EnumerationTest"))))

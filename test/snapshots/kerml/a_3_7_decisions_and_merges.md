@@ -626,7 +626,7 @@ package DecisionsAndMergesExecution {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "faea3d91905f72bea8a4133c80a9180a32ebb312109bbae2439d8869e39ff3fb") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a6dbe56c460f4c6f0a996cb636c200deca3c7c39e619b9ce8b2a24cee75fc782") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution"))) (kind "package") (name "DecisionsAndMergesExecution") (declared-name "DecisionsAndMergesExecution") (range (start (line 48) (character 0)) (end (line 48) (character 2634))))
     (element (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 53) (character 1)) (end (line 53) (character 25))) (parent (node (document "d0") (qualified-name "DecisionsAndMergesExecution"))) (authored (membership (kind Import) (visibility "private") (import (reference "Atoms::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 53) (character 16)) (end (line 53) (character 21))))))

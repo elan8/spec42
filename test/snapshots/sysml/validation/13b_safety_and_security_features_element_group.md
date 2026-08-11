@@ -256,7 +256,7 @@ package '13b-Safety and Security Features Element Group' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "238fcf1fa674833991f96a3b3803437aa9c5fde5c28828c517578b55733d868f") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ec09e9aa2f2490f51b2ac5cf4b80f53a29d96a67f4fb9061522cf166084f47c7") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group"))) (kind "package") (name "13b-Safety and Security Features Element Group") (declared-name "13b-Safety and Security Features Element Group") (range (start (line 0) (character 0)) (end (line 0) (character 885))))
     (element (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group::Safety & Security Features"))) (kind "package") (name "Safety & Security Features") (declared-name "Safety & Security Features") (range (start (line 31) (character 1)) (end (line 31) (character 211))) (parent (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group"))))

@@ -43,7 +43,7 @@ feature x : Integer;
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "4455adac864df3e9d0ab6e9e8af50fa0492053aeac395cf985f3be80bddc7ced") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c4d81fc5b52c6b692cf163f606fc32e73ac142224d82ad8d7ed2d3cb3b1a3a9a") (contract-version "canonical-resolution-v1"))
   (structure
   )
   (references

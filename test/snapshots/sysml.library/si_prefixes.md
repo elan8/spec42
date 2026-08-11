@@ -681,7 +681,7 @@ standard library package SIPrefixes {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "687983d52d45b107c0b84b9aa03336879386f5a1d039e232ed055f89e23519f4") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "4b77b31602e9ce9ad7200250f2d72bbf8eb44a01ddf42be6559935b2136cf628") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "SIPrefixes"))) (kind "package") (name "SIPrefixes") (declared-name "SIPrefixes") (range (start (line 0) (character 0)) (end (line 0) (character 3354))))
     (element (id (node (document "d0") (qualified-name "SIPrefixes::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 6) (character 1)) (end (line 6) (character 41))) (parent (node (document "d0") (qualified-name "SIPrefixes"))) (authored (membership (kind Import) (visibility "private") (import (reference "MeasurementReferences::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 37))))))

@@ -243,7 +243,7 @@ standard library package DerivationConnections {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "611d215ab8d62953985fc4984f21868670fd1bf2f2aa097751704ec59bad1ad0") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f8af119f4062e04e1a2458e205d7bb16ba42062275f2ea33965e0748f8ca657f") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "DerivationConnections"))) (kind "package") (name "DerivationConnections") (declared-name "DerivationConnections") (range (start (line 0) (character 0)) (end (line 0) (character 2305))))
     (element (id (node (document "d0") (qualified-name "DerivationConnections::Derivation"))) (kind "connection def") (name "Derivation") (declared-name "Derivation") (range (start (line 16) (character 1)) (end (line 16) (character 1660))) (parent (node (document "d0") (qualified-name "DerivationConnections"))))

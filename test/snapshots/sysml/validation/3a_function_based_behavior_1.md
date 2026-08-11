@@ -568,7 +568,7 @@ package '3a-Function-based Behavior-1' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "46253781b0129b226f6add2170ecf061674d9dc9dbfed29673e3fad1977cfc00") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "51dbb6a32421c8d4a56ae8aeada330767a8fbd722c2c0f91d4c3fa7acc9ce63a") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "3a-Function-based Behavior-1"))) (kind "package") (name "3a-Function-based Behavior-1") (declared-name "3a-Function-based Behavior-1") (range (start (line 0) (character 0)) (end (line 0) (character 4170))))
     (element (id (node (document "d0") (qualified-name "3a-Function-based Behavior-1::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 30))) (parent (node (document "d0") (qualified-name "3a-Function-based Behavior-1"))) (authored (membership (kind Import) (visibility "public") (import (reference "Definitions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 15)) (end (line 1) (character 26))))))

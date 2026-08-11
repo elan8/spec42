@@ -218,7 +218,7 @@ standard library package Ports {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "8851193e6f34324e83b3b8e041bca0d4592493adfdc3c42bfa241db0cee36751") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ed91bc6097083815cee302c9513da81cc772dc0c008b977acc961f669283973e") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Ports"))) (kind "package") (name "Ports") (declared-name "Ports") (range (start (line 0) (character 0)) (end (line 0) (character 1594))))
     (element (id (node (document "d0") (qualified-name "Ports::Object"))) (kind "import") (name "Object") (declared-name "Object") (range (start (line 7) (character 4)) (end (line 7) (character 35))) (parent (node (document "d0") (qualified-name "Ports"))) (authored (membership (kind Import) (visibility "private") (import (reference "Objects::Object") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 19)) (end (line 7) (character 34))))))

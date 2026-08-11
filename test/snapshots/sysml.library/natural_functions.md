@@ -264,7 +264,7 @@ standard library package NaturalFunctions {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "acc80980a4dae9c5ec82735f94c09957c135d78bee3b25fa0bf9905ad2326917") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "71f3271616f231a82596d0aac46e7514f8f8697810ee32b2cf5e8e26475b011c") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "NaturalFunctions"))) (kind "package") (name "NaturalFunctions") (declared-name "NaturalFunctions") (range (start (line 0) (character 0)) (end (line 0) (character 1622))))
     (element (id (node (document "d0") (qualified-name "NaturalFunctions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 7) (character 1)) (end (line 7) (character 31))) (parent (node (document "d0") (qualified-name "NaturalFunctions"))) (authored (membership (kind Import) (visibility "public") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 7) (character 15)) (end (line 7) (character 27))))))

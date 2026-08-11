@@ -289,7 +289,7 @@ package StateTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5dd0529ba8ec473424006a4c5519034630a10013014cdfaf3b49416f8628effc") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "dcbfbdf924b6d4bf1abd746971a808aa13c3cdd91f0536d907241f3984604d69") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "StateTest"))) (kind "package") (name "StateTest") (declared-name "StateTest") (range (start (line 0) (character 0)) (end (line 0) (character 840))))
     (element (id (node (document "d0") (qualified-name "StateTest::Exit"))) (kind "attribute def") (name "Exit") (declared-name "Exit") (range (start (line 4) (character 1)) (end (line 4) (character 20))) (parent (node (document "d0") (qualified-name "StateTest"))))

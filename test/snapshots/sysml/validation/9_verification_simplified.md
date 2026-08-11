@@ -509,7 +509,7 @@ package '9-Verification-simplified' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "11da2812cadd0688b1631a6040efb1c036b530013db00faaa61496dc1ff20c45") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "3ab05ac8c5711a50a444f7f5e7f3c00424af88e397cb8d412044e50a70b14248") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "9-Verification-simplified"))) (kind "package") (name "9-Verification-simplified") (declared-name "9-Verification-simplified") (range (start (line 0) (character 0)) (end (line 0) (character 2911))))
     (element (id (node (document "d0") (qualified-name "9-Verification-simplified::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 37))) (parent (node (document "d0") (qualified-name "9-Verification-simplified"))) (authored (membership (kind Import) (visibility "private") (import (reference "VerificationCases::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 33))))))

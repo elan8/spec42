@@ -112,7 +112,7 @@ standard library package Attributes {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ef7b847c049139dd812770246d5ed1849f148354b0507eb02942a811060b0f68") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ba64be3c3af135ff38ece80726bf37d9c063a941aaeada3325ec3f32a7516faa") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Attributes"))) (kind "package") (name "Attributes") (declared-name "Attributes") (range (start (line 0) (character 0)) (end (line 0) (character 651))))
     (element (id (node (document "d0") (qualified-name "Attributes::AttributeValue"))) (kind "alias") (name "AttributeValue") (declared-name "AttributeValue") (range (start (line 9) (character 4)) (end (line 9) (character 271))) (parent (node (document "d0") (qualified-name "Attributes"))))

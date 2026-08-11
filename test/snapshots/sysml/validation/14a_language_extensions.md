@@ -155,7 +155,7 @@ package '14a-Language Extensions' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "aceb4dfdc20324a9f6e0f073783b2e205eb2752c2dad85a4f8e819497d0868a7") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "af64da5ded28c43ec82900c2a5b50b22d53b3822db0801cab564660e235e57be") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "14a-Language Extensions"))) (kind "package") (name "14a-Language Extensions") (declared-name "14a-Language Extensions") (range (start (line 0) (character 0)) (end (line 0) (character 564))))
     (element (id (node (document "d0") (qualified-name "14a-Language Extensions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 45))) (parent (node (document "d0") (qualified-name "14a-Language Extensions"))) (authored (membership (kind Import) (visibility "private") (import (reference "User Defined Extensions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 41))))))

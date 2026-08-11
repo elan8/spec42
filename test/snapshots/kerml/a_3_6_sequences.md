@@ -290,7 +290,7 @@ package SequencesExecution {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "99b2d2f6c0df418776c198653812301c929b092074f1c4ff24c3b3f39f98de1d") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "640cdf5c64c8e3c07910fc23c2db7e3bea7ad09f669e15a05b9ae70d9c644a89") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "SequencesExecution"))) (kind "package") (name "SequencesExecution") (declared-name "SequencesExecution") (range (start (line 18) (character 0)) (end (line 18) (character 1207))))
     (element (id (node (document "d0") (qualified-name "SequencesExecution::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 23) (character 1)) (end (line 23) (character 25))) (parent (node (document "d0") (qualified-name "SequencesExecution"))) (authored (membership (kind Import) (visibility "private") (import (reference "Atoms::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 23) (character 16)) (end (line 23) (character 21))))))

@@ -167,7 +167,7 @@ package VerificationTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "8e9264c994a44e3e59852f77b0cb5c6fa6a446bf97a3644d63731810473872dc") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "90318d6907e828593e533e6147594b83a27f8b799d5222e124ef066ea10c5241") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "VerificationTest"))) (kind "package") (name "VerificationTest") (declared-name "VerificationTest") (range (start (line 0) (character 0)) (end (line 0) (character 559))))
     (element (id (node (document "d0") (qualified-name "VerificationTest::R"))) (kind "requirement def") (name "R") (declared-name "R") (range (start (line 8) (character 1)) (end (line 8) (character 39))) (parent (node (document "d0") (qualified-name "VerificationTest"))))

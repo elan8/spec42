@@ -226,7 +226,7 @@ part def Vehicle {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "6f305ae01e9d38619a2b458312c47ef6da906c7d52d9ac34e0e5636ddb58d95d") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "a52f96e0a141b3d6a9a8ce6e90cf559c8306604728b6d1df5562e8320ad8592b") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Color"))) (kind "part def") (name "Color") (declared-name "Color") (range (start (line 4) (character 0)) (end (line 4) (character 15))))
     (element (id (node (document "d0") (qualified-name "DataPort"))) (kind "part def") (name "DataPort") (declared-name "DataPort") (range (start (line 2) (character 0)) (end (line 2) (character 18))))

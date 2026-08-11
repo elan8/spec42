@@ -116,7 +116,7 @@ package ParameterTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1e51a24ffc43565e5f66d1f6090aaa8f9fffcea1d3943848225d58e46477f46d") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "22e86f60b3f7cd03878476e30a1c79ad6b72ac3e1e54df48a295623f974c230a") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ParameterTest"))) (kind "package") (name "ParameterTest") (declared-name "ParameterTest") (range (start (line 0) (character 0)) (end (line 0) (character 340))))
     (element (id (node (document "d0") (qualified-name "ParameterTest::A"))) (kind "attribute def") (name "A") (declared-name "A") (range (start (line 1) (character 1)) (end (line 1) (character 78))) (parent (node (document "d0") (qualified-name "ParameterTest"))))

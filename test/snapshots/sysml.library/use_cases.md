@@ -230,7 +230,7 @@ standard library package UseCases {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1dca455c471e154a8d247820976a235d41bf04c120a57805593fe501a60afe05") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a9d475b7ddb2300aee0fe6e98bcd11a649565f61a10630099957a8359c1e2079") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "UseCases"))) (kind "package") (name "UseCases") (declared-name "UseCases") (range (start (line 0) (character 0)) (end (line 0) (character 1271))))
     (element (id (node (document "d0") (qualified-name "UseCases::Case"))) (kind "import") (name "Case") (declared-name "Case") (range (start (line 6) (character 1)) (end (line 6) (character 28))) (parent (node (document "d0") (qualified-name "UseCases"))) (authored (membership (kind Import) (visibility "private") (import (reference "Cases::Case") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 27))))))

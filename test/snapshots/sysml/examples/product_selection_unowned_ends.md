@@ -180,7 +180,7 @@ package ProductSelection_UnownedEnds_SysML {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "3f3002401d0725d12523470c6279c75cf08a7ca99f6f52727772fd14a7bcb43c") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e74dcc4b31fc5b5224952863aba076ef433fd10c8c73a047e67fe0f315423026") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML"))) (kind "package") (name "ProductSelection_UnownedEnds_SysML") (declared-name "ProductSelection_UnownedEnds_SysML") (range (start (line 0) (character 0)) (end (line 0) (character 879))))
     (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer"))) (kind "item def") (name "OnlineCustomer") (declared-name "OnlineCustomer") (range (start (line 22) (character 1)) (end (line 22) (character 318))) (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML"))))

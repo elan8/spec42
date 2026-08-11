@@ -154,7 +154,7 @@ package 'Local Clock Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f2c06ab46cdcc62799091ebe0852bc26ed4d8b94b27af787d4deef8fff254c5b") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "dcb0970e0c5521e251575f0e10ddb38cc7d7922cd0db06f60a3e454eac034bb7") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Local Clock Example"))) (kind "package") (name "Local Clock Example") (declared-name "Local Clock Example") (range (start (line 0) (character 0)) (end (line 0) (character 581))))
     (element (id (node (document "d0") (qualified-name "Local Clock Example::Request"))) (kind "item def") (name "Request") (declared-name "Request") (range (start (line 4) (character 1)) (end (line 4) (character 18))) (parent (node (document "d0") (qualified-name "Local Clock Example"))))

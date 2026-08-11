@@ -113,7 +113,7 @@ package CarWithEnvelopingShape {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f5a81d6c2ff18c11006cc0a145d5b535e4db5dd8ea4ba74a9064435bcf104e34") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1be731a1f518f56721b7f0f9d847d3d8e18dc21688beb35022611e4336435ed6") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "CarWithEnvelopingShape"))) (kind "package") (name "CarWithEnvelopingShape") (declared-name "CarWithEnvelopingShape") (range (start (line 0) (character 0)) (end (line 0) (character 330))))
     (element (id (node (document "d0") (qualified-name "CarWithEnvelopingShape::Box"))) (kind "import") (name "Box") (declared-name "Box") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "CarWithEnvelopingShape"))) (authored (membership (kind Import) (visibility "private") (import (reference "ShapeItems::Box") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 31))))))

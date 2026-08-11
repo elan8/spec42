@@ -191,7 +191,7 @@ package 'Requirement Satisfaction' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "ccd9c64986e8023dacd5aec94e79f6e0a005b1e49462fc0da0f3eb6dde2ff41d") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "db1d8b266168a720f9b2d95b9c1ed6598493ce95f740104d80a2403fa1c83680") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Requirement Satisfaction"))) (kind "package") (name "Requirement Satisfaction") (declared-name "Requirement Satisfaction") (range (start (line 0) (character 0)) (end (line 0) (character 568))))
     (element (id (node (document "d0") (qualified-name "Requirement Satisfaction::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 45))) (parent (node (document "d0") (qualified-name "Requirement Satisfaction"))) (authored (membership (kind Import) (visibility "private") (import (reference "Requirement Definitions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 41))))))

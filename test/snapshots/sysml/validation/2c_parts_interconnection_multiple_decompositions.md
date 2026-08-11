@@ -351,7 +351,7 @@ package '2c-Parts Interconnection-Multiple Decompositions' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "32cd7305b43476190ddad77caaed6e4d2030c82b1e803d8d23a62ad9b005e0fd") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c4a328d07c3688e6cc666795d191ceb46b7af4ea9e5f0bea2401ddd57285ef13") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "2c-Parts Interconnection-Multiple Decompositions"))) (kind "package") (name "2c-Parts Interconnection-Multiple Decompositions") (declared-name "2c-Parts Interconnection-Multiple Decompositions") (range (start (line 0) (character 0)) (end (line 0) (character 1343))))
     (element (id (node (document "d0") (qualified-name "2c-Parts Interconnection-Multiple Decompositions::A1"))) (kind "part def") (name "A1") (declared-name "A1") (range (start (line 2) (character 1)) (end (line 2) (character 13))) (parent (node (document "d0") (qualified-name "2c-Parts Interconnection-Multiple Decompositions"))))

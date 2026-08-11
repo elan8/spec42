@@ -392,7 +392,7 @@ package '11b-Safety and Security Feaure Views' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "85abfec96a15aeaf8639739f49c7c750941b2de6a8ea97b25ac0efd793b9d1f7") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "cd63c935314e43947771952534f971d5e28d145d6003c6d64fa8a4c1d5705f7b") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 0) (character 0)) (end (line 0) (character 24))) (authored (membership (kind Import) (visibility "private") (import (reference "Views::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 0) (character 15)) (end (line 0) (character 20))))))
     (element (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views"))) (kind "package") (name "11b-Safety and Security Feaure Views") (declared-name "11b-Safety and Security Feaure Views") (range (start (line 1) (character 0)) (end (line 1) (character 1498))))

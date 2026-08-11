@@ -758,7 +758,7 @@ package '10c-Fuel Economy Analysis' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "9c21807351049ce9da3d76e232e251c1013fa89fafb2ee26576969819be5d647") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6f8c93a64f9b2389c3de07894f26c0f05f3b47ab6ab3538d43b9a5cc4f10badd") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis"))) (kind "package") (name "10c-Fuel Economy Analysis") (declared-name "10c-Fuel Economy Analysis") (range (start (line 0) (character 0)) (end (line 0) (character 4755))))
     (element (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "10c-Fuel Economy Analysis"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))

@@ -180,7 +180,7 @@ package 'Requirement Usages' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "adfe67e1fcf229479d7bf9e84ac80c4afb7908a12d52e7ca74d1336540128ac4") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a0ccd04064539f306ca7a9267dfc4a61479ed112d8718272a2771ac4f82b315c") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Requirement Usages"))) (kind "package") (name "Requirement Usages") (declared-name "Requirement Usages") (range (start (line 0) (character 0)) (end (line 0) (character 600))))
     (element (id (node (document "d0") (qualified-name "Requirement Usages::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 22))) (parent (node (document "d0") (qualified-name "Requirement Usages"))) (authored (membership (kind Import) (visibility "private") (import (reference "SI::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 18))))))

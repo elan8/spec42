@@ -467,7 +467,7 @@ package '10b-Trade-off Among Alternative Configurations' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "0b880ca418f5050747c7e46648984b6c26e9c843096607f8e96ce8b4742f4b0c") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6997af633d238122ea4a3258b938a8d85b009f947cc786634ebfb56a81603f43") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations"))) (kind "package") (name "10b-Trade-off Among Alternative Configurations") (declared-name "10b-Trade-off Among Alternative Configurations") (range (start (line 0) (character 0)) (end (line 0) (character 2297))))
     (element (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 32))) (parent (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations"))) (authored (membership (kind Import) (visibility "private") (import (reference "TradeStudies::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 28))))))

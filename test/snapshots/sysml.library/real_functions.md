@@ -457,7 +457,7 @@ standard library package RealFunctions {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "220cfa73658e82e92ec9a0c482003d7d1b55b3a1d4f72c60fb4fb145ddfcf153") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "bab8cc8658308459d8e5eb30b1265d6c9cbe636bb68faca916ca1cf78d3945a7") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "RealFunctions"))) (kind "package") (name "RealFunctions") (declared-name "RealFunctions") (range (start (line 0) (character 0)) (end (line 0) (character 2716))))
     (element (id (node (document "d0") (qualified-name "RealFunctions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 7) (character 1)) (end (line 7) (character 31))) (parent (node (document "d0") (qualified-name "RealFunctions"))) (authored (membership (kind Import) (visibility "public") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 7) (character 15)) (end (line 7) (character 27))))))

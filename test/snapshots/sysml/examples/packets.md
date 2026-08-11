@@ -181,7 +181,7 @@ package Packets {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "467f879e5a17fe59946d61a8624334a0dec762b6b6f1249f6ab6212da538971d") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "52317ea22aa8e8bba5df8839ee8e9650c2fb83e0ce3a3e70ad626ee4654abc23") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Packets"))) (kind "package") (name "Packets") (declared-name "Packets") (range (start (line 0) (character 0)) (end (line 0) (character 996))))
     (element (id (node (document "d0") (qualified-name "Packets::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "Packets"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))

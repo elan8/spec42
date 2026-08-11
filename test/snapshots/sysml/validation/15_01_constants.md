@@ -273,7 +273,7 @@ package '15_01-Constants' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f99c981413d792060de56f388e3682d4aaa6dcbcdd8e953e4201eb5f9886a710") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "33849a5fbc0f6a1a5d5104de14d6a75881886c80e1f8e89df63e1a00be7bcaa1") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "15_01-Constants"))) (kind "package") (name "15_01-Constants") (declared-name "15_01-Constants") (range (start (line 0) (character 0)) (end (line 0) (character 2245))))
     (element (id (node (document "d0") (qualified-name "15_01-Constants::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 4)) (end (line 1) (character 44))) (parent (node (document "d0") (qualified-name "15_01-Constants"))) (authored (membership (kind Import) (visibility "private") (import (reference "MeasurementReferences::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 19)) (end (line 1) (character 40))))))

@@ -482,7 +482,7 @@ standard library package ModelingMetadata {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a88e9f0a5a11eec4d38bc1bf8ecb88f77833aea229433bce0a77a8d310ea5ad2") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c2f61a5f3de41e775f6b11164d1291b5613f47b1c988834cd6eb70e26dab3cf5") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ModelingMetadata"))) (kind "package") (name "ModelingMetadata") (declared-name "ModelingMetadata") (range (start (line 0) (character 0)) (end (line 0) (character 2423))))
     (element (id (node (document "d0") (qualified-name "ModelingMetadata::Anything"))) (kind "import") (name "Anything") (declared-name "Anything") (range (start (line 6) (character 1)) (end (line 6) (character 31))) (parent (node (document "d0") (qualified-name "ModelingMetadata"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::Anything") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 30))))))

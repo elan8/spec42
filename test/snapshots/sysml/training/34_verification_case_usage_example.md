@@ -274,7 +274,7 @@ package 'Verification Case Usage Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "c0e71e47de4f50e78b72bd7d68997bfac954265f6f31f0f44518b38b9ef85226") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "3eac23f3b76759fa2fffdf9518204f6b1b7b7ed7888944d63ed785ace80f860e") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Verification Case Usage Example"))) (kind "package") (name "Verification Case Usage Example") (declared-name "Verification Case Usage Example") (range (start (line 0) (character 0)) (end (line 0) (character 1177))))
     (element (id (node (document "d0") (qualified-name "Verification Case Usage Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 58))) (parent (node (document "d0") (qualified-name "Verification Case Usage Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "Verification Case Definition Example::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 54))))))

@@ -124,7 +124,7 @@ package 'Port Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "94b0ff42cd619b6cf39de10a6e2ee4c3ca74781ec2685765e5f2aa4c2cd95fe4") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f556f5bd429a9ca94ec5cdd7a4357cf54980c098ae87ce2a150fa78162ad1768") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Port Example"))) (kind "package") (name "Port Example") (declared-name "Port Example") (range (start (line 0) (character 0)) (end (line 0) (character 435))))
     (element (id (node (document "d0") (qualified-name "Port Example::Engine"))) (kind "part def") (name "Engine") (declared-name "Engine") (range (start (line 22) (character 1)) (end (line 22) (character 57))) (parent (node (document "d0") (qualified-name "Port Example"))))

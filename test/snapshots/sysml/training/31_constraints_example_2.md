@@ -206,7 +206,7 @@ package 'Constraints Example-2' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "0c970f5df7d4950785b891e968cdd252066f434349148d1354dcd39291fbccc7") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "fa0b14c61bf599f448ff402c67fe5b3a9a22f9c5767709f51660d42113631618") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Constraints Example-2"))) (kind "package") (name "Constraints Example-2") (declared-name "Constraints Example-2") (range (start (line 0) (character 0)) (end (line 0) (character 671))))
     (element (id (node (document "d0") (qualified-name "Constraints Example-2::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 23))) (parent (node (document "d0") (qualified-name "Constraints Example-2"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 19))))))

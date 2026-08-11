@@ -74,7 +74,7 @@ package BindingNamedMult {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "c19d09b917a9aad797689f27a33ff41d7e2969aa9acccdf089bad70b6a552f3b") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "7c2487bd245ddce46d7627113ad0700cae3f11c429b5605ed54e21443a5260de") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "BindingNamedMult"))) (kind "package") (name "BindingNamedMult") (declared-name "BindingNamedMult") (range (start (line 0) (character 0)) (end (line 0) (character 173))))
   )

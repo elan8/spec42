@@ -72,7 +72,7 @@ package FeatureDeclCoverage {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "587a7aceba5252422b31beb323e3de7c2819916df93de650b25dbb4fceb808ab") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "cc47ce602a300330b09a9953b4af421aa1b8596cb3bbf2a46e47fdbce8c5187c") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "FeatureDeclCoverage"))) (kind "package") (name "FeatureDeclCoverage") (declared-name "FeatureDeclCoverage") (range (start (line 0) (character 0)) (end (line 0) (character 138))))
     (element (id (node (document "d0") (qualified-name "FeatureDeclCoverage::Base"))) (kind "classifier decl") (name "Base") (declared-name "Base") (range (start (line 1) (character 1)) (end (line 1) (character 17))) (parent (node (document "d0") (qualified-name "FeatureDeclCoverage"))))

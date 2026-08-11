@@ -631,7 +631,7 @@ standard library package SequenceFunctions {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "424118b623dca74b1a0fd16d28427264df2aefe847bf58557a826a1c732329f9") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "3f401e67859fdbbe214f9113098cbb55bef44c1b77b54eedca22bc8541137fe6") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "SequenceFunctions"))) (kind "package") (name "SequenceFunctions") (declared-name "SequenceFunctions") (range (start (line 0) (character 0)) (end (line 0) (character 4501))))
     (element (id (node (document "d0") (qualified-name "SequenceFunctions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 9) (character 1)) (end (line 9) (character 32))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 9) (character 16)) (end (line 9) (character 28))))))

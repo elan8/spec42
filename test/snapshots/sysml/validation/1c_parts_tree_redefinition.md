@@ -450,7 +450,7 @@ package '1c-Parts Tree Redefinition' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "05f7d1663224416672635a8d25cb8e349fc266bd00c6c65f4423ba0124b7274d") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "9c07d89aede5983be29fe44a43994b63897a488d73330f5877851a8902e486df") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "1c-Parts Tree Redefinition"))) (kind "package") (name "1c-Parts Tree Redefinition") (declared-name "1c-Parts Tree Redefinition") (range (start (line 0) (character 0)) (end (line 0) (character 2231))))
     (element (id (node (document "d0") (qualified-name "1c-Parts Tree Redefinition::Definitions"))) (kind "package") (name "Definitions") (declared-name "Definitions") (range (start (line 3) (character 1)) (end (line 3) (character 272))) (parent (node (document "d0") (qualified-name "1c-Parts Tree Redefinition"))))

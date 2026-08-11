@@ -592,7 +592,7 @@ package VehicleIndividuals {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "fc61d143a335c46d7102c87d3e5b6e1b4b1ab509de8637d55cc3232829a55291") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "57a160d1c92ae1f064624b7fc52d15ae95accb75035152408636d88ac59a8154") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "VehicleIndividuals"))) (kind "package") (name "VehicleIndividuals") (declared-name "VehicleIndividuals") (range (start (line 0) (character 0)) (end (line 0) (character 2826))))
     (element (id (node (document "d0") (qualified-name "VehicleIndividuals::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 33))) (parent (node (document "d0") (qualified-name "VehicleIndividuals"))) (authored (membership (kind Import) (visibility "private") (import (reference "VehicleUsages::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 29))))))

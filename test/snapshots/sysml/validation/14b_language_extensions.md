@@ -289,7 +289,7 @@ package '14b-Language-Extensions' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "4e40b5bc6878eae65d3912d9faf1975041e7837a53fcb72021c974aee7238903") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6d2bd28e50ba345c0ecd652db51d3d0033827d2b94ece67422c829f376eb3b1d") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "14b-Language-Extensions"))) (kind "package") (name "14b-Language-Extensions") (declared-name "14b-Language-Extensions") (range (start (line 0) (character 0)) (end (line 0) (character 939))))
     (element (id (node (document "d0") (qualified-name "14b-Language-Extensions::LibraryModel"))) (kind "package") (name "LibraryModel") (declared-name "LibraryModel") (range (start (line 2) (character 1)) (end (line 2) (character 48))) (parent (node (document "d0") (qualified-name "14b-Language-Extensions"))))

@@ -97,7 +97,7 @@ package QualifiedNameImportTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f6b7be6558e2fe4d23cd265cd8aba5758c2f64411ea90187fc41429fe0a90992") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "4d0ce82c4087280b67501dc8aa760c1f0d2500d14982c0694e7d8ccb1d2e6ac6") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "QualifiedNameImportTest"))) (kind "package") (name "QualifiedNameImportTest") (declared-name "QualifiedNameImportTest") (range (start (line 0) (character 0)) (end (line 0) (character 230))))
     (element (id (node (document "d0") (qualified-name "QualifiedNameImportTest::P1"))) (kind "package") (name "P1") (declared-name "P1") (range (start (line 1) (character 1)) (end (line 1) (character 30))) (parent (node (document "d0") (qualified-name "QualifiedNameImportTest"))))

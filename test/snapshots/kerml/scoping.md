@@ -183,7 +183,7 @@ package Scoping {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e8ec502f83d09fb45f7def358606c08488f47cb7d39207d16ab09ee714c3c898") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d9c54ac853a06f36f18e0cb28deaae70a122cd1a5c3739092b1eda62cfc99d69") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Scoping"))) (kind "package") (name "Scoping") (declared-name "Scoping") (range (start (line 0) (character 0)) (end (line 0) (character 890))))
     (element (id (node (document "d0") (qualified-name "Scoping::P1"))) (kind "package") (name "P1") (declared-name "P1") (range (start (line 1) (character 4)) (end (line 1) (character 870))) (parent (node (document "d0") (qualified-name "Scoping"))))

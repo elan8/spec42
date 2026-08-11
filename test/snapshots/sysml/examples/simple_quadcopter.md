@@ -1436,7 +1436,7 @@ package SimpleQuadcopter {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "c7e101065291cecbbb25a002d41be9eba7b4cc6d7f7132584e27503b1c7a7b39") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "3befefce366cff0064f0ca7e7439162410138893976127b399df82b6ca546863") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "SimpleQuadcopter"))) (kind "package") (name "SimpleQuadcopter") (declared-name "SimpleQuadcopter") (range (start (line 0) (character 0)) (end (line 0) (character 10751))))
     (element (id (node (document "d0") (qualified-name "SimpleQuadcopter::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 4)) (end (line 1) (character 26))) (parent (node (document "d0") (qualified-name "SimpleQuadcopter"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 19)) (end (line 1) (character 22))))))

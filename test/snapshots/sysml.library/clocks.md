@@ -537,7 +537,7 @@ standard library package Clocks {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "7ea99f81e772b2569e774cf1629fef2a66befcddc15301a5d61c8d2f013e8feb") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "be7d46a81aa10c2155513027413046f39abf5cc4047389b43cdfe615728a7729") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Clocks"))) (kind "package") (name "Clocks") (declared-name "Clocks") (range (start (line 0) (character 0)) (end (line 0) (character 3853))))
     (element (id (node (document "d0") (qualified-name "Clocks::BasicClock"))) (kind "classifier decl") (name "BasicClock") (declared-name "BasicClock") (range (start (line 122) (character 1)) (end (line 122) (character 155))) (parent (node (document "d0") (qualified-name "Clocks"))))

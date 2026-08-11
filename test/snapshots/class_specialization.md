@@ -43,7 +43,7 @@ class B :> A { }
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "43a40b329340bbf64d912a20cb4e102781a4354371841bc4005998a9f152b0e8") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "7cb10869a753c15dde0b32b4924eee486d3dad8e80177d650ebfdbff6b187fdc") (contract-version "canonical-resolution-v1"))
   (structure
   )
   (references

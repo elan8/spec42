@@ -354,7 +354,7 @@ package '7a1-Variant Configuration - General Concept-a' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "df5a2cc991e75c9ce7c15f7a228fa29ee276a6d85ab3a426109584b67588521b") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ab03ac47073692081af06d9aea3296883a426af7b093db109c16fbb6165d7fff") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a"))) (kind "package") (name "7a1-Variant Configuration - General Concept-a") (declared-name "7a1-Variant Configuration - General Concept-a") (range (start (line 0) (character 0)) (end (line 0) (character 1531))))
     (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA"))) (kind "part def") (name "SubsystemA") (declared-name "SubsystemA") (range (start (line 20) (character 1)) (end (line 20) (character 67))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a"))))

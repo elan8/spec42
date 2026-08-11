@@ -173,7 +173,7 @@ package 'Variation Definitions' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "dc3367ce9081a8f723213b71f664ff017f10b994ac042a535f57fe9d6bebc795") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d708c72e680b085a9851b2ac94d49c6ed340c2f7e70a1052902e9b34ae3a4288") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Variation Definitions"))) (kind "package") (name "Variation Definitions") (declared-name "Variation Definitions") (range (start (line 0) (character 0)) (end (line 0) (character 717))))
     (element (id (node (document "d0") (qualified-name "Variation Definitions::4cylEngine"))) (kind "part") (name "4cylEngine") (declared-name "4cylEngine") (range (start (line 14) (character 4)) (end (line 14) (character 71))) (parent (node (document "d0") (qualified-name "Variation Definitions"))) (authored (membership (kind Feature)) (relationships (typing (reference "Engine") (range (start (line 14) (character 24)) (end (line 14) (character 30)))))))

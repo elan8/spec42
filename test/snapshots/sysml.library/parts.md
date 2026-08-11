@@ -407,7 +407,7 @@ standard library package Parts {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "2c83b1f619a6890f31fa6657a9f2b678e8648492d4261e9fd69df9dd9ad8a957") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b1a2e6bbe50cef288c0718fbb55ad4407154fe15db567140d5ffab5b132e7ea4") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Parts"))) (kind "package") (name "Parts") (declared-name "Parts") (range (start (line 0) (character 0)) (end (line 0) (character 1882))))
     (element (id (node (document "d0") (qualified-name "Parts::Action"))) (kind "import") (name "Action") (declared-name "Action") (range (start (line 13) (character 1)) (end (line 13) (character 32))) (parent (node (document "d0") (qualified-name "Parts"))) (authored (membership (kind Import) (visibility "private") (import (reference "Actions::Action") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 13) (character 16)) (end (line 13) (character 31))))))

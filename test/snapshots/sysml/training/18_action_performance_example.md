@@ -134,7 +134,7 @@ package 'Action Performance Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "0bf226e695119c42a77e25dd001fddc476b58fe9ef07acabab5d56eac5c90d9f") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "ef7f067945a959c77269de27c186a2cf1e9f24940f3a583d6d86adc63841258c") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Action Performance Example"))) (kind "package") (name "Action Performance Example") (declared-name "Action Performance Example") (range (start (line 0) (character 0)) (end (line 0) (character 358))))
     (element (id (node (document "d0") (qualified-name "Action Performance Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 42))) (parent (node (document "d0") (qualified-name "Action Performance Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "Action Decomposition::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 38))))))

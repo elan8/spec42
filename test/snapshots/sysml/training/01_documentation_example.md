@@ -82,7 +82,7 @@ package 'Documentation Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "84f77ef0bcc3a0b727346ebc686087fb99127cad4de444e33ec32cad7b127571") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f3f683404d38cf3968db482d13574f52fecc8109de330a070ea8d97f3c4afb51") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Documentation Example"))) (kind "package") (name "Documentation Example") (declared-name "Documentation Example") (range (start (line 0) (character 0)) (end (line 0) (character 307))))
     (element (id (node (document "d0") (qualified-name "Documentation Example::Automobile"))) (kind "part def") (name "Automobile") (declared-name "Automobile") (range (start (line 5) (character 1)) (end (line 5) (character 81))) (parent (node (document "d0") (qualified-name "Documentation Example"))))

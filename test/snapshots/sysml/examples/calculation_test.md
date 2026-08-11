@@ -198,7 +198,7 @@ package CalculationExample {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "56453e45cfffab1a058a95bfa1e636b9f01dbbd3841a43ae91e9c1cc6fba8cd5") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "42b8ecd3c05199d728c7ad0c11b46242110af3662b73fc002c5d0ba8b60f7a4c") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "CalculationExample"))) (kind "package") (name "CalculationExample") (declared-name "CalculationExample") (range (start (line 0) (character 0)) (end (line 0) (character 659))))
     (element (id (node (document "d0") (qualified-name "CalculationExample::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 23))) (parent (node (document "d0") (qualified-name "CalculationExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 19))))))

@@ -602,7 +602,7 @@ package ServerSequenceRealization_2 {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "15f4382dbc3f5392d7830c8628aa6a8ef1737be42222cdcc35186ea39949ae6d") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "a3accd17495579f0bc12faea4df7ba5ad02ba19b9bd297afa1221321693b0982") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_2"))) (kind "package") (name "ServerSequenceRealization_2") (declared-name "ServerSequenceRealization_2") (range (start (line 0) (character 0)) (end (line 0) (character 3235))))
     (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 39))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_2"))) (authored (membership (kind Import) (visibility "private") (import (reference "ServerSequenceModel::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 35))))))

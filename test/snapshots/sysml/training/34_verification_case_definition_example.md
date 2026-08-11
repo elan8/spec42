@@ -258,7 +258,7 @@ package 'Verification Case Definition Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "abf554540790f02164f06219e076bca2c79c07e663e825f79d21c668f1d42fa5") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "0ea66fbed9bb68b4c044c9b36f92357b55246ce854af476960e769d1b529ecd3") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Verification Case Definition Example"))) (kind "package") (name "Verification Case Definition Example") (declared-name "Verification Case Definition Example") (range (start (line 0) (character 0)) (end (line 0) (character 1287))))
     (element (id (node (document "d0") (qualified-name "Verification Case Definition Example::Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (range (start (line 2) (character 1)) (end (line 2) (character 53))) (parent (node (document "d0") (qualified-name "Verification Case Definition Example"))))

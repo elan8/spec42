@@ -633,7 +633,7 @@ standard library package Observation {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "35c62181086f588318438a06d86fc43c62bf949cf9abf13dd26d99c88db884b3") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "77fccaf206d36eabcd5662d79670280d2b15d1b5947134861c5878e801f51538") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Observation"))) (kind "package") (name "Observation") (declared-name "Observation") (range (start (line 0) (character 0)) (end (line 0) (character 4578))))
     (element (id (node (document "d0") (qualified-name "Observation::Boolean"))) (kind "import") (name "Boolean") (declared-name "Boolean") (range (start (line 7) (character 1)) (end (line 7) (character 38))) (parent (node (document "d0") (qualified-name "Observation"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Boolean") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 37))))))

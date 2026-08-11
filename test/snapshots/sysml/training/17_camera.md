@@ -177,7 +177,7 @@ package Camera {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "6081ff884a1c2781bb2d6875ab62214b65cfc5910d64acb498b2a0d70a00e984") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "fb9810bdb90395330663dcb1b1ec4a030548454aefd0f47a274ee9ef78e5f1b5") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Camera"))) (kind "package") (name "Camera") (declared-name "Camera") (range (start (line 0) (character 0)) (end (line 0) (character 486))))
     (element (id (node (document "d0") (qualified-name "Camera::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 42))) (parent (node (document "d0") (qualified-name "Camera"))) (authored (membership (kind Import) (visibility "private") (import (reference "Action Decomposition::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 38))))))

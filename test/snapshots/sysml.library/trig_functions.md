@@ -202,7 +202,7 @@ standard library package TrigFunctions {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "65ff2948cdc10669c0328189ec8e9b4366ca9c78f5b16f385ae6bf504cbc00b1") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "fdc591eb39d947e851856edecd97abb016a4cf7a60975489d9e748777bd0ad7a") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "TrigFunctions"))) (kind "package") (name "TrigFunctions") (declared-name "TrigFunctions") (range (start (line 0) (character 0)) (end (line 0) (character 1070))))
     (element (id (node (document "d0") (qualified-name "TrigFunctions::Real"))) (kind "import") (name "Real") (declared-name "Real") (range (start (line 5) (character 4)) (end (line 5) (character 37))) (parent (node (document "d0") (qualified-name "TrigFunctions"))) (authored (membership (kind Import) (visibility "public") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 5) (character 18)) (end (line 5) (character 36))))))

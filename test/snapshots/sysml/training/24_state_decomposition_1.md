@@ -120,7 +120,7 @@ package 'State Decomposition-1' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5a24abc7516f9df34ab166a582652cb45cfb2b48a9b0529842792dbbcf2b5865") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a79b396b14e0b00ac3fffbf25e805b1eb774578b53e8b8c23ef84df1f0295d74") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "State Decomposition-1"))) (kind "package") (name "State Decomposition-1") (declared-name "State Decomposition-1") (range (start (line 0) (character 0)) (end (line 0) (character 408))))
     (element (id (node (document "d0") (qualified-name "State Decomposition-1::VehicleOffSignal"))) (kind "attribute def") (name "VehicleOffSignal") (declared-name "VehicleOffSignal") (range (start (line 4) (character 1)) (end (line 4) (character 32))) (parent (node (document "d0") (qualified-name "State Decomposition-1"))))

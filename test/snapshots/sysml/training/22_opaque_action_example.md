@@ -115,7 +115,7 @@ package 'Opaque Action Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "e845d88e7e23eda9800245b748ec7fe58eace2b5f312ceb1ce1730976287ab9f") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "ccd9ccb41e406150a11c63d073772165660416d4b1036d548e83ca868ec21cea") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Opaque Action Example"))) (kind "package") (name "Opaque Action Example") (declared-name "Opaque Action Example") (range (start (line 0) (character 0)) (end (line 0) (character 307))))
     (element (id (node (document "d0") (qualified-name "Opaque Action Example::Sensor"))) (kind "part def") (name "Sensor") (declared-name "Sensor") (range (start (line 2) (character 1)) (end (line 2) (character 64))) (parent (node (document "d0") (qualified-name "Opaque Action Example"))))

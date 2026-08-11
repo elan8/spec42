@@ -300,7 +300,7 @@ package '15_05-Unification of Expression and Constraint Definition' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "eb67362f14fb707558a61008b892977576b4fda01a1da07d7d1397f874acb962") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a4157d352526353bbff0d814be3595151f203a68df37a47db3b16f9820c834df") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition"))) (kind "package") (name "15_05-Unification of Expression and Constraint Definition") (declared-name "15_05-Unification of Expression and Constraint Definition") (range (start (line 0) (character 0)) (end (line 0) (character 1441))))
     (element (id (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 44))) (parent (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition"))) (authored (membership (kind Import) (visibility "private") (import (reference "15_03-Value Expression::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 40))))))

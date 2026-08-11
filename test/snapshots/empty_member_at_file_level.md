@@ -49,7 +49,7 @@ parse.expected_semicolon_or_body
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "b1303de88dd99587ffc1683631085dcda5c1660a5512aa8a8f981e125fd04159") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "fefede073c8c7ce43930b22b1d1c30639364c8e8b3185e2ef91212bd14218998") (contract-version "canonical-resolution-v1"))
   (structure
   )
   (references

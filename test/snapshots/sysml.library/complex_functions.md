@@ -359,7 +359,7 @@ standard library package ComplexFunctions {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "af43a7a76ae97f2baf7d5b6a370de9c0cae9b96cb9bfc07f6ec980b8780d7cda") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e09e2831ffb9d0edcd243add33f440640d6041e3c91db33246c988c6c30373ba") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ComplexFunctions"))) (kind "package") (name "ComplexFunctions") (declared-name "ComplexFunctions") (range (start (line 0) (character 0)) (end (line 0) (character 2266))))
     (element (id (node (document "d0") (qualified-name "ComplexFunctions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 7) (character 1)) (end (line 7) (character 31))) (parent (node (document "d0") (qualified-name "ComplexFunctions"))) (authored (membership (kind Import) (visibility "public") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 7) (character 15)) (end (line 7) (character 27))))))

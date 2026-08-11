@@ -620,7 +620,7 @@ package TimeVaryingFeaturesEnhanced {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "533007fdb3aeedf51fe1c81e4a52aa56fd09c812eee0bb32d5defc229849a356") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a287d97f80a3543c6297654d9deecc95dd34aa3cd2134def7fae6d0dcccea6d4") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced"))) (kind "package") (name "TimeVaryingFeaturesEnhanced") (declared-name "TimeVaryingFeaturesEnhanced") (range (start (line 0) (character 0)) (end (line 0) (character 6820))))
     (element (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 4)) (end (line 1) (character 42))) (parent (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced"))) (authored (membership (kind Import) (visibility "private") (import (reference "ExtendedOccurrences::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 19)) (end (line 1) (character 38))))))

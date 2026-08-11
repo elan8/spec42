@@ -98,7 +98,7 @@ package Annotated {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "64c429d0a76224d613835c9da21e503ab63994fef49bc145156425f536e8b251") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "09f4fd17531e2f9f52420cda01132a27aa44df681136c27ef6ee3cb557edf1da") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Annotated"))) (kind "package") (name "Annotated") (declared-name "Annotated") (range (start (line 3) (character 0)) (end (line 3) (character 244))))
     (element (id (node (document "d0") (qualified-name "Annotated::AnnotatedPart"))) (kind "part def") (name "AnnotatedPart") (declared-name "AnnotatedPart") (range (start (line 11) (character 16)) (end (line 11) (character 39))) (parent (node (document "d0") (qualified-name "Annotated"))))

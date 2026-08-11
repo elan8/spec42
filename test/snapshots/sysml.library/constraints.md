@@ -197,7 +197,7 @@ standard library package Constraints {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5176b3c0710cb0bc1e77ed290e2f8243a0d38f327caf0b0dd750deb45ef8bb33") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e6a5af70747a8758f782dce8c528980734d11ff20a07939911c26cc754292e20") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Constraints"))) (kind "package") (name "Constraints") (declared-name "Constraints") (range (start (line 0) (character 0)) (end (line 0) (character 1263))))
     (element (id (node (document "d0") (qualified-name "Constraints::BooleanEvaluation"))) (kind "import") (name "BooleanEvaluation") (declared-name "BooleanEvaluation") (range (start (line 7) (character 1)) (end (line 7) (character 48))) (parent (node (document "d0") (qualified-name "Constraints"))) (authored (membership (kind Import) (visibility "private") (import (reference "Performances::BooleanEvaluation") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 47))))))

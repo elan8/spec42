@@ -48,7 +48,7 @@ tokenize.UnclosedRegularComment
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "ca4fad6ba51d2419c2aed5d50ac392a0692336551753fe38c10e66c5ef2c5f18") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "240228c74fcd5e4e87262c76b2c76ac5f891de2b97f989064670f2de5851b7ba") (contract-version "canonical-resolution-v1"))
   (structure
   )
   (references

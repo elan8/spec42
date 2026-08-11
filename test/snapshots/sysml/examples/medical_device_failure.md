@@ -128,7 +128,7 @@ package MedicalDeviceFailure {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c70f62480870edb017b5546e8da8725c70362aa424b71bd4edd03a0d647d08dc") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e82c988c61c63239d64c376d5dd98c95539cbdd3d0f642cb01e06d74448d9532") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "MedicalDeviceFailure"))) (kind "package") (name "MedicalDeviceFailure") (declared-name "MedicalDeviceFailure") (range (start (line 0) (character 0)) (end (line 0) (character 491))))
     (element (id (node (document "d0") (qualified-name "MedicalDeviceFailure::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 34))) (parent (node (document "d0") (qualified-name "MedicalDeviceFailure"))) (authored (membership (kind Import) (visibility "private") (import (reference "CauseAndEffect::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 30))))))

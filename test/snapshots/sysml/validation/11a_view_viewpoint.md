@@ -282,7 +282,7 @@ package '11a-View-Viewpoint' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "df5f3059f053c88d837883e169cff0c107524b5f61c6e9e24a45dfb004b7e160") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f1b7b87800c2af2385c52073d0dedc353d2be79fac07d20f16aa8e07958b79e4") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "11a-View-Viewpoint"))) (kind "package") (name "11a-View-Viewpoint") (declared-name "11a-View-Viewpoint") (range (start (line 0) (character 0)) (end (line 0) (character 1144))))
     (element (id (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel"))) (kind "package") (name "SystemModel") (declared-name "SystemModel") (range (start (line 2) (character 1)) (end (line 2) (character 611))) (parent (node (document "d0") (qualified-name "11a-View-Viewpoint"))))

@@ -181,7 +181,7 @@ standard library package Calculations {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d14beef72f9d6704e6e3b6726548c32b369bb4ecb82e6405e56950f3cb94e285") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "2784623ca7d31d17862567f20e3eef437646a1c3c3622b31436c64eac39de589") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Calculations"))) (kind "package") (name "Calculations") (declared-name "Calculations") (range (start (line 0) (character 0)) (end (line 0) (character 990))))
     (element (id (node (document "d0") (qualified-name "Calculations::Action"))) (kind "import") (name "Action") (declared-name "Action") (range (start (line 9) (character 1)) (end (line 9) (character 32))) (parent (node (document "d0") (qualified-name "Calculations"))) (authored (membership (kind Import) (visibility "private") (import (reference "Actions::Action") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 9) (character 16)) (end (line 9) (character 31))))))

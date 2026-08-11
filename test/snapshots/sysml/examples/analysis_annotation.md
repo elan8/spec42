@@ -260,7 +260,7 @@ package AnalysisAnnotation {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "10d55d90d722d281bf200f1803a0d6da4ef795f12a876854f82f264dd0ffa6e8") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "ca5f5288123c6d126b1eae21603aee637c81f2dbb0c6a2a629f5eb8d4ec288d5") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "AnalysisAnnotation"))) (kind "package") (name "AnalysisAnnotation") (declared-name "AnalysisAnnotation") (range (start (line 0) (character 0)) (end (line 0) (character 959))))
     (element (id (node (document "d0") (qualified-name "AnalysisAnnotation::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 35))) (parent (node (document "d0") (qualified-name "AnalysisAnnotation"))) (authored (membership (kind Import) (visibility "private") (import (reference "AnalysisTooling::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 31))))))

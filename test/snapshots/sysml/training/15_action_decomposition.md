@@ -161,7 +161,7 @@ package 'Action Decomposition' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "c2c4ee1926c3f7f12308cb1d8037cc60c699c2871f097b81eeddf4b24772419e") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "189c7f32d91e0af4b92920ea6e779d640f435ac325dbf31512c66b91cd236e05") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Action Decomposition"))) (kind "package") (name "Action Decomposition") (declared-name "Action Decomposition") (range (start (line 0) (character 0)) (end (line 0) (character 582))))
     (element (id (node (document "d0") (qualified-name "Action Decomposition::Focus"))) (kind "action def") (name "Focus") (declared-name "Focus") (range (start (line 5) (character 1)) (end (line 5) (character 58))) (parent (node (document "d0") (qualified-name "Action Decomposition"))))

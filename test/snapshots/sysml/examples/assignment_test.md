@@ -255,7 +255,7 @@ package AssignmentTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "8f2077218088e803774512a94869d29e0f39d99a219e378505f72d8cc2baaa77") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f2096242123231750825f4828c8c41f6633c58b1a98cbf2feae7f604d2809c09") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "AssignmentTest"))) (kind "package") (name "AssignmentTest") (declared-name "AssignmentTest") (range (start (line 0) (character 0)) (end (line 0) (character 873))))
     (element (id (node (document "d0") (qualified-name "AssignmentTest::Counter"))) (kind "part def") (name "Counter") (declared-name "Counter") (range (start (line 2) (character 1)) (end (line 2) (character 176))) (parent (node (document "d0") (qualified-name "AssignmentTest"))))

@@ -4286,7 +4286,7 @@ standard library package <USCU> USCustomaryUnits {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ad841f6221b2e858028557591f9de52f6ded85d0b26b9d9e80234c8b3589d462") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ba229203349410221384d5c5918f118f577ffc9009cd85bfc58196df788a7034") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "USCustomaryUnits"))) (kind "package") (name "USCustomaryUnits") (declared-name "USCustomaryUnits") (range (start (line 0) (character 0)) (end (line 0) (character 30368))))
     (element (id (node (document "d0") (qualified-name "USCustomaryUnits::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 8) (character 4)) (end (line 8) (character 44))) (parent (node (document "d0") (qualified-name "USCustomaryUnits"))) (authored (membership (kind Import) (visibility "private") (import (reference "MeasurementReferences::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 8) (character 19)) (end (line 8) (character 40))))))

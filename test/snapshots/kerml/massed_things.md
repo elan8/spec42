@@ -89,7 +89,7 @@ package MassedThings {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ac71f42929e77fd38ceca50c52a09270d1a01db4281433cff95b64e33d6538fa") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "bfd756aa831fb14bc04da32190ccba00be96a9ad77fa859085e757c5c628f754") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 0) (character 0)) (end (line 0) (character 31))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 0) (character 15)) (end (line 0) (character 27))))))
     (element (id (node (document "d0") (qualified-name "MassedThings"))) (kind "package") (name "MassedThings") (declared-name "MassedThings") (range (start (line 1) (character 0)) (end (line 1) (character 245))))

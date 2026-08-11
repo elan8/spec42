@@ -106,7 +106,7 @@ package TextualRepresentation {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "17c609a5f16f94b83138a42059ef5303d994a6edb3a9c0a4078b9e84d550b05e") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5bb99bb7a28f7328de54bcbeafe79f8ca9317e68e658348f156f8b8878ba0d86") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "TextualRepresentation"))) (kind "package") (name "TextualRepresentation") (declared-name "TextualRepresentation") (range (start (line 0) (character 0)) (end (line 0) (character 343))))
     (element (id (node (document "d0") (qualified-name "TextualRepresentation::C"))) (kind "classifier decl") (name "C") (declared-name "C") (range (start (line 3) (character 1)) (end (line 3) (character 127))) (parent (node (document "d0") (qualified-name "TextualRepresentation"))))

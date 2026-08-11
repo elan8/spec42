@@ -49,7 +49,7 @@ in individual it;
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "fba7f7a4eab7831067db6c753457650efe2daaf8352f6c2207063aaad1dcd817") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "ef7d5cacf4ffda28ef856a92dd9dd19d8c40322bbf707bb42987c977680dea7b") (contract-version "canonical-resolution-v1"))
   (structure
   )
   (references

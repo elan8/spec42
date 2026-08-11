@@ -56,7 +56,7 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "3c52d7d2ca1e2310fb7c192ea0c75288775814fe9a0ec161dd6ad6c9d88eb00c") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "61b234f16160faf1d81388d8acb8e8ca61228b185717c5f3c821a2fd5893b9fc") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P") (range (start (line 0) (character 0)) (end (line 0) (character 136))))
     (element (id (node (document "d0") (qualified-name "P::Base"))) (kind "part def") (name "Base") (declared-name "Base") (range (start (line 1) (character 4)) (end (line 1) (character 56))) (parent (node (document "d0") (qualified-name "P"))))

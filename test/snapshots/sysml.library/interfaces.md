@@ -427,7 +427,7 @@ standard library package Interfaces {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "01dd968209b57cb7865e774606b079ee26abdbfd87d882d5a79cf28a15a9e75a") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b6fb19a15252373924cf0a9c348559de316184d0d2a9d143b9f450bd506089c6") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Interfaces"))) (kind "package") (name "Interfaces") (declared-name "Interfaces") (range (start (line 0) (character 0)) (end (line 0) (character 3467))))
     (element (id (node (document "d0") (qualified-name "Interfaces::BinaryConnection"))) (kind "import") (name "BinaryConnection") (declared-name "BinaryConnection") (range (start (line 8) (character 4)) (end (line 8) (character 49))) (parent (node (document "d0") (qualified-name "Interfaces"))) (authored (membership (kind Import) (visibility "private") (import (reference "Connections::BinaryConnection") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 8) (character 19)) (end (line 8) (character 48))))))

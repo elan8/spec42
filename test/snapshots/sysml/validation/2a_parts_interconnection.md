@@ -792,7 +792,7 @@ package '2a-Parts Interconnection' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "7b35e45bc4294587d9beb1fed66c5676fb35912339baac8ef125fbf93279a5f8") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f7603000b796ef6ea75526c50e4466c5ff658b0ad75325de723d69a52c7e5585") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "2a-Parts Interconnection"))) (kind "package") (name "2a-Parts Interconnection") (declared-name "2a-Parts Interconnection") (range (start (line 0) (character 0)) (end (line 0) (character 5072))))
     (element (id (node (document "d0") (qualified-name "2a-Parts Interconnection::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 30))) (parent (node (document "d0") (qualified-name "2a-Parts Interconnection"))) (authored (membership (kind Import) (visibility "public") (import (reference "Definitions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 15)) (end (line 1) (character 26))))))

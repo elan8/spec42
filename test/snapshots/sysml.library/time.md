@@ -1063,7 +1063,7 @@ standard library package Time {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "71155a16d2f2735b37976766049ded3e0537f689a9737501245560a52fafb647") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "19134c557566e1b4472dec4568555cc495c7faf8be3302eb528e68c4aa0b5bcf") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Time"))) (kind "package") (name "Time") (declared-name "Time") (range (start (line 0) (character 0)) (end (line 0) (character 10427))))
     (element (id (node (document "d0") (qualified-name "Time::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 15) (character 4)) (end (line 15) (character 44))) (parent (node (document "d0") (qualified-name "Time"))) (authored (membership (kind Import) (visibility "private") (import (reference "MeasurementReferences::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 15) (character 19)) (end (line 15) (character 40))))))

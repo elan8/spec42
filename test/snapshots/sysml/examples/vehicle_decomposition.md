@@ -223,7 +223,7 @@ package 'Vehicle Decomposition' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "35cf7fb4bfd39c2eb8e67ad0029353c0d503dfbd18248eff0c7d6c413e7b8973") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "3b351fca08ce784a39db6c2808ed6858e37ec5b314cfcf58319e96088ec45221") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Vehicle Decomposition"))) (kind "package") (name "Vehicle Decomposition") (declared-name "Vehicle Decomposition") (range (start (line 0) (character 0)) (end (line 0) (character 1092))))
     (element (id (node (document "d0") (qualified-name "Vehicle Decomposition::Chassis Assembly"))) (kind "part def") (name "Chassis Assembly") (declared-name "Chassis Assembly") (range (start (line 22) (character 1)) (end (line 22) (character 81))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition"))))

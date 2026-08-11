@@ -113,7 +113,7 @@ package 'Packet Usage' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "353a985196f12d8e80c4875b0e966a25d463f39b9573c136b4c05b53a8311f89") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "77990fc602b1a57d1e6709a71b2eecafdfdb633c6b0aa15863475ba9f18143b3") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 0) (character 0)) (end (line 0) (character 26))) (authored (membership (kind Import) (visibility "private") (import (reference "Packets::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 0) (character 15)) (end (line 0) (character 22))))))
     (element (id (node (document "d0") (qualified-name "Packet Usage"))) (kind "package") (name "Packet Usage") (declared-name "Packet Usage") (range (start (line 2) (character 0)) (end (line 2) (character 297))))

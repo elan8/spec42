@@ -1157,7 +1157,7 @@ standard library package Transfers {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d66f746481b94d726f262501f3c91a48537c977ccb83fd7ad3ce5066c86c0855") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ca94de06a2542d93acbee9d606cf43d940a2164d57af074965dc52ad53af5cc2") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Transfers"))) (kind "package") (name "Transfers") (declared-name "Transfers") (range (start (line 0) (character 0)) (end (line 0) (character 10817))))
     (element (id (node (document "d0") (qualified-name "Transfers::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 7) (character 4)) (end (line 7) (character 34))) (parent (node (document "d0") (qualified-name "Transfers"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 7) (character 19)) (end (line 7) (character 30))))))

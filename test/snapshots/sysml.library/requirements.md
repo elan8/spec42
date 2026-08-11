@@ -689,7 +689,7 @@ standard library package Requirements {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e2c72a9d91c48a67bb4f9266e651b6affd8e1682a4bfa2d44d5754aab8498023") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "be63cbdf3e3950de0494607dce1518b87f9600c3bf627700015d0e4151a852b4") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Requirements"))) (kind "package") (name "Requirements") (declared-name "Requirements") (range (start (line 0) (character 0)) (end (line 0) (character 5466))))
     (element (id (node (document "d0") (qualified-name "Requirements::Action"))) (kind "import") (name "Action") (declared-name "Action") (range (start (line 14) (character 1)) (end (line 14) (character 32))) (parent (node (document "d0") (qualified-name "Requirements"))) (authored (membership (kind Import) (visibility "private") (import (reference "Actions::Action") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 14) (character 16)) (end (line 14) (character 31))))))

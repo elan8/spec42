@@ -138,7 +138,7 @@ package TradeStudyTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5ecbfd207914be179a6fe96fef80e4b2334d95310dc5511c78187acbacb45e0e") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "fb546d7f0625b2425d9b9a0fca32233ec23f04381d0a2528eaf4ead5b993bb63") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "TradeStudyTest"))) (kind "package") (name "TradeStudyTest") (declared-name "TradeStudyTest") (range (start (line 0) (character 0)) (end (line 0) (character 393))))
     (element (id (node (document "d0") (qualified-name "TradeStudyTest::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 32))) (parent (node (document "d0") (qualified-name "TradeStudyTest"))) (authored (membership (kind Import) (visibility "private") (import (reference "TradeStudies::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 28))))))

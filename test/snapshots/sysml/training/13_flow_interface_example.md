@@ -196,7 +196,7 @@ package 'Flow Interface Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "31183c67023ea64975868a5f7302d1a89a1cc5fda8f903b94b03f0f3c94b89ab") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "072b6e0d911fdb6bc2a9168035dba8a84e254d9da4385b86131ee739f57ca132") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Flow Interface Example"))) (kind "package") (name "Flow Interface Example") (declared-name "Flow Interface Example") (range (start (line 0) (character 0)) (end (line 0) (character 537))))
     (element (id (node (document "d0") (qualified-name "Flow Interface Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 34))) (parent (node (document "d0") (qualified-name "Flow Interface Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "Port Example::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 30))))))

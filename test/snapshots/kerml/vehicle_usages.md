@@ -461,7 +461,7 @@ package VehicleUsages {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "bf3b90df7ed5b38f10a6b183099148f9e7b24d98010107fc50593719984534b5") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "41aa674f97203d346bca3a8e960ed2f49799764a91cf2f129861abc7d531cd26") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "VehicleUsages"))) (kind "package") (name "VehicleUsages") (declared-name "VehicleUsages") (range (start (line 0) (character 0)) (end (line 0) (character 3371))))
     (element (id (node (document "d0") (qualified-name "VehicleUsages::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 6) (character 1)) (end (line 6) (character 38))) (parent (node (document "d0") (qualified-name "VehicleUsages"))) (authored (membership (kind Import) (visibility "private") (import (reference "VehicleDefinitions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 34))))))

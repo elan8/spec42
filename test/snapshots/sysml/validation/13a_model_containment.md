@@ -292,7 +292,7 @@ package '13a-Model Containment' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "271ceb93d7f65d82bc356b164d769686aec56827b3274426bcf7e098e3810532") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "60a5fc5ca0614584ba2069c160369b70872ab66ff08fed7bbbf45881b522ed6f") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "13a-Model Containment"))) (kind "package") (name "13a-Model Containment") (declared-name "13a-Model Containment") (range (start (line 0) (character 0)) (end (line 0) (character 1428))))
     (element (id (node (document "d0") (qualified-name "13a-Model Containment::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 46))) (parent (node (document "d0") (qualified-name "13a-Model Containment"))) (authored (membership (kind Import) (visibility "private") (import (reference "2a-Parts Interconnection::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 42))))))

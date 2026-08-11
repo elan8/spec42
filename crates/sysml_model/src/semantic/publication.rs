@@ -86,8 +86,9 @@ impl SemanticModelIdentity {
         hasher.update(b"spec42-semantic-input\0");
         hasher.update(request.configuration.semantic_contract_version.as_bytes());
         hasher.update([0]);
-        hasher.update(construction_tag(request.construction));
-        hasher.update([0]);
+        // Construction strategy is an execution choice. It remains part of the typed
+        // publication identity below, but must not enter the content digest rendered in SMG:
+        // sequential and parallel construction are required to publish byte-equivalent facts.
         hasher.update(evaluation_tag(request.evaluation));
         hasher.update([0]);
         for document in request.sources.documents() {
@@ -105,13 +106,6 @@ impl SemanticModelIdentity {
             construction: request.construction,
             evaluation: request.evaluation,
         }
-    }
-}
-
-fn construction_tag(strategy: ConstructionStrategy) -> &'static [u8] {
-    match strategy {
-        ConstructionStrategy::Sequential => b"sequential",
-        ConstructionStrategy::Parallel => b"parallel",
     }
 }
 
@@ -2136,7 +2130,7 @@ mod tests {
     }
 
     #[test]
-    fn identity_includes_phase_affecting_policies() {
+    fn identity_retains_phase_affecting_policies() {
         let snapshot =
             ImmutableSourceSnapshot::new(vec![document("memory://test/a.sysml", "package A {}")])
                 .unwrap();
@@ -2160,6 +2154,10 @@ mod tests {
         };
         assert_ne!(resolved_only.identity(), evaluated.identity());
         assert_ne!(resolved_only.identity(), parallel.identity());
+        assert_eq!(
+            resolved_only.identity().source_digest,
+            parallel.identity().source_digest
+        );
         assert_eq!(
             resolved_only.identity().evaluation,
             EvaluationPolicy::ResolvedOnly

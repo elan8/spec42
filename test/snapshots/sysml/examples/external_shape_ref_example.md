@@ -182,7 +182,7 @@ package ExternalShapeRefExample {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "7099a129835bd99aec51c536cf682193d9f6911604d8b5ec5dadfa99eed58cf7") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a5a71058d2d0ba6cd7443c11b54d9b57a7a205c31258a8dc2e0003d8655f60b3") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ExternalShapeRefExample"))) (kind "package") (name "ExternalShapeRefExample") (declared-name "ExternalShapeRefExample") (range (start (line 0) (character 0)) (end (line 0) (character 684))))
     (element (id (node (document "d0") (qualified-name "ExternalShapeRefExample::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 30))) (parent (node (document "d0") (qualified-name "ExternalShapeRefExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "ShapeItems::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 26))))))

@@ -269,7 +269,7 @@ package 'Calculation Definitions' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "848eccff3330fcd420fc236af2aef0294cf89061da1e94e98e662234d7333a70") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d49c201628139d4f3c13e79d49bbde7d1acad68909e93ebfe3324a145d5ace79") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Calculation Definitions"))) (kind "package") (name "Calculation Definitions") (declared-name "Calculation Definitions") (range (start (line 0) (character 0)) (end (line 0) (character 712))))
     (element (id (node (document "d0") (qualified-name "Calculation Definitions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 23))) (parent (node (document "d0") (qualified-name "Calculation Definitions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 19))))))

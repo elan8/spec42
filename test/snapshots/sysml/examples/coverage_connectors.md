@@ -108,7 +108,7 @@ part def System {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "8290f6a2d9cb06a0a4e73ef1a5766397598f901adc8aba0d251ea8e0392709f6") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "a2fc16301a164ff9516d6bf5db5efd33cd9b46ce86568a6e9ee914b5ea717bcd") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "A"))) (kind "part def") (name "A") (declared-name "A") (range (start (line 0) (character 0)) (end (line 0) (character 32))))
     (element (id (node (document "d0") (qualified-name "A::p1"))) (kind "port") (name "p1") (declared-name "p1") (range (start (line 0) (character 13)) (end (line 0) (character 21))) (parent (node (document "d0") (qualified-name "A"))))

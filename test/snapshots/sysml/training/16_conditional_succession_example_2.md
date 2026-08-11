@@ -172,7 +172,7 @@ package 'Conditional Succession Example-2' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "5b0ff4a62adb934489504f0454c0e84e291d4d608a3009588c4b0cb7af415091") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "c745f466697de1b101bf5534b38f55260c2b1d5ebddbf3a5da217f99f387a587") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Conditional Succession Example-2"))) (kind "package") (name "Conditional Succession Example-2") (declared-name "Conditional Succession Example-2") (range (start (line 0) (character 0)) (end (line 0) (character 689))))
     (element (id (node (document "d0") (qualified-name "Conditional Succession Example-2::Focus"))) (kind "action def") (name "Focus") (declared-name "Focus") (range (start (line 7) (character 1)) (end (line 7) (character 58))) (parent (node (document "d0") (qualified-name "Conditional Succession Example-2"))))

@@ -2961,7 +2961,7 @@ standard library package SysML {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "2c92147ed962ec10fe132e07c73c37c02c4df202987dedfbe8f6c593b6df7866") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "25da17bc983af759f12ed870af4b8880774df92277b1f98a31d688e9f7848cd7") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "SysML"))) (kind "package") (name "SysML") (declared-name "SysML") (range (start (line 0) (character 0)) (end (line 0) (character 30788))))
     (element (id (node (document "d0") (qualified-name "SysML::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 6) (character 1)) (end (line 6) (character 32))) (parent (node (document "d0") (qualified-name "SysML"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 28))))))

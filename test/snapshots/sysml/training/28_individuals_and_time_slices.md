@@ -198,7 +198,7 @@ package 'Individuals and Time Slices' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "2cbaf4ccd8d75818573729f7bb97b11a83a0b814287b6e97257f7a6d7af6fe8e") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "b53e77bc3a07ff75f3b156bdb80be8cf06d3384b978a6454046fe8953286b117") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Individuals and Time Slices"))) (kind "package") (name "Individuals and Time Slices") (declared-name "Individuals and Time Slices") (range (start (line 0) (character 0)) (end (line 0) (character 473))))
     (element (id (node (document "d0") (qualified-name "Individuals and Time Slices::"))) (kind "occurrence") (name "") (range (start (line 6) (character 12)) (end (line 6) (character 297))) (parent (node (document "d0") (qualified-name "Individuals and Time Slices"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle_1") (range none)))))

@@ -244,7 +244,7 @@ package JohnIndividualExample {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "78197c13c2bacf7f8edfc7e004a943a4dd35c3c93868b9d6a31c5af9bfd35a56") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "f06ae08bb55bea9ac734edac0ca5b0ed8206f2634ea7be75d58675d5d46af3a2") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "JohnIndividualExample"))) (kind "package") (name "JohnIndividualExample") (declared-name "JohnIndividualExample") (range (start (line 0) (character 0)) (end (line 0) (character 1431))))
     (element (id (node (document "d0") (qualified-name "JohnIndividualExample::Country"))) (kind "item def") (name "Country") (declared-name "Country") (range (start (line 26) (character 1)) (end (line 26) (character 244))) (parent (node (document "d0") (qualified-name "JohnIndividualExample"))))

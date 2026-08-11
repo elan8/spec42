@@ -159,7 +159,7 @@ package FeatureChains {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "2a2b51430747d4ad4da80bd3d98b41ca93a09dc41bcc39aeee2f3a9f3b6865ee") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "5d93bcb75ee63af3ca04d532d8582eb105b36f9ce0cfac97527cefb4d2cbc901") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "FeatureChains"))) (kind "package") (name "FeatureChains") (declared-name "FeatureChains") (range (start (line 0) (character 0)) (end (line 0) (character 550))))
     (element (id (node (document "d0") (qualified-name "FeatureChains::A"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 7) (character 1)) (end (line 7) (character 37))) (parent (node (document "d0") (qualified-name "FeatureChains"))))

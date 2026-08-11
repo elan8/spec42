@@ -221,7 +221,7 @@ package 'Time Constraints' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "0515f3aadeda18c38263cfbe353e55fb0e1b70e9980cbd8db0115d547967bc5d") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e19813f6ad4b925cc734672d4dbcc124d281d0de09fa06e6867988faa9e67378") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Time Constraints"))) (kind "package") (name "Time Constraints") (declared-name "Time Constraints") (range (start (line 0) (character 0)) (end (line 0) (character 977))))
     (element (id (node (document "d0") (qualified-name "Time Constraints::DurationOf"))) (kind "import") (name "DurationOf") (declared-name "DurationOf") (range (start (line 5) (character 1)) (end (line 5) (character 33))) (parent (node (document "d0") (qualified-name "Time Constraints"))) (authored (membership (kind Import) (visibility "private") (import (reference "Time::DurationOf") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 5) (character 16)) (end (line 5) (character 32))))))

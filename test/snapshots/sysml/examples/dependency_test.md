@@ -103,7 +103,7 @@ package DependencyTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "51fd2c3b2fc05a12009906529ec4842dc1a5239393cfed8b0ef67cdc01e601bc") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "926210d643d50780f7eae2a2f99497d19ed15e605ea734ee7a9e3c462dce1ec9") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "DependencyTest"))) (kind "package") (name "DependencyTest") (declared-name "DependencyTest") (range (start (line 0) (character 0)) (end (line 0) (character 344))))
     (element (id (node (document "d0") (qualified-name "DependencyTest::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 8) (character 1)) (end (line 8) (character 26))) (parent (node (document "d0") (qualified-name "DependencyTest"))) (authored (membership (kind Import) (visibility "private") (import (reference "System::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 22))))))

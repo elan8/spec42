@@ -141,7 +141,7 @@ package '12b-Allocation' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "91fd809b74745016dcea2b0c414c017b9ecfffbf2f9e5587f1b3fb4607852d7a") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "130ae23fece4382a7835e2250e6e680c6db6acae6a949ffdeb72b3d2d9acf861") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "12b-Allocation"))) (kind "package") (name "12b-Allocation") (declared-name "12b-Allocation") (range (start (line 0) (character 0)) (end (line 0) (character 493))))
     (element (id (node (document "d0") (qualified-name "12b-Allocation::"))) (kind "allocation") (name "") (range (start (line 22) (character 1)) (end (line 22) (character 123))) (parent (node (document "d0") (qualified-name "12b-Allocation"))))

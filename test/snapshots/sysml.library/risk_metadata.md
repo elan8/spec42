@@ -332,7 +332,7 @@ standard library package RiskMetadata {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "44a9e7c5ba6c802793c9633b3858adc8db9629c0b97e4469bbc5d18bac573622") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "117f30f9c51a549c4ef68e0f42a35c997910cc9c89e064e1183164c550312774") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "RiskMetadata"))) (kind "package") (name "RiskMetadata") (declared-name "RiskMetadata") (range (start (line 0) (character 0)) (end (line 0) (character 2085))))
     (element (id (node (document "d0") (qualified-name "RiskMetadata::Level"))) (kind "attribute def") (name "Level") (declared-name "Level") (range (start (line 8) (character 1)) (end (line 8) (character 173))) (parent (node (document "d0") (qualified-name "RiskMetadata"))) (authored (membership (kind Owning)) (relationships (typing (reference "Real") (range none)))))

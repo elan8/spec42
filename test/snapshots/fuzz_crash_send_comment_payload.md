@@ -72,7 +72,7 @@ package P {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "b22d3e1144f64cd9f2aa462a24262ec8b3e2e3e164eade10f37b677646cf7eb5") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "d53ebad1f320716a2531ac6fd8d40ee848774b5bfca9ee9291ca1996f6eb8f51") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P") (range (start (line 0) (character 0)) (end (line 0) (character 127))))
     (element (id (node (document "d0") (qualified-name "P::A"))) (kind "action def") (name "A") (declared-name "A") (range (start (line 1) (character 0)) (end (line 1) (character 113))) (parent (node (document "d0") (qualified-name "P"))))

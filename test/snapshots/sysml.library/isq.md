@@ -321,7 +321,7 @@ standard library package ISQ {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "dea3fce3ab631bcf04c92bae4475229d2b0bd5c3eadbab82195fcd4c3af9eefe") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "3412b67a19602820084fc353437f10e2390ead9e2eb511ed980ae52288e40d82") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ISQ"))) (kind "package") (name "ISQ") (declared-name "ISQ") (range (start (line 0) (character 0)) (end (line 0) (character 2095))))
     (element (id (node (document "d0") (qualified-name "ISQ::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 7) (character 1)) (end (line 7) (character 30))) (parent (node (document "d0") (qualified-name "ISQ"))) (authored (membership (kind Import) (visibility "private") (import (reference "Quantities::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 26))))))

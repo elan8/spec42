@@ -138,7 +138,7 @@ package 'Part Definition Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6db77b6d2da2c81422e64d78866eefe692169c9125da88fb02d254bf1ad69219") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "944636373dda12837c6ccff46af36fd09e4f675c1adf25758da19456f11c9fde") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Part Definition Example"))) (kind "package") (name "Part Definition Example") (declared-name "Part Definition Example") (range (start (line 0) (character 0)) (end (line 0) (character 361))))
     (element (id (node (document "d0") (qualified-name "Part Definition Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "Part Definition Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))

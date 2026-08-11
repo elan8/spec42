@@ -492,7 +492,7 @@ standard library package Collections {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "057b9c94feb32d456af0cdc122dde1d481213efd29f4e2b3d17b39de2fdf9525") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c9581171f68c9e099c51b93618bc58424dfb9084bb14bbc66259d9cda60c9574") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Collections"))) (kind "package") (name "Collections") (declared-name "Collections") (range (start (line 0) (character 0)) (end (line 0) (character 4973))))
     (element (id (node (document "d0") (qualified-name "Collections::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 8) (character 1)) (end (line 8) (character 24))) (parent (node (document "d0") (qualified-name "Collections"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 20))))))

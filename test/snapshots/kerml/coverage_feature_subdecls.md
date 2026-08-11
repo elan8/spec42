@@ -100,7 +100,7 @@ package FeatureSubDeclCoverage {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "5c74ebec619b1dac2c52bfeb2c12c9abc4bcd14cff480b5e71aca857aa9efa2c") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "620120a4903666b6ac2fd4f1e68cc8945e6e22fc6f05cccdf1020c33ae9f6522") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage"))) (kind "package") (name "FeatureSubDeclCoverage") (declared-name "FeatureSubDeclCoverage") (range (start (line 0) (character 0)) (end (line 0) (character 339))))
     (element (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::a"))) (kind "feature decl") (name "a") (declared-name "a") (range (start (line 1) (character 4)) (end (line 1) (character 18))) (parent (node (document "d0") (qualified-name "FeatureSubDeclCoverage"))))

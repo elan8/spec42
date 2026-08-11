@@ -147,7 +147,7 @@ package MultiplicityTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "39cb21a9b4cced5e00e07b613aeb942e82b05a28452459631a98d7071b159eb9") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "59a2167d72bc5bd96dcbbfb5b3d2d23f50bbe005786fafdf3e49513d8cd98ff5") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "MultiplicityTest"))) (kind "package") (name "MultiplicityTest") (declared-name "MultiplicityTest") (range (start (line 0) (character 0)) (end (line 0) (character 276))))
     (element (id (node (document "d0") (qualified-name "MultiplicityTest::A"))) (kind "attribute def") (name "A") (declared-name "A") (range (start (line 14) (character 1)) (end (line 14) (character 81))) (parent (node (document "d0") (qualified-name "MultiplicityTest"))))

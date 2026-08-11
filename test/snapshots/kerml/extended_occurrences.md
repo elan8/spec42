@@ -266,7 +266,7 @@ package ExtendedOccurrences {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a487ccc4f721c14cf94475a2113ff763c8d9ab9bad377be39f1d993cfc40a5b6") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a485154465639c6a7defd7178f21a4f333d44c73322ea2c9768abe1302df8091") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ExtendedOccurrences"))) (kind "package") (name "ExtendedOccurrences") (declared-name "ExtendedOccurrences") (range (start (line 0) (character 0)) (end (line 0) (character 2023))))
     (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::ExtendedObject"))) (kind "classifier decl") (name "ExtendedObject") (declared-name "ExtendedObject") (range (start (line 49) (character 4)) (end (line 49) (character 146))) (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))

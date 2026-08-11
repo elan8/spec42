@@ -524,7 +524,7 @@ package ProductSelection_N_ary {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "33f0d3e283498d5b0c5928de80cdbdfee8bf12104ba447db9a33483f47884aa4") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f816064ec31fdd0eff5ceb3d889c2f3a79c5353aa28fe4a857aecba5be77a893") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary"))) (kind "package") (name "ProductSelection_N_ary") (declared-name "ProductSelection_N_ary") (range (start (line 0) (character 0)) (end (line 0) (character 4894))))
     (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary::Account"))) (kind "classifier decl") (name "Account") (declared-name "Account") (range (start (line 4) (character 1)) (end (line 4) (character 15))) (parent (node (document "d0") (qualified-name "ProductSelection_N_ary"))))

@@ -66,7 +66,7 @@ package Conjugation {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "22cf655c28c2ced4bcf0e4f4b5e79635beed6c52bea2a080ed7805b7f134dc7c") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "298ce35cd527980bef9b1f60de186509b444966aae024f67e767d6a762c73107") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Conjugation"))) (kind "package") (name "Conjugation") (declared-name "Conjugation") (range (start (line 0) (character 0)) (end (line 0) (character 99))))
     (element (id (node (document "d0") (qualified-name "Conjugation::A"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 1) (character 1)) (end (line 1) (character 29))) (parent (node (document "d0") (qualified-name "Conjugation"))))

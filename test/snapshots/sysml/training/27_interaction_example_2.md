@@ -192,7 +192,7 @@ package 'Interaction Example-2' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "4117629edec3eaa1e3ace9750241255f03f05218e36c25473b8563d4baacab24") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "c06e73a7887c1631d274c208e54cb6662dd079021f340d5ff2917efe0576297b") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Interaction Example-2"))) (kind "package") (name "Interaction Example-2") (declared-name "Interaction Example-2") (range (start (line 0) (character 0)) (end (line 0) (character 800))))
     (element (id (node (document "d0") (qualified-name "Interaction Example-2::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 46))) (parent (node (document "d0") (qualified-name "Interaction Example-2"))) (authored (membership (kind Import) (visibility "private") (import (reference "Event Occurrence Example::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 42))))))

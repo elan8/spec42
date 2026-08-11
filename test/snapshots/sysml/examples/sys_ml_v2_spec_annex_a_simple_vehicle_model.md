@@ -7990,7 +7990,7 @@ package SimpleVehicleModel{
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "214cf78917397350319a7b011223ac39f7f9d96ecd6e2e70339d069bd617b293") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "a1b0abd4e9fde467ff04a5290d27194d17284d77f6cbd5b7d7d91da187075cbb") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "SimpleVehicleModel"))) (kind "package") (name "SimpleVehicleModel") (declared-name "SimpleVehicleModel") (range (start (line 0) (character 0)) (end (line 0) (character 73562))))
     (element (id (node (document "d0") (qualified-name "SimpleVehicleModel::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 4)) (end (line 2) (character 33))) (parent (node (document "d0") (qualified-name "SimpleVehicleModel"))) (authored (membership (kind Import) (visibility "public") (import (reference "Definitions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 18)) (end (line 2) (character 29))))))

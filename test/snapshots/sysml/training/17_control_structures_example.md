@@ -192,7 +192,7 @@ package 'Control Structures Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "66a5a7dcb767162dddd541f1ae97d5a34e573a774760f21809ab7302f14204a6") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "1d29daa0f52c5d43795c5c0cd8fd7fcb5313432270577bdecbcbc617a8214954") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Control Structures Example"))) (kind "package") (name "Control Structures Example") (declared-name "Control Structures Example") (range (start (line 0) (character 0)) (end (line 0) (character 599))))
     (element (id (node (document "d0") (qualified-name "Control Structures Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "Control Structures Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))

@@ -228,7 +228,7 @@ package ProductSelection_OwnedEnds_SysML {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "85490f29a54fbd8a75ca23ce9db61aea4c39e6726cdb6752e33780d29e3f5076") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "cbe2d8ab8d6aba37ddd1398fa302ceb2ccf3e70da11b77c44a82fef92e8d39d7") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML"))) (kind "package") (name "ProductSelection_OwnedEnds_SysML") (declared-name "ProductSelection_OwnedEnds_SysML") (range (start (line 0) (character 0)) (end (line 0) (character 1260))))
     (element (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::OnlineCustomer"))) (kind "item def") (name "OnlineCustomer") (declared-name "OnlineCustomer") (range (start (line 32) (character 1)) (end (line 32) (character 318))) (parent (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML"))))

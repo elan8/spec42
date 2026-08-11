@@ -49,7 +49,7 @@ parse.unexpected_token
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "68797422f77b0cb8a22f939e61771c3f8455dbc8fb7e3963f924b6ab3941f0f2") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "19f0ee67d2fc34fdbbe40ce2ba0c6d02b2cdd7e3deb1087781728b803bdb04d5") (contract-version "canonical-resolution-v1"))
   (structure
   )
   (references

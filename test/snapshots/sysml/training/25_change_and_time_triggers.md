@@ -221,7 +221,7 @@ package 'Change and Time Triggers' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "3a3066ebab2455ddca9bda19dbb333a5fbfd142066bf415a1e278d452c11befd") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a67f0f61e797c764451e07252a52fb1aa8070306601fa109967435e44fcbb786") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Change and Time Triggers"))) (kind "package") (name "Change and Time Triggers") (declared-name "Change and Time Triggers") (range (start (line 0) (character 0)) (end (line 0) (character 1059))))
     (element (id (node (document "d0") (qualified-name "Change and Time Triggers::DurationValue"))) (kind "import") (name "DurationValue") (declared-name "DurationValue") (range (start (line 2) (character 1)) (end (line 2) (character 35))) (parent (node (document "d0") (qualified-name "Change and Time Triggers"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::DurationValue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 34))))))

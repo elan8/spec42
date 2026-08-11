@@ -567,7 +567,7 @@ library package AHFProfileMetadata{
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "831b6d553f85636950862b5ce74e63e70a82617d66593f903d09d87d74e88b16") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "57d523f94d366d881bc96fc390bacc5805a61ea440f0ed5d222a5d8726f62fb1") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "AHFProfileLib"))) (kind "package") (name "AHFProfileLib") (declared-name "AHFProfileLib") (range (start (line 0) (character 0)) (end (line 0) (character 1517))))
     (element (id (node (document "d0") (qualified-name "AHFProfileLib::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 32))) (parent (node (document "d0") (qualified-name "AHFProfileLib"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 28))))))

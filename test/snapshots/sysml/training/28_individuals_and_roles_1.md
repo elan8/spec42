@@ -147,7 +147,7 @@ package 'Individuals and Roles' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "d713814b9b6b44b5fbdd0136311da3e5d8c2ff5ac4c02fb1c800b386305c13b4") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "ddc7839d525f5f08f9247427e5750b72acf146740fb7a4bb7e0b3988f089a4db") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Individuals and Roles"))) (kind "package") (name "Individuals and Roles") (declared-name "Individuals and Roles") (range (start (line 0) (character 0)) (end (line 0) (character 499))))
     (element (id (node (document "d0") (qualified-name "Individuals and Roles::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 45))) (parent (node (document "d0") (qualified-name "Individuals and Roles"))) (authored (membership (kind Import) (visibility "private") (import (reference "Part Definition Example::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 41))))))

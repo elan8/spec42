@@ -525,7 +525,7 @@ package ConstraintTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "2f473f7caa0375c91449d9a7c721135a4b2765677d5dd56827f3fdf43e9ee00c") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "22cd871396ec4018b0d27ae481a54a3a607ca11e178bf0a69ff5b02a74365edd") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ConstraintTest"))) (kind "package") (name "ConstraintTest") (declared-name "ConstraintTest") (range (start (line 0) (character 0)) (end (line 0) (character 2477))))
     (element (id (node (document "d0") (qualified-name "ConstraintTest::Component"))) (kind "part def") (name "Component") (declared-name "Component") (range (start (line 12) (character 1)) (end (line 12) (character 53))) (parent (node (document "d0") (qualified-name "ConstraintTest"))))

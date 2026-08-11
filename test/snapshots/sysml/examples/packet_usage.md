@@ -137,7 +137,7 @@ package 'Packet Usage' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e18fab1cea07a0afbfc10c1e79f5da661899a24adccd62b00b7040d881ac11a4") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "50152335856237a1f718c0946355b12457b54dd67cae649487b2d894ca6d12fa") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Packet Usage"))) (kind "package") (name "Packet Usage") (declared-name "Packet Usage") (range (start (line 0) (character 0)) (end (line 0) (character 363))))
     (element (id (node (document "d0") (qualified-name "Packet Usage::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 26))) (parent (node (document "d0") (qualified-name "Packet Usage"))) (authored (membership (kind Import) (visibility "public") (import (reference "Packets::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 15)) (end (line 1) (character 22))))))

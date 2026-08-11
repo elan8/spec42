@@ -116,7 +116,7 @@ standard library package ScalarValues {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1fedb7fbb35581eb6aa737daad54d9ba376e878ace4b6b50cd27f4d6561b2163") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1581c1e6e3a4f3bd274af51155e25043882415cf9b55c72c7671fa3e493acc42") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ScalarValues"))) (kind "package") (name "ScalarValues") (declared-name "ScalarValues") (range (start (line 0) (character 0)) (end (line 0) (character 887))))
     (element (id (node (document "d0") (qualified-name "ScalarValues::Boolean"))) (kind "kermlDecl") (name "Boolean") (declared-name "Boolean") (range (start (line 10) (character 4)) (end (line 10) (character 45))) (parent (node (document "d0") (qualified-name "ScalarValues"))))

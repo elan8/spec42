@@ -239,7 +239,7 @@ package '17b-Sequence-Modeling' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "70267e25f02b6f57206846dcc9a96bd8b54a9dd77c53fc43f49227577428ea30") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "3f5f4b8651e33740910138b200d405795e8685b55abac4e5d357038b0268f751") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "17b-Sequence-Modeling"))) (kind "package") (name "17b-Sequence-Modeling") (declared-name "17b-Sequence-Modeling") (range (start (line 0) (character 0)) (end (line 0) (character 857))))
     (element (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "17b-Sequence-Modeling"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))

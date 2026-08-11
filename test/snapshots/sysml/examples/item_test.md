@@ -118,7 +118,7 @@ package ItemTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "09e5cf33075e0e311dfda961522cdeab1acab26936fa23dc135fbcf677496910") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "8d33d0572df50297d3c46ebce554902b2c1d0072bc43d46237bee5a56322d011") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ItemTest"))) (kind "package") (name "ItemTest") (declared-name "ItemTest") (range (start (line 0) (character 0)) (end (line 0) (character 265))))
     (element (id (node (document "d0") (qualified-name "ItemTest::A"))) (kind "item def") (name "A") (declared-name "A") (range (start (line 4) (character 1)) (end (line 4) (character 63))) (parent (node (document "d0") (qualified-name "ItemTest"))))

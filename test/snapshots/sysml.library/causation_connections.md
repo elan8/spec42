@@ -311,7 +311,7 @@ standard library package CausationConnections {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "8c2a169f386410cfd9bd30015968ca739cb4aa0320c8b579e2e8da3d05158aba") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "64f638b154aae1bcd2b94a69981c968524dc431e2f075196deea1ec7b5b94dbb") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "CausationConnections"))) (kind "package") (name "CausationConnections") (declared-name "CausationConnections") (range (start (line 0) (character 0)) (end (line 0) (character 2650))))
     (element (id (node (document "d0") (qualified-name "CausationConnections::Causation"))) (kind "connection def") (name "Causation") (declared-name "Causation") (range (start (line 61) (character 1)) (end (line 61) (character 598))) (parent (node (document "d0") (qualified-name "CausationConnections"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Multicausation") (range (start (line 61) (character 29)) (end (line 61) (character 43)))))))

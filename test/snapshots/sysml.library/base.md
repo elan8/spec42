@@ -300,7 +300,7 @@ standard library package Base {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "dcb97c725b5bcbc5f0d8c52045421e6ba35271eac4a94bab7f82dea6f821692e") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "03a5b99dd3590504feb8a42f066534c12d05c48a56c261b7cb6fa0809a6e63d7") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Base"))) (kind "package") (name "Base") (declared-name "Base") (range (start (line 0) (character 0)) (end (line 0) (character 2338))))
     (element (id (node (document "d0") (qualified-name "Base::Anything"))) (kind "classifier decl") (name "Anything") (declared-name "Anything") (range (start (line 7) (character 1)) (end (line 7) (character 434))) (parent (node (document "d0") (qualified-name "Base"))))

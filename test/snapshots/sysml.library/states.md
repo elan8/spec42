@@ -480,7 +480,7 @@ standard library package States {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "da781d90927714bc2df8713ad7f73811acc7142f1bb51dbe4eb2af3705d1fe67") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5421ec0680183ac1e26759ae6e3beee7ba56192227113ea03cef868138df1a49") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "States"))) (kind "package") (name "States") (declared-name "States") (range (start (line 0) (character 0)) (end (line 0) (character 3371))))
     (element (id (node (document "d0") (qualified-name "States::AcceptAction"))) (kind "import") (name "AcceptAction") (declared-name "AcceptAction") (range (start (line 13) (character 1)) (end (line 13) (character 38))) (parent (node (document "d0") (qualified-name "States"))) (authored (membership (kind Import) (visibility "private") (import (reference "Actions::AcceptAction") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 13) (character 16)) (end (line 13) (character 37))))))

@@ -90,7 +90,7 @@ package '12a-Dependency' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b10ecec8da6bd229fece92c53284df6b38e00bcfe8c6d728d96d20d780c8d822") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6f50314ec40cbf3d5ca15754d649b0727dcb5e6ef81a112a08caa37b57e17b51") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "12a-Dependency"))) (kind "package") (name "12a-Dependency") (declared-name "12a-Dependency") (range (start (line 0) (character 0)) (end (line 0) (character 293))))
     (element (id (node (document "d0") (qualified-name "12a-Dependency::Application Layer"))) (kind "package") (name "Application Layer") (declared-name "Application Layer") (range (start (line 2) (character 1)) (end (line 2) (character 29))) (parent (node (document "d0") (qualified-name "12a-Dependency"))))

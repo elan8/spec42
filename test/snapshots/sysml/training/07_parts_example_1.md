@@ -130,7 +130,7 @@ package 'Parts Example-1' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "cdaa1fac596a42b0d4ad7c59a38132047755cc824347896661b41a002390942a") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5237fc4f7f88fbf13ee074fc04d6e22677877a85a9c824d03e611da74082f2be") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Parts Example-1"))) (kind "package") (name "Parts Example-1") (declared-name "Parts Example-1") (range (start (line 0) (character 0)) (end (line 0) (character 359))))
     (element (id (node (document "d0") (qualified-name "Parts Example-1::Cylinder"))) (kind "part def") (name "Cylinder") (declared-name "Cylinder") (range (start (line 12) (character 1)) (end (line 12) (character 19))) (parent (node (document "d0") (qualified-name "Parts Example-1"))))

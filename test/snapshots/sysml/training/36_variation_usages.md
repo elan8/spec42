@@ -146,7 +146,7 @@ package 'Variation Usages' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "30c0802480995a246eb31968af76f254862fdd5c0c0695309f1a2d248f8a1df8") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "dd2905b5ded6a6eb6e0d2a6f2edcb5b46d61a365b181a73103cffd3b12ea2209") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Variation Usages"))) (kind "package") (name "Variation Usages") (declared-name "Variation Usages") (range (start (line 0) (character 0)) (end (line 0) (character 602))))
     (element (id (node (document "d0") (qualified-name "Variation Usages::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 43))) (parent (node (document "d0") (qualified-name "Variation Usages"))) (authored (membership (kind Import) (visibility "private") (import (reference "Variation Definitions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 39))))))

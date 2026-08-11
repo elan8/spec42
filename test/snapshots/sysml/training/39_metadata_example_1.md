@@ -217,7 +217,7 @@ package 'Metadata Example-1' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1db35a69c812579da884a2d242fe58830c695790769bbf7aaa455caf26322828") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6188a26977bf6a2e64eec90e0bd842084394880e95b07bed5bdd2b4d0d105976") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Metadata Example-1"))) (kind "package") (name "Metadata Example-1") (declared-name "Metadata Example-1") (range (start (line 0) (character 0)) (end (line 0) (character 612))))
     (element (id (node (document "d0") (qualified-name "Metadata Example-1::SafetyFeature"))) (kind "metadata def") (name "SafetyFeature") (declared-name "SafetyFeature") (range (start (line 2) (character 1)) (end (line 2) (character 28))) (parent (node (document "d0") (qualified-name "Metadata Example-1"))))

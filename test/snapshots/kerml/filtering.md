@@ -257,7 +257,7 @@ package Filtering {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "b2da7dea7ef9280457fd995bd9cd8909159f7ce37ab472f81c8993f76f0a9e96") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "5a5b5d9122046ade2aa8f7bc453497fc9c2f6d22975bae72be273f8851dfb250") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Filtering"))) (kind "package") (name "Filtering") (declared-name "Filtering") (range (start (line 0) (character 0)) (end (line 0) (character 1084))))
     (element (id (node (document "d0") (qualified-name "Filtering::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "Filtering"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))

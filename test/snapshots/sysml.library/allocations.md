@@ -173,7 +173,7 @@ standard library package Allocations {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f8c9e9e22b0ab338f8f85db37efd58149a8da251464cee17fcb808343edcc263") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "7e2c6643f248a86608bc2dda70336c419ddbe039b5e88168a5cac75e0edaa579") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Allocations"))) (kind "package") (name "Allocations") (declared-name "Allocations") (range (start (line 0) (character 0)) (end (line 0) (character 788))))
     (element (id (node (document "d0") (qualified-name "Allocations::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 8) (character 1)) (end (line 8) (character 31))) (parent (node (document "d0") (qualified-name "Allocations"))) (authored (membership (kind Import) (visibility "private") (import (reference "Connections::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 27))))))

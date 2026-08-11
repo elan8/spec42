@@ -829,7 +829,7 @@ package VehicleGeometryAndCoordinateFrames {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a90650c15bb0409860254384af206416658cf56933c4ed22779b7b498f257aee") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b5b7d6fd4df99f691f0c2c6e6e5dd7a32b38627cc4ca461024b4d4b6955952e3") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames"))) (kind "package") (name "VehicleGeometryAndCoordinateFrames") (declared-name "VehicleGeometryAndCoordinateFrames") (range (start (line 0) (character 0)) (end (line 0) (character 5063))))
     (element (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 4)) (end (line 1) (character 36))) (parent (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames"))) (authored (membership (kind Import) (visibility "private") (import (reference "TrigFunctions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 19)) (end (line 1) (character 32))))))

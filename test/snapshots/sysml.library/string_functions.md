@@ -210,7 +210,7 @@ standard library package StringFunctions {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "baefd348f9e9bb7a4e3f11cbb443d15560b4ba909cb8d3c89872349c1223cbdc") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "49d66d13bdf64b1b0268bb52aea5c2b0fe202a6aa71ced56c82361559702ae14") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "StringFunctions"))) (kind "package") (name "StringFunctions") (declared-name "StringFunctions") (range (start (line 0) (character 0)) (end (line 0) (character 1180))))
     (element (id (node (document "d0") (qualified-name "StringFunctions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 7) (character 1)) (end (line 7) (character 31))) (parent (node (document "d0") (qualified-name "StringFunctions"))) (authored (membership (kind Import) (visibility "public") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 7) (character 15)) (end (line 7) (character 27))))))

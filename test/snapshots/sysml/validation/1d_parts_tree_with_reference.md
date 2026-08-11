@@ -247,7 +247,7 @@ package '1d-Parts Tree with Reference' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ff85251c3b36478ad625ee2e31ba96ca436db11c23024960db63580d7058456c") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "51e948294d3ffe86c6e0888e735403d13f0094d51c87a0b43d59198f7d0936c8") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference"))) (kind "package") (name "1d-Parts Tree with Reference") (declared-name "1d-Parts Tree with Reference") (range (start (line 0) (character 0)) (end (line 0) (character 1344))))
     (element (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions"))) (kind "package") (name "Definitions") (declared-name "Definitions") (range (start (line 2) (character 1)) (end (line 2) (character 139))) (parent (node (document "d0") (qualified-name "1d-Parts Tree with Reference"))))

@@ -128,7 +128,7 @@ package ProductSelection_N_ary_SysML {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "269e0acbb3059936fbcedd9fbea2ad023a8549d4a897a160a0c7713e8a9450aa") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "9bd2b07751acebe2138c06342bc9774a25a4ec843165736d42bd716ca0336131") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML"))) (kind "package") (name "ProductSelection_N_ary_SysML") (declared-name "ProductSelection_N_ary_SysML") (range (start (line 0) (character 0)) (end (line 0) (character 596))))
     (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::Account"))) (kind "item def") (name "Account") (declared-name "Account") (range (start (line 4) (character 1)) (end (line 4) (character 18))) (parent (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML"))))

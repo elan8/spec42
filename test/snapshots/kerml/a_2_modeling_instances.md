@@ -165,7 +165,7 @@ package ModelingInstancesWithAtoms {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c063a9ae14a7fc3b2301e61b50687d20e1a16966b75fa5762268d2474a6ba0ff") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "67d5b71f69b703c5155328bc785c8cba7493f57b826d4809c00711cd8f67dfdf") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ModelingInstances"))) (kind "package") (name "ModelingInstances") (declared-name "ModelingInstances") (range (start (line 0) (character 0)) (end (line 0) (character 218))))
     (element (id (node (document "d0") (qualified-name "ModelingInstances::Bicycle"))) (kind "classifier decl") (name "Bicycle") (declared-name "Bicycle") (range (start (line 6) (character 1)) (end (line 6) (character 40))) (parent (node (document "d0") (qualified-name "ModelingInstances"))))

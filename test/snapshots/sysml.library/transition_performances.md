@@ -386,7 +386,7 @@ standard library package TransitionPerformances {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e1fe96a223d39b15d3ecd0a7eb23cf877c1aaadd43d6490806224874663f174a") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1979ea721f982879efcd9ea04a6cc4665e264363b7838cccce67a41c0523f7ad") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "TransitionPerformances"))) (kind "package") (name "TransitionPerformances") (declared-name "TransitionPerformances") (range (start (line 0) (character 0)) (end (line 0) (character 2591))))
     (element (id (node (document "d0") (qualified-name "TransitionPerformances::AcceptPerformance"))) (kind "import") (name "AcceptPerformance") (declared-name "AcceptPerformance") (range (start (line 15) (character 1)) (end (line 15) (character 45))) (parent (node (document "d0") (qualified-name "TransitionPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Transfers::AcceptPerformance") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 15) (character 16)) (end (line 15) (character 44))))))

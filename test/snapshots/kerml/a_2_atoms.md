@@ -85,7 +85,7 @@ package Atoms {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "bd61becffe00d3eb8e89726a802f2750409dee9b6a75a82cb68292488016304b") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1484a0dae521515b571fb71fe10b62d6b07738481eef110c8a5b012d494bc8f3") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Atoms"))) (kind "package") (name "Atoms") (declared-name "Atoms") (range (start (line 0) (character 0)) (end (line 0) (character 341))))
     (element (id (node (document "d0") (qualified-name "Atoms::Atom"))) (kind "classifier decl") (name "Atom") (declared-name "Atom") (range (start (line 9) (character 1)) (end (line 9) (character 17))) (parent (node (document "d0") (qualified-name "Atoms"))))

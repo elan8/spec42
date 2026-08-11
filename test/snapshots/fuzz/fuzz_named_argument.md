@@ -63,7 +63,7 @@ package P {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "591f31a99faa64bddd9c804c2fb3b465671d435c8646c2ffc92a3f676722f213") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "65c4980a5d3ea68d799182f9d32ee290054819c9ab98219064dd33f0f321b555") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P") (range (start (line 0) (character 0)) (end (line 0) (character 117))))
     (element (id (node (document "d0") (qualified-name "P::F"))) (kind "calc def") (name "F") (declared-name "F") (range (start (line 1) (character 4)) (end (line 1) (character 28))) (parent (node (document "d0") (qualified-name "P"))))

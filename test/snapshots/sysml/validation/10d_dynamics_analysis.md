@@ -576,7 +576,7 @@ package '10d-Dynamics Analysis' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "21675aab4f3c656570fbb40b6523468f414ac1be1f49e697aa588554dfd905ef") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "21a69e5c6d0c911d70a8d03eac4e45695deccfe3ce208fb37a993b590a28755d") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "10d-Dynamics Analysis"))) (kind "package") (name "10d-Dynamics Analysis") (declared-name "10d-Dynamics Analysis") (range (start (line 0) (character 0)) (end (line 0) (character 2131))))
     (element (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 23))) (parent (node (document "d0") (qualified-name "10d-Dynamics Analysis"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 19))))))

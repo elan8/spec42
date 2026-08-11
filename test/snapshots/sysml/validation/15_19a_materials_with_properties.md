@@ -380,7 +380,7 @@ package '15_19a-Materials with Properties' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "0fb978823c23ebd5ac1f4dd41ae08175785901ad74fa558519f7af3db60ce699") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "922453fec082a7b062947f0ce9cedb5bbe501dd80d1fe0b2af5553b42d8ce7a3") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "15_19a-Materials with Properties"))) (kind "package") (name "15_19a-Materials with Properties") (declared-name "15_19a-Materials with Properties") (range (start (line 0) (character 0)) (end (line 0) (character 2734))))
     (element (id (node (document "d0") (qualified-name "15_19a-Materials with Properties::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "15_19a-Materials with Properties"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))

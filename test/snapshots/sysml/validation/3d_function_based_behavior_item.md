@@ -360,7 +360,7 @@ package '3d-Function-based Behavior-item' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "46929156d2791030e4abadc26f3d2825a1185fff093ee5927a77e9b85fd6fd6d") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "02150292b6fd5b57b9bea9ed1d25cbf9df2eeefe776d9665981897efb7c3f5a6") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item"))) (kind "package") (name "3d-Function-based Behavior-item") (declared-name "3d-Function-based Behavior-item") (range (start (line 0) (character 0)) (end (line 0) (character 1601))))
     (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 30))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item"))) (authored (membership (kind Import) (visibility "public") (import (reference "Definitions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 15)) (end (line 2) (character 26))))))

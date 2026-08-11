@@ -415,7 +415,7 @@ package '15_19-Materials with Properties' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "205e32039b297c96f3146079424050b2af735639bbe427d7fbf0a757ab0412ed") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "936a0f106bddd3d4ba27c475dffcd73db78b19519dc85723eee2aacedaa6fed4") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "15_19-Materials with Properties"))) (kind "package") (name "15_19-Materials with Properties") (declared-name "15_19-Materials with Properties") (range (start (line 0) (character 0)) (end (line 0) (character 2655))))
     (element (id (node (document "d0") (qualified-name "15_19-Materials with Properties::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 30))) (parent (node (document "d0") (qualified-name "15_19-Materials with Properties"))) (authored (membership (kind Import) (visibility "private") (import (reference "Quantities::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 26))))))

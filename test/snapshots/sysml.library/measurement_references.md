@@ -1812,7 +1812,7 @@ standard library package MeasurementReferences {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a8c60c952f663d5c5f11fa04261457ced553c8b566173c9989e046f94c688c1e") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d7978ac694680e4d397e77ad74de9a22432a3f1c5f1d79b58c841ed9c27c702d") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "MeasurementReferences"))) (kind "package") (name "MeasurementReferences") (declared-name "MeasurementReferences") (range (start (line 0) (character 0)) (end (line 0) (character 21400))))
     (element (id (node (document "d0") (qualified-name "MeasurementReferences::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 8) (character 1)) (end (line 8) (character 32))) (parent (node (document "d0") (qualified-name "MeasurementReferences"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 28))))))

@@ -478,7 +478,7 @@ package '15_13-Discretely Sampled Function Value' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "eb87c216cd8ca9cd790f04d4d840ec8a6f169376f131ac185e065389679716be") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6f7275b089fd7dc9d2efbf12ac4bcbde8c108727bd74e83dfbe41713e141419c") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value"))) (kind "package") (name "15_13-Discretely Sampled Function Value") (declared-name "15_13-Discretely Sampled Function Value") (range (start (line 0) (character 0)) (end (line 0) (character 2825))))
     (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 4) (character 1)) (end (line 4) (character 23))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 4) (character 16)) (end (line 4) (character 19))))))

@@ -182,7 +182,7 @@ package IndividualTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "da4bcfced120889430d987b4507305f3dcf842dac76e1f3bab317e3222307367") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "b76a4469e63155fbcd8ec7b245d4d06e86f564a52687ae9aa2a22af52d659b2d") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "IndividualTest"))) (kind "package") (name "IndividualTest") (declared-name "IndividualTest") (range (start (line 0) (character 0)) (end (line 0) (character 593))))
     (element (id (node (document "d0") (qualified-name "IndividualTest::A"))) (kind "action def") (name "A") (declared-name "A") (range (start (line 32) (character 1)) (end (line 32) (character 34))) (parent (node (document "d0") (qualified-name "IndividualTest"))) (authored (membership (kind Owning)) (relationships (perform (reference "IndividualTest::A::a") (range none)))))

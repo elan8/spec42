@@ -389,7 +389,7 @@ standard library package IntegerFunctions {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b5c11f39cbd8fa106b8d616e7c6a2a911b25b190982a5cae7f58f0a66326c8a5") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d2a3388ebc05faa3b5e4d38af970d9ec4e3018ead2ce5c681973bd4a580de788") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "IntegerFunctions"))) (kind "package") (name "IntegerFunctions") (declared-name "IntegerFunctions") (range (start (line 0) (character 0)) (end (line 0) (character 2575))))
     (element (id (node (document "d0") (qualified-name "IntegerFunctions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 7) (character 1)) (end (line 7) (character 31))) (parent (node (document "d0") (qualified-name "IntegerFunctions"))) (authored (membership (kind Import) (visibility "public") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 7) (character 15)) (end (line 7) (character 27))))))

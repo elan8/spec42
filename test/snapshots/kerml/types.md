@@ -190,7 +190,7 @@ package Types {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "66245800fd506c0db3a2ae7ad740b104dc80d7070f52e60d1f29abffb025ab35") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "386a281b8085663a83954ccebae369c6b2f8ed1b6cfae0794731a6ef307d4c3b") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Types"))) (kind "package") (name "Types") (declared-name "Types") (range (start (line 0) (character 0)) (end (line 0) (character 964))))
   )

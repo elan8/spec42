@@ -110,7 +110,7 @@ package 'Items Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "bf1981479c6a90afb16ada9d823fe03501d7be7362b06e3641f2243169ed0a25") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "dbcdfd0cb66ec00a9b48308d56557e51a2fd5b66f8b5ec4882aca513005a774a") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Items Example"))) (kind "package") (name "Items Example") (declared-name "Items Example") (range (start (line 0) (character 0)) (end (line 0) (character 224))))
     (element (id (node (document "d0") (qualified-name "Items Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "Items Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))

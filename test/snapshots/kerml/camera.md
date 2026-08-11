@@ -69,7 +69,7 @@ class Camera {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "8e617e5ca6363e6976abbfbe1a69e618d9dbedfc24b17181f1dd95e832d62b23") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "63a1d9416e0e67b10556a87afc4a2c2577ecbd981f709571939a8ad9d4a72be4") (contract-version "canonical-resolution-v1"))
   (structure
   )
   (references

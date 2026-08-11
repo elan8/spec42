@@ -297,7 +297,7 @@ package Features {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "f4865ac4dd6c883fb024f021ed6f7c05acd122a4c4cfac66abaa5e027aafcfbc") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "a9b7810e5bf91e8098856ecdb54a0861afd9a020ab2bb994b7013db3ddb479d3") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Features"))) (kind "package") (name "Features") (declared-name "Features") (range (start (line 0) (character 0)) (end (line 0) (character 1615))))
     (element (id (node (document "d0") (qualified-name "Features::A"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 1) (character 1)) (end (line 1) (character 14))) (parent (node (document "d0") (qualified-name "Features"))))

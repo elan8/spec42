@@ -193,7 +193,7 @@ package OccurrenceTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "3b047879cdfc579ca5de8d017998f5a3c58a32f7a4b1d7e566335bc08af6d47b") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "0e6b905f03a39f694b949e62e7f07a1aa921221ce56ae9467058d2225b52b0c6") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "OccurrenceTest"))) (kind "package") (name "OccurrenceTest") (declared-name "OccurrenceTest") (range (start (line 0) (character 0)) (end (line 0) (character 515))))
     (element (id (node (document "d0") (qualified-name "OccurrenceTest::Occ"))) (kind "occurrence def") (name "Occ") (declared-name "Occ") (range (start (line 1) (character 1)) (end (line 1) (character 162))) (parent (node (document "d0") (qualified-name "OccurrenceTest"))))

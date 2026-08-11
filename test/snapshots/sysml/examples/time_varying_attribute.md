@@ -306,7 +306,7 @@ package TimeVaryingAttribute {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "d658ab9258f2ca46cd76996e9f265cca0618e267a9f19bb2a1132f26e2e46ac1") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "e5e7e3bbd466078f05bd056dbb047c2f9d5c34e355217966f9df8945ffe92e3d") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "TimeVaryingAttribute"))) (kind "package") (name "TimeVaryingAttribute") (declared-name "TimeVaryingAttribute") (range (start (line 0) (character 0)) (end (line 0) (character 1397))))
     (element (id (node (document "d0") (qualified-name "TimeVaryingAttribute::PwrCmd"))) (kind "item def") (name "PwrCmd") (declared-name "PwrCmd") (range (start (line 3) (character 4)) (end (line 3) (character 78))) (parent (node (document "d0") (qualified-name "TimeVaryingAttribute"))))

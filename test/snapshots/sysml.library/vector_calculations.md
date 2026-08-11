@@ -600,7 +600,7 @@ standard library package VectorCalculations {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d25bd7fd0ca08914cec7fc25d8dfa70a0a4b8327cc7dd6eee3ccdfe21134caad") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "2d859db5ce8faf084977dcf80bf20f55a87836288eed83a32816c56f7b68a325") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "VectorCalculations"))) (kind "package") (name "VectorCalculations") (declared-name "VectorCalculations") (range (start (line 0) (character 0)) (end (line 0) (character 3046))))
     (element (id (node (document "d0") (qualified-name "VectorCalculations::*"))) (kind "alias") (name "*") (declared-name "*") (range (start (line 43) (character 4)) (end (line 43) (character 35))) (parent (node (document "d0") (qualified-name "VectorCalculations"))))

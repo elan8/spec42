@@ -219,7 +219,7 @@ package Moments {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b5b7a5cb08e5dcec9e9f3cee8fce728125edda6255bf19500327adc86983df0f") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "4073a10b459d571fdeecdfd3082c66de4cffa55a2f213007e2b7422792e3ae48") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Moments"))) (kind "package") (name "Moments") (declared-name "Moments") (range (start (line 0) (character 0)) (end (line 0) (character 1506))))
     (element (id (node (document "d0") (qualified-name "Moments::Eternity"))) (kind "classifier decl") (name "Eternity") (declared-name "Eternity") (range (start (line 4) (character 4)) (end (line 4) (character 257))) (parent (node (document "d0") (qualified-name "Moments"))))

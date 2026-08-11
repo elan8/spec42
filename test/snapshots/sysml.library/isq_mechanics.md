@@ -7050,7 +7050,7 @@ standard library package ISQMechanics {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "2693018b01003873022104f840fafab61595003e30830bb0a688e3b11aa273b5") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "8f066cce5362184af521631e27efa39be2935fb945782f2343a96343b2b7b2cd") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ISQMechanics"))) (kind "package") (name "ISQMechanics") (declared-name "ISQMechanics") (range (start (line 0) (character 0)) (end (line 0) (character 73848))))
     (element (id (node (document "d0") (qualified-name "ISQMechanics::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 15) (character 4)) (end (line 15) (character 33))) (parent (node (document "d0") (qualified-name "ISQMechanics"))) (authored (membership (kind Import) (visibility "private") (import (reference "Quantities::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 15) (character 19)) (end (line 15) (character 29))))))

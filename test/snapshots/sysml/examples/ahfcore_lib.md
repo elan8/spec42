@@ -268,7 +268,7 @@ library package AHFCoreLib {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "879dffaa82c7a5ae7a79317b7ce9f391ac916134fad74547e853229bc9d1bc2a") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "d7fdabcc4acd5c535419e5b64d023227fc0cd988eaaaa8a286a17c376f3d30a1") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "AHFCoreLib"))) (kind "package") (name "AHFCoreLib") (declared-name "AHFCoreLib") (range (start (line 1) (character 0)) (end (line 1) (character 1525))))
     (element (id (node (document "d0") (qualified-name "AHFCoreLib::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 33))) (parent (node (document "d0") (qualified-name "AHFCoreLib"))) (authored (membership (kind Import) (visibility "private") (import (reference "AHFProfileLib::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 29))))))

@@ -179,7 +179,7 @@ package CommentTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "075246e4956b56dc1cc8aa6bbcc26230ed0a074c393aea129c9c68548b7f4b32") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "71a49d648e41b8100cb032c1a6868dd51734bc1a8124bfc011efb05fc1134669") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "CommentTest"))) (kind "package") (name "CommentTest") (declared-name "CommentTest") (range (start (line 2) (character 0)) (end (line 2) (character 685))))
     (element (id (node (document "d0") (qualified-name "CommentTest::A"))) (kind "part def") (name "A") (declared-name "A") (range (start (line 42) (character 1)) (end (line 42) (character 12))) (parent (node (document "d0") (qualified-name "CommentTest"))))

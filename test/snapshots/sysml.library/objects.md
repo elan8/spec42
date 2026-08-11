@@ -854,7 +854,7 @@ standard library package Objects {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "4c8de9f1c750d01e753aefee227494ea93944260304f2390c20bce90f510f476") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e989c46254f14a43d2d3a54cd93766c8da771dd1e4554cf478704fe14f8f0b41") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Objects"))) (kind "package") (name "Objects") (declared-name "Objects") (range (start (line 0) (character 0)) (end (line 0) (character 7248))))
     (element (id (node (document "d0") (qualified-name "Objects::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 8) (character 1)) (end (line 8) (character 25))) (parent (node (document "d0") (qualified-name "Objects"))) (authored (membership (kind Import) (visibility "private") (import (reference "Links::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 21))))))

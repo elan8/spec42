@@ -116,7 +116,7 @@ package 'State Exhibition Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1cdd722b5d4691a2dcef003cdb8c984555674ceec1318135514aa0861a7be87d") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ca8f9d15577b769188afa95a851809e919c7c5aa8eff5c159d4cbc94a62faae6") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "State Exhibition Example"))) (kind "package") (name "State Exhibition Example") (declared-name "State Exhibition Example") (range (start (line 0) (character 0)) (end (line 0) (character 267))))
     (element (id (node (document "d0") (qualified-name "State Exhibition Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 40))) (parent (node (document "d0") (qualified-name "State Exhibition Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "Transition Actions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 36))))))

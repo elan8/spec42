@@ -303,7 +303,7 @@ package VehicleDefinitions {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "47e4e2852f1a7e781fc9e3a38f29508b407522dcc7ba929bcbfbbd0a87fb7a28") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "25e18695601773cbd949bf4676cde7b87b4b4c90f0df30df73d1de660528da4f") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "VehicleDefinitions"))) (kind "package") (name "VehicleDefinitions") (declared-name "VehicleDefinitions") (range (start (line 0) (character 0)) (end (line 0) (character 1051))))
     (element (id (node (document "d0") (qualified-name "VehicleDefinitions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 6) (character 1)) (end (line 6) (character 32))) (parent (node (document "d0") (qualified-name "VehicleDefinitions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 28))))))

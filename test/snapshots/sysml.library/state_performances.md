@@ -653,7 +653,7 @@ standard library package StatePerformances {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "cb52bed4477624f4156b7ba6c1c06cce5b9660835941c270ab2e286001f36d05") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "00f32fe64091541ac06ee57e84bcd45b8f2242a9257e7fe4652c76f3b9085ef5") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "StatePerformances"))) (kind "package") (name "StatePerformances") (declared-name "StatePerformances") (range (start (line 0) (character 0)) (end (line 0) (character 5456))))
     (element (id (node (document "d0") (qualified-name "StatePerformances::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 19) (character 1)) (end (line 19) (character 37))) (parent (node (document "d0") (qualified-name "StatePerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 19) (character 16)) (end (line 19) (character 33))))))

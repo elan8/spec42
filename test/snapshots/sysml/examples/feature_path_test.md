@@ -250,7 +250,7 @@ package Q {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "fad0d15d3953c928cea0eee14c928c9f0f04760773a5a691d9b2ca641fb195b7") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "3926c725221b4ab7fc8f3f426c4cdf2174a919bb8cebc781a811e1ba0bc0fdb8") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Q"))) (kind "package") (name "Q") (declared-name "Q") (range (start (line 0) (character 0)) (end (line 0) (character 492))))
     (element (id (node (document "d0") (qualified-name "Q::A"))) (kind "part def") (name "A") (declared-name "A") (range (start (line 7) (character 2)) (end (line 7) (character 36))) (parent (node (document "d0") (qualified-name "Q"))))

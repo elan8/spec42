@@ -705,7 +705,7 @@ package MassConstraintExample {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "9fd0566c0f51bdc9111e7479c1d0bd257d5402f1644d46d82586d55cc36ab3ce") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "893a985a9c0f3a36a11a7aad03a0196d32cd733639f508f6e9f8c6b635520bd1") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "MassConstraintExample"))) (kind "package") (name "MassConstraintExample") (declared-name "MassConstraintExample") (range (start (line 0) (character 0)) (end (line 0) (character 1958))))
     (element (id (node (document "d0") (qualified-name "MassConstraintExample::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 23))) (parent (node (document "d0") (qualified-name "MassConstraintExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 19))))))

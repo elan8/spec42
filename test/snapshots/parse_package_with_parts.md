@@ -52,7 +52,7 @@ package Vehicles {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f1dc7d7d38e200ff1184f784fcb692f5547594cb02870501509c8e645a4866b8") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e1551059b903689c0ea709eece0560ac59628a9b65fb8291b9c3251c25a8e047") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Vehicles"))) (kind "package") (name "Vehicles") (declared-name "Vehicles") (range (start (line 0) (character 0)) (end (line 0) (character 58))))
     (element (id (node (document "d0") (qualified-name "Vehicles::Car"))) (kind "part def") (name "Car") (declared-name "Car") (range (start (line 1) (character 4)) (end (line 1) (character 17))) (parent (node (document "d0") (qualified-name "Vehicles"))))

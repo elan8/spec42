@@ -195,7 +195,7 @@ package 'Requirement Groups' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "88c0142db7f647dcb1bbe57f35eee5dc73930eae1a82b680105197746e8fce51") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "09c595a4f00015d58be76be18847de257932085200f2170de9b6d451b444c8da") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Requirement Groups"))) (kind "package") (name "Requirement Groups") (declared-name "Requirement Groups") (range (start (line 0) (character 0)) (end (line 0) (character 720))))
     (element (id (node (document "d0") (qualified-name "Requirement Groups::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 45))) (parent (node (document "d0") (qualified-name "Requirement Groups"))) (authored (membership (kind Import) (visibility "private") (import (reference "Requirement Definitions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 41))))))

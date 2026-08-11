@@ -251,7 +251,7 @@ package '3e-Function-based Behavior-item' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "bf3dec0696d7320c57fca4a3bfe9606deae34a802310d7335b9d98b20e9962d3") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "188dadad5702ecd46d6d9d7d59b3b8edfd9e1af1d6c0f6ca9166af5bae9117fc") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "3e-Function-based Behavior-item"))) (kind "package") (name "3e-Function-based Behavior-item") (declared-name "3e-Function-based Behavior-item") (range (start (line 0) (character 0)) (end (line 0) (character 1750))))
     (element (id (node (document "d0") (qualified-name "3e-Function-based Behavior-item::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 30))) (parent (node (document "d0") (qualified-name "3e-Function-based Behavior-item"))) (authored (membership (kind Import) (visibility "public") (import (reference "Definitions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 15)) (end (line 1) (character 26))))))

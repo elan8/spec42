@@ -78,7 +78,7 @@ package SuccessionStructured {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ac1b530173454fe16dbfa27e062b9c1f14b86ac23e8f8c2df9fe2bc2c406bf29") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "144ece9b737878fb006b0daa89efe8396ffe6ebeea915096e34e21067daf206e") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "SuccessionStructured"))) (kind "package") (name "SuccessionStructured") (declared-name "SuccessionStructured") (range (start (line 0) (character 0)) (end (line 0) (character 252))))
     (element (id (node (document "d0") (qualified-name "SuccessionStructured::1"))) (kind "kermlDecl") (name "1") (declared-name "1") (range (start (line 2) (character 4)) (end (line 2) (character 41))) (parent (node (document "d0") (qualified-name "SuccessionStructured"))))

@@ -158,7 +158,7 @@ package 'Viewpoint Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d80f3108082d320a982458ca6cf16c607d6f034c502aa4bbe04dc9a27c040b10") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a58cf27a62997b30e52de7475e4bfc7451600449cc46ae1d8c1a58f41173bd54") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Viewpoint Example"))) (kind "package") (name "Viewpoint Example") (declared-name "Viewpoint Example") (range (start (line 0) (character 0)) (end (line 0) (character 974))))
     (element (id (node (document "d0") (qualified-name "Viewpoint Example::IV&V"))) (kind "part def") (name "IV&V") (declared-name "IV&V") (range (start (line 2) (character 1)) (end (line 2) (character 17))) (parent (node (document "d0") (qualified-name "Viewpoint Example"))))

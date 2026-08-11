@@ -91,7 +91,7 @@ package FuncSpec {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c34d05deb8a522dc7a7d138961cb947d0b33def0099ebecb53cd74ef258d861b") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "acd43b8e528f1be93e2512b4afaf0b5a4447d0e1f0cd45c5931d0741a293f352") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "FuncSpec"))) (kind "package") (name "FuncSpec") (declared-name "FuncSpec") (range (start (line 0) (character 0)) (end (line 0) (character 350))))
     (element (id (node (document "d0") (qualified-name "FuncSpec::F"))) (kind "kermlDecl") (name "F") (declared-name "F") (range (start (line 1) (character 4)) (end (line 1) (character 38))) (parent (node (document "d0") (qualified-name "FuncSpec"))))

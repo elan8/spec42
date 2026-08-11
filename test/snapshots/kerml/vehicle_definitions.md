@@ -182,7 +182,7 @@ package VehicleDefinitions {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "7ed204ec753a47e951ec82356a877c53ab0a6a6b74c82ff8e55343fdaed44955") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1652e7d6af92c08caeabfd71905dad0a96d0fbca10acc71ca53ca44f68c9efab") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "VehicleDefinitions"))) (kind "package") (name "VehicleDefinitions") (declared-name "VehicleDefinitions") (range (start (line 0) (character 0)) (end (line 0) (character 639))))
     (element (id (node (document "d0") (qualified-name "VehicleDefinitions::Axle"))) (kind "classifier decl") (name "Axle") (declared-name "Axle") (range (start (line 12) (character 1)) (end (line 12) (character 12))) (parent (node (document "d0") (qualified-name "VehicleDefinitions"))))

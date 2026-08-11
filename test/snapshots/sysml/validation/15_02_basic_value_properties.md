@@ -156,7 +156,7 @@ package '15_02-Basic Value Properties' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "4edd544ff0d39c862b70c2c900c446ba59ad4d0a27b2364466203d780720ccb3") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "aa86b8bc5ff2287f83c2b8418bc1c3b2425aa9952b0e18a9c699699feeac6cd6") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "15_02-Basic Value Properties"))) (kind "package") (name "15_02-Basic Value Properties") (declared-name "15_02-Basic Value Properties") (range (start (line 0) (character 0)) (end (line 0) (character 589))))
     (element (id (node (document "d0") (qualified-name "15_02-Basic Value Properties::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "15_02-Basic Value Properties"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))

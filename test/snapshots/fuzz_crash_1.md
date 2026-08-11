@@ -126,7 +126,7 @@ package MassRkllup2 {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "ba3588bf75949f65f9c6f58868292f17eccfaee87f1d39f4370ebad023e98bfa") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "a49f08491d5450050f0ba6e0ce4290b824df20c2167d1fb0273cff7f9b8dfd07") (contract-version "canonical-resolution-v1"))
   (structure
   )
   (references

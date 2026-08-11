@@ -195,7 +195,7 @@ package 'Allocation Definition Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "40952eff5b912c32eda063db421328f7578b9a3b23c374d3fc31f1e1558379c0") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d98a159ea3b363e53542525f26a1d3d70a7fd9106211083e53731a1ff4c847cb") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Allocation Definition Example"))) (kind "package") (name "Allocation Definition Example") (declared-name "Allocation Definition Example") (range (start (line 0) (character 0)) (end (line 0) (character 827))))
     (element (id (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel"))) (kind "package") (name "LogicalModel") (declared-name "LogicalModel") (range (start (line 1) (character 1)) (end (line 1) (character 340))) (parent (node (document "d0") (qualified-name "Allocation Definition Example"))))

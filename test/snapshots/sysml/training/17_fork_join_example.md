@@ -262,7 +262,7 @@ package 'Fork Join Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "559c40c3fd9847737491e20d3428adeba5db0ec009a6e845b496646006ab3c57") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "89e1ac55e67a450690af451d7122db0a184c73a8c671de2d9614499e0700f70e") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Fork Join Example"))) (kind "package") (name "Fork Join Example") (declared-name "Fork Join Example") (range (start (line 0) (character 0)) (end (line 0) (character 939))))
     (element (id (node (document "d0") (qualified-name "Fork Join Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "Fork Join Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))

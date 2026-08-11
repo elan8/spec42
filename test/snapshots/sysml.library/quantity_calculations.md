@@ -807,7 +807,7 @@ standard library package QuantityCalculations {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "19225a3fe012e95090443b7839f31f81e49bbf225a79eeb3e49a86d2b1b45b97") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "df295a871c6aaef5986e7a2a289b620cb32c02a2179076a52d6e3603f8fe6771") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "QuantityCalculations"))) (kind "package") (name "QuantityCalculations") (declared-name "QuantityCalculations") (range (start (line 0) (character 0)) (end (line 0) (character 4217))))
     (element (id (node (document "d0") (qualified-name "QuantityCalculations::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 6) (character 1)) (end (line 6) (character 32))) (parent (node (document "d0") (qualified-name "QuantityCalculations"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 28))))))

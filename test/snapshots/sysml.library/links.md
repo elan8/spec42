@@ -264,7 +264,7 @@ standard library package Links {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b4572ee699fde98115409de601e85689a244738a78dd4baf2a9402fd3f9e4eb5") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "eba81b58d46e6326f4a7605d66c21a1206821ebd35a1d9c0cb11cafc7643bd28") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Links"))) (kind "package") (name "Links") (declared-name "Links") (range (start (line 0) (character 0)) (end (line 0) (character 2117))))
     (element (id (node (document "d0") (qualified-name "Links::Anything"))) (kind "import") (name "Anything") (declared-name "Anything") (range (start (line 6) (character 4)) (end (line 6) (character 34))) (parent (node (document "d0") (qualified-name "Links"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::Anything") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 6) (character 19)) (end (line 6) (character 33))))))

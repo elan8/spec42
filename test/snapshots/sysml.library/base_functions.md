@@ -430,7 +430,7 @@ standard library package BaseFunctions {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "58641288fa5434c29e29d198594308c05b97e862e679955a4accdf8c50142ad5") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "84c59994357d016e9798311c0fed0f1c6b48a8efc80142364509c10ea125ab88") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "BaseFunctions"))) (kind "package") (name "BaseFunctions") (declared-name "BaseFunctions") (range (start (line 0) (character 0)) (end (line 0) (character 2044))))
     (element (id (node (document "d0") (qualified-name "BaseFunctions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 11) (character 1)) (end (line 11) (character 32))) (parent (node (document "d0") (qualified-name "BaseFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 11) (character 16)) (end (line 11) (character 28))))))

@@ -957,7 +957,7 @@ standard library package ISQBase {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "057c36eb002774ea19a360f69af1575e45965ae4755b950d206f5cbb41eb641f") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a43078cfbe4593bdc71f5e92f2b9fa52e97f3c969c5bf5c1dffeb71f5fc4c62d") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ISQBase"))) (kind "package") (name "ISQBase") (declared-name "ISQBase") (range (start (line 0) (character 0)) (end (line 0) (character 12218))))
     (element (id (node (document "d0") (qualified-name "ISQBase::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 11) (character 4)) (end (line 11) (character 33))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Import) (visibility "private") (import (reference "Quantities::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 11) (character 19)) (end (line 11) (character 29))))))

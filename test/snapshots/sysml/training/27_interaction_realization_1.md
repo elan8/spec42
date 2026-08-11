@@ -411,7 +411,7 @@ package 'Interaction Realization-1' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "ab0e170aa083ff7bee7409737a47412b4d5a6fc71a5a716186cd5733b0a54d49") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "3a6912c25428709d350dddc883c7c385054527f558e34651af1047bb76c1e76a") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Interaction Realization-1"))) (kind "package") (name "Interaction Realization-1") (declared-name "Interaction Realization-1") (range (start (line 0) (character 0)) (end (line 0) (character 1827))))
     (element (id (node (document "d0") (qualified-name "Interaction Realization-1::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 43))) (parent (node (document "d0") (qualified-name "Interaction Realization-1"))) (authored (membership (kind Import) (visibility "private") (import (reference "Interaction Example-1::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 39))))))

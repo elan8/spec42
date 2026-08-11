@@ -82,7 +82,7 @@ package Demo {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "fa1141ca06096885af4b41e8b821906f5eda610ba8755cb3af9b1d802152d002") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "2dc4d54f5c2bd8caa94a274da8a6c0168b850511068062749a864e025f824d43") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Demo"))) (kind "package") (name "Demo") (declared-name "Demo") (range (start (line 0) (character 0)) (end (line 0) (character 462))))
     (element (id (node (document "d0") (qualified-name "Demo::ArchitectureView"))) (kind "view def") (name "ArchitectureView") (declared-name "ArchitectureView") (range (start (line 15) (character 4)) (end (line 15) (character 30))) (parent (node (document "d0") (qualified-name "Demo"))))

@@ -151,7 +151,7 @@ package WithoutConnectorsExecution {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "cff4749503e32cb5d023104e113a9eaa3787d08bf9475fc460970d0a1e6afae6") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "801c0d29f3ae17c21169956b0a8c190f280a6e9f9669732d5dd25caec800517f") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "WithoutConnectorsExecution"))) (kind "package") (name "WithoutConnectorsExecution") (declared-name "WithoutConnectorsExecution") (range (start (line 14) (character 0)) (end (line 14) (character 369))))
     (element (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 19) (character 1)) (end (line 19) (character 25))) (parent (node (document "d0") (qualified-name "WithoutConnectorsExecution"))) (authored (membership (kind Import) (visibility "private") (import (reference "Atoms::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 19) (character 16)) (end (line 19) (character 21))))))

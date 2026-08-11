@@ -341,7 +341,7 @@ package '10a-Analysis' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6f9b91974ff6b381285bc944713d2d3d2cd37c25e3bef6392e18e836ca38e035") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "65a227d0c856228b1b02f427e98671aaa90ff1584a2db7dd735198e8f966f0b8") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "10a-Analysis"))) (kind "package") (name "10a-Analysis") (declared-name "10a-Analysis") (range (start (line 0) (character 0)) (end (line 0) (character 1450))))
     (element (id (node (document "d0") (qualified-name "10a-Analysis::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 23))) (parent (node (document "d0") (qualified-name "10a-Analysis"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 19))))))

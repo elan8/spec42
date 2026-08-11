@@ -204,7 +204,7 @@ package '3c-Function-based Behavior-structure mod-2' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "fb7c3576dfa5c21fcc58743f228bd74538495275396f1b2f4570cc3ea909ce3d") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "31c5dd4be34c6965baf1d754344eb15401d82ae592e6774d4569cb03ce0e6b17") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2"))) (kind "package") (name "3c-Function-based Behavior-structure mod-2") (declared-name "3c-Function-based Behavior-structure mod-2") (range (start (line 0) (character 0)) (end (line 0) (character 1064))))
     (element (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::HitchBall"))) (kind "part def") (name "HitchBall") (declared-name "HitchBall") (range (start (line 5) (character 1)) (end (line 5) (character 20))) (parent (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2"))))

@@ -285,7 +285,7 @@ package 'Trade Study Analysis Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "0e4e3a94af43db432c4b563ee280c38e5f20ed561f2be4141d4e7a477811927c") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f2716e199f468443dea392071901d1c1c4076bd6b82a650afbb4e2cea0fc7211") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Trade Study Analysis Example"))) (kind "package") (name "Trade Study Analysis Example") (declared-name "Trade Study Analysis Example") (range (start (line 0) (character 0)) (end (line 0) (character 1357))))
     (element (id (node (document "d0") (qualified-name "Trade Study Analysis Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 32))) (parent (node (document "d0") (qualified-name "Trade Study Analysis Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "TradeStudies::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 28))))))

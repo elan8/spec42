@@ -286,7 +286,7 @@ package OneToOneConnectorsExecution {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "337fa3fc1d3f1afb82edf88715da47886c3b1e49a6243d102e71cfb76ffc7f91") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b74c699f2eabf08b665b68fcfab80f6e4fb18fcd4a8d95945c3de516148e67d1") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))) (kind "package") (name "OneToOneConnectorsExecution") (declared-name "OneToOneConnectorsExecution") (range (start (line 20) (character 0)) (end (line 20) (character 1125))))
     (element (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 25) (character 1)) (end (line 25) (character 25))) (parent (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))) (authored (membership (kind Import) (visibility "private") (import (reference "Atoms::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 25) (character 16)) (end (line 25) (character 21))))))

@@ -229,7 +229,7 @@ package 'Car Mass Rollup 1' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "fac547af4e95f8ae2dd147de6dae6aa6afbdaf8143dbb6202eab769e387faed5") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "62e4f81aada1875815ea8bce724553ebab56cf197cde53949a38b03e6c1ae070") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Car Mass Rollup 1"))) (kind "package") (name "Car Mass Rollup 1") (declared-name "Car Mass Rollup 1") (range (start (line 0) (character 0)) (end (line 0) (character 675))))
     (element (id (node (document "d0") (qualified-name "Car Mass Rollup 1::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "Car Mass Rollup 1"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))

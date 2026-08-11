@@ -393,7 +393,7 @@ standard library package CauseAndEffect {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "8328da257cc7cd5f0086b6e2f52385bd02a4ce17a583068658f999a50812f793") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "187f6abcbab9bb7926d7d305ba4043903928e249e6de4fe27ccf04228b6cf9e2") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "CauseAndEffect"))) (kind "package") (name "CauseAndEffect") (declared-name "CauseAndEffect") (range (start (line 0) (character 0)) (end (line 0) (character 2440))))
     (element (id (node (document "d0") (qualified-name "CauseAndEffect::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 3) (character 1)) (end (line 3) (character 39))) (parent (node (document "d0") (qualified-name "CauseAndEffect"))) (authored (membership (kind Import) (visibility "public") (import (reference "CausationConnections::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 3) (character 15)) (end (line 3) (character 35))))))

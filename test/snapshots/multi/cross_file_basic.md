@@ -73,7 +73,7 @@ package Usage {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e4dc1c280b6390593b23779cc6d52a5c069c6649ffeea1326e8a6c44f79f2b74") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "daf9f4108f74be994f93d4db20c6ca8595e5a701391f3fdc4f1cf03479715bb5") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Definitions"))) (kind "package") (name "Definitions") (declared-name "Definitions") (range (start (line 0) (character 0)) (end (line 0) (character 97))))
     (element (id (node (document "d0") (qualified-name "Definitions::Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (range (start (line 1) (character 4)) (end (line 1) (character 73))) (parent (node (document "d0") (qualified-name "Definitions"))))

@@ -274,7 +274,7 @@ package OneToUnrestrictedConnectorsExecution {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e6c7304c008da73f3666c7775d3b842c07a155df5ef5e8cb0506c32aa7d2a252") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "aa182489e3f08016d4b522af5263fbfa2a83695f518482c4a0bc9a655d9d25b1") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))) (kind "package") (name "OneToUnrestrictedConnectorsExecution") (declared-name "OneToUnrestrictedConnectorsExecution") (range (start (line 21) (character 0)) (end (line 21) (character 1209))))
     (element (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 26) (character 1)) (end (line 26) (character 25))) (parent (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))) (authored (membership (kind Import) (visibility "private") (import (reference "Atoms::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 26) (character 16)) (end (line 26) (character 21))))))

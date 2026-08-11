@@ -240,7 +240,7 @@ package 'Constraint Assertions-2' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "a5e23bf4c7fda9d73dceb3d3bb29c96d0bd91a5c7670782b7ea51eb0e57e6599") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "ab0db59faa4337f266a6fec8fdd401c1798b03ecf9bfce5f4a8aba4491bccd49") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Constraint Assertions-2"))) (kind "package") (name "Constraint Assertions-2") (declared-name "Constraint Assertions-2") (range (start (line 0) (character 0)) (end (line 0) (character 739))))
     (element (id (node (document "d0") (qualified-name "Constraint Assertions-2::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 23))) (parent (node (document "d0") (qualified-name "Constraint Assertions-2"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 19))))))

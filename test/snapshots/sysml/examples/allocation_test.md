@@ -177,7 +177,7 @@ package AllocationTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "672e563ccd09c5c4f172eabe78a06155d0ebec2ec68bc34f9bb13ba0a2233802") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "0c0bb7b4ec74566787a3d1321e44606474d252559ba10a6208233eda2a0275d4") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "AllocationTest"))) (kind "package") (name "AllocationTest") (declared-name "AllocationTest") (range (start (line 0) (character 0)) (end (line 0) (character 628))))
     (element (id (node (document "d0") (qualified-name "AllocationTest::"))) (kind "allocation") (name "") (range (start (line 34) (character 1)) (end (line 34) (character 44))) (parent (node (document "d0") (qualified-name "AllocationTest"))))

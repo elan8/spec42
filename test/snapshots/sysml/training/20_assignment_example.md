@@ -283,7 +283,7 @@ package 'For Loop Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e17482f38ebb8dc484b1237202b79cf327903f4f504e7a511ac78a4054a36a23") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "4eae89d3b7e4188908457480010b421fcd53a8d8d27310da1e90a6b6e8dc811c") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "For Loop Example"))) (kind "package") (name "For Loop Example") (declared-name "For Loop Example") (range (start (line 0) (character 0)) (end (line 0) (character 1166))))
     (element (id (node (document "d0") (qualified-name "For Loop Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 37))) (parent (node (document "d0") (qualified-name "For Loop Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 33))))))

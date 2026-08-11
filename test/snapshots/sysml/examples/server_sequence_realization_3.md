@@ -864,7 +864,7 @@ package ServerSequenceRealization_3 {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "6232161176d1c8f604d09bd2c630c3d61efe42720abd1677789fe70ca88c40f4") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "1840504e2428c5ce1228f56d822a95694cc11080bf0ff11c59ad4187be4d1b49") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3"))) (kind "package") (name "ServerSequenceRealization_3") (declared-name "ServerSequenceRealization_3") (range (start (line 0) (character 0)) (end (line 0) (character 4724))))
     (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 39))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3"))) (authored (membership (kind Import) (visibility "private") (import (reference "ServerSequenceModel::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 35))))))

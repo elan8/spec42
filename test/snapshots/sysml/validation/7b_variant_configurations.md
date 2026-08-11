@@ -553,7 +553,7 @@ package '7b-Variant Configurations' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "aef2dfa0bb2d0510d52b469fbda290852cb4d9e4ff96ff47cfdaa007d819a58e") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e710bdcdb2cac9bda4c96aa9510da9c186e9ec359210a2ec82d9b7690005b8db") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "7b-Variant Configurations"))) (kind "package") (name "7b-Variant Configurations") (declared-name "7b-Variant Configurations") (range (start (line 0) (character 0)) (end (line 0) (character 3937))))
     (element (id (node (document "d0") (qualified-name "7b-Variant Configurations::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 37))) (parent (node (document "d0") (qualified-name "7b-Variant Configurations"))) (authored (membership (kind Import) (visibility "private") (import (reference "RequirementsModel::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 33))))))

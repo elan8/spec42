@@ -120,7 +120,7 @@ package MassRollup1 {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "db94889da53d77906c1d7faa6a13cae5b77b043a15d07fec36aa1ae5e080702c") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "7d381d309eb7892f93d95488a821af1d501689ed3efdd006a17fa9e92cd6b976") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "MassRollup1"))) (kind "package") (name "MassRollup1") (declared-name "MassRollup1") (range (start (line 0) (character 0)) (end (line 0) (character 403))))
     (element (id (node (document "d0") (qualified-name "MassRollup1::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 38))) (parent (node (document "d0") (qualified-name "MassRollup1"))) (authored (membership (kind Import) (visibility "private") (import (reference "NumericalFunctions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 34))))))

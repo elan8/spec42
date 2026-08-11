@@ -365,7 +365,7 @@ standard library package Connections {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b74da91a9bcd7d225cda3b0460bb8ebd89a05e7c1836fc59dba28e8c08149a92") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "38b73beca1bb8bc169b9ae39099ba770866dd61b0e9bb75698f0907288704a32") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Connections"))) (kind "package") (name "Connections") (declared-name "Connections") (range (start (line 0) (character 0)) (end (line 0) (character 2133))))
     (element (id (node (document "d0") (qualified-name "Connections::Action"))) (kind "import") (name "Action") (declared-name "Action") (range (start (line 23) (character 4)) (end (line 23) (character 35))) (parent (node (document "d0") (qualified-name "Connections"))) (authored (membership (kind Import) (visibility "private") (import (reference "Actions::Action") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 23) (character 19)) (end (line 23) (character 34))))))

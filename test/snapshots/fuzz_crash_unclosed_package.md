@@ -126,7 +126,7 @@ package MassRollup2 {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "8374d263838e7aeb4859024b469a460b17e6c4ce44399cd3c916d9fa145f4fbd") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "5dad8dcaad926520628130dbf5ac38a8ed405998f1fee2e88a890190ec3ad722") (contract-version "canonical-resolution-v1"))
   (structure
   )
   (references

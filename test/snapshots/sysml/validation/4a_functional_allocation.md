@@ -560,7 +560,7 @@ package '4a-Functional Allocation' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "68e3632bfbf83e71dab02d970267b24d52a7048ff64358266c08740c747a10b2") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b5b72b3d36fa8932b2cb521bb6848d20d072bbfc01b01d2541a25db1d1d6656e") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "4a-Functional Allocation"))) (kind "package") (name "4a-Functional Allocation") (declared-name "4a-Functional Allocation") (range (start (line 0) (character 0)) (end (line 0) (character 2843))))
     (element (id (node (document "d0") (qualified-name "4a-Functional Allocation::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 46))) (parent (node (document "d0") (qualified-name "4a-Functional Allocation"))) (authored (membership (kind Import) (visibility "private") (import (reference "2a-Parts Interconnection::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 42))))))

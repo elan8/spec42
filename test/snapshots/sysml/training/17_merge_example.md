@@ -206,7 +206,7 @@ package 'Merge Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "8e4f4d5713d47e75f2d2bf3c314b2e7800e583e7e22703fc58b0a013d1a5a10f") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1b2617aebe36b634a1f4f52111539f2bfbf19ae5feb8e9075ed12c0bd149e127") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Merge Example"))) (kind "package") (name "Merge Example") (declared-name "Merge Example") (range (start (line 0) (character 0)) (end (line 0) (character 811))))
     (element (id (node (document "d0") (qualified-name "Merge Example::Display"))) (kind "action def") (name "Display") (declared-name "Display") (range (start (line 7) (character 1)) (end (line 7) (character 50))) (parent (node (document "d0") (qualified-name "Merge Example"))))

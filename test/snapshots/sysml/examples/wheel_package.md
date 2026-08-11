@@ -439,7 +439,7 @@ package 'Wheel Package' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "54de014cfd38e80a9740e61a4e96cce1b59331998cd05d05515cffb6af03b062") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "82cd23e6c4cd8a9fb819c89e0ca93097b71cdde130d348dd586e47453ef6a55b") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Wheel Package"))) (kind "package") (name "Wheel Package") (declared-name "Wheel Package") (range (start (line 0) (character 0)) (end (line 0) (character 1723))))
     (element (id (node (document "d0") (qualified-name "Wheel Package::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 6) (character 1)) (end (line 6) (character 23))) (parent (node (document "d0") (qualified-name "Wheel Package"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 19))))))

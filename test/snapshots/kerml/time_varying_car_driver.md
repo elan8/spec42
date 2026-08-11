@@ -513,7 +513,7 @@ package TimeVaryingCarDriver {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "597038379d974f5312c7d9fce5c636a5433be36d443bbfae26f7778957c6b83f") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "404e0d5861e8b40043847245c9a25842a0cf2972f48989cbe6779f95476cc8e5") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver"))) (kind "package") (name "TimeVaryingCarDriver") (declared-name "TimeVaryingCarDriver") (range (start (line 0) (character 0)) (end (line 0) (character 4313))))
     (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 4)) (end (line 1) (character 35))) (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 19)) (end (line 1) (character 31))))))

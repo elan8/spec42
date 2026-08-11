@@ -420,7 +420,7 @@ package HSUVDynamics {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "24317a9e7401e8c6f5f4ab7e1429cf1867602a90323669ace81e0b1b9d1e4427") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "4c75e5d91ef19cb0106ef7b952cbebf77b25046873ddeea9a05c374bde711606") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "HSUVDynamics"))) (kind "package") (name "HSUVDynamics") (declared-name "HSUVDynamics") (range (start (line 0) (character 0)) (end (line 0) (character 2451))))
     (element (id (node (document "d0") (qualified-name "HSUVDynamics::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "HSUVDynamics"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))

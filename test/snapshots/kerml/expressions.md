@@ -356,7 +356,7 @@ package Expressions {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "53945bbbacaf71b9bb488bdc6a8d6451e42fe6ffd1fb72dc7e840cdf28520406") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "034d42e5bbc2c856ffe13b65b5885161b7603ac93cbba1ef4b2b77bc81e49fdb") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Expressions"))) (kind "package") (name "Expressions") (declared-name "Expressions") (range (start (line 0) (character 0)) (end (line 0) (character 1809))))
     (element (id (node (document "d0") (qualified-name "Expressions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 35))) (parent (node (document "d0") (qualified-name "Expressions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarFunctions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 31))))))

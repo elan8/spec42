@@ -908,7 +908,7 @@ package ChangingFeatureValuesExecution {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "4f8ae1b84db3a050ce1fb3943b9591371be51c75899e6a6468b05fe32edad38b") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a4007ff2f2d31be1cf7eb3770fefa861f2e92b781469b80e27ac3952d3fdb909") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))) (kind "package") (name "ChangingFeatureValuesExecution") (declared-name "ChangingFeatureValuesExecution") (range (start (line 70) (character 0)) (end (line 70) (character 4855))))
     (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 75) (character 1)) (end (line 75) (character 25))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))) (authored (membership (kind Import) (visibility "private") (import (reference "Atoms::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 75) (character 16)) (end (line 75) (character 21))))))

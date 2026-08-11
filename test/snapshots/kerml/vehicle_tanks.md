@@ -169,7 +169,7 @@ package VehicleTanks {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e6b7b465e3ab01df0c82c3212eeee37d0583f7399c646114a3d18252033eda47") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "cc8383cdf1b30e3f50c79173da128515ca4ca44834e970d864f6df74d57af57d") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "VehicleTanks"))) (kind "package") (name "VehicleTanks") (declared-name "VehicleTanks") (range (start (line 0) (character 0)) (end (line 0) (character 744))))
     (element (id (node (document "d0") (qualified-name "VehicleTanks::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "VehicleTanks"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))

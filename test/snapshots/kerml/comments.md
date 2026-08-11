@@ -177,7 +177,7 @@ package Comments {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "e9dfef1f84fae68931677e06cf6772b453c579493ef47c74ddf8a243ac2cb377") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "807b81015df756cfa6185f889f5edcc2ef6d73439150124fbb0e72297eeaac40") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Comments"))) (kind "package") (name "Comments") (declared-name "Comments") (range (start (line 2) (character 0)) (end (line 2) (character 693))))
     (element (id (node (document "d0") (qualified-name "Comments::A"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 41) (character 1)) (end (line 41) (character 135))) (parent (node (document "d0") (qualified-name "Comments"))))

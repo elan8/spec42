@@ -159,7 +159,7 @@ standard library package AnalysisTooling {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6b92d65dc2eb417ba407dbbcd02dd587e3b7a117b64973afb7069bc58ac02099") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "10a63ef3e477110334502fc01022631f9394885026ddb587616435f49fc30bed") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "AnalysisTooling"))) (kind "package") (name "AnalysisTooling") (declared-name "AnalysisTooling") (range (start (line 0) (character 0)) (end (line 0) (character 798))))
     (element (id (node (document "d0") (qualified-name "AnalysisTooling::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 7) (character 1)) (end (line 7) (character 32))) (parent (node (document "d0") (qualified-name "AnalysisTooling"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 28))))))

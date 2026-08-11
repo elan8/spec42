@@ -384,7 +384,7 @@ standard library package VerificationCases {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c15a96da9fdc69f36668f313a467dc39b0e653c52fd1f99a2be6310a4c788951") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "17e83c31fc0e484fc37a2229a2757ce5f5510881913df760167849fdc7777dd5") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "VerificationCases"))) (kind "package") (name "VerificationCases") (declared-name "VerificationCases") (range (start (line 0) (character 0)) (end (line 0) (character 2488))))
     (element (id (node (document "d0") (qualified-name "VerificationCases::Boolean"))) (kind "import") (name "Boolean") (declared-name "Boolean") (range (start (line 10) (character 1)) (end (line 10) (character 38))) (parent (node (document "d0") (qualified-name "VerificationCases"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Boolean") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 10) (character 16)) (end (line 10) (character 37))))))

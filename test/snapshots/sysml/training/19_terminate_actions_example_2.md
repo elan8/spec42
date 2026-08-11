@@ -101,7 +101,7 @@ package 'Terminate Actions Example-2' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "02c0d8f746a16f59fad762ee612f0c8c34c1f9c8cb5454e61e1b4b2f42abe52b") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5158bfd670672b6a790faa5d2576494c77d8dc0073f2d67b67438b321e9b40bf") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Terminate Actions Example-2"))) (kind "package") (name "Terminate Actions Example-2") (declared-name "Terminate Actions Example-2") (range (start (line 0) (character 0)) (end (line 0) (character 324))))
     (element (id (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor"))) (kind "part def") (name "Processor") (declared-name "Processor") (range (start (line 3) (character 1)) (end (line 3) (character 116))) (parent (node (document "d0") (qualified-name "Terminate Actions Example-2"))))

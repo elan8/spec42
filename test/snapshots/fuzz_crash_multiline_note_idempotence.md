@@ -81,7 +81,7 @@ er E specializes C intersects A, B;
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "056fd865fc7716e800642260a4493a0ca926d35f9fbc552e18abdf81c548acfe") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "5606128b9441d3d77b25f39fa390a7d83e22b38d8b04100d6cbe16a1738026c4") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ers"))) (kind "package") (name "ers") (declared-name "ers") (range (start (line 0) (character 0)) (end (line 0) (character 390))))
   )

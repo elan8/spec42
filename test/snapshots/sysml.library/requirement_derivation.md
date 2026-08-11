@@ -230,7 +230,7 @@ standard library package RequirementDerivation {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "48f76fe7983379e8566b3f11da4cc35c151131438da1489cea05c701240ac97f") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "af44e6f4556542ef4aa8e44ce798c39ce41f3184441d17dde901968999a629a8") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "RequirementDerivation"))) (kind "package") (name "RequirementDerivation") (declared-name "RequirementDerivation") (range (start (line 0) (character 0)) (end (line 0) (character 1269))))
     (element (id (node (document "d0") (qualified-name "RequirementDerivation::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 3) (character 1)) (end (line 3) (character 40))) (parent (node (document "d0") (qualified-name "RequirementDerivation"))) (authored (membership (kind Import) (visibility "public") (import (reference "DerivationConnections::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 3) (character 15)) (end (line 3) (character 36))))))

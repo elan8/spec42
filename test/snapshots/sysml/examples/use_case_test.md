@@ -192,7 +192,7 @@ package UseCaseTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "1204bbe5b5dc2079f6d50b7d5e9e3df184f6dbf59f16d0518d9815b78416861f") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "136f5674d5168da3277ded2c3ac8fde93ec4892e9e3129e3f0617301d79ddb29") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "UseCaseTest"))) (kind "package") (name "UseCaseTest") (declared-name "UseCaseTest") (range (start (line 0) (character 0)) (end (line 0) (character 557))))
     (element (id (node (document "d0") (qualified-name "UseCaseTest::System"))) (kind "part def") (name "System") (declared-name "System") (range (start (line 2) (character 1)) (end (line 2) (character 17))) (parent (node (document "d0") (qualified-name "UseCaseTest"))))

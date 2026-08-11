@@ -906,7 +906,7 @@ package ServerSequenceOutsideRealization_3 {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "977dda05268bdb78536a8c17af6aefc7ba3b4cf61cd580ab464ea7cad296b7ca") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "54a865c35ca25219cb63959052ffacda9f654fd73792586f407b3ec8b5fb2fa2") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3"))) (kind "package") (name "ServerSequenceOutsideRealization_3") (declared-name "ServerSequenceOutsideRealization_3") (range (start (line 0) (character 0)) (end (line 0) (character 5158))))
     (element (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 46))) (parent (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3"))) (authored (membership (kind Import) (visibility "private") (import (reference "ServerSequenceModelOutside::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 42))))))

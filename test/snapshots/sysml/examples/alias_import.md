@@ -86,7 +86,7 @@ package AliasImport {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d0ab57751ac6d683aae5c771c84c7915df2e50895e5aed9e8df20d376d18d1a9") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "8077b1935bd8d2b9b48eae760b9b602cb3d7b4259efbbfeef35782add6b415a2") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "AliasImport"))) (kind "package") (name "AliasImport") (declared-name "AliasImport") (range (start (line 0) (character 0)) (end (line 0) (character 194))))
     (element (id (node (document "d0") (qualified-name "AliasImport::Definitions"))) (kind "package") (name "Definitions") (declared-name "Definitions") (range (start (line 1) (character 1)) (end (line 1) (character 82))) (parent (node (document "d0") (qualified-name "AliasImport"))))

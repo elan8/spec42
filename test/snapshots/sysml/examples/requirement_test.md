@@ -194,7 +194,7 @@ package RequirementTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f78adf2c6174c9ad49a75177ac348c1d58a085d8eef46f746b2b484ec84c4aab") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "7c8c2df235a9d35a9e3a33163a79576669b79128edc59d5b21949429d6322ee6") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "RequirementTest"))) (kind "package") (name "RequirementTest") (declared-name "RequirementTest") (range (start (line 0) (character 0)) (end (line 0) (character 478))))
     (element (id (node (document "d0") (qualified-name "RequirementTest::C"))) (kind "constraint def") (name "C") (declared-name "C") (range (start (line 1) (character 1)) (end (line 1) (character 18))) (parent (node (document "d0") (qualified-name "RequirementTest"))))

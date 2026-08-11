@@ -113,7 +113,7 @@ package DefaultValueTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "437bd5e0fef37f2cc3cbf303c321e00d9282c1053b3dd1bc96e106993633a1d9") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b2ca124abc87af849ba3ac4fa9cc088d2ced70836e5f732d217f8daa17bdffc1") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "DefaultValueTest"))) (kind "package") (name "DefaultValueTest") (declared-name "DefaultValueTest") (range (start (line 0) (character 0)) (end (line 0) (character 218))))
     (element (id (node (document "d0") (qualified-name "DefaultValueTest::V"))) (kind "part def") (name "V") (declared-name "V") (range (start (line 2) (character 1)) (end (line 2) (character 64))) (parent (node (document "d0") (qualified-name "DefaultValueTest"))))

@@ -336,7 +336,7 @@ standard library package StandardViewDefinitions {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "837077736f8151e88f437155b73d186729f11a47d91945c5387a5e647f0b983f") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "2a9826190845fc2431f58cccead96f0a9101f6641920f75c4be583f6a8541773") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "StandardViewDefinitions"))) (kind "package") (name "StandardViewDefinitions") (declared-name "StandardViewDefinitions") (range (start (line 0) (character 0)) (end (line 0) (character 6114))))
     (element (id (node (document "d0") (qualified-name "StandardViewDefinitions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 4) (character 4)) (end (line 4) (character 27))) (parent (node (document "d0") (qualified-name "StandardViewDefinitions"))) (authored (membership (kind Import) (visibility "public") (import (reference "SysML::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 4) (character 18)) (end (line 4) (character 23))))))

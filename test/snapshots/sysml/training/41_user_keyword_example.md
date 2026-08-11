@@ -179,7 +179,7 @@ package 'User Keyword Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "d81dcf6bb85720d5fe864d8cde98849e8022a9e1d2777f15e83968dd4334b651") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "8e134a3b55d7ad69ae40419928e2f634e648a5d66cdf3a414e58beda17f9d935") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "User Keyword Example"))) (kind "package") (name "User Keyword Example") (declared-name "User Keyword Example") (range (start (line 0) (character 0)) (end (line 0) (character 651))))
     (element (id (node (document "d0") (qualified-name "User Keyword Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 47))) (parent (node (document "d0") (qualified-name "User Keyword Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "Semantic Metadata Example::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 43))))))

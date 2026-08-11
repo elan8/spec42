@@ -76,7 +76,7 @@ package ConnectorAll {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "55b7a82dfc14b92d5872fb3316392d758474245e1b0c14cb1abdcf5b74003572") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "8b1aa2652f6ff9ff643f8ba0e8e37117a2e8dd9df7bc25cbcbf4642536f81fe4") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ConnectorAll"))) (kind "package") (name "ConnectorAll") (declared-name "ConnectorAll") (range (start (line 0) (character 0)) (end (line 0) (character 233))))
   )

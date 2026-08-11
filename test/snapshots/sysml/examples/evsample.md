@@ -1486,7 +1486,7 @@ package EVSample {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "77eca7bc7cd516a9002535214fdafc0fd1686c7eb10d60184972c0f981c0cf3c") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "8e5d15046c8cde81ae6c2fc5ec3d5deb1e9ad15f6b582905667a5d8127419aa4") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "EVSample"))) (kind "package") (name "EVSample") (declared-name "EVSample") (range (start (line 1) (character 0)) (end (line 1) (character 10960))))
     (element (id (node (document "d0") (qualified-name "EVSample::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 4)) (end (line 2) (character 25))) (parent (node (document "d0") (qualified-name "EVSample"))) (authored (membership (kind Import) (visibility "private") (import (reference "SI::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 19)) (end (line 2) (character 21))))))

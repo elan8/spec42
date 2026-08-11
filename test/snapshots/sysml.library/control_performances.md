@@ -536,7 +536,7 @@ standard library package ControlPerformances {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c2d603b5fe06015a39044299c878dfdccfdea6d0853d9e7c2e13d3b23ffe2408") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "906b6658dbe37b7a5307b0d18b33a67cc0a9ea5d8faa4c4918d8285a8fe3b196") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ControlPerformances"))) (kind "package") (name "ControlPerformances") (declared-name "ControlPerformances") (range (start (line 0) (character 0)) (end (line 0) (character 4496))))
     (element (id (node (document "d0") (qualified-name "ControlPerformances::Boolean"))) (kind "import") (name "Boolean") (declared-name "Boolean") (range (start (line 7) (character 1)) (end (line 7) (character 38))) (parent (node (document "d0") (qualified-name "ControlPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Boolean") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 37))))))

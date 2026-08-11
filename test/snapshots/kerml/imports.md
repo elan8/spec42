@@ -234,7 +234,7 @@ package Imports {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "1ca5e8d12eecd3ee112b9903c5cb702e019c0d9a0657aab02488db4fb09d7a0d") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "e6e2b2da1cb02327a8a66f7174085f3d2a758b0350083ae40cda8470f67dd2f1") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Imports"))) (kind "package") (name "Imports") (declared-name "Imports") (range (start (line 0) (character 0)) (end (line 0) (character 480))))
     (element (id (node (document "d0") (qualified-name "Imports::P"))) (kind "package") (name "P") (declared-name "P") (range (start (line 2) (character 1)) (end (line 2) (character 48))) (parent (node (document "d0") (qualified-name "Imports"))))

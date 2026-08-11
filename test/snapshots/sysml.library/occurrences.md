@@ -3277,7 +3277,7 @@ standard library package Occurrences {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "56b5a2d0f5c22b15846b15f449d3fe18890c5afd06bfd6ef4460404a31856fea") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "9373da946c3d6459e36ccdfdfd8dca498a3524e560e1f759a9321e5753f162a0") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Occurrences"))) (kind "package") (name "Occurrences") (declared-name "Occurrences") (range (start (line 0) (character 0)) (end (line 0) (character 36918))))
     (element (id (node (document "d0") (qualified-name "Occurrences::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 12) (character 1)) (end (line 12) (character 25))) (parent (node (document "d0") (qualified-name "Occurrences"))) (authored (membership (kind Import) (visibility "private") (import (reference "Links::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 12) (character 16)) (end (line 12) (character 21))))))

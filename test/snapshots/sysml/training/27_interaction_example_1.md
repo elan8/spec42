@@ -176,7 +176,7 @@ package 'Interaction Example-1' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "a2527dcb86ba89c14ee31973ae6b45d0db1dd01b4025f21e39f6c075557d9794") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "c1c543b14fdc599849b1c61a682f454718b30f1f094c00e0cc39bfbf42240c57") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Interaction Example-1"))) (kind "package") (name "Interaction Example-1") (declared-name "Interaction Example-1") (range (start (line 0) (character 0)) (end (line 0) (character 695))))
     (element (id (node (document "d0") (qualified-name "Interaction Example-1::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 45))) (parent (node (document "d0") (qualified-name "Interaction Example-1"))) (authored (membership (kind Import) (visibility "public") (import (reference "Event Occurrence Example::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 15)) (end (line 1) (character 41))))))

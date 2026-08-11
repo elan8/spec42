@@ -126,7 +126,7 @@ package ExpressionCoverage {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "c5963c4ffa79d95171d3822a0ab8ec18b217b11356dc25beadc4801ffc1ae142") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "8853cee9ec7516d18367d1c46605fb53f3ee9b3b9e391a336c2d00b5920f4944") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ExpressionCoverage"))) (kind "package") (name "ExpressionCoverage") (declared-name "ExpressionCoverage") (range (start (line 0) (character 0)) (end (line 0) (character 501))))
     (element (id (node (document "d0") (qualified-name "ExpressionCoverage::Item"))) (kind "classifier decl") (name "Item") (declared-name "Item") (range (start (line 2) (character 4)) (end (line 2) (character 20))) (parent (node (document "d0") (qualified-name "ExpressionCoverage"))))

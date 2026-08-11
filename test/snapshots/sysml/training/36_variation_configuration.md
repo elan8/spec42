@@ -112,7 +112,7 @@ package 'Variation Configuration' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "941b4c90d188f05f3d9d74ccceb52039e9b20eb19fc8665aea7d03461dc4755a") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "cabfe4b1e990a2ea6bdd43b63eccc2082bd306a61ff96452d90f5802bd7fb495") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Variation Configuration"))) (kind "package") (name "Variation Configuration") (declared-name "Variation Configuration") (range (start (line 0) (character 0)) (end (line 0) (character 390))))
     (element (id (node (document "d0") (qualified-name "Variation Configuration::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 38))) (parent (node (document "d0") (qualified-name "Variation Configuration"))) (authored (membership (kind Import) (visibility "private") (import (reference "Variation Usages::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 34))))))

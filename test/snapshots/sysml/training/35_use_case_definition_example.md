@@ -150,7 +150,7 @@ package 'Use Case Definition Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b981e620408f4dc3dbd3720f803e1e090ebb10a0220540586b25df943dc3e34d") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1e300649c1c615e2b0eec016f1c625475548f77efd7555f8b1de3e74775fa924") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Use Case Definition Example"))) (kind "package") (name "Use Case Definition Example") (declared-name "Use Case Definition Example") (range (start (line 0) (character 0)) (end (line 0) (character 679))))
     (element (id (node (document "d0") (qualified-name "Use Case Definition Example::Enter Vehicle"))) (kind "use case def") (name "Enter Vehicle") (declared-name "Enter Vehicle") (range (start (line 22) (character 1)) (end (line 22) (character 123))) (parent (node (document "d0") (qualified-name "Use Case Definition Example"))))

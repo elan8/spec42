@@ -1500,7 +1500,7 @@ package 'Vehicle Analysis Demo' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "420f79fd2e904f9565e478fb03a821b7d20f40d3fd299fc85c1ce1ad8a477e10") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "2ef35b034f91ea3dc526b2ef9ac8b53d0b2dcc7c5aac668ed5d15ab39bc2a75d") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Vehicle Analysis Demo"))) (kind "package") (name "Vehicle Analysis Demo") (declared-name "Vehicle Analysis Demo") (range (start (line 0) (character 0)) (end (line 0) (character 9023))))
     (element (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 4)) (end (line 1) (character 35))) (parent (node (document "d0") (qualified-name "Vehicle Analysis Demo"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 19)) (end (line 1) (character 31))))))

@@ -1034,7 +1034,7 @@ standard library package Performances {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "425eade4ebc32454ca6ae0e2fce0098d305d66bcdad2249a176010cec7f7c0b5") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c95ff90f4873b53551bab11949ce68130fc2f40e4203b027ef3f419cb5be1d0a") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Performances"))) (kind "package") (name "Performances") (declared-name "Performances") (range (start (line 0) (character 0)) (end (line 0) (character 8925))))
     (element (id (node (document "d0") (qualified-name "Performances::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 18) (character 1)) (end (line 18) (character 32))) (parent (node (document "d0") (qualified-name "Performances"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 18) (character 16)) (end (line 18) (character 28))))))

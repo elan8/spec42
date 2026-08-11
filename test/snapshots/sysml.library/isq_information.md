@@ -3670,7 +3670,7 @@ standard library package ISQInformation {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1febee76136a9f07a526300b3f16e4b859cee3be24fcd2a89095dc0f3364d258") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5a5c5bbe77f287fd1a4d5acf29273568621b816a7b4eff05902a942f43d0ee9a") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ISQInformation"))) (kind "package") (name "ISQInformation") (declared-name "ISQInformation") (range (start (line 0) (character 0)) (end (line 0) (character 41978))))
     (element (id (node (document "d0") (qualified-name "ISQInformation::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 15) (character 4)) (end (line 15) (character 33))) (parent (node (document "d0") (qualified-name "ISQInformation"))) (authored (membership (kind Import) (visibility "private") (import (reference "Quantities::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 15) (character 19)) (end (line 15) (character 29))))))

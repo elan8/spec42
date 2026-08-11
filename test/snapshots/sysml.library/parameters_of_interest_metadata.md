@@ -185,7 +185,7 @@ standard library package ParametersOfInterestMetadata {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "85fb68bbfc15735177cd6b5f7cc334e245c8434d3ca7c7fc1209927497168ff6") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ae30e555e8df105e6446f44ae6116723228beaf9dee7bba0e74ab37cbac90f1f") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ParametersOfInterestMetadata"))) (kind "package") (name "ParametersOfInterestMetadata") (declared-name "ParametersOfInterestMetadata") (range (start (line 0) (character 0)) (end (line 0) (character 1191))))
     (element (id (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness"))) (kind "metadata def") (name "MeasureOfEffectiveness") (declared-name "MeasureOfEffectiveness") (range (start (line 17) (character 2)) (end (line 17) (character 311))) (parent (node (document "d0") (qualified-name "ParametersOfInterestMetadata"))) (authored (membership (kind Owning)) (relationships (specializes (reference "SemanticMetadata") (range (start (line 17) (character 47)) (end (line 17) (character 63)))))))

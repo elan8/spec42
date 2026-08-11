@@ -104,7 +104,7 @@ part def Camera {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "e94283c71b107d765f4afca3b02bd0a4c3591be8b4ccce27ce318ebf4bdd5206") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "2b5d836d254f62c2255d5cb1f0011736b166da63af27110833e1cbd0ad3134cc") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Camera"))) (kind "part def") (name "Camera") (declared-name "Camera") (range (start (line 0) (character 0)) (end (line 0) (character 238))))
     (element (id (node (document "d0") (qualified-name "Camera::focusingSubsystem"))) (kind "part") (name "focusingSubsystem") (declared-name "focusingSubsystem") (range (start (line 5) (character 1)) (end (line 5) (character 57))) (parent (node (document "d0") (qualified-name "Camera"))) (authored (membership (kind Feature)) (relationships (perform (reference "Camera::focusingSubsystem::takePicture::focus") (range none)))))

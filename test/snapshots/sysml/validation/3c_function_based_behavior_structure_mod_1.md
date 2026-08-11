@@ -218,7 +218,7 @@ package '3c-Function-based Behavior-structure mod-1' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "9d57db17cf768c0740cdab528d863ea27ee393cdff726d8c883c063764c91bdf") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e3a3b69e36d90cf6338aabb77199f1c1b376e6d41c4f13d50be9ff6f2307ddb6") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-1"))) (kind "package") (name "3c-Function-based Behavior-structure mod-1") (declared-name "3c-Function-based Behavior-structure mod-1") (range (start (line 0) (character 0)) (end (line 0) (character 1281))))
     (element (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-1::HitchBall"))) (kind "part def") (name "HitchBall") (declared-name "HitchBall") (range (start (line 5) (character 1)) (end (line 5) (character 20))) (parent (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-1"))))

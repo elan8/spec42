@@ -265,7 +265,7 @@ package 'Flashlight Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "73d56b7bba6e757931fb3a8b29a121607379f0cfd82a3d7b5aec13407c869917") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "ce4333a799d4aee041461508b71faafa1168c27dea979a4f4ceed14dce5de330") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Flashlight Example"))) (kind "package") (name "Flashlight Example") (declared-name "Flashlight Example") (range (start (line 0) (character 0)) (end (line 0) (character 1245))))
     (element (id (node (document "d0") (qualified-name "Flashlight Example::Light"))) (kind "attribute def") (name "Light") (declared-name "Light") (range (start (line 3) (character 1)) (end (line 3) (character 21))) (parent (node (document "d0") (qualified-name "Flashlight Example"))))

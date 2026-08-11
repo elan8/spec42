@@ -120,7 +120,7 @@ package 'Redefinition Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e6135653b4e2f638c066df553bd8eb9f567dd24d34716acf2cd79b00e1054b45") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f009f7be8d9cceb567033c041b9ecf87d19176cecfddc9f71e9b662dcdc886e6") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Redefinition Example"))) (kind "package") (name "Redefinition Example") (declared-name "Redefinition Example") (range (start (line 0) (character 0)) (end (line 0) (character 430))))
     (element (id (node (document "d0") (qualified-name "Redefinition Example::BigEngine"))) (kind "part def") (name "BigEngine") (declared-name "BigEngine") (range (start (line 18) (character 1)) (end (line 18) (character 59))) (parent (node (document "d0") (qualified-name "Redefinition Example"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Engine") (range (start (line 18) (character 23)) (end (line 18) (character 29)))))))

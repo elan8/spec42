@@ -642,7 +642,7 @@ standard library package OccurrenceFunctions {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6146f0929fa3d8912c95a049ca64ad61bc49931527dede863636981fc6ad8bb1") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "0056e31facda9245716cd06883cf8f273bd767a48542aa3dc39090bc731c6b5c") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "OccurrenceFunctions"))) (kind "package") (name "OccurrenceFunctions") (declared-name "OccurrenceFunctions") (range (start (line 0) (character 0)) (end (line 0) (character 3713))))
     (element (id (node (document "d0") (qualified-name "OccurrenceFunctions::Boolean"))) (kind "import") (name "Boolean") (declared-name "Boolean") (range (start (line 9) (character 1)) (end (line 9) (character 38))) (parent (node (document "d0") (qualified-name "OccurrenceFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Boolean") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 9) (character 16)) (end (line 9) (character 37))))))

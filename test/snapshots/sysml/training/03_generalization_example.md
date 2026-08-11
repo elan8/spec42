@@ -97,7 +97,7 @@ package 'Generalization Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a7a5941aed3de4640b4158550ae8d7346c7276e4a154297d68fceaa9e6da4f93") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b6ada02dc0db6fe253a4094cc7365e36681b71a023d0dd7e72850e65dc1a51e2") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Generalization Example"))) (kind "package") (name "Generalization Example") (declared-name "Generalization Example") (range (start (line 0) (character 0)) (end (line 0) (character 334))))
     (element (id (node (document "d0") (qualified-name "Generalization Example::Engine"))) (kind "part def") (name "Engine") (declared-name "Engine") (range (start (line 15) (character 1)) (end (line 15) (character 17))) (parent (node (document "d0") (qualified-name "Generalization Example"))))

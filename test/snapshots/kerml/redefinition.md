@@ -117,7 +117,7 @@ package Redefinition {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a65431c61d3eae2ccdaa78118065520d6e574757c8aa3f545e4464519399fcee") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "89d27b100c3658ab2d7e343244ec744434896ed3c94f38880f6a712275280140") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Redefinition"))) (kind "package") (name "Redefinition") (declared-name "Redefinition") (range (start (line 0) (character 0)) (end (line 0) (character 325))))
     (element (id (node (document "d0") (qualified-name "Redefinition::A"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 2) (character 1)) (end (line 2) (character 34))) (parent (node (document "d0") (qualified-name "Redefinition"))))

@@ -155,7 +155,7 @@ package '15_04-Logical Expressions' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "4ed840359cee2757f41f258f77faf0ec3f92973d2527143a59ab0be8fdd74723") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "36e4d397f09e68d16279790019cd836d905b6b53ddd11ca4a8638e56c4f2f4f2") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "15_04-Logical Expressions"))) (kind "package") (name "15_04-Logical Expressions") (declared-name "15_04-Logical Expressions") (range (start (line 0) (character 0)) (end (line 0) (character 724))))
     (element (id (node (document "d0") (qualified-name "15_04-Logical Expressions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "15_04-Logical Expressions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))

@@ -81,7 +81,7 @@ package Circular {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "0121c73578e5552590447a9c5e00f78b6fd636348691aed1ce316dd4551b0967") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "00aebb6ba004439ee30b63301928598e49736318f230bb516c5dbd7f3ceebae1") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Circular"))) (kind "package") (name "Circular") (declared-name "Circular") (range (start (line 0) (character 0)) (end (line 0) (character 172))))
     (element (id (node (document "d0") (qualified-name "Circular::A"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 1) (character 1)) (end (line 1) (character 12))) (parent (node (document "d0") (qualified-name "Circular"))))

@@ -11118,7 +11118,7 @@ standard library package ISQElectromagnetism {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a95dfdac75bf38c61badba1efa63e0e444b259c70e53573e6a3042a01ba179a7") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1ee4bf2706233a38b46ca52808004e7852e6111755e41159abe2d6140d774dbe") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ISQElectromagnetism"))) (kind "package") (name "ISQElectromagnetism") (declared-name "ISQElectromagnetism") (range (start (line 0) (character 0)) (end (line 0) (character 115564))))
     (element (id (node (document "d0") (qualified-name "ISQElectromagnetism::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 15) (character 4)) (end (line 15) (character 33))) (parent (node (document "d0") (qualified-name "ISQElectromagnetism"))) (authored (membership (kind Import) (visibility "private") (import (reference "Quantities::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 15) (character 19)) (end (line 15) (character 29))))))

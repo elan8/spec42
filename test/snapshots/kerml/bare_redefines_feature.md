@@ -77,7 +77,7 @@ class A {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "3d53c5d159f8b41aaa38c159d133c8ac77b1731dbedc6c68901dbffda38588fd") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5fc75c6e494594bffba82d0b608821738dac66299024c9a6b5f508f283244c50") (contract-version "canonical-resolution-v1"))
   (structure
   )
   (references

@@ -289,7 +289,7 @@ standard library package Cases {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e98ab593c86ca2e4227c2b5edc97a0eaed07ffe93f63fa255406032ded64ed53") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ab9cf7aa5a6e98d6e04b8ebf764b8014a04dac71db39a28b12576e158684ab56") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Cases"))) (kind "package") (name "Cases") (declared-name "Cases") (range (start (line 0) (character 0)) (end (line 0) (character 1619))))
     (element (id (node (document "d0") (qualified-name "Cases::Anything"))) (kind "import") (name "Anything") (declared-name "Anything") (range (start (line 7) (character 1)) (end (line 7) (character 31))) (parent (node (document "d0") (qualified-name "Cases"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::Anything") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 30))))))

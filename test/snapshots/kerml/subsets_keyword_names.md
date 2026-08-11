@@ -57,7 +57,7 @@ feature f2 subsets do, step;
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "25b4fb7754582a135721818142d5794223c6f8718c01479243e74337bfbc5b8c") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1d16f421f7c93925788f5d8f054dfc93102e56af4b29710a99272be879043e11") (contract-version "canonical-resolution-v1"))
   (structure
   )
   (references

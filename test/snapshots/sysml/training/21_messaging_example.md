@@ -170,7 +170,7 @@ package 'Messaging Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "4d46e1df0dc4f0803c01699b9c5367d68153471044ebf64836ad500c39614367") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "9c29ea77d7152372c9bd61c370d7bc67d4131adb3f622e5a9e603378333b3ecc") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Messaging Example"))) (kind "package") (name "Messaging Example") (declared-name "Messaging Example") (range (start (line 0) (character 0)) (end (line 0) (character 665))))
     (element (id (node (document "d0") (qualified-name "Messaging Example::Focus"))) (kind "action def") (name "Focus") (declared-name "Focus") (range (start (line 9) (character 1)) (end (line 9) (character 68))) (parent (node (document "d0") (qualified-name "Messaging Example"))))

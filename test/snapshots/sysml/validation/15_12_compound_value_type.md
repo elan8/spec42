@@ -197,7 +197,7 @@ package '15_12-Compound Value Type' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d23911f7a20ae6c7f46556d7767235863f6503d19938e9731f4e49c5e935c34c") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "75aec00f8071926fcecfd7ec6e45f6564ea0ccc21920b6a6df5e833e1c1b915d") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "15_12-Compound Value Type"))) (kind "package") (name "15_12-Compound Value Type") (declared-name "15_12-Compound Value Type") (range (start (line 0) (character 0)) (end (line 0) (character 858))))
     (element (id (node (document "d0") (qualified-name "15_12-Compound Value Type::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "15_12-Compound Value Type"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))

@@ -173,7 +173,7 @@ package 'Action Succession Example-1' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f767175a00aad41cfe6d222add3d1bfff8dfb81c47575df28badfcd7d0c9732f") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e2384668817074c362790529b8dd6d56c72e480b663cf9c327204b50c26a2df5") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Action Succession Example-1"))) (kind "package") (name "Action Succession Example-1") (declared-name "Action Succession Example-1") (range (start (line 0) (character 0)) (end (line 0) (character 549))))
     (element (id (node (document "d0") (qualified-name "Action Succession Example-1::Focus"))) (kind "action def") (name "Focus") (declared-name "Focus") (range (start (line 5) (character 1)) (end (line 5) (character 58))) (parent (node (document "d0") (qualified-name "Action Succession Example-1"))))

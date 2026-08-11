@@ -203,7 +203,7 @@ package 'Binding Connectors Example-1' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "8028e91a6cb2eab605d814e850c156c42680d27f56bcfcfc4edbdbb1cd859277") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "487d9275e70437fe918487973fafec741e5d9e6a98c686c4ccdd83d249bdf8ee") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Binding Connectors Example-1"))) (kind "package") (name "Binding Connectors Example-1") (declared-name "Binding Connectors Example-1") (range (start (line 0) (character 0)) (end (line 0) (character 596))))
     (element (id (node (document "d0") (qualified-name "Binding Connectors Example-1::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 34))) (parent (node (document "d0") (qualified-name "Binding Connectors Example-1"))) (authored (membership (kind Import) (visibility "private") (import (reference "Port Example::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 30))))))

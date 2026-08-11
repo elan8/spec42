@@ -223,7 +223,7 @@ standard library package VectorValues {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d45cf328e28fcc0aa649ea7ca16c774de9f9f43f8016a1d00728437c058e5fa5") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "2bbbb529042a81e0a970b62815302faa024b6068ee2cd7463f9cc60e2edde266") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "VectorValues"))) (kind "package") (name "VectorValues") (declared-name "VectorValues") (range (start (line 0) (character 0)) (end (line 0) (character 1962))))
     (element (id (node (document "d0") (qualified-name "VectorValues::Array"))) (kind "import") (name "Array") (declared-name "Array") (range (start (line 9) (character 4)) (end (line 9) (character 38))) (parent (node (document "d0") (qualified-name "VectorValues"))) (authored (membership (kind Import) (visibility "private") (import (reference "Collections::Array") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 9) (character 19)) (end (line 9) (character 37))))))

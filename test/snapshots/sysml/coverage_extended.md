@@ -151,7 +151,7 @@ package ExtendedExamples {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "195b70ac4690dcf66b928bac48890da04bb5ae444ebcad237ac9d0c949b0ee67") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "22ff8990e8de6d1522d19d30f2eb6ee8803010376d14ac6d65f3c78e48a2324e") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ExtendedExamples"))) (kind "package") (name "ExtendedExamples") (declared-name "ExtendedExamples") (range (start (line 0) (character 0)) (end (line 0) (character 333))))
     (element (id (node (document "d0") (qualified-name "ExtendedExamples::_situation"))) (kind "metadata keyword") (name "situation") (declared-name "situation") (range (start (line 1) (character 4)) (end (line 1) (character 15))) (parent (node (document "d0") (qualified-name "ExtendedExamples"))))

@@ -193,7 +193,7 @@ package StructuredControlTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "dd05517e3fbaf83600724970c91a9a7c81e47bc7466c5dd239391cf64c37d59a") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "e33ad92654de39546b911b228ef7fdb2b61de9e6e3dbe50d56614604b31b281d") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "StructuredControlTest"))) (kind "package") (name "StructuredControlTest") (declared-name "StructuredControlTest") (range (start (line 0) (character 0)) (end (line 0) (character 532))))
     (element (id (node (document "d0") (qualified-name "StructuredControlTest::"))) (kind "action") (name "") (range (start (line 2) (character 1)) (end (line 2) (character 496))) (parent (node (document "d0") (qualified-name "StructuredControlTest"))) (authored (membership (kind Feature)) (relationships (perform (reference "StructuredControlTest::::aLoop") (range none)))))

@@ -2065,7 +2065,7 @@ standard library package Actions {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1a5e449c917f6f8a1f5ba9e60eccfaf7fa82683803e2dc8d4930f906cfc14cd0") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5e7f567998c3514a84521c656b80b5f6e136a042587305fc83fbbeb0af44ab97") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Actions"))) (kind "package") (name "Actions") (declared-name "Actions") (range (start (line 0) (character 0)) (end (line 0) (character 14635))))
     (element (id (node (document "d0") (qualified-name "Actions::AcceptAction"))) (kind "action def") (name "AcceptAction") (declared-name "AcceptAction") (range (start (line 218) (character 1)) (end (line 218) (character 535))) (parent (node (document "d0") (qualified-name "Actions"))) (authored (membership (kind Owning)) (relationships (specializes (reference "AcceptMessageAction") (range none)) (specializes (reference "AcceptMessageAction") (range none)) (specializes (reference "AcceptMessageAction") (range (start (line 218) (character 28)) (end (line 218) (character 47)))))))

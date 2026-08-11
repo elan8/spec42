@@ -186,7 +186,7 @@ library package 'Model Library Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "74eec524a0d6df2a4df852edd9b624df7fe01ff2d3c8a6fd01477eab62ffe5f3") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5bd0a41806ce8d848de10dafd6cdd989e7e9c96d5537bfaf589053d3ce2c7ae8") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Model Library Example"))) (kind "package") (name "Model Library Example") (declared-name "Model Library Example") (range (start (line 0) (character 0)) (end (line 0) (character 867))))
     (element (id (node (document "d0") (qualified-name "Model Library Example::Causation"))) (kind "connection def") (name "Causation") (declared-name "Causation") (range (start (line 20) (character 1)) (end (line 20) (character 136))) (parent (node (document "d0") (qualified-name "Model Library Example"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Occurrences::HappensBefore") (range (start (line 20) (character 38)) (end (line 20) (character 64)))))))

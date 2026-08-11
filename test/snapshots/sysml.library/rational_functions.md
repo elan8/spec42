@@ -433,7 +433,7 @@ standard library package RationalFunctions {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b917f9504f0899204db894a7abb2661e4f0daf8be341517686372212d81fbe66") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c506d9cab67d66037728d22fb1812aed6fe7852569165406063d70fa3d06738c") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "RationalFunctions"))) (kind "package") (name "RationalFunctions") (declared-name "RationalFunctions") (range (start (line 0) (character 0)) (end (line 0) (character 2812))))
     (element (id (node (document "d0") (qualified-name "RationalFunctions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 7) (character 1)) (end (line 7) (character 31))) (parent (node (document "d0") (qualified-name "RationalFunctions"))) (authored (membership (kind Import) (visibility "public") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 7) (character 15)) (end (line 7) (character 27))))))

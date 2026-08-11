@@ -542,7 +542,7 @@ package AHFNorwaySequences {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "2c10b25de84bba2f156d33589ab474e04da15ca29d0a27578cccad701b34c5fa") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "73ef026b28d9e6146db040a8a092587c6ac68da33d3efdb9beebc2a926cb0e87") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "AHFNorwaySequences"))) (kind "package") (name "AHFNorwaySequences") (declared-name "AHFNorwaySequences") (range (start (line 1) (character 0)) (end (line 1) (character 4629))))
     (element (id (node (document "d0") (qualified-name "AHFNorwaySequences::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 3) (character 1)) (end (line 3) (character 33))) (parent (node (document "d0") (qualified-name "AHFNorwaySequences"))) (authored (membership (kind Import) (visibility "private") (import (reference "AHFProfileLib::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 3) (character 16)) (end (line 3) (character 29))))))

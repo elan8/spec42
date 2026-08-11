@@ -157,7 +157,7 @@ package ConjugationTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "37db3f2c358db743c9a5295c9b31a7bac93052fb337f6ccf80b98b26d5ae2ca9") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "bf85d66eeb20581e744c9bf6318694dea0c67ee386be50bab69e89618b664326") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ConjugationTest"))) (kind "package") (name "ConjugationTest") (declared-name "ConjugationTest") (range (start (line 0) (character 0)) (end (line 0) (character 434))))
     (element (id (node (document "d0") (qualified-name "ConjugationTest::A"))) (kind "connection def") (name "A") (declared-name "A") (range (start (line 8) (character 1)) (end (line 8) (character 59))) (parent (node (document "d0") (qualified-name "ConjugationTest"))))

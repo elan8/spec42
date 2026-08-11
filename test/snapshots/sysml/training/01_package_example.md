@@ -80,7 +80,7 @@ package 'Package Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "cad7c2964404db52a5d07a8920e70e036e4a36bd1c405ff5ee0d50a54dd60f23") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6a98d27a17982c900449adced1dd81ab7290b27d9f2d02528afa9580e9c46d6a") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Package Example"))) (kind "package") (name "Package Example") (declared-name "Package Example") (range (start (line 0) (character 0)) (end (line 0) (character 226))))
     (element (id (node (document "d0") (qualified-name "Package Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 32))) (parent (node (document "d0") (qualified-name "Package Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 28))))))

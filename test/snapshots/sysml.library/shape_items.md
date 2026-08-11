@@ -4026,7 +4026,7 @@ standard library package ShapeItems {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "65079e593071bdbd5a95fd437bcff989d823a65ba3fb43c2b1a3e68c1c1b7487") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "238d61b26273402819b82bb7002d568f6054eb812b3fd9009d6df0dc2a7cd74c") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ShapeItems"))) (kind "package") (name "ShapeItems") (declared-name "ShapeItems") (range (start (line 0) (character 0)) (end (line 0) (character 26661))))
     (element (id (node (document "d0") (qualified-name "ShapeItems::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 8) (character 1)) (end (line 8) (character 32))) (parent (node (document "d0") (qualified-name "ShapeItems"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQSpaceTime::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 28))))))

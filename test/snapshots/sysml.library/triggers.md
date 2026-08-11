@@ -630,7 +630,7 @@ standard library package Triggers {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "0c3a9a90e86a7c5642734154a2c5491dd80c2e8525253d18df54229f301d0711") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "870c469b959364a0b9d42a667902528e5670c07da6322b297c8d7b599f7fd8ca") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Triggers"))) (kind "package") (name "Triggers") (declared-name "Triggers") (range (start (line 0) (character 0)) (end (line 0) (character 4422))))
     (element (id (node (document "d0") (qualified-name "Triggers::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 12) (character 1)) (end (line 12) (character 25))) (parent (node (document "d0") (qualified-name "Triggers"))) (authored (membership (kind Import) (visibility "public") (import (reference "Clocks::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 12) (character 15)) (end (line 12) (character 21))))))

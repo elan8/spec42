@@ -142,7 +142,7 @@ package RationaleMetadataExample {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b7334c0da973fab6771dc36b5d6c75634bc94e14c858b35ebbc5ad2b0bf69787") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "cc38857d9d14d9e772439ac569547eab340a83533632450629e76a6c9fbf548a") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "RationaleMetadataExample"))) (kind "package") (name "RationaleMetadataExample") (declared-name "RationaleMetadataExample") (range (start (line 0) (character 0)) (end (line 0) (character 833))))
     (element (id (node (document "d0") (qualified-name "RationaleMetadataExample::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 15) (character 4)) (end (line 15) (character 35))) (parent (node (document "d0") (qualified-name "RationaleMetadataExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "TradeStudies::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 15) (character 19)) (end (line 15) (character 31))))))

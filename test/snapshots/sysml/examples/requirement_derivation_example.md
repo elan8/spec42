@@ -196,7 +196,7 @@ package RequirementDerivationExample {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6ec47f1a869a65f01fd6bc5b55415b38e165518052f2705a73eefdb5a5e613cc") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "719120dd17f1efdaddbfa5820b81988552fd7bfe38b65a02b8db13884e6edca1") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "RequirementDerivationExample"))) (kind "package") (name "RequirementDerivationExample") (declared-name "RequirementDerivationExample") (range (start (line 0) (character 0)) (end (line 0) (character 772))))
     (element (id (node (document "d0") (qualified-name "RequirementDerivationExample::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 41))) (parent (node (document "d0") (qualified-name "RequirementDerivationExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "RequirementDerivation::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 37))))))

@@ -247,7 +247,7 @@ package 'Requirement Definitions' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "91a569bd0f41be1e68ae6d37d3c4bd2f88510f17de270f28f405ee7c76120f82") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "299f545d607e2782c3514c4749f92fcc2ceeb065efaca7110d6257f885917024") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Requirement Definitions"))) (kind "package") (name "Requirement Definitions") (declared-name "Requirement Definitions") (range (start (line 0) (character 0)) (end (line 0) (character 1218))))
     (element (id (node (document "d0") (qualified-name "Requirement Definitions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 23))) (parent (node (document "d0") (qualified-name "Requirement Definitions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 19))))))

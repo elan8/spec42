@@ -126,7 +126,7 @@ package 'Dependency Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b97b3fa61340671a749647aa84129ffa3053b4751311a45a61572c47767b9386") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "27d13035eb71259c7e40554d57bccac09cebf8f6e9ad722485d1b8ce99ed28f9") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Dependency Example"))) (kind "package") (name "Dependency Example") (declared-name "Dependency Example") (range (start (line 0) (character 0)) (end (line 0) (character 488))))
     (element (id (node (document "d0") (qualified-name "Dependency Example::Schemata"))) (kind "dependency") (name "Schemata") (declared-name "Schemata") (range (start (line 23) (character 1)) (end (line 23) (character 138))) (parent (node (document "d0") (qualified-name "Dependency Example"))))

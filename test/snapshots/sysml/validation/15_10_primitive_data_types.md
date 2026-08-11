@@ -362,7 +362,7 @@ package '15.10-Primitive Data Types' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "67a06d8c249aac685239a65ac1f39142318db2fa4a64e04f0a61a17a1ed4dd97") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "0a30c5f9911794e6605e3e4601e18fd8d3d8118cf6a7422dcdde3ab635444f1b") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types"))) (kind "package") (name "15.10-Primitive Data Types") (declared-name "15.10-Primitive Data Types") (range (start (line 0) (character 0)) (end (line 0) (character 1977))))
     (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::Boolean"))) (kind "import") (name "Boolean") (declared-name "Boolean") (range (start (line 42) (character 1)) (end (line 42) (character 116))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Boolean") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 42) (character 16)) (end (line 42) (character 37))))))

@@ -212,7 +212,7 @@ package VehicleRequirementDerivation {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e69a295b7d592f475d645e055f2bd8dfeef449dbb76a691c290b8d8d42e043f1") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "efac69a83f704b583528df1af9f40fbe78ef991f17cdf0974598b98f396a64fc") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "VehicleRequirementDerivation"))) (kind "package") (name "VehicleRequirementDerivation") (declared-name "VehicleRequirementDerivation") (range (start (line 0) (character 0)) (end (line 0) (character 855))))
     (element (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 41))) (parent (node (document "d0") (qualified-name "VehicleRequirementDerivation"))) (authored (membership (kind Import) (visibility "private") (import (reference "RequirementDerivation::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 37))))))

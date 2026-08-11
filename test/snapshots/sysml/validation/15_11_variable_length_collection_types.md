@@ -275,7 +275,7 @@ package '15_11-Variable Length Collection Types' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "63bf74fa1f6c1e322ea2ca1b5d401cc15d3b91ddbf9cbcd63f6a80d187a1a2a1") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "eadbe5317da8801e148af1966bdf45457ba347ea16deb5b85fd73f0ad9dae010") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "15_11-Variable Length Collection Types"))) (kind "package") (name "15_11-Variable Length Collection Types") (declared-name "15_11-Variable Length Collection Types") (range (start (line 0) (character 0)) (end (line 0) (character 810))))
     (element (id (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "15_11-Variable Length Collection Types"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))

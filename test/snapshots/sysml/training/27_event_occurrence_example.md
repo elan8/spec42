@@ -137,7 +137,7 @@ package 'Event Occurrence Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "508d307939b0591107cb8d8dfab9e7e3898749cbdfbbfba5db167474cd7c0552") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e1a719d5569130159365d8fe1a571ca173b828b7a978c9005c0879f93d4b7972") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Event Occurrence Example"))) (kind "package") (name "Event Occurrence Example") (declared-name "Event Occurrence Example") (range (start (line 0) (character 0)) (end (line 0) (character 573))))
     (element (id (node (document "d0") (qualified-name "Event Occurrence Example::CruiseController"))) (kind "part def") (name "CruiseController") (declared-name "CruiseController") (range (start (line 2) (character 1)) (end (line 2) (character 27))) (parent (node (document "d0") (qualified-name "Event Occurrence Example"))))

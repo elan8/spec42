@@ -202,7 +202,7 @@ package 'Connections Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "639eb31ff8a448d3ac4ba8b676849d92d512953c85ca4c618dcbe31de4fbd05e") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "3abef445b1d3de9cb72c75a8e5f18b5ab323fa5aa2fcc9117419c90e593e4731") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Connections Example"))) (kind "package") (name "Connections Example") (declared-name "Connections Example") (range (start (line 0) (character 0)) (end (line 0) (character 974))))
     (element (id (node (document "d0") (qualified-name "Connections Example::Hub"))) (kind "part def") (name "Hub") (declared-name "Hub") (range (start (line 9) (character 1)) (end (line 9) (character 14))) (parent (node (document "d0") (qualified-name "Connections Example"))))

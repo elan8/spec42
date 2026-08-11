@@ -290,7 +290,7 @@ package '15_03-Value Expression' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5ad0d1a929a196c5612b056ed6eaf783ef06324cca393cd9a4da7ff48a402c8c") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "08101b8b2207cd146a49d671684636f3aca50fdb0e2e39ff50d5c0c7417b8155") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "15_03-Value Expression"))) (kind "package") (name "15_03-Value Expression") (declared-name "15_03-Value Expression") (range (start (line 0) (character 0)) (end (line 0) (character 931))))
     (element (id (node (document "d0") (qualified-name "15_03-Value Expression::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 4)) (end (line 1) (character 25))) (parent (node (document "d0") (qualified-name "15_03-Value Expression"))) (authored (membership (kind Import) (visibility "private") (import (reference "SI::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 19)) (end (line 1) (character 21))))))

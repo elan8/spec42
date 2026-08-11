@@ -1125,7 +1125,7 @@ standard library package VectorFunctions {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "8fb54af6d260a5053fc4088493024fb788856a4a4037ee622d23b6cd2536ccde") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "16bd72c854826bce07461cea58c8000a6418be12dd68df23c59ed74f72cb0840") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "VectorFunctions"))) (kind "package") (name "VectorFunctions") (declared-name "VectorFunctions") (range (start (line 0) (character 0)) (end (line 0) (character 8060))))
     (element (id (node (document "d0") (qualified-name "VectorFunctions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 12) (character 1)) (end (line 12) (character 38))) (parent (node (document "d0") (qualified-name "VectorFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "NumericalFunctions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 12) (character 16)) (end (line 12) (character 34))))))

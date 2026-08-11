@@ -186,7 +186,7 @@ package 'Enumeration Definitions-2' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "92ad38a7dd8e5930861204f08441d8e775c251bf4db8581dfd2907798760af04") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "635d883e77284a70cfc0437f177dc3d33fe5b896dca319797f46b95df838b2d0") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Enumeration Definitions-2"))) (kind "package") (name "Enumeration Definitions-2") (declared-name "Enumeration Definitions-2") (range (start (line 0) (character 0)) (end (line 0) (character 633))))
     (element (id (node (document "d0") (qualified-name "Enumeration Definitions-2::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "Enumeration Definitions-2"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))

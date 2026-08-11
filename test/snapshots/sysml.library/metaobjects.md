@@ -220,7 +220,7 @@ standard library package Metaobjects {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "fc901b09314024ee245f98cb5cd53ab7e735f525a98e6cb18d9487c727bb0982") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d994c3c865ab8b5ec41202e1c53d7fa377b9ea423d3fb2283bbbf494d33f400f") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Metaobjects"))) (kind "package") (name "Metaobjects") (declared-name "Metaobjects") (range (start (line 0) (character 0)) (end (line 0) (character 1749))))
     (element (id (node (document "d0") (qualified-name "Metaobjects::Element"))) (kind "import") (name "Element") (declared-name "Element") (range (start (line 7) (character 4)) (end (line 7) (character 34))) (parent (node (document "d0") (qualified-name "Metaobjects"))) (authored (membership (kind Import) (visibility "private") (import (reference "KerML::Element") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 19)) (end (line 7) (character 33))))))

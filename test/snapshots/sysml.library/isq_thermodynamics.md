@@ -5938,7 +5938,7 @@ standard library package ISQThermodynamics {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "7601b9e40551755d3b1f395915bfad41e738b79b31195c9feaf111bf36b89cae") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "22e3b33bf2462bfe63352f3fa582cb81d9b7c95547e1f91c5b881b1b7ad0ab23") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ISQThermodynamics"))) (kind "package") (name "ISQThermodynamics") (declared-name "ISQThermodynamics") (range (start (line 0) (character 0)) (end (line 0) (character 64627))))
     (element (id (node (document "d0") (qualified-name "ISQThermodynamics::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 15) (character 4)) (end (line 15) (character 33))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Import) (visibility "private") (import (reference "Quantities::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 15) (character 19)) (end (line 15) (character 29))))))

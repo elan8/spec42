@@ -209,7 +209,7 @@ package 'Calculation Usages-2' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e48cf9eabeced8f3fe31bffcdabc965f12adc075181bc2fdb41d8dcddeb67431") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5f40e41cb65a555e3b40eb51b11710aaeec07ff57fd3ba4caadafd191a51fdb8") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Calculation Usages-2"))) (kind "package") (name "Calculation Usages-2") (declared-name "Calculation Usages-2") (range (start (line 0) (character 0)) (end (line 0) (character 758))))
     (element (id (node (document "d0") (qualified-name "Calculation Usages-2::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 23))) (parent (node (document "d0") (qualified-name "Calculation Usages-2"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 19))))))

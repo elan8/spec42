@@ -52,7 +52,7 @@ state def SD {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "18405fb042ce249758988cca0c9bba5c5cf09b1dfad245cedf22394ad2179d46") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e9e2624754eb01275138bbffc80303620ebea34703648a8c0852b73a2ef83245") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "SD"))) (kind "state def") (name "SD") (declared-name "SD") (range (start (line 0) (character 0)) (end (line 0) (character 54))))
   )

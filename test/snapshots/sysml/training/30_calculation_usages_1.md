@@ -281,7 +281,7 @@ package 'Calculation Usages-1' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "50a6ff1cd6404116bcdee8859fc7b6b7228aecf53c64cd5c987ea31fc045f6b8") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "26b74429af98cf42fb8857abfaf68b40d3798f477c47555a884f6fe7e9d31c31") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Calculation Usages-1"))) (kind "package") (name "Calculation Usages-1") (declared-name "Calculation Usages-1") (range (start (line 0) (character 0)) (end (line 0) (character 830))))
     (element (id (node (document "d0") (qualified-name "Calculation Usages-1::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 23))) (parent (node (document "d0") (qualified-name "Calculation Usages-1"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 19))))))

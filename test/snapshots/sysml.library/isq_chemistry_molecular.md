@@ -6166,7 +6166,7 @@ standard library package ISQChemistryMolecular {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "58fe379c5e9c785c10ef6b1b3019dd37a87afe10c387b9c723696d0afabb832c") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "521a456542257c842f89d19905549d7f27bdce687013dc8caa24b2241f7b317c") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (kind "package") (name "ISQChemistryMolecular") (declared-name "ISQChemistryMolecular") (range (start (line 0) (character 0)) (end (line 0) (character 71442))))
     (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 15) (character 4)) (end (line 15) (character 33))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Import) (visibility "private") (import (reference "Quantities::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 15) (character 19)) (end (line 15) (character 29))))))

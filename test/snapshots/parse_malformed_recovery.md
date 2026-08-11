@@ -58,7 +58,7 @@ package Foo {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "48ee27ed9713cb535165b5d7f95f97bffa1bb6d372c20353f1bb500cc087621b") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "cda5a6f40388b019f8774c8e73b793d835738fe30bc045f5c3363ff67b9e21dd") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Foo"))) (kind "package") (name "Foo") (declared-name "Foo") (range (start (line 0) (character 0)) (end (line 0) (character 50))))
     (element (id (node (document "d0") (qualified-name "Foo::Bar"))) (kind "part def") (name "Bar") (declared-name "Bar") (range (start (line 2) (character 4)) (end (line 2) (character 17))) (parent (node (document "d0") (qualified-name "Foo"))))

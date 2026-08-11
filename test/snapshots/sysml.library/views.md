@@ -559,7 +559,7 @@ standard library package Views {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ded06fb4dcc737b5e3eaa9267d71078f692241fc4ee3bf19eddd7fb4a049bbba") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "3fcb7c8a1a7a9e90ebeecf4854cfcf37b7348b3814d1cf7d01e67b36b2e4601a") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Views"))) (kind "package") (name "Views") (declared-name "Views") (range (start (line 0) (character 0)) (end (line 0) (character 3973))))
     (element (id (node (document "d0") (qualified-name "Views::GraphicalRendering"))) (kind "rendering def") (name "GraphicalRendering") (declared-name "GraphicalRendering") (range (start (line 86) (character 1)) (end (line 86) (character 144))) (parent (node (document "d0") (qualified-name "Views"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Rendering") (range (start (line 86) (character 37)) (end (line 86) (character 46)))))))

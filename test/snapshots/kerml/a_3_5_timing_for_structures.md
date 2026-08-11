@@ -988,7 +988,7 @@ package TimingForStructuresExecution3 {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "02b5a004970012b95ad0fbc1094b176ce883c68c804cf6eda00d8d3fa9743133") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "641bd72b64e7916cbca6a3fbc6952c6f2e2b423494e42d32dd86e0f340504afc") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution1"))) (kind "package") (name "TimingForStructuresExecution1") (declared-name "TimingForStructuresExecution1") (range (start (line 16) (character 0)) (end (line 16) (character 559))))
     (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution1::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 21) (character 1)) (end (line 21) (character 25))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution1"))) (authored (membership (kind Import) (visibility "private") (import (reference "Atoms::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 21) (character 16)) (end (line 21) (character 21))))))

@@ -188,7 +188,7 @@ standard library package AnalysisCases {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c21d6fffdfe7c60b9dd53afe488ec51c569cb596b63ee041eea0cf002f35b466") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "2cd6d0163e28cf17fed402e3e7f3c11dc033944b2a3c9ee76671fe51cdb14825") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "AnalysisCases"))) (kind "package") (name "AnalysisCases") (declared-name "AnalysisCases") (range (start (line 0) (character 0)) (end (line 0) (character 1038))))
     (element (id (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase"))) (kind "analysis def") (name "AnalysisCase") (declared-name "AnalysisCase") (range (start (line 13) (character 1)) (end (line 13) (character 509))) (parent (node (document "d0") (qualified-name "AnalysisCases"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Case") (range (start (line 13) (character 39)) (end (line 13) (character 43)))))))

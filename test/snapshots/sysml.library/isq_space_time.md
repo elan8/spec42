@@ -4615,7 +4615,7 @@ standard library package ISQSpaceTime {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6d1db49bb0c6d0ee1984e05d74acd3a43a6309fd9da2a34850cfdfa4613ffb09") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "bbb530df111ffa6b58066b31dd0213800713e0a1b29f7284b561c6d9456f3ddb") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ISQSpaceTime"))) (kind "package") (name "ISQSpaceTime") (declared-name "ISQSpaceTime") (range (start (line 0) (character 0)) (end (line 0) (character 54699))))
     (element (id (node (document "d0") (qualified-name "ISQSpaceTime::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 15) (character 4)) (end (line 15) (character 33))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Import) (visibility "private") (import (reference "Quantities::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 15) (character 19)) (end (line 15) (character 29))))))

@@ -383,7 +383,7 @@ standard library package NumericalFunctions {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "71b44ef2c6d805fc55d9091869c31fbdc27eff81448206e9ddaedff4f07ca589") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e11446ca51e09c518389d0e7da9390ff28d0c1a0c659c45c475d5183cb194d43") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "NumericalFunctions"))) (kind "package") (name "NumericalFunctions") (declared-name "NumericalFunctions") (range (start (line 0) (character 0)) (end (line 0) (character 2787))))
     (element (id (node (document "d0") (qualified-name "NumericalFunctions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 6) (character 1)) (end (line 6) (character 31))) (parent (node (document "d0") (qualified-name "NumericalFunctions"))) (authored (membership (kind Import) (visibility "public") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 6) (character 15)) (end (line 6) (character 27))))))

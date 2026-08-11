@@ -220,7 +220,7 @@ package 'Analysis Case Usage Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f4570f33be1e1e5f6daf4213ba66c839cd836f974169b348317c0efc903bf027") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "73af8304e0b36fab77f748ad6f9833ebb001f250cbe4b1833a5024f73b6a1cc3") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Analysis Case Usage Example"))) (kind "package") (name "Analysis Case Usage Example") (declared-name "Analysis Case Usage Example") (range (start (line 0) (character 0)) (end (line 0) (character 851))))
     (element (id (node (document "d0") (qualified-name "Analysis Case Usage Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 54))) (parent (node (document "d0") (qualified-name "Analysis Case Usage Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "Analysis Case Definition Example::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 50))))))

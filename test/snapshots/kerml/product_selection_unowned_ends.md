@@ -199,7 +199,7 @@ package ProductSelection_UnownedEnds {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ee36af175e2102ef2267226689f8e9cb031f6e99a2512b6f3637c818962fc354") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5b89bd65886a6c893e85c52221f0850fc4e785839d43b201091206f05d1d81d4") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds"))) (kind "package") (name "ProductSelection_UnownedEnds") (declared-name "ProductSelection_UnownedEnds") (range (start (line 0) (character 0)) (end (line 0) (character 1311))))
     (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::OnlineCustomer"))) (kind "classifier decl") (name "OnlineCustomer") (declared-name "OnlineCustomer") (range (start (line 32) (character 1)) (end (line 32) (character 316))) (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds"))))

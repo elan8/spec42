@@ -551,7 +551,7 @@ standard library package TradeStudies {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1c707d129d76fcf192cc75a876f594710ad6dc4e4a02adfa2b5503f61530e7b1") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "3b8b3ca9879a4b2eab2d1b272963a8a82ae8c3967a2a9b6ea4853f027762a326") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "TradeStudies"))) (kind "package") (name "TradeStudies") (declared-name "TradeStudies") (range (start (line 0) (character 0)) (end (line 0) (character 4754))))
     (element (id (node (document "d0") (qualified-name "TradeStudies::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 7) (character 1)) (end (line 7) (character 32))) (parent (node (document "d0") (qualified-name "TradeStudies"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 28))))))

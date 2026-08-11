@@ -611,7 +611,7 @@ standard library package ControlFunctions {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "231a5f41df5179fef72f9eb08568eb0ac512377736711e3b6b2e9aab43ecaeec") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ae3684db479e2de911a2d35d859a5e04d1d20a6151c6b9832402070ec2a2e2f1") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ControlFunctions"))) (kind "package") (name "ControlFunctions") (declared-name "ControlFunctions") (range (start (line 0) (character 0)) (end (line 0) (character 3603))))
     (element (id (node (document "d0") (qualified-name "ControlFunctions::Anything"))) (kind "import") (name "Anything") (declared-name "Anything") (range (start (line 7) (character 1)) (end (line 7) (character 31))) (parent (node (document "d0") (qualified-name "ControlFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::Anything") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 30))))))

@@ -93,7 +93,7 @@ package Inverses {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "a9584b997e5f18150bd0f99c99791ebd785aa56a62da5b521b931a1da31fa10a") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "4ae52aa499248f0bbc9aa17266e6a7dd3df26dde1807060e2d796bcc9567831b") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Inverses"))) (kind "package") (name "Inverses") (declared-name "Inverses") (range (start (line 0) (character 0)) (end (line 0) (character 249))))
     (element (id (node (document "d0") (qualified-name "Inverses::A"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 1) (character 1)) (end (line 1) (character 79))) (parent (node (document "d0") (qualified-name "Inverses"))))

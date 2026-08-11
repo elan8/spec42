@@ -85,7 +85,7 @@ package j {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "f4c0a79d090d912d38e4d4a11f796f3f7261e36c82243d84659b55b1c7581ed2") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "661eedf40522db43e1b05fc1d83242fc28a3ec38de83353fbebe8d864c919c94") (contract-version "canonical-resolution-v1"))
   (structure
   )
   (references

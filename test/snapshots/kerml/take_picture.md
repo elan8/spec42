@@ -109,7 +109,7 @@ behavior TakePicture {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "96b4898e9e6c30fd8d665720eba18731492a8ebdb58154272a6c06589e701540") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "05c70ae2e850dd796023b18293fbb57cfcf4130d1b7d3ed003d38872dc08df80") (contract-version "canonical-resolution-v1"))
   (structure
   )
   (references

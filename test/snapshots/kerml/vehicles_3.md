@@ -222,7 +222,7 @@ package Vehicles_3 {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "1104da943cbffd0ff8f0b170a211c0402edadfa28081a9be5953b2925f0f1fd0") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "53074dc88e83c311a26d3392ceb8d69868fa1a9b5d7c0f272194136eae285c84") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Vehicles_3"))) (kind "package") (name "Vehicles_3") (declared-name "Vehicles_3") (range (start (line 0) (character 0)) (end (line 0) (character 938))))
     (element (id (node (document "d0") (qualified-name "Vehicles_3::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "Vehicles_3"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))

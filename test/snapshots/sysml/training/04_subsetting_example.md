@@ -89,7 +89,7 @@ package 'Subsetting Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1f9b72ae6429e76b04c84796e4f4ed2e88ef97d6eeb6f25a920cc5fdb1460197") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "631877bfc3a795b00a6e5671d3d35bbda12c90535165b777a6feedffb32244d2") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Subsetting Example"))) (kind "package") (name "Subsetting Example") (declared-name "Subsetting Example") (range (start (line 0) (character 0)) (end (line 0) (character 342))))
     (element (id (node (document "d0") (qualified-name "Subsetting Example::Engine"))) (kind "part def") (name "Engine") (declared-name "Engine") (range (start (line 11) (character 1)) (end (line 11) (character 32))) (parent (node (document "d0") (qualified-name "Subsetting Example"))) (authored (membership (kind Owning)) (relationships (specializes (reference "VehiclePart") (range (start (line 11) (character 20)) (end (line 11) (character 31)))))))

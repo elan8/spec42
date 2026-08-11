@@ -383,7 +383,7 @@ package CartSample {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "fc4abf9e8eb6247e7cf68db226a139b71e26f8ff369be62bacf285c6acfddee2") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "eda2e50772f90fd42a42bc20a4d7483b0a5851ad6afe4dcda1cc34b2bbc06e36") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "CartSample"))) (kind "package") (name "CartSample") (declared-name "CartSample") (range (start (line 2) (character 0)) (end (line 2) (character 1782))))
     (element (id (node (document "d0") (qualified-name "CartSample::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 3) (character 4)) (end (line 3) (character 47))) (parent (node (document "d0") (qualified-name "CartSample"))) (authored (membership (kind Import) (visibility "private") (import (reference "StateSpaceRepresentation::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 3) (character 19)) (end (line 3) (character 43))))))

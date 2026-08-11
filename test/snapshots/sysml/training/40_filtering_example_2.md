@@ -241,7 +241,7 @@ package 'Filtering Example-2' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ad99cf659a326fcfcad8bc0b4036fc1030f03bda96cac8144d876d5283d4eda9") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "07b94feb018f73425f8d0869cc43d577ff0e77e534b25d2f5e850fa6a515b3e2") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Filtering Example-2"))) (kind "package") (name "Filtering Example-2") (declared-name "Filtering Example-2") (range (start (line 0) (character 0)) (end (line 0) (character 802))))
     (element (id (node (document "d0") (qualified-name "Filtering Example-2::Boolean"))) (kind "import") (name "Boolean") (declared-name "Boolean") (range (start (line 1) (character 1)) (end (line 1) (character 38))) (parent (node (document "d0") (qualified-name "Filtering Example-2"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Boolean") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 37))))))

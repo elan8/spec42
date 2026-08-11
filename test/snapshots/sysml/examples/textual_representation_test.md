@@ -121,7 +121,7 @@ package TextualRepresentationTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "a0410c70f61383bc6d8308a8dd1dc8ddc2a2105cad2b6f217cb9d4e43baa491a") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "b636f0b185cce46df451c25762f3f9b202c50bc745d090a0aaf919ff58aa338e") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "TextualRepresentationTest"))) (kind "package") (name "TextualRepresentationTest") (declared-name "TextualRepresentationTest") (range (start (line 0) (character 0)) (end (line 0) (character 375))))
     (element (id (node (document "d0") (qualified-name "TextualRepresentationTest::C"))) (kind "item def") (name "C") (declared-name "C") (range (start (line 3) (character 1)) (end (line 3) (character 146))) (parent (node (document "d0") (qualified-name "TextualRepresentationTest"))))

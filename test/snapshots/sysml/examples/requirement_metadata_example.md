@@ -210,7 +210,7 @@ package RequirementMetadataExample {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "75de69a88b9790a2334d91ed0fb646573237a2ca629ff3cd8ccfb445080ed8f4") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "f4a98bd605b0d65ce6ddbc8ae3fd6be6d950b129615884f5961878268b62a942") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "RequirementMetadataExample"))) (kind "package") (name "RequirementMetadataExample") (declared-name "RequirementMetadataExample") (range (start (line 0) (character 0)) (end (line 0) (character 923))))
     (element (id (node (document "d0") (qualified-name "RequirementMetadataExample::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 36))) (parent (node (document "d0") (qualified-name "RequirementMetadataExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "ModelingMetadata::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 32))))))

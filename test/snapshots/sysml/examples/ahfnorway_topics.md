@@ -787,7 +787,7 @@ package AHFNorway {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "42e20024d54142a4f27de56a00faa2f7b576558e305168bc725b507cb7db738a") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "c9f0d2e684a8b772b5d846d23e5c1bf1e54688734500785de92dff82247a538d") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "AHFNorway"))) (kind "package") (name "AHFNorway") (declared-name "AHFNorway") (range (start (line 0) (character 0)) (end (line 0) (character 4943))))
     (element (id (node (document "d0") (qualified-name "AHFNorway::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 5) (character 1)) (end (line 5) (character 33))) (parent (node (document "d0") (qualified-name "AHFNorway"))) (authored (membership (kind Import) (visibility "private") (import (reference "AHFProfileLib::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 5) (character 16)) (end (line 5) (character 29))))))

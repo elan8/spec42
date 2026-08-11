@@ -448,7 +448,7 @@ package 'Analysis Case Definition Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d8c77b5030515bb8fc4a74c4c71e2b3d839c6e77d387865dcf350170242ddbda") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "be48b1643ec6a715e71193bdd72d751c9ae36bd4e8fe6083885a0264d1954bc4") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Analysis Case Definition Example"))) (kind "package") (name "Analysis Case Definition Example") (declared-name "Analysis Case Definition Example") (range (start (line 0) (character 0)) (end (line 0) (character 2309))))
     (element (id (node (document "d0") (qualified-name "Analysis Case Definition Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 45))) (parent (node (document "d0") (qualified-name "Analysis Case Definition Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "Calculation Definitions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 41))))))

@@ -177,7 +177,7 @@ package 'Allocation Usage Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "4ea1c9cd5e3312e99a80a01351837ff03dff6b5ecbc9fc650064aa276c759226") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "fc3b79d81bfedcc64b7c8e8b1d153839f59bb25fde3762b86ecad0527c60c161") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Allocation Usage Example"))) (kind "package") (name "Allocation Usage Example") (declared-name "Allocation Usage Example") (range (start (line 0) (character 0)) (end (line 0) (character 683))))
     (element (id (node (document "d0") (qualified-name "Allocation Usage Example::LogicalModel"))) (kind "package") (name "LogicalModel") (declared-name "LogicalModel") (range (start (line 1) (character 1)) (end (line 1) (character 292))) (parent (node (document "d0") (qualified-name "Allocation Usage Example"))))

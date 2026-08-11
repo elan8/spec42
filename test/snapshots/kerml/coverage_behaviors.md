@@ -175,7 +175,7 @@ package BehaviorCoverage {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "9a8f000aebecf6f1ad6de43c82e06dfae58285d4bad506e9699f4b58ac95f586") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "0800067208f80370ef39de1ddbd4172ef8136a533e5661a771216e306654888c") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "BehaviorCoverage"))) (kind "package") (name "BehaviorCoverage") (declared-name "BehaviorCoverage") (range (start (line 0) (character 0)) (end (line 0) (character 573))))
     (element (id (node (document "d0") (qualified-name "BehaviorCoverage::Action1"))) (kind "kermlDecl") (name "Action1") (declared-name "Action1") (range (start (line 1) (character 4)) (end (line 1) (character 57))) (parent (node (document "d0") (qualified-name "BehaviorCoverage"))))

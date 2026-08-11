@@ -343,7 +343,7 @@ package '18-Use Case' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "4b0efbb9256dc1788ee6ee23e6da56258e6a0361f4e6616cd2e72d07b4c142e7") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "599083dc78c76a4826db6d9e447591edd30c6f3f4f6999af37a1aada5c925036") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "18-Use Case"))) (kind "package") (name "18-Use Case") (declared-name "18-Use Case") (range (start (line 0) (character 0)) (end (line 0) (character 2014))))
     (element (id (node (document "d0") (qualified-name "18-Use Case::Environment"))) (kind "part def") (name "Environment") (declared-name "Environment") (range (start (line 4) (character 1)) (end (line 4) (character 22))) (parent (node (document "d0") (qualified-name "18-Use Case"))))

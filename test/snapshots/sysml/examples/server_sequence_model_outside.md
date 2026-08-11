@@ -150,7 +150,7 @@ package ServerSequenceModelOutside {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "e8c6f471dcaf82d315dba72bfc3a68b1a5b53e167d5eb46ae2e2261da0661d1b") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "01a10f570ee29cf272b81e3fb7b78898ce8cb710fd899c2bae2ea07c98e45cca") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ServerSequenceModelOutside"))) (kind "package") (name "ServerSequenceModelOutside") (declared-name "ServerSequenceModelOutside") (range (start (line 0) (character 0)) (end (line 0) (character 714))))
     (element (id (node (document "d0") (qualified-name "ServerSequenceModelOutside::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 38))) (parent (node (document "d0") (qualified-name "ServerSequenceModelOutside"))) (authored (membership (kind Import) (visibility "public") (import (reference "ServerSequenceModel::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 15)) (end (line 1) (character 34))))))

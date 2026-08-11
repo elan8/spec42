@@ -138,7 +138,7 @@ package RiskMetadataExample {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "53489f089dba22f94cf2e98a2224e454365520a735c2ae88e9fdf6c0844a7d9d") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d514e1f3d1f4b0ba81a2bd4a8e33bf30bee35ea66a75e369365da9cc6532636c") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "RiskMetadataExample"))) (kind "package") (name "RiskMetadataExample") (declared-name "RiskMetadataExample") (range (start (line 0) (character 0)) (end (line 0) (character 384))))
     (element (id (node (document "d0") (qualified-name "RiskMetadataExample::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "RiskMetadataExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "RiskMetadata::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))

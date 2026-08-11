@@ -145,7 +145,7 @@ package 'Flow Usage Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e1c21fc60f630af35f595658aa20a15ee602a19bb14861d7d41a6b72ac46f8a4") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "835095463f09b6050ae89cba2f14e18fefd87ad9bafd044ab369adfc92d90f22") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Flow Usage Example"))) (kind "package") (name "Flow Usage Example") (declared-name "Flow Usage Example") (range (start (line 0) (character 0)) (end (line 0) (character 372))))
     (element (id (node (document "d0") (qualified-name "Flow Usage Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 34))) (parent (node (document "d0") (qualified-name "Flow Usage Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "Port Example::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 30))))))

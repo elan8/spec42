@@ -168,7 +168,7 @@ package PrivateImportTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "4575fe6bf10a131244ddcf5ecc7e8001139c79f9fa9364be232ad07ff01f35cb") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1e03689f501fa5fdfca0ac5aae07404a8bdf3575d74328c39d6a9c7d064eea08") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "PrivateImportTest"))) (kind "package") (name "PrivateImportTest") (declared-name "PrivateImportTest") (range (start (line 0) (character 0)) (end (line 0) (character 559))))
     (element (id (node (document "d0") (qualified-name "PrivateImportTest::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 10) (character 1)) (end (line 10) (character 21))) (parent (node (document "d0") (qualified-name "PrivateImportTest"))) (authored (membership (kind Import) (visibility "public") (import (reference "P2::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 10) (character 15)) (end (line 10) (character 17))))))

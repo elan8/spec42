@@ -469,7 +469,7 @@ package RoomModel {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "065395c7f7a468e4f1c02b60c6e4cc17a6d5c4367dab34099b82f85ae052d471") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "4c64371a767360793a21a6acbbca6c8c330e508d61b48450b1b3d2da32ab08eb") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "RoomModel"))) (kind "package") (name "RoomModel") (declared-name "RoomModel") (range (start (line 1) (character 0)) (end (line 1) (character 2775))))
     (element (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary"))) (kind "package") (name "RoomDefinitionModelLibrary") (declared-name "RoomDefinitionModelLibrary") (range (start (line 2) (character 4)) (end (line 2) (character 1361))) (parent (node (document "d0") (qualified-name "RoomModel"))))

@@ -298,7 +298,7 @@ package CauseAndEffectExample {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "8d0e509d93b4535b02560c0ebda03c8ede277604a32af9384a54a53047bbbe75") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "262edf7906a90100a59aa81b04ad6bf927fe5810a75ab0f6be1c856761694685") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "CauseAndEffectExample"))) (kind "package") (name "CauseAndEffectExample") (declared-name "CauseAndEffectExample") (range (start (line 0) (character 0)) (end (line 0) (character 1197))))
     (element (id (node (document "d0") (qualified-name "CauseAndEffectExample::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 34))) (parent (node (document "d0") (qualified-name "CauseAndEffectExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "CauseAndEffect::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 30))))))

@@ -4161,7 +4161,7 @@ standard library package SI {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c202e739364d9d59d99b5b2264e93f744ea94798a36f532d8b90d26ebf017f6a") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "952d591133b74150c878a2f0b1627331ea8ec95a2f708d0978fc2304abcef40f") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "SI"))) (kind "package") (name "SI") (declared-name "SI") (range (start (line 0) (character 0)) (end (line 0) (character 30923))))
     (element (id (node (document "d0") (qualified-name "SI::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 9) (character 4)) (end (line 9) (character 44))) (parent (node (document "d0") (qualified-name "SI"))) (authored (membership (kind Import) (visibility "private") (import (reference "MeasurementReferences::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 9) (character 19)) (end (line 9) (character 40))))))

@@ -149,7 +149,7 @@ library package 'Semantic Metadata Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "97b5c0bb1ff151c99db65f8d49c796be77e7b9c387c18f7b04ab694e7bc4eab9") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "8e2fefb99f75b8ec1e53364f8bc46320a8fb3975369696147360522293fff450") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Semantic Metadata Example"))) (kind "package") (name "Semantic Metadata Example") (declared-name "Semantic Metadata Example") (range (start (line 0) (character 0)) (end (line 0) (character 615))))
     (element (id (node (document "d0") (qualified-name "Semantic Metadata Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 43))) (parent (node (document "d0") (qualified-name "Semantic Metadata Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "Model Library Example::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 39))))))

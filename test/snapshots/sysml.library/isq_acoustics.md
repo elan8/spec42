@@ -1864,7 +1864,7 @@ standard library package ISQAcoustics {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c16c9b5fd4522186c01b54316c376834330a65c1652c455cf72c8c9369d12bd9") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b0414fe086e5282e304ca2da44a1fb1724d740f31678a2ca2c1bd21bbcf028cf") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ISQAcoustics"))) (kind "package") (name "ISQAcoustics") (declared-name "ISQAcoustics") (range (start (line 0) (character 0)) (end (line 0) (character 26005))))
     (element (id (node (document "d0") (qualified-name "ISQAcoustics::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 15) (character 4)) (end (line 15) (character 33))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Import) (visibility "private") (import (reference "Quantities::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 15) (character 19)) (end (line 15) (character 29))))))

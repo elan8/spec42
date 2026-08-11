@@ -261,7 +261,7 @@ package VehicleMasses {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "84d345532c06b69e107dcec3b7978de9ab06c143ebc74982441346dabde2e47f") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "ba97ef78975a2484e4f6454572093c677dbda4d7d913eaff4a1fb8383de23264") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "VehicleMasses"))) (kind "package") (name "VehicleMasses") (declared-name "VehicleMasses") (range (start (line 0) (character 0)) (end (line 0) (character 683))))
     (element (id (node (document "d0") (qualified-name "VehicleMasses::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "VehicleMasses"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))

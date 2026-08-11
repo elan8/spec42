@@ -108,7 +108,7 @@ package ClassifierCoverage {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b40b741e60d9b2a11a935208780d91e7e01f868f566185b680546453a6a3f2e1") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "7d89267b505b3ad7ef2071c37d8228cfa52002a62ca214d654fcdbe9974e9352") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ClassifierCoverage"))) (kind "package") (name "ClassifierCoverage") (declared-name "ClassifierCoverage") (range (start (line 0) (character 0)) (end (line 0) (character 473))))
     (element (id (node (document "d0") (qualified-name "ClassifierCoverage::A"))) (kind "kermlDecl") (name "A") (declared-name "A") (range (start (line 11) (character 4)) (end (line 11) (character 28))) (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))

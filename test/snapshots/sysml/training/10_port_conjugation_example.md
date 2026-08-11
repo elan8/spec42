@@ -103,7 +103,7 @@ package 'Port Conjugation Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "bc033299730b710fd120b765f9421366959017148ba36fad788e0f7c3736b913") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "8e9321e60830dfc6149560e45a640e2b03f69c01a9e268b5f40e6a6995335be8") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Port Conjugation Example"))) (kind "package") (name "Port Conjugation Example") (declared-name "Port Conjugation Example") (range (start (line 0) (character 0)) (end (line 0) (character 313))))
     (element (id (node (document "d0") (qualified-name "Port Conjugation Example::Engine"))) (kind "part def") (name "Engine") (declared-name "Engine") (range (start (line 16) (character 1)) (end (line 16) (character 56))) (parent (node (document "d0") (qualified-name "Port Conjugation Example"))))

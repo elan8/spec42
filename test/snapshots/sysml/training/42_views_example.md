@@ -187,7 +187,7 @@ package 'Views Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "cdc555f935b69185f0467ee378f43240a1f5edecaf2f081e24e6cf359bf42385") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d8d9f020d3a7f3eba8dd364a75158ed696bdc7bdb3c1c6303fd3d2301b5f37d6") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Views Example"))) (kind "package") (name "Views Example") (declared-name "Views Example") (range (start (line 0) (character 0)) (end (line 0) (character 779))))
     (element (id (node (document "d0") (qualified-name "Views Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 25))) (parent (node (document "d0") (qualified-name "Views Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "Views::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 21))))))

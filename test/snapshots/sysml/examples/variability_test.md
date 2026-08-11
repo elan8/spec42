@@ -196,7 +196,7 @@ package VariabilityTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "6443efe3ada14b41055651ca59d4b7d3d790c425c070af47caaf83c8a03ed0ed") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "c6a33e2b494e3d4360d961e3980c292998d2ef4206c8b486f89730483d4f43c5") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "VariabilityTest"))) (kind "package") (name "VariabilityTest") (declared-name "VariabilityTest") (range (start (line 0) (character 0)) (end (line 0) (character 589))))
     (element (id (node (document "d0") (qualified-name "VariabilityTest::A"))) (kind "kermlDecl") (name "A") (declared-name "A") (range (start (line 22) (character 1)) (end (line 22) (character 70))) (parent (node (document "d0") (qualified-name "VariabilityTest"))))

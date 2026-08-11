@@ -150,7 +150,7 @@ package 'Action Shorthand Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "82e9118a7f9bfa496fcc7d4fba276df53cf311d654204f71b9a7dde84b29bde9") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ec5238d27706142e3e82d3a51def27a5d470e49986befda432b41e643aed5ecb") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Action Shorthand Example"))) (kind "package") (name "Action Shorthand Example") (declared-name "Action Shorthand Example") (range (start (line 0) (character 0)) (end (line 0) (character 530))))
     (element (id (node (document "d0") (qualified-name "Action Shorthand Example::Focus"))) (kind "action def") (name "Focus") (declared-name "Focus") (range (start (line 5) (character 1)) (end (line 5) (character 58))) (parent (node (document "d0") (qualified-name "Action Shorthand Example"))))

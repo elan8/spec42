@@ -90,7 +90,7 @@ package P3 {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1c9d7fbe643e1f582682aae4782320b9e79d208335bdad2038879d985b4b0aa2") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "10125a54963f4eeedc0481ba6c6b954637caa8be1624b5c15bd15622fe526041") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 9) (character 0)) (end (line 9) (character 21))) (authored (membership (kind Import) (visibility "private") (import (reference "P2::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 9) (character 15)) (end (line 9) (character 17))))))
     (element (id (node (document "d0") (qualified-name "P1"))) (kind "package") (name "P1") (declared-name "P1") (range (start (line 0) (character 0)) (end (line 0) (character 27))))

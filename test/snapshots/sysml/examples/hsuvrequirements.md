@@ -216,7 +216,7 @@ package HSUVRequirements {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b8909fc498f3faa8d94f76643fe632d251ae77b0d52f07fff4a1d67e102214f8") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6107ba67270f3a4a9ea70a3b80dc45d365735418a8b447ec0b7a76336b0b835f") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "HSUVRequirements"))) (kind "package") (name "HSUVRequirements") (declared-name "HSUVRequirements") (range (start (line 0) (character 0)) (end (line 0) (character 1106))))
     (element (id (node (document "d0") (qualified-name "HSUVRequirements::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "HSUVRequirements"))) (authored (membership (kind Import) (visibility "private") (import (reference "Requirements::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))

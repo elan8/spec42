@@ -879,7 +879,7 @@ package '8-Requirements' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "29bd4e8db76250c28caa803858441e744569a4b15157d93b086eb52e108067b9") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "0da62ed91c3515f5d2acc3e4ddedb01d0ab5844ea90d3788aedc28445cd23a1a") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "8-Requirements"))) (kind "package") (name "8-Requirements") (declared-name "8-Requirements") (range (start (line 0) (character 0)) (end (line 0) (character 5449))))
     (element (id (node (document "d0") (qualified-name "8-Requirements::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 23))) (parent (node (document "d0") (qualified-name "8-Requirements"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 19))))))

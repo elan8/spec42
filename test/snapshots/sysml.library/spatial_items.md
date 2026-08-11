@@ -879,7 +879,7 @@ standard library package SpatialItems {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "30fa42f87fe9a8bbb62fddc8b434f34d95ca17c3a368f0d0f66c38e062e9d400") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "9edceafffa3f17f93b2ccba4fa5d253e3c4909fa43666f7f4a9559d37fb1865f") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "SpatialItems"))) (kind "package") (name "SpatialItems") (declared-name "SpatialItems") (range (start (line 0) (character 0)) (end (line 0) (character 6129))))
     (element (id (node (document "d0") (qualified-name "SpatialItems::Clock"))) (kind "import") (name "Clock") (declared-name "Clock") (range (start (line 12) (character 1)) (end (line 12) (character 28))) (parent (node (document "d0") (qualified-name "SpatialItems"))) (authored (membership (kind Import) (visibility "private") (import (reference "Time::Clock") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 12) (character 16)) (end (line 12) (character 27))))))

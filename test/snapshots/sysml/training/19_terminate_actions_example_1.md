@@ -181,7 +181,7 @@ package 'Terminate Actions Example-1' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "d06db9fd7b0d32f268eddc2e363fac699864f7443a31712d41b01be9ab782052") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "bf82b9367aff349618fe9c8bf6a9ce8e7744b40dcc9df41ca35d9a76ad7a7612") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Terminate Actions Example-1"))) (kind "package") (name "Terminate Actions Example-1") (declared-name "Terminate Actions Example-1") (range (start (line 0) (character 0)) (end (line 0) (character 505))))
     (element (id (node (document "d0") (qualified-name "Terminate Actions Example-1::Boolean"))) (kind "import") (name "Boolean") (declared-name "Boolean") (range (start (line 1) (character 1)) (end (line 1) (character 38))) (parent (node (document "d0") (qualified-name "Terminate Actions Example-1"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Boolean") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 37))))))

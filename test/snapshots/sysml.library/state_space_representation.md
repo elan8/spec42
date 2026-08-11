@@ -516,7 +516,7 @@ standard library package StateSpaceRepresentation {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "289d3aafb887151e3d91481c20f0e50d03cc4cb9acd12afe79d70d5fd74f3c17") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5be6f48545c9ebacd2c5b8ef64368d8c0d2b58d510858162aeb531b466f8e7dc") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "StateSpaceRepresentation"))) (kind "package") (name "StateSpaceRepresentation") (declared-name "StateSpaceRepresentation") (range (start (line 0) (character 0)) (end (line 0) (character 4263))))
     (element (id (node (document "d0") (qualified-name "StateSpaceRepresentation::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 9) (character 4)) (end (line 9) (character 41))) (parent (node (document "d0") (qualified-name "StateSpaceRepresentation"))) (authored (membership (kind Import) (visibility "private") (import (reference "VectorCalculations::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 9) (character 19)) (end (line 9) (character 37))))))

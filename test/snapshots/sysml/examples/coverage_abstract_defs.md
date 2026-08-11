@@ -127,7 +127,7 @@ abstract part def Container {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "d5d07cf991c4eb2470678d0a3beed929edff2735854a2d533533257981f022f4") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "32a9f16ac01b05c658d227c806c11abb5bdbbcf3869d4fdfa87fa442ebf75fd4") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "AbstractEvent"))) (kind "occurrence def") (name "AbstractEvent") (declared-name "AbstractEvent") (range (start (line 6) (character 0)) (end (line 6) (character 38))))
     (element (id (node (document "d0") (qualified-name "AbstractPort"))) (kind "port def") (name "AbstractPort") (declared-name "AbstractPort") (range (start (line 3) (character 0)) (end (line 3) (character 31))))

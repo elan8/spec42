@@ -173,7 +173,7 @@ package FeatureAdvancedCoverage {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "ae02cf1e5293606f98a8b70268bc44312106b6e80ab94846e5af31b68ffc0455") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "a1b13c4d4734ee8cf1e59c0ada92967b11e43f55714fe6566514cb1091c4ac2c") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))) (kind "package") (name "FeatureAdvancedCoverage") (declared-name "FeatureAdvancedCoverage") (range (start (line 0) (character 0)) (end (line 0) (character 566))))
     (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::C"))) (kind "classifier decl") (name "C") (declared-name "C") (range (start (line 19) (character 4)) (end (line 19) (character 121))) (parent (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))))

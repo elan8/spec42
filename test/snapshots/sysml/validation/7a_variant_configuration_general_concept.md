@@ -257,7 +257,7 @@ package '7a-Variant Configuration - General Concept' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "9b5b5c82c42fd2706ae17d8ba17c79ee04586cc0b26eb3ea8e5597964a53a473") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5c20453adb32ef3923bdcfaadca1aba39d6ede6fc606fec40952b10dcd284608") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "7a-Variant Configuration - General Concept"))) (kind "package") (name "7a-Variant Configuration - General Concept") (declared-name "7a-Variant Configuration - General Concept") (range (start (line 0) (character 0)) (end (line 0) (character 981))))
     (element (id (node (document "d0") (qualified-name "7a-Variant Configuration - General Concept::Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (range (start (line 2) (character 1)) (end (line 2) (character 18))) (parent (node (document "d0") (qualified-name "7a-Variant Configuration - General Concept"))))

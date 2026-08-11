@@ -543,7 +543,7 @@ package ServerSequenceOutsideRealization_2 {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "badb03093eca3b420de7e4aef80f76f882798fd896781c55a530e6aa8a823e0c") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "4621af208205375087a5c783cb6a7429957e60197b926e1e563f96e2e4155fa3") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_2"))) (kind "package") (name "ServerSequenceOutsideRealization_2") (declared-name "ServerSequenceOutsideRealization_2") (range (start (line 0) (character 0)) (end (line 0) (character 3259))))
     (element (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_2::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 46))) (parent (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_2"))) (authored (membership (kind Import) (visibility "private") (import (reference "ServerSequenceModelOutside::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 42))))))

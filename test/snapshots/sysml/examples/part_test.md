@@ -279,7 +279,7 @@ package PartTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "d531e20b21dacb983d4d562749cd71e141530dfbc92731ff901713106ed73363") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "1ed283dc510ab825d7ea78a8ae36a21354caf52d6482c0f1da032b77aafd730e") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "PartTest"))) (kind "package") (name "PartTest") (declared-name "PartTest") (range (start (line 0) (character 0)) (end (line 0) (character 903))))
     (element (id (node (document "d0") (qualified-name "PartTest::A"))) (kind "part def") (name "A") (declared-name "A") (range (start (line 4) (character 1)) (end (line 4) (character 169))) (parent (node (document "d0") (qualified-name "PartTest"))))

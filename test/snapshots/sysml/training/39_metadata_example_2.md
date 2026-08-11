@@ -188,7 +188,7 @@ package 'Metadata Example-2' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "8a61b12c7d57b26f4c9bfd48665a3f253dccb1d2e019bef84b5b17f89da05c95") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "70abbbac7fd8db213a2e4a3e251a179017a3ffd9d174ac4b150cc05b41d62bef") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Metadata Example-2"))) (kind "package") (name "Metadata Example-2") (declared-name "Metadata Example-2") (range (start (line 0) (character 0)) (end (line 0) (character 659))))
     (element (id (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics"))) (kind "action") (name "computeDynamics") (declared-name "computeDynamics") (range (start (line 2) (character 1)) (end (line 2) (character 622))) (parent (node (document "d0") (qualified-name "Metadata Example-2"))))

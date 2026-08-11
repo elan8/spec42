@@ -154,7 +154,7 @@ package KeywordAsName {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "48366d9bb2b8995eedef80f6c2f3c83c69a8389d18e8b01c46ca92ac3f2fa98d") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d9ceab923dbb202c7b1bc5655129b0c10fb5feeead12aabacc5f9437982edbe2") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "KeywordAsName"))) (kind "package") (name "KeywordAsName") (declared-name "KeywordAsName") (range (start (line 0) (character 0)) (end (line 0) (character 734))))
     (element (id (node (document "d0") (qualified-name "KeywordAsName::Container"))) (kind "classifier decl") (name "Container") (declared-name "Container") (range (start (line 28) (character 1)) (end (line 28) (character 52))) (parent (node (document "d0") (qualified-name "KeywordAsName"))))

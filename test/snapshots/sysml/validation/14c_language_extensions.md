@@ -977,7 +977,7 @@ package '14c-Language-Extensions' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b94129c15e92abb39d59a6558211415438a8329158596e50760670ce10df99d3") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f4fa83755b896f1ab958c9e846ba7b94f15e9f34a62d070f760d1376dbb79af0") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "14c-Language-Extensions"))) (kind "package") (name "14c-Language-Extensions") (declared-name "14c-Language-Extensions") (range (start (line 0) (character 0)) (end (line 0) (character 5200))))
     (element (id (node (document "d0") (qualified-name "14c-Language-Extensions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "14c-Language-Extensions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))

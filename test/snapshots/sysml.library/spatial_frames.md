@@ -767,7 +767,7 @@ standard library package SpatialFrames {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "adc79b0620edb2ce473bf66b7f1e9df7ef89020161893eeb23f571290733f777") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "4132489f2c2297db203fcc5585e68ed65bc1ba3b1786e495c4cbe8638b1b87e8") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "SpatialFrames"))) (kind "package") (name "SpatialFrames") (declared-name "SpatialFrames") (range (start (line 0) (character 0)) (end (line 0) (character 6871))))
     (element (id (node (document "d0") (qualified-name "SpatialFrames::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 7) (character 4)) (end (line 7) (character 29))) (parent (node (document "d0") (qualified-name "SpatialFrames"))) (authored (membership (kind Import) (visibility "private") (import (reference "Clocks::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 7) (character 19)) (end (line 7) (character 25))))))

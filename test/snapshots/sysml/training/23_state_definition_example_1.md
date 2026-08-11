@@ -138,7 +138,7 @@ package 'State Definition Example-1' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "084f6b243b2f804b9e796403bc51c41255a522128f782acea44ff4d63fd1de71") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b1cf084f6582b64b19e4355911c073ec14540e55c1aa252f5319fd9f6ce8929a") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "State Definition Example-1"))) (kind "package") (name "State Definition Example-1") (declared-name "State Definition Example-1") (range (start (line 0) (character 0)) (end (line 0) (character 508))))
     (element (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleOffSignal"))) (kind "attribute def") (name "VehicleOffSignal") (declared-name "VehicleOffSignal") (range (start (line 4) (character 1)) (end (line 4) (character 32))) (parent (node (document "d0") (qualified-name "State Definition Example-1"))))

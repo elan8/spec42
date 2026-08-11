@@ -202,7 +202,7 @@ part def Outer {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "2963a7e829136144873e7099399cbf6b12e33dd5e5974fe6016f561891e52a5f") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "6cc0b875b8cf2f6fd6e7f0c468e19a5613f3f75598020bfaa25a987799308b20") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Outer"))) (kind "part def") (name "Outer") (declared-name "Outer") (range (start (line 0) (character 0)) (end (line 0) (character 754))))
     (element (id (node (document "d0") (qualified-name "Outer::InnerAttr"))) (kind "attribute def") (name "InnerAttr") (declared-name "InnerAttr") (range (start (line 1) (character 4)) (end (line 1) (character 28))) (parent (node (document "d0") (qualified-name "Outer"))))

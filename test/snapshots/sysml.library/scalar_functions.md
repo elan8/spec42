@@ -356,7 +356,7 @@ standard library package ScalarFunctions {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "9f6f079bee2fac1478efabdac671b137e3d5aca224131575fcb9cf8605e01154") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a41f20a0bba86eac8608372066d24fd03fe9b55fbe6ff3f5cc671c3b653f48bc") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ScalarFunctions"))) (kind "package") (name "ScalarFunctions") (declared-name "ScalarFunctions") (range (start (line 0) (character 0)) (end (line 0) (character 2595))))
     (element (id (node (document "d0") (qualified-name "ScalarFunctions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 6) (character 1)) (end (line 6) (character 31))) (parent (node (document "d0") (qualified-name "ScalarFunctions"))) (authored (membership (kind Import) (visibility "public") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 6) (character 15)) (end (line 6) (character 27))))))

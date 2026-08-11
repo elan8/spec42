@@ -493,7 +493,7 @@ standard library package TensorCalculations {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ffbe58d148e8eb64ce595f6e18fc8c5df4dd02586fa02f7e059c235476647055") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "baf0b26e2b22fb74d8ebe0339f999d6a125e5b802529bcef81faa261e70da686") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "TensorCalculations"))) (kind "package") (name "TensorCalculations") (declared-name "TensorCalculations") (range (start (line 0) (character 0)) (end (line 0) (character 2436))))
     (element (id (node (document "d0") (qualified-name "TensorCalculations::+"))) (kind "calc def") (name "+") (declared-name "+") (range (start (line 31) (character 4)) (end (line 31) (character 133))) (parent (node (document "d0") (qualified-name "TensorCalculations"))))

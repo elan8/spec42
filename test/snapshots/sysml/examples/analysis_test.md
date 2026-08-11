@@ -165,7 +165,7 @@ package AnalysisTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "9754af7c8de7e6f45c1718ead0a356a4b87fe01b54e2424ec126d3b7521966cd") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "f5930d3b5479c0fb9542f59bb5a8de20e48107aa6850cf49b94253e48a87b265") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "AnalysisTest"))) (kind "package") (name "AnalysisTest") (declared-name "AnalysisTest") (range (start (line 0) (character 0)) (end (line 0) (character 488))))
     (element (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase"))) (kind "analysis def") (name "AnalysisCase") (declared-name "AnalysisCase") (range (start (line 12) (character 1)) (end (line 12) (character 124))) (parent (node (document "d0") (qualified-name "AnalysisTest"))))

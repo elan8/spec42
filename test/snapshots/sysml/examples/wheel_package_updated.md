@@ -438,7 +438,7 @@ package 'Wheel Package - Updated' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "9896680386c75763f497cd178ce258eebb79dd4456eb13ff3418d8c132d86c91") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "537ad53749c7ad7a92893be5a8761429467c509b6340db557cfe206647f20c7d") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Wheel Package - Updated"))) (kind "package") (name "Wheel Package - Updated") (declared-name "Wheel Package - Updated") (range (start (line 0) (character 0)) (end (line 0) (character 1752))))
     (element (id (node (document "d0") (qualified-name "Wheel Package - Updated::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 6) (character 1)) (end (line 6) (character 23))) (parent (node (document "d0") (qualified-name "Wheel Package - Updated"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 19))))))

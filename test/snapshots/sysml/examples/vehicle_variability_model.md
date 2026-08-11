@@ -702,7 +702,7 @@ package VehicleVariabilityModel {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "86c596c905caeac42e2e8c6624810c80551d2f1cd758bc071a7416a9645ee855") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "bb01e5e719ef04118c986f4fc7ddd9e2a384fb3565a547fdd95a8a9f887b4c55") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "VehicleVariabilityModel"))) (kind "package") (name "VehicleVariabilityModel") (declared-name "VehicleVariabilityModel") (range (start (line 0) (character 0)) (end (line 0) (character 4718))))
     (element (id (node (document "d0") (qualified-name "VehicleVariabilityModel::100% Model"))) (kind "package") (name "100% Model") (declared-name "100% Model") (range (start (line 148) (character 1)) (end (line 148) (character 545))) (parent (node (document "d0") (qualified-name "VehicleVariabilityModel"))))

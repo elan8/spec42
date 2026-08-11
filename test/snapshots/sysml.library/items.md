@@ -667,7 +667,7 @@ standard library package Items {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "41b6b16dba209172428c0a719f3b5feec1fa54f385725d97eaa7df21357619d2") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f3876a811282b4078b6c7ee27b750afe2a8383430fe1a1f3e68a2127e1019c7f") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Items"))) (kind "package") (name "Items") (declared-name "Items") (range (start (line 0) (character 0)) (end (line 0) (character 4121))))
     (element (id (node (document "d0") (qualified-name "Items::ConstraintCheck"))) (kind "import") (name "ConstraintCheck") (declared-name "ConstraintCheck") (range (start (line 14) (character 1)) (end (line 14) (character 45))) (parent (node (document "d0") (qualified-name "Items"))) (authored (membership (kind Import) (visibility "private") (import (reference "Constraints::ConstraintCheck") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 14) (character 16)) (end (line 14) (character 44))))))

@@ -233,7 +233,7 @@ action def ControlNodeTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "3ce1580445616b797cedd2122af9f1bc39575fe96ed018697c9bdefafc4fd3ca") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "4a9efb6eb190d426579177146445c53c54861d7d8d35760914ed4b691ef444cd") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ControlNodeTest"))) (kind "action def") (name "ControlNodeTest") (declared-name "ControlNodeTest") (range (start (line 0) (character 0)) (end (line 0) (character 329))) (authored (membership (kind Owning)) (relationships (flow (reference "ControlNodeTest::J") (range none)) (perform (reference "ControlNodeTest::A1") (range none)) (perform (reference "ControlNodeTest::A2") (range none)) (perform (reference "ControlNodeTest::B1") (range none)) (perform (reference "ControlNodeTest::B2") (range none)))))
     (element (id (node (document "d0") (qualified-name "ControlNodeTest::A1"))) (kind "action") (name "A1") (declared-name "A1") (range (start (line 1) (character 1)) (end (line 1) (character 11))) (parent (node (document "d0") (qualified-name "ControlNodeTest"))))

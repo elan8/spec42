@@ -193,7 +193,7 @@ package 'Derivation Constraints' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c4c6738cb52cf0ac2c95bd97314678d9e8ae8bcb35d3a1ee9a0017d667162171") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c842fe30fd52ea054a67376e72bed44294bdb406a188ac6d98e838c92dd62745") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Derivation Constraints"))) (kind "package") (name "Derivation Constraints") (declared-name "Derivation Constraints") (range (start (line 0) (character 0)) (end (line 0) (character 613))))
     (element (id (node (document "d0") (qualified-name "Derivation Constraints::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 22))) (parent (node (document "d0") (qualified-name "Derivation Constraints"))) (authored (membership (kind Import) (visibility "private") (import (reference "SI::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 18))))))

@@ -108,7 +108,7 @@ package 'Comment Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d47ea1b6ed0749eaf1efd2263e2f3e6c13b8809ef82f571ab32980e10d54050f") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "47bdb833c19db3b715ad43d0b02af99455fc452278c9f335c8b97d729a788456") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Comment Example"))) (kind "package") (name "Comment Example") (declared-name "Comment Example") (range (start (line 0) (character 0)) (end (line 0) (character 566))))
     (element (id (node (document "d0") (qualified-name "Comment Example::Automobile"))) (kind "part def") (name "Automobile") (declared-name "Automobile") (range (start (line 11) (character 1)) (end (line 11) (character 21))) (parent (node (document "d0") (qualified-name "Comment Example"))))

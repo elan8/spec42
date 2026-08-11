@@ -379,7 +379,7 @@ standard library package CollectionFunctions {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "68e3fa6e017e0dcb2211b68ab78e448aa0a8bae923db98e8b375bba027914097") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "3a00e4591bcf247b70aa1764f60816434f5a76d1b06be4f282884f203a3cc2f5") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "CollectionFunctions"))) (kind "package") (name "CollectionFunctions") (declared-name "CollectionFunctions") (range (start (line 0) (character 0)) (end (line 0) (character 2457))))
     (element (id (node (document "d0") (qualified-name "CollectionFunctions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 8) (character 1)) (end (line 8) (character 32))) (parent (node (document "d0") (qualified-name "CollectionFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 28))))))

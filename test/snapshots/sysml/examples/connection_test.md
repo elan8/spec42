@@ -358,7 +358,7 @@ package ConnectionTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "1d994b09fbbe27d181c7a2cc1f9c35772f027ec42f3672ba10ed45082d173e0c") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "c814e30487edcc33beb3320d55723f1c18b2293b2626c1b7c727577cda40acf5") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ConnectionTest"))) (kind "package") (name "ConnectionTest") (declared-name "ConnectionTest") (range (start (line 0) (character 0)) (end (line 0) (character 726))))
     (element (id (node (document "d0") (qualified-name "ConnectionTest::A"))) (kind "part def") (name "A") (declared-name "A") (range (start (line 49) (character 1)) (end (line 49) (character 32))) (parent (node (document "d0") (qualified-name "ConnectionTest"))))

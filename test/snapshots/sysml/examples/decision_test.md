@@ -179,7 +179,7 @@ action def DecisionTest {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "99b3bd6b52659a0bf5b0a7ca175fda86e4d765e805d6c18615e6ad156bf2264e") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "06a130201bd0ea4b3b2afcd6608e5b97cfafccfbc601414fec3c0ad3cf472971") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "DecisionTest"))) (kind "action def") (name "DecisionTest") (declared-name "DecisionTest") (range (start (line 0) (character 0)) (end (line 0) (character 297))) (authored (membership (kind Owning)) (relationships (perform (reference "DecisionTest::A1") (range none)) (perform (reference "DecisionTest::A2") (range none)) (perform (reference "DecisionTest::A3") (range none)))))
     (element (id (node (document "d0") (qualified-name "DecisionTest::A1"))) (kind "action") (name "A1") (declared-name "A1") (range (start (line 12) (character 1)) (end (line 12) (character 11))) (parent (node (document "d0") (qualified-name "DecisionTest"))))

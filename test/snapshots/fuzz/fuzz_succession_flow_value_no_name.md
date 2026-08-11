@@ -77,7 +77,7 @@ package P {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "0cf8a1cd4c7c5431c8fee449a79eb6f5fca9c3ae9f93567d501fb798970fac05") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "190f7b74ea7ac5c773537c396caac9a9a1021b367962da31ddda19feb4ed861b") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P") (range (start (line 0) (character 0)) (end (line 0) (character 172))))
     (element (id (node (document "d0") (qualified-name "P::Container"))) (kind "classifier decl") (name "Container") (declared-name "Container") (range (start (line 1) (character 4)) (end (line 1) (character 158))) (parent (node (document "d0") (qualified-name "P"))))

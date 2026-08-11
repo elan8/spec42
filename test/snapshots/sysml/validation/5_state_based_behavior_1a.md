@@ -875,7 +875,7 @@ package '5-State-based Behavior-1a' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b1317bed14b2a1374424dfefba0b146965b17c849dcc6f86bdaa976054278faf") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "584182264a56d09f82960f6b2a229b07fa03bc1a63138f0234ac40c0d8b450c6") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "5-State-based Behavior-1a"))) (kind "package") (name "5-State-based Behavior-1a") (declared-name "5-State-based Behavior-1a") (range (start (line 0) (character 0)) (end (line 0) (character 6105))))
     (element (id (node (document "d0") (qualified-name "5-State-based Behavior-1a::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-1a"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))

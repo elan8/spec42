@@ -243,7 +243,7 @@ package 'Use Case Usage Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "bfa1279466859cfee789b5c974e8cdcd4916fcad4a9a3c292cde6546b933ebf0") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "2a17bbaa7e6013b49850b2740b8a51e2143815cfbeb680a8148c3ede4ffeaae5") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Use Case Usage Example"))) (kind "package") (name "Use Case Usage Example") (declared-name "Use Case Usage Example") (range (start (line 0) (character 0)) (end (line 0) (character 1062))))
     (element (id (node (document "d0") (qualified-name "Use Case Usage Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 49))) (parent (node (document "d0") (qualified-name "Use Case Usage Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "Use Case Definition Example::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 45))))))

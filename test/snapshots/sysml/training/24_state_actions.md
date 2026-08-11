@@ -164,7 +164,7 @@ package 'State Actions' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ad7b0d24ccdcad84fe48c3bdc4717ff590c5054066ab82565610a7b48a9571bf") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "83e0d86056f6d4fdc2440dc8860f3ae18a7a8b88981d7c92a9563f82a348da01") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "State Actions"))) (kind "package") (name "State Actions") (declared-name "State Actions") (range (start (line 0) (character 0)) (end (line 0) (character 695))))
     (element (id (node (document "d0") (qualified-name "State Actions::Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (range (start (line 6) (character 1)) (end (line 6) (character 18))) (parent (node (document "d0") (qualified-name "State Actions"))))

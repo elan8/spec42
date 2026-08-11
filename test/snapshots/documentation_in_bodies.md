@@ -134,7 +134,7 @@ package DocTests {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f61ead110c2614ae1d5fa2bbd6b2da04825c7d88af73f87e82ed7889500726b9") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1cf8a24e6dc1e2baad52bb8841167eadf3426c2a162b48bdfa216435f910d90e") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "DocTests"))) (kind "package") (name "DocTests") (declared-name "DocTests") (range (start (line 0) (character 0)) (end (line 0) (character 608))))
     (element (id (node (document "d0") (qualified-name "DocTests::Car"))) (kind "alias") (name "Car") (declared-name "Car") (range (start (line 25) (character 4)) (end (line 25) (character 72))) (parent (node (document "d0") (qualified-name "DocTests"))))

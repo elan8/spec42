@@ -169,7 +169,7 @@ package 'Individuals and Snapshots Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "1d4c70a56a9cb945807da2c63aba94956a24fac9c8fe7bf2219a80500f46e21f") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "441947d6f85108b620190eb3115d90d76ac5f4d84d86cfbab5ccd319a35221f9") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Individuals and Snapshots Example"))) (kind "package") (name "Individuals and Snapshots Example") (declared-name "Individuals and Snapshots Example") (range (start (line 0) (character 0)) (end (line 0) (character 466))))
     (element (id (node (document "d0") (qualified-name "Individuals and Snapshots Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 44))) (parent (node (document "d0") (qualified-name "Individuals and Snapshots Example"))) (authored (membership (kind Import) (visibility "public") (import (reference "Part Definition Example::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 15)) (end (line 1) (character 40))))))

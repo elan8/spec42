@@ -136,7 +136,7 @@ assoc JustOutsideOf specializes OutsideOf {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c744cd17606555e8ead1c5da13a4b310d1ef10dcfed432f70326aef217342383") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1657944386d0528cfec52b234d5b9f762edd8a31e57a20193066c8c1529c1c88") (contract-version "canonical-resolution-v1"))
   (structure
   )
   (references

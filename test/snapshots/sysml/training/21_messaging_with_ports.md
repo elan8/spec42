@@ -188,7 +188,7 @@ package 'Messaging Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "2965dda92b4f4c707495bbc4af9eeb75409c2f11be35d03049a442cdb7a76829") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "34add96ae32c0f39cd163387412a9d9e471bde35bdae87095cc3824b3edc5b1c") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Messaging Example"))) (kind "package") (name "Messaging Example") (declared-name "Messaging Example") (range (start (line 0) (character 0)) (end (line 0) (character 779))))
     (element (id (node (document "d0") (qualified-name "Messaging Example::Focus"))) (kind "action def") (name "Focus") (declared-name "Focus") (range (start (line 9) (character 1)) (end (line 9) (character 68))) (parent (node (document "d0") (qualified-name "Messaging Example"))))

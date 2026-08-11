@@ -266,7 +266,7 @@ package TimeVaryingSteps {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "2c417b38449e4627fa10eac882c1d819a27506ffd5e1259b7e1e3ff86c39603c") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "78cac9099ca667ebf5a425c56631645d4b43a562ac2f8058f041691f843dd8bc") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "TimeVaryingSteps"))) (kind "package") (name "TimeVaryingSteps") (declared-name "TimeVaryingSteps") (range (start (line 0) (character 0)) (end (line 0) (character 2323))))
     (element (id (node (document "d0") (qualified-name "TimeVaryingSteps::Camera"))) (kind "classifier decl") (name "Camera") (declared-name "Camera") (range (start (line 38) (character 1)) (end (line 38) (character 279))) (parent (node (document "d0") (qualified-name "TimeVaryingSteps"))))

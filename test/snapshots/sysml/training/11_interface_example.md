@@ -154,7 +154,7 @@ package 'Interface Example' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "9d48ed78f5f97f25f915b68c445afb2a9a4a94b977465a3e92eb404f015377a5") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6df93f3caecb225ed597f54b87a3fdea3e2e2d428817c6f9c4a2d8cd016c4c85") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Interface Example"))) (kind "package") (name "Interface Example") (declared-name "Interface Example") (range (start (line 0) (character 0)) (end (line 0) (character 408))))
     (element (id (node (document "d0") (qualified-name "Interface Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 34))) (parent (node (document "d0") (qualified-name "Interface Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "Port Example::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 30))))))

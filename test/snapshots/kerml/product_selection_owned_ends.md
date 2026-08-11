@@ -373,7 +373,7 @@ package ProductSelection_OwnedEnds {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "78849a67c41682ec240f7c8d1aa8ed2e1353b9e6dfcdf1f1be9ee2f961ceef48") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b0585c68a3726c230abac8ce3d47231fba5b50192fef6f9aa34ad6d11b5893c1") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds"))) (kind "package") (name "ProductSelection_OwnedEnds") (declared-name "ProductSelection_OwnedEnds") (range (start (line 0) (character 0)) (end (line 0) (character 2940))))
     (element (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::OnlineCustomer"))) (kind "classifier decl") (name "OnlineCustomer") (declared-name "OnlineCustomer") (range (start (line 79) (character 1)) (end (line 79) (character 316))) (parent (node (document "d0") (qualified-name "ProductSelection_OwnedEnds"))))

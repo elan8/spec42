@@ -133,7 +133,7 @@ package '15_08-Range Restriction' {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a4440753575c370dae0253b9869b69feffcc2e532c7b6202e81913fd48e73d24") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "05e2d9e7be9471b26f19a2a880272093da020c5ae1546c7b2adbfcb8113255f5") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "15_08-Range Restriction"))) (kind "package") (name "15_08-Range Restriction") (declared-name "15_08-Range Restriction") (range (start (line 0) (character 0)) (end (line 0) (character 537))))
     (element (id (node (document "d0") (qualified-name "15_08-Range Restriction::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 23))) (parent (node (document "d0") (qualified-name "15_08-Range Restriction"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 19))))))

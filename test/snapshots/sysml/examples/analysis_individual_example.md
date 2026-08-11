@@ -606,7 +606,7 @@ package AnalysisIndividualExample {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "29b114029c99dac8ccc5ed951e3c1cfc4881b7bb5a99cf569d03842dfb7b28e1") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "800f1282684671d2c76c7842010425b8b24265f1f03d305b26b2049667bb10f1") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample"))) (kind "package") (name "AnalysisIndividualExample") (declared-name "AnalysisIndividualExample") (range (start (line 0) (character 0)) (end (line 0) (character 2819))))
     (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 4)) (end (line 1) (character 35))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 19)) (end (line 1) (character 31))))))

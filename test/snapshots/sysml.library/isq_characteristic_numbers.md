@@ -6369,7 +6369,7 @@ standard library package ISQCharacteristicNumbers {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "615ec10ea2833ea8b7abbe52b9c07d74493f407844b0aa7c7844ed505014e0e4") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e23ceebe35f8988880b541f4fe50ecbc1823cca0fb0ecfb2077019ac3ed50cf6") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (kind "package") (name "ISQCharacteristicNumbers") (declared-name "ISQCharacteristicNumbers") (range (start (line 0) (character 0)) (end (line 0) (character 120114))))
     (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 15) (character 4)) (end (line 15) (character 33))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Import) (visibility "private") (import (reference "Quantities::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 15) (character 19)) (end (line 15) (character 29))))))

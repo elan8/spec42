@@ -528,7 +528,7 @@ package CarWithShapeAndCSG {
 # SMG
 ~~~
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "bbacfe8cdee25c4e58841f666b83a91e4fc81e3aa71fde08a7d0323ab4f4bcbf") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "1d3e8936b4ebdeed61bdc5d2c1441bbcbb77ae2fac103cb96a76be34ff46e896") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "CarWithShapeAndCSG"))) (kind "package") (name "CarWithShapeAndCSG") (declared-name "CarWithShapeAndCSG") (range (start (line 0) (character 0)) (end (line 0) (character 2520))))
     (element (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "CarWithShapeAndCSG"))) (authored (membership (kind Import) (visibility "private") (import (reference "SpatialItems::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))
