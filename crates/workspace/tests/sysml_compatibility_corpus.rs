@@ -64,17 +64,13 @@ fn sysml_snapshot_corpus_is_accounted_for_without_interchange() {
 
     let mut coverage = Coverage::default();
     for path in snapshots {
-        let relative = path
-            .strip_prefix(FIXTURES)
-            .expect("fixture path")
-            .display()
-            .to_string();
-        let fixture = match String::from_utf8(fs::read(&path).expect("read snapshot fixture")) {
-            Ok(fixture) => fixture,
-            Err(_) => {
+        let relative = relative_fixture_path(&path);
+        let fixture = match try_read_fixture_normalized(&path) {
+            Some(fixture) => fixture,
+            None => {
                 coverage.non_utf8_skipped += 1;
                 let bytes = fs::read(&path).expect("read snapshot fixture");
-                let metadata = String::from_utf8_lossy(&bytes);
+                let metadata = String::from_utf8_lossy(&bytes).replace("\r\n", "\n");
                 let reason = formatter_skip_reason(&metadata).unwrap_or_else(|error| {
                     panic!("{relative}: malformed formatter skip: {error}")
                 });
@@ -343,8 +339,7 @@ fn print_semantic_graph_fixture() {
     let requested = std::env::var("SPEC42_SEMANTIC_GRAPH_FIXTURE")
         .expect("set SPEC42_SEMANTIC_GRAPH_FIXTURE to a fixture path relative to the corpus root");
     let path = Path::new(FIXTURES).join(&requested);
-    let fixture = String::from_utf8(fs::read(&path).expect("read snapshot fixture"))
-        .expect("requested fixture must be UTF-8");
+    let fixture = read_fixture_normalized(&path);
     let documents = source_documents(&fixture, &requested);
     let semantic_documents = documents
         .iter()
@@ -370,8 +365,7 @@ fn print_formatter_fixture() {
     let requested = std::env::var("SPEC42_FORMATTER_FIXTURE")
         .expect("set SPEC42_FORMATTER_FIXTURE to a fixture path relative to the corpus root");
     let path = Path::new(FIXTURES).join(&requested);
-    let fixture = String::from_utf8(fs::read(&path).expect("read snapshot fixture"))
-        .expect("requested fixture must be UTF-8");
+    let fixture = read_fixture_normalized(&path);
     let documents = source_documents(&fixture, &requested);
     let formatted = documents
         .iter()
@@ -389,8 +383,7 @@ fn print_diagnostics_fixture() {
     let requested = std::env::var("SPEC42_DIAGNOSTICS_FIXTURE")
         .expect("set SPEC42_DIAGNOSTICS_FIXTURE to a fixture path relative to the corpus root");
     let path = Path::new(FIXTURES).join(&requested);
-    let fixture = String::from_utf8(fs::read(&path).expect("read snapshot fixture"))
-        .expect("requested fixture must be UTF-8");
+    let fixture = read_fixture_normalized(&path);
     let documents = source_documents(&fixture, &requested);
     let semantic_documents = semantic_documents(&documents, &requested);
     let (graph, _) = build_and_link_graph(&semantic_documents).expect("semantic graph");
@@ -405,12 +398,8 @@ fn print_diagnostics_fixture() {
 #[ignore = "rewrites checked-in semantic graph sections after deliberate review"]
 fn regenerate_semantic_graph_sections() {
     for path in snapshot_paths(Path::new(FIXTURES)) {
-        let relative = path
-            .strip_prefix(FIXTURES)
-            .expect("fixture path")
-            .display()
-            .to_string();
-        let Ok(fixture) = String::from_utf8(fs::read(&path).expect("read snapshot fixture")) else {
+        let relative = relative_fixture_path(&path);
+        let Some(fixture) = try_read_fixture_normalized(&path) else {
             continue;
         };
         let documents = source_documents(&fixture, &relative);
@@ -458,12 +447,8 @@ fn regenerate_semantic_graph_sections() {
 #[ignore = "rewrites checked-in formatter sections after deliberate review"]
 fn regenerate_formatter_sections() {
     for path in snapshot_paths(Path::new(FIXTURES)) {
-        let relative = path
-            .strip_prefix(FIXTURES)
-            .expect("fixture path")
-            .display()
-            .to_string();
-        let Ok(fixture) = String::from_utf8(fs::read(&path).expect("read snapshot fixture")) else {
+        let relative = relative_fixture_path(&path);
+        let Some(fixture) = try_read_fixture_normalized(&path) else {
             continue;
         };
         let documents = source_documents(&fixture, &relative);
@@ -485,12 +470,8 @@ fn regenerate_formatter_sections() {
 #[ignore = "rewrites checked-in diagnostics sections after deliberate review"]
 fn regenerate_diagnostics_sections() {
     for path in snapshot_paths(Path::new(FIXTURES)) {
-        let relative = path
-            .strip_prefix(FIXTURES)
-            .expect("fixture path")
-            .display()
-            .to_string();
-        let Ok(fixture) = String::from_utf8(fs::read(&path).expect("read snapshot fixture")) else {
+        let relative = relative_fixture_path(&path);
+        let Some(fixture) = try_read_fixture_normalized(&path) else {
             continue;
         };
         let documents = source_documents(&fixture, &relative);
@@ -624,6 +605,44 @@ fn documents_from_section(source: &str, fallback_name: &str) -> Vec<SourceDocume
             })
             .unwrap_or_default()
     }
+}
+
+/// A fixture's path relative to [`FIXTURES`], forward-slash separated regardless of host OS.
+///
+/// Embedded into golden diagnostic/document renderings (e.g. `fixture-diagnostics`'s document
+/// name), so it must be platform-stable: `Path::display()` uses the host's native separator,
+/// which would make every checked-in golden -- generated on Linux -- mismatch on Windows.
+fn relative_fixture_path(path: &Path) -> String {
+    path.strip_prefix(FIXTURES)
+        .expect("fixture path")
+        .display()
+        .to_string()
+        .replace('\\', "/")
+}
+
+/// Reads a fixture file, requiring valid UTF-8, and normalizes CRLF line endings to LF.
+///
+/// `raw_section`/`fenced_block`/`section` (below) search for `\n`-only markers, so a CRLF
+/// checkout (Windows, or anywhere `core.autocrlf=true`) would otherwise make every fixture
+/// look like it's missing its own sections -- normalizing once here, at the read boundary,
+/// means every downstream parsing function just works without needing its own fix.
+///
+/// Panics if the file isn't valid UTF-8. Use [`try_read_fixture_normalized`] for the (rare)
+/// call sites that must tolerate a non-UTF-8 fixture instead of failing.
+fn read_fixture_normalized(path: &Path) -> String {
+    String::from_utf8(fs::read(path).expect("read snapshot fixture"))
+        .expect("requested fixture must be UTF-8")
+        .replace("\r\n", "\n")
+}
+
+/// As [`read_fixture_normalized`], but returns `None` instead of panicking when the fixture
+/// isn't valid UTF-8, for call sites that deliberately skip the (currently single) non-UTF-8
+/// fixture in the corpus rather than treating it as a hard error.
+fn try_read_fixture_normalized(path: &Path) -> Option<String> {
+    let bytes = fs::read(path).expect("read snapshot fixture");
+    String::from_utf8(bytes)
+        .ok()
+        .map(|fixture| fixture.replace("\r\n", "\n"))
 }
 
 fn section(fixture: &str, name: &str) -> Option<String> {
@@ -884,7 +903,7 @@ fn source_parser_handles_single_and_multi_file_sections() {
 #[test]
 fn camera_fixture_keeps_opaque_root_declaration_as_an_explicit_skip() {
     let relative = "kerml/camera.md";
-    let fixture = fs::read_to_string(Path::new(FIXTURES).join(relative)).expect("camera fixture");
+    let fixture = read_fixture_normalized(&Path::new(FIXTURES).join(relative));
     let documents = source_documents(&fixture, relative);
     let parsed = sysml_v2_parser::parse(&documents[0].text).expect("strict parser accepts camera");
     assert!(matches!(
