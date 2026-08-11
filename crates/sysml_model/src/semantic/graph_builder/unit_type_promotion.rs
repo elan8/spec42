@@ -48,10 +48,7 @@ pub fn materialize_unit_attribute_def_from_kerml(
 ) {
     let qualified =
         qualified_name_for_node(g, uri, container_prefix, &parsed.name, "attribute def");
-    let mut attrs = HashMap::new();
-    if let Some(ref base) = parsed.specializes {
-        attrs.insert("attributeType".to_string(), serde_json::json!(base));
-    }
+    let attrs = HashMap::new();
     add_node_and_recurse(
         g,
         uri,
@@ -72,8 +69,7 @@ pub fn materialize_unit_attribute_def_from_kerml(
     if let Some(ref unit_type) = parsed.m_ref_unit {
         let mref_qualified =
             qualified_name_for_node(g, uri, Some(qualified.as_str()), "mRef", "attribute def");
-        let mut mref_attrs = HashMap::new();
-        mref_attrs.insert("attributeType".to_string(), serde_json::json!(unit_type));
+        let mref_attrs = HashMap::new();
         add_node_and_recurse(
             g,
             uri,

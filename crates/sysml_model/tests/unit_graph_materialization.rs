@@ -47,10 +47,7 @@ fn unit_catalog_short_names_materialize_on_graph_nodes() {
         .expect("metre node");
     assert_eq!(metre.declared_facts.short_name.as_deref(), Some("m"));
     assert_eq!(
-        metre
-            .attributes
-            .get("attributeType")
-            .and_then(|v| v.as_str()),
+        metre.declared_facts.relationships.typing_display(),
         Some("LengthUnit")
     );
 }

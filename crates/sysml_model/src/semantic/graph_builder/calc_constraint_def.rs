@@ -355,10 +355,6 @@ pub(super) fn build_calc_def_body_elements(
                 );
                 let mut ret_attrs = HashMap::new();
                 ret_attrs.insert("direction".to_string(), serde_json::json!("return"));
-                ret_attrs.insert(
-                    "parameterType".to_string(),
-                    serde_json::json!(&ret.value.type_name),
-                );
                 add_node_and_recurse(
                     g,
                     uri,

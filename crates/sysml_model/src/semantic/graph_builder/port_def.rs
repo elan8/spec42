@@ -36,7 +36,6 @@ fn build_in_out_decl(
         "direction".to_string(),
         serde_json::json!(direction_name(d.direction)),
     );
-    attrs.insert("parameterType".to_string(), serde_json::json!(&d.type_name));
     add_node_and_recurse(
         g,
         uri,
@@ -75,9 +74,6 @@ pub(super) fn materialize_port_usage(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&n.membership),
     );
-    if let Some(ref t) = n.type_name {
-        attrs.insert("portType".to_string(), serde_json::json!(t));
-    }
     if let Some(ref m) = n.multiplicity {
         attrs.insert("multiplicity".to_string(), serde_json::json!(m));
     }
@@ -174,18 +170,11 @@ pub(super) fn build_from_port_def_body_element(
             let qualified =
                 qualified_name_for_node(g, uri, container_prefix, name, "attribute def");
             let range = span_to_range(&n.span);
-            let mut attrs = HashMap::new();
+            let attrs = HashMap::new();
             g.register_declared_membership_facts(
                 NodeId::new(uri, &qualified),
                 crate::semantic::ast_util::declared_membership_facts(&n.membership),
             );
-            let typed_by = typing_targets(n.typing.as_deref());
-            if !typed_by.is_empty() {
-                attrs.insert(
-                    "attributeType".to_string(),
-                    serde_json::json!(typed_by.join(", ")),
-                );
-            }
             add_node_and_recurse(
                 g,
                 uri,
@@ -221,19 +210,6 @@ pub(super) fn build_from_port_def_body_element(
                     serde_json::json!(direction_name(direction)),
                 );
                 let typed_by = typing_targets(n.typing.as_deref());
-                let parameter_type_display = if typed_by.is_empty() {
-                    subsetting_target(n.subsets.as_deref())
-                        .unwrap_or_default()
-                        .to_string()
-                } else {
-                    typed_by.join(", ")
-                };
-                if !parameter_type_display.is_empty() {
-                    attrs.insert(
-                        "parameterType".to_string(),
-                        serde_json::json!(parameter_type_display),
-                    );
-                }
                 add_node_and_recurse(
                     g,
                     uri,

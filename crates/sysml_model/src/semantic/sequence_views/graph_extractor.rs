@@ -225,9 +225,9 @@ fn is_scenario_node(node: &SemanticNode, closures: &NameClosures) -> bool {
         }
         ElementKind::Part => {
             let part_type = node
-                .attributes
-                .get("partType")
-                .and_then(|v| v.as_str())
+                .declared_facts
+                .relationships
+                .typing_display()
                 .unwrap_or("");
             !part_type.is_empty() && closures.scenario.contains(&simple_name(part_type))
         }
@@ -570,11 +570,11 @@ fn sorted_children<'a>(graph: &'a SemanticGraph, parent: &SemanticNode) -> Vec<&
 }
 
 fn part_type_of(node: &SemanticNode) -> String {
-    node.attributes
-        .get("partType")
-        .and_then(|v| v.as_str())
-        .map(|s| s.to_string())
+    node.declared_facts
+        .relationships
+        .typing_display()
         .unwrap_or_default()
+        .to_string()
 }
 
 fn ref_value(graph: &SemanticGraph, node: &SemanticNode, names: &[&str]) -> Option<String> {

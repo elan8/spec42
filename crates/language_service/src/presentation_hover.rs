@@ -13,10 +13,6 @@ fn attr_str<'a>(node: &'a SemanticNode, key: &str) -> Option<&'a str> {
     node.attributes.get(key).and_then(|value| value.as_str())
 }
 
-fn first_attr_str<'a>(node: &'a SemanticNode, keys: &[&str]) -> Option<&'a str> {
-    keys.iter().find_map(|key| attr_str(node, key))
-}
-
 /// Comma-joined display text for the node's authored `specializes` clause, sourced from the
 /// typed `DeclaredRelationshipFacts::specializes` fact rather than the legacy attribute map.
 fn specializes_display(node: &SemanticNode) -> Option<String> {
@@ -101,18 +97,7 @@ fn declared_typing_display(node: &SemanticNode) -> Option<&str> {
 }
 
 fn declared_type(node: &SemanticNode) -> Option<&str> {
-    first_attr_str(
-        node,
-        &[
-            "partType",
-            "attributeType",
-            "portType",
-            "parameterType",
-            "refType",
-            "type",
-        ],
-    )
-    .or_else(|| declared_typing_display(node))
+    declared_typing_display(node)
 }
 
 fn append_attribute_value(md: &mut String, node: &SemanticNode, label: &str, keys: &[&str]) {
@@ -164,7 +149,7 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
             format!("{prefix}part def {}{specializes};", node.name)
         }
         "part" => {
-            let type_part = attr_str(node, "partType")
+            let type_part = declared_typing_display(node)
                 .map(|t| format!(" : {}", t))
                 .unwrap_or_default();
             format!(
@@ -179,13 +164,13 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
             format!("subject {}{};", node.name, type_part)
         }
         "attribute def" => {
-            let type_part = attr_str(node, "attributeType")
+            let type_part = declared_typing_display(node)
                 .map(|t| format!(" : {}", t))
                 .unwrap_or_default();
             format!("attribute def {}{};", node.name, type_part)
         }
         "attribute" => {
-            let type_part = attr_str(node, "attributeType")
+            let type_part = declared_typing_display(node)
                 .map(|t| format!(" : {}", t))
                 .unwrap_or_default();
             format!(
@@ -200,7 +185,7 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
             format!("port def {}{specializes};", node.name)
         }
         "port" => {
-            let type_part = attr_str(node, "portType")
+            let type_part = declared_typing_display(node)
                 .map(|t| format!(" : {}", t))
                 .unwrap_or_default();
             format!("port {}{}{};", node.name, type_part, multiplicity)
@@ -293,7 +278,7 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
         }
         "in out parameter" => {
             let direction = attr_str(node, "direction").unwrap_or("in");
-            let type_part = first_attr_str(node, &["parameterType", "type"])
+            let type_part = declared_typing_display(node)
                 .map(|t| format!(" : {}", t))
                 .unwrap_or_default();
             format!("{direction} {}{type_part};", node.name)

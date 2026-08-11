@@ -515,10 +515,10 @@ pub(crate) fn collect_behavior_conformance_diagnostics(
             continue;
         }
         let payload_type = node
-            .attributes
-            .get("payloadType")
-            .or_else(|| node.attributes.get("acceptType"))
-            .and_then(|v| v.as_str())
+            .declared_facts
+            .payload_type_reference
+            .as_deref()
+            .or(node.declared_facts.accept_type_reference.as_deref())
             .map(str::trim)
             .filter(|value| !value.is_empty());
         let Some(payload_type) = payload_type else {

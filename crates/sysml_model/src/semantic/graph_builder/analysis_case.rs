@@ -281,13 +281,6 @@ pub(super) fn build_from_analysis_body(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&value.membership),
     );
-                let typed_by = typing_targets(value.typing.as_deref());
-                if !typed_by.is_empty() {
-                    attrs.insert(
-                        "attributeType".to_string(),
-                        serde_json::json!(typed_by.join(", ")),
-                    );
-                }
                 if let Some(expr_node) = &value.value {
                     attrs.insert(
                         "valueIsBoolean".to_string(),
@@ -338,10 +331,7 @@ pub(super) fn build_from_analysis_body(
                         &parsed.name,
                         parsed.kind,
                     );
-                    let mut attrs = HashMap::new();
-                    if let Some(typing) = parsed.typing.as_ref() {
-                        attrs.insert("attributeType".to_string(), serde_json::json!(typing));
-                    }
+                    let attrs = HashMap::new();
                     let is_attribute_def = parsed.kind == "attribute def";
                     let parsed_value = parsed.value.clone();
                     add_node_and_recurse(

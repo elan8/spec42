@@ -146,11 +146,9 @@ fn attribute_type_name(state: &ServerState, node: &SemanticNode) -> Option<Strin
         .into_iter()
         .find_map(|target| Some(target.name.clone()).filter(|name| !name.trim().is_empty()))
         .or_else(|| {
-            node.attributes
-                .get("attributeType")
-                .or_else(|| node.attributes.get("dataType"))
-                .or_else(|| node.attributes.get("type"))
-                .and_then(|value| value.as_str())
+            node.declared_facts
+                .relationships
+                .typing_display()
                 .map(|raw| raw.split("::").last().unwrap_or(raw).to_string())
         })
 }

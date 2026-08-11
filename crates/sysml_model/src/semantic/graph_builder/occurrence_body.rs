@@ -74,18 +74,11 @@ pub(super) fn build_from_occurrence_body_element(
             let value = &attribute.value;
             let name = super::effective_usage_name(&value.name, value.redefines.as_deref());
             let qualified = qualified_name_for_node(g, uri, container_prefix, name, "attribute");
-            let mut attrs = HashMap::new();
+            let attrs = HashMap::new();
             g.register_declared_membership_facts(
                 NodeId::new(uri, &qualified),
                 crate::semantic::ast_util::declared_membership_facts(&value.membership),
             );
-            let typed_by = typing_targets(value.typing.as_deref());
-            if !typed_by.is_empty() {
-                attrs.insert(
-                    "attributeType".to_string(),
-                    serde_json::json!(typed_by.join(", ")),
-                );
-            }
             add_node_and_recurse(
                 g,
                 uri,
@@ -127,7 +120,6 @@ pub(super) fn build_from_occurrence_body_element(
                 NodeId::new(uri, &qualified),
                 crate::semantic::ast_util::declared_membership_facts(&part.membership),
             );
-            attrs.insert("partType".to_string(), serde_json::json!(&part.type_name));
             if let Some(ref m) = part.multiplicity {
                 attrs.insert("multiplicity".to_string(), serde_json::json!(m));
             }

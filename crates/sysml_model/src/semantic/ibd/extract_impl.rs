@@ -168,6 +168,10 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                 &mut attributes,
                 node,
             );
+            crate::semantic::model_projection::project_type_reference_attributes(
+                &mut attributes,
+                node,
+            );
             parts.push(IbdPartDto {
                 id: qn.clone(),
                 node_id: qualified_name_to_dot(&qn),
@@ -190,9 +194,9 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                 .and_then(|v| v.as_str())
                 .map(String::from);
             let port_type = node
-                .attributes
-                .get("portType")
-                .and_then(|v| v.as_str())
+                .declared_facts
+                .relationships
+                .typing_display()
                 .map(String::from);
             let port_side = infer_port_side(&node.name, direction.as_deref(), port_type.as_deref());
             ports.push(IbdPortDto {

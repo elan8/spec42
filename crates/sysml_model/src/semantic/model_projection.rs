@@ -95,6 +95,52 @@ pub fn project_relationship_target_attributes(
     }
 }
 
+/// Projects authored type-reference display text onto a boundary DTO's legacy `attributes` JSON
+/// map, at the transport boundary only (see `AGENTS.md` "Boundary DTO modules remain explicitly
+/// allowed"). `SemanticNode` itself no longer carries `attributeType`/`dataType`/`type`/`partType`/
+/// `portType`/`refType`/`parameterType` as JSON: every one of those was a pure duplicate of the
+/// first authored [`crate::semantic::model::DeclaredRelationshipFacts::typing`] target
+/// (`UNIFY_CACHE_PROGRESS.md` B9 chunk-G-remaining) -- populating all of the legacy key names with
+/// that single value preserves every existing per-element-kind DTO reader
+/// (`general_view_fold::detail_type_name`, `lsp_server`'s symbol projections) unchanged.
+/// `payloadType`/`acceptType` are genuinely separate facts
+/// ([`crate::semantic::model::DeclaredSemanticFacts::payload_type_reference`]/
+/// `accept_type_reference`), not duplicates of `relationships.typing`.
+pub fn project_type_reference_attributes(
+    attributes: &mut HashMap<String, Value>,
+    node: &crate::semantic::model::SemanticNode,
+) {
+    // An interface/connection end's declared type (`end name : Type;`) is kept off
+    // `relationships.typing` entirely (see `DeclaredSemanticFacts::interface_end_type`'s doc
+    // comment), so it is checked first and takes precedence over any (absent) typing target.
+    let typing = node
+        .declared_facts
+        .declared_end_reference()
+        .or_else(|| node.declared_facts.relationships.typing_display());
+    if let Some(typing) = typing {
+        attributes.insert("attributeType".to_string(), json!(typing));
+        attributes.insert("partType".to_string(), json!(typing));
+        attributes.insert("portType".to_string(), json!(typing));
+        attributes.insert("refType".to_string(), json!(typing));
+        attributes.insert("parameterType".to_string(), json!(typing));
+    }
+    // A named flow's own `FlowPayload` child feature has no separate
+    // `payload_type_reference` fact -- its authored type is a pure duplicate of its `Typing`
+    // edge/declared fact (unlike an action/transition `accept`/`send` clause's payload type,
+    // which never gets a `Typing` edge), so it falls back to the same `typing` display text.
+    if let Some(payload_type) = node
+        .declared_facts
+        .payload_type_reference
+        .as_deref()
+        .or(typing)
+    {
+        attributes.insert("payloadType".to_string(), json!(payload_type));
+    }
+    if let Some(accept_type) = &node.declared_facts.accept_type_reference {
+        attributes.insert("acceptType".to_string(), json!(accept_type));
+    }
+}
+
 pub fn canonical_general_view_graph(
     graph: &SysmlGraphDto,
     _include_all_roots: bool,

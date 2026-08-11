@@ -67,7 +67,6 @@ pub(super) fn materialize_part_usage(
             }),
         );
     }
-    attrs.insert("partType".to_string(), serde_json::json!(&n.type_name));
     if let Some(ref m) = n.multiplicity {
         attrs.insert("multiplicity".to_string(), serde_json::json!(m));
     }
@@ -174,18 +173,11 @@ pub(super) fn materialize_attribute_usage(
     let kind = infer_attribute_usage_kind(g, parent_id, subsetting_target(n.redefines.as_deref()));
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, kind);
     let range = span_to_range(&n.span);
-    let mut attrs = HashMap::new();
+    let attrs = HashMap::new();
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&n.membership),
     );
-    let typed_by = typing_targets(n.typing.as_deref());
-    if !typed_by.is_empty() {
-        attrs.insert(
-            "attributeType".to_string(),
-            serde_json::json!(typed_by.join(", ")),
-        );
-    }
     add_node_and_recurse(
         g,
         uri,

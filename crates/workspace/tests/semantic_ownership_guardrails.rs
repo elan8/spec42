@@ -46,6 +46,15 @@ const RELATIONSHIP_PROJECTION_KEYS: &[&str] = &[
     "metaclassRole",
     "refTarget",
     "keyword",
+    // `UNIFY_CACHE_PROGRESS.md` B9 chunk-G-remaining: `parameterType` is a pure duplicate of the
+    // first `DeclaredRelationshipFacts::typing` target (same family as `partType`/`portType`/
+    // `refType`/`attributeType` above). `payloadType`/`acceptType` are not relationship-typing
+    // duplicates -- they back the genuinely separate `DeclaredSemanticFacts::
+    // payload_type_reference`/`accept_type_reference` facts -- but share the same enforcement:
+    // post-construction consumers must read the typed fact, not the legacy projection key.
+    "parameterType",
+    "payloadType",
+    "acceptType",
 ];
 
 /// `*Type` attribute projections that have been retired outright: their producers were removed

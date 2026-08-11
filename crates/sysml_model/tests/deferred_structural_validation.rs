@@ -190,10 +190,7 @@ package P {
         .expect("payload feature");
 
     assert_eq!(
-        payload
-            .attributes
-            .get("payloadType")
-            .and_then(serde_json::Value::as_str),
+        payload.declared_facts.relationships.typing_display(),
         Some("Scalar"),
         "the authored payload type must remain a semantic fact"
     );

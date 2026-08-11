@@ -299,14 +299,7 @@ pub(crate) fn materialize_attribute_def(
     let name = &value.name;
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "attribute def");
     let range = span_to_range(&ad_node.span);
-    let mut attrs = HashMap::new();
-    let typed_by = crate::semantic::ast_util::typing_targets(value.typing.as_deref());
-    if !typed_by.is_empty() {
-        attrs.insert(
-            "attributeType".to_string(),
-            serde_json::json!(typed_by.join(", ")),
-        );
-    }
+    let attrs = HashMap::new();
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&value.membership),

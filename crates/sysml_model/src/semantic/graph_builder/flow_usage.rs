@@ -124,10 +124,7 @@ fn materialize_flow_payload(
         .clone()
         .unwrap_or_else(|| "_payload".to_string());
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "flow payload");
-    let mut attrs = HashMap::new();
-    if let Some(ref type_name) = payload.value.type_name {
-        attrs.insert("payloadType".to_string(), serde_json::json!(type_name));
-    }
+    let attrs = HashMap::new();
     add_node_and_recurse(
         g,
         uri,

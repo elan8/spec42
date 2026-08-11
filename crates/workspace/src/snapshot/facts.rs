@@ -88,6 +88,10 @@ fn build_host_semantic_model_node(
 ) -> HostSemanticModelNode {
     let mut attributes = node.attributes.clone();
     sysml_model::semantic::model_projection::project_source_text_attributes(&mut attributes, node);
+    sysml_model::semantic::model_projection::project_type_reference_attributes(
+        &mut attributes,
+        node,
+    );
     // Additive: resolve the usage's canonical type reference. Existing
     // textual hints (`partType`, `type`, `typing`, ...) are left untouched.
     if let Some(typed_by) = typed_by_reference(graph, node) {

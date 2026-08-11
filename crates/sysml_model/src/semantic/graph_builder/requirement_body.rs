@@ -583,15 +583,7 @@ pub(super) fn walk_requirement_def_body(
                     name,
                     "attribute def",
                 );
-                let mut attrs = HashMap::new();
-                let typed_by =
-                    crate::semantic::ast_util::typing_targets(attr_def.value.typing.as_deref());
-                if !typed_by.is_empty() {
-                    attrs.insert(
-                        "attributeType".to_string(),
-                        serde_json::json!(typed_by.join(", ")),
-                    );
-                }
+                let attrs = HashMap::new();
                 add_node_and_recurse(
                     g,
                     uri,
@@ -638,15 +630,7 @@ pub(super) fn walk_requirement_def_body(
                     name,
                     "attribute",
                 );
-                let mut attrs = HashMap::new();
-                let typed_by =
-                    crate::semantic::ast_util::typing_targets(attr_usage.value.typing.as_deref());
-                if !typed_by.is_empty() {
-                    attrs.insert(
-                        "attributeType".to_string(),
-                        serde_json::json!(typed_by.join(", ")),
-                    );
-                }
+                let attrs = HashMap::new();
                 add_node_and_recurse(
                     g,
                     uri,
