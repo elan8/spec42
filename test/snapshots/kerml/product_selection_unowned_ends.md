@@ -53,6 +53,15 @@ package ProductSelection_UnownedEnds {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "product_selection_unowned_ends.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -129,6 +138,14 @@ CloseCurly,EndOfFile,
         (connector_end)
         (feature_def :>> 'info' value)))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package ProductSelection_UnownedEnds {
@@ -179,44 +196,25 @@ package ProductSelection_UnownedEnds {
 	
 }
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds"))) (name "ProductSelection_UnownedEnds") (declared-name "ProductSelection_UnownedEnds")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::OnlineCustomer"))) (name "OnlineCustomer") (declared-name "OnlineCustomer"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::Product"))) (name "Product") (declared-name "Product"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::ProductSelection"))) (name "ProductSelection") (declared-name "ProductSelection"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::SelectionInfo"))) (name "SelectionInfo") (declared-name "SelectionInfo"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::ShoppingCart"))) (name "ShoppingCart") (declared-name "ShoppingCart"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::SingleProductSelection"))) (name "SingleProductSelection") (declared-name "SingleProductSelection"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::SingleProductSelection1"))) (name "SingleProductSelection1") (declared-name "SingleProductSelection1"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ee36af175e2102ef2267226689f8e9cb031f6e99a2512b6f3637c818962fc354") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds"))) (kind "package") (name "ProductSelection_UnownedEnds") (declared-name "ProductSelection_UnownedEnds") (range (start (line 0) (character 0)) (end (line 0) (character 1311))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::OnlineCustomer"))) (kind "classifier decl") (name "OnlineCustomer") (declared-name "OnlineCustomer") (range (start (line 32) (character 1)) (end (line 32) (character 316))) (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::Product"))) (kind "classifier decl") (name "Product") (declared-name "Product") (range (start (line 6) (character 1)) (end (line 6) (character 57))) (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::ProductSelection"))) (kind "kermlDecl") (name "ProductSelection") (declared-name "ProductSelection") (range (start (line 10) (character 1)) (end (line 10) (character 206))) (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::SelectionInfo"))) (kind "classifier decl") (name "SelectionInfo") (declared-name "SelectionInfo") (range (start (line 2) (character 1)) (end (line 2) (character 21))) (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::ShoppingCart"))) (kind "classifier decl") (name "ShoppingCart") (declared-name "ShoppingCart") (range (start (line 3) (character 1)) (end (line 3) (character 68))) (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::SingleProductSelection"))) (kind "kermlDecl") (name "SingleProductSelection") (declared-name "SingleProductSelection") (range (start (line 17) (character 1)) (end (line 17) (character 141))) (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::SingleProductSelection1"))) (kind "kermlDecl") (name "SingleProductSelection1") (declared-name "SingleProductSelection1") (range (start (line 23) (character 1)) (end (line 23) (character 374))) (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/product_selection_unowned_ends.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

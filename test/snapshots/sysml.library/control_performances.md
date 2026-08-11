@@ -141,45 +141,62 @@ standard library package ControlPerformances {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Performance'
-semantic.unresolved_name 'HappensBefore'
-semantic.unresolved_name 'earlierOccurrence'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'Performance'
-semantic.unresolved_name 'HappensBefore'
-semantic.unresolved_name 'laterOccurrence'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'Performance'
-semantic.unresolved_name 'BooleanEvaluation'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Performance'
-semantic.unresolved_name 'BooleanEvaluation'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'BooleanEvaluation'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Performance'
-semantic.unresolved_name 'HappensBefore'
-semantic.unresolved_name 'earlierOccurrence'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'Performance'
-semantic.unresolved_name 'HappensBefore'
-semantic.unresolved_name 'laterOccurrence'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'Performance'
-semantic.unresolved_name 'BooleanEvaluation'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Performance'
-semantic.unresolved_name 'BooleanEvaluation'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'BooleanEvaluation'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "control_performances.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 16) (end 8 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 16) (end 9 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 16) (end 10 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 11 16) (end 11 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 12 16) (end 12 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 13 16) (end 13 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 14 16) (end 14 47))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -338,6 +355,46 @@ CloseCurly,EndOfFile,
       (invariant_def
         (result_expr_member)))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'HappensBefore'
+semantic.unresolved_name 'earlierOccurrence'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'HappensBefore'
+semantic.unresolved_name 'laterOccurrence'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'BooleanEvaluation'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'BooleanEvaluation'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'BooleanEvaluation'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'HappensBefore'
+semantic.unresolved_name 'earlierOccurrence'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'HappensBefore'
+semantic.unresolved_name 'laterOccurrence'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'BooleanEvaluation'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'BooleanEvaluation'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'BooleanEvaluation'
+~~~
 # FORMAT
 ~~~sysml
 standard library package ControlPerformances {
@@ -478,92 +535,40 @@ standard library package ControlPerformances {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ControlPerformances"))) (name "ControlPerformances") (declared-name "ControlPerformances")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "ControlPerformances::Boolean"))) (name "Boolean") (declared-name "Boolean"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ControlPerformances::BooleanEvaluation"))) (name "BooleanEvaluation") (declared-name "BooleanEvaluation"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlPerformances::DecisionPerformance"))) (name "DecisionPerformance") (declared-name "DecisionPerformance"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ControlPerformances::HappensBefore"))) (name "HappensBefore") (declared-name "HappensBefore"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlPerformances::IfElsePerformance"))) (name "IfElsePerformance") (declared-name "IfElsePerformance"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlPerformances::IfPerformance"))) (name "IfPerformance") (declared-name "IfPerformance"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlPerformances::IfThenElsePerformance"))) (name "IfThenElsePerformance") (declared-name "IfThenElsePerformance"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlPerformances::IfThenPerformance"))) (name "IfThenPerformance") (declared-name "IfThenPerformance"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlPerformances::LoopPerformance"))) (name "LoopPerformance") (declared-name "LoopPerformance"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlPerformances::MergePerformance"))) (name "MergePerformance") (declared-name "MergePerformance"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ControlPerformances::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ControlPerformances::Performance"))) (name "Performance") (declared-name "Performance"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ControlPerformances::SelfSameLifeLink"))) (name "SelfSameLifeLink") (declared-name "SelfSameLifeLink"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "ControlPerformances::_documentation"))) (name ""))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ControlPerformances::notEmpty"))) (name "notEmpty") (declared-name "notEmpty"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ControlPerformances::size"))) (name "size") (declared-name "size"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c2d603b5fe06015a39044299c878dfdccfdea6d0853d9e7c2e13d3b23ffe2408") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ControlPerformances"))) (kind "package") (name "ControlPerformances") (declared-name "ControlPerformances") (range (start (line 0) (character 0)) (end (line 0) (character 4496))))
+    (element (id (node (document "d0") (qualified-name "ControlPerformances::Boolean"))) (kind "import") (name "Boolean") (declared-name "Boolean") (range (start (line 7) (character 1)) (end (line 7) (character 38))) (parent (node (document "d0") (qualified-name "ControlPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Boolean") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "ControlPerformances::BooleanEvaluation"))) (kind "import") (name "BooleanEvaluation") (declared-name "BooleanEvaluation") (range (start (line 14) (character 1)) (end (line 14) (character 48))) (parent (node (document "d0") (qualified-name "ControlPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Performances::BooleanEvaluation") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 14) (character 16)) (end (line 14) (character 47))))))
+    (element (id (node (document "d0") (qualified-name "ControlPerformances::DecisionPerformance"))) (kind "kermlDecl") (name "DecisionPerformance") (declared-name "DecisionPerformance") (range (start (line 16) (character 1)) (end (line 16) (character 782))) (parent (node (document "d0") (qualified-name "ControlPerformances"))))
+    (element (id (node (document "d0") (qualified-name "ControlPerformances::HappensBefore"))) (kind "import") (name "HappensBefore") (declared-name "HappensBefore") (range (start (line 11) (character 1)) (end (line 11) (character 43))) (parent (node (document "d0") (qualified-name "ControlPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::HappensBefore") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 11) (character 16)) (end (line 11) (character 42))))))
+    (element (id (node (document "d0") (qualified-name "ControlPerformances::IfElsePerformance"))) (kind "kermlDecl") (name "IfElsePerformance") (declared-name "IfElsePerformance") (range (start (line 81) (character 1)) (end (line 81) (character 375))) (parent (node (document "d0") (qualified-name "ControlPerformances"))))
+    (element (id (node (document "d0") (qualified-name "ControlPerformances::IfPerformance"))) (kind "kermlDecl") (name "IfPerformance") (declared-name "IfPerformance") (range (start (line 58) (character 1)) (end (line 58) (character 258))) (parent (node (document "d0") (qualified-name "ControlPerformances"))))
+    (element (id (node (document "d0") (qualified-name "ControlPerformances::IfThenElsePerformance"))) (kind "kermlDecl") (name "IfThenElsePerformance") (declared-name "IfThenElsePerformance") (range (start (line 94) (character 1)) (end (line 94) (character 442))) (parent (node (document "d0") (qualified-name "ControlPerformances"))))
+    (element (id (node (document "d0") (qualified-name "ControlPerformances::IfThenPerformance"))) (kind "kermlDecl") (name "IfThenPerformance") (declared-name "IfThenPerformance") (range (start (line 68) (character 1)) (end (line 68) (character 369))) (parent (node (document "d0") (qualified-name "ControlPerformances"))))
+    (element (id (node (document "d0") (qualified-name "ControlPerformances::LoopPerformance"))) (kind "kermlDecl") (name "LoopPerformance") (declared-name "LoopPerformance") (range (start (line 108) (character 1)) (end (line 108) (character 985))) (parent (node (document "d0") (qualified-name "ControlPerformances"))))
+    (element (id (node (document "d0") (qualified-name "ControlPerformances::MergePerformance"))) (kind "kermlDecl") (name "MergePerformance") (declared-name "MergePerformance") (range (start (line 37) (character 1)) (end (line 37) (character 729))) (parent (node (document "d0") (qualified-name "ControlPerformances"))))
+    (element (id (node (document "d0") (qualified-name "ControlPerformances::Occurrence"))) (kind "import") (name "Occurrence") (declared-name "Occurrence") (range (start (line 10) (character 1)) (end (line 10) (character 40))) (parent (node (document "d0") (qualified-name "ControlPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::Occurrence") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 10) (character 16)) (end (line 10) (character 39))))))
+    (element (id (node (document "d0") (qualified-name "ControlPerformances::Performance"))) (kind "import") (name "Performance") (declared-name "Performance") (range (start (line 13) (character 1)) (end (line 13) (character 42))) (parent (node (document "d0") (qualified-name "ControlPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Performances::Performance") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 13) (character 16)) (end (line 13) (character 41))))))
+    (element (id (node (document "d0") (qualified-name "ControlPerformances::SelfSameLifeLink"))) (kind "import") (name "SelfSameLifeLink") (declared-name "SelfSameLifeLink") (range (start (line 12) (character 1)) (end (line 12) (character 46))) (parent (node (document "d0") (qualified-name "ControlPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::SelfSameLifeLink") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 12) (character 16)) (end (line 12) (character 45))))))
+    (element (id (node (document "d0") (qualified-name "ControlPerformances::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 4496))) (parent (node (document "d0") (qualified-name "ControlPerformances"))))
+    (element (id (node (document "d0") (qualified-name "ControlPerformances::notEmpty"))) (kind "import") (name "notEmpty") (declared-name "notEmpty") (range (start (line 9) (character 1)) (end (line 9) (character 44))) (parent (node (document "d0") (qualified-name "ControlPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::notEmpty") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 9) (character 16)) (end (line 9) (character 43))))))
+    (element (id (node (document "d0") (qualified-name "ControlPerformances::size"))) (kind "import") (name "size") (declared-name "size") (range (start (line 8) (character 1)) (end (line 8) (character 40))) (parent (node (document "d0") (qualified-name "ControlPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::size") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 39))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "ControlPerformances::Boolean"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Boolean") (range (start (line 7) (character 16)) (end (line 7) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ControlPerformances::BooleanEvaluation"))) (kind membershipImport) (ordinal 0)) (authored-target "Performances::BooleanEvaluation") (range (start (line 14) (character 16)) (end (line 14) (character 47))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ControlPerformances::HappensBefore"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::HappensBefore") (range (start (line 11) (character 16)) (end (line 11) (character 42))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ControlPerformances::Occurrence"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::Occurrence") (range (start (line 10) (character 16)) (end (line 10) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ControlPerformances::Performance"))) (kind membershipImport) (ordinal 0)) (authored-target "Performances::Performance") (range (start (line 13) (character 16)) (end (line 13) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ControlPerformances::SelfSameLifeLink"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::SelfSameLifeLink") (range (start (line 12) (character 16)) (end (line 12) (character 45))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ControlPerformances::notEmpty"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::notEmpty") (range (start (line 9) (character 16)) (end (line 9) (character 43))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ControlPerformances::size"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::size") (range (start (line 8) (character 16)) (end (line 8) (character 39))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ControlPerformances::_documentation"))) (to (node (document "d0") (qualified-name "ControlPerformances"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/control_performances.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 16) (end 7 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 16) (end 8 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 9 16) (end 9 43))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 10 16) (end 10 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 11 16) (end 11 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 12 16) (end 12 45))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 13 16) (end 13 41))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 14 16) (end 14 47))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

@@ -31,6 +31,69 @@ package 'Derivation Constraints' {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "31_derivation_constraints.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 18))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 4 17) (end 4 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 5 2) (end 5 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 5 24) (end 5 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 9 17) (end 9 24))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 10 2) (end 10 82))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 10 2) (end 10 82))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 10 24) (end 10 33))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -74,6 +137,30 @@ CloseCurly,EndOfFile,
       (default_ref_usage in 'force' : 'ForceValue')
       (result_expr_member))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'SpeedValue'
+semantic.unresolved_name 'SpeedValue'
+semantic.unresolved_name 'TimeValue'
+semantic.unresolved_name 'ForceValue'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'SpeedValue'
+semantic.unresolved_name 'SpeedValue'
+semantic.unresolved_name 'TimeValue'
+semantic.unresolved_name 'ForceValue'
+~~~
 # FORMAT
 ~~~sysml
 package 'Derivation Constraints' {
@@ -103,109 +190,35 @@ package 'Derivation Constraints' {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'SpeedValue'
-semantic.unresolved_name 'SpeedValue'
-semantic.unresolved_name 'TimeValue'
-semantic.unresolved_name 'ForceValue'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'SpeedValue'
-semantic.unresolved_name 'SpeedValue'
-semantic.unresolved_name 'TimeValue'
-semantic.unresolved_name 'ForceValue'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Derivation Constraints"))) (name "Derivation Constraints") (declared-name "Derivation Constraints")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Derivation Constraints::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Derivation Constraints::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "constraint def") (id (node (document "d0") (qualified-name "Derivation Constraints::Dynamics"))) (name "Dynamics") (declared-name "Dynamics") (declared (own-expression (expression (kind "binary") (operator "&&") (children (expression (kind "binary") (operator "==") (children (expression (kind "binary") (operator "*") (children (expression (kind "featureReference") (reference "force")) (expression (kind "featureReference") (reference "deltaT")))) (expression (kind "binary") (operator "*") (children (expression (kind "featureReference") (reference "mass")) (expression (kind "parenthesized") (children (expression (kind "binary") (operator "-") (children (expression (kind "featureReference") (reference "finalSpeed")) (expression (kind "featureReference") (reference "initialSpeed")))))))))) (expression (kind "binary") (operator ">") (children (expression (kind "featureReference") (reference "mass")) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal (integer 0))) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))))))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Derivation Constraints::vehicle1"))) (name "vehicle1") (declared-name "vehicle1") (declared (properties (ordered false)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Derivation Constraints::vehicle1::totalMass"))) (name "totalMass") (declared-name "totalMass") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-          )
-        )
-        (element (kind "part") (id (node (document "d0") (qualified-name "Derivation Constraints::vehicle2"))) (name "vehicle2") (declared-name "vehicle2") (declared (properties (ordered false)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Derivation Constraints::vehicle2::totalMass"))) (name "totalMass") (declared-name "totalMass") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "binary") (operator "+") (children (expression (kind "binary") (operator "+") (children (expression (kind "featureReference") (reference "chassisMass")) (expression (kind "memberAccess") (reference "mass") (children (expression (kind "featureReference") (reference "engine")))))) (expression (kind "memberAccess") (reference "mass") (children (expression (kind "featureReference") (reference "transmission")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Derivation Constraints::vehicle2::totalMass"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c4c6738cb52cf0ac2c95bd97314678d9e8ae8bcb35d3a1ee9a0017d667162171") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Derivation Constraints"))) (kind "package") (name "Derivation Constraints") (declared-name "Derivation Constraints") (range (start (line 0) (character 0)) (end (line 0) (character 613))))
+    (element (id (node (document "d0") (qualified-name "Derivation Constraints::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 22))) (parent (node (document "d0") (qualified-name "Derivation Constraints"))) (authored (membership (kind Import) (visibility "private") (import (reference "SI::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 18))))))
+    (element (id (node (document "d0") (qualified-name "Derivation Constraints::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 43))) (parent (node (document "d0") (qualified-name "Derivation Constraints"))) (authored (membership (kind Import) (visibility "private") (import (reference "Constraints Example-1::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 39))))))
+    (element (id (node (document "d0") (qualified-name "Derivation Constraints::Dynamics"))) (kind "constraint def") (name "Dynamics") (declared-name "Dynamics") (range (start (line 13) (character 1)) (end (line 13) (character 238))) (parent (node (document "d0") (qualified-name "Derivation Constraints"))))
+    (element (id (node (document "d0") (qualified-name "Derivation Constraints::vehicle1"))) (kind "part") (name "vehicle1") (declared-name "vehicle1") (range (start (line 4) (character 1)) (end (line 4) (character 149))) (parent (node (document "d0") (qualified-name "Derivation Constraints"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle") (range (start (line 4) (character 17)) (end (line 4) (character 24)))))))
+    (element (id (node (document "d0") (qualified-name "Derivation Constraints::vehicle1::totalMass"))) (kind "attribute") (name "totalMass") (declared-name "totalMass") (range (start (line 5) (character 2)) (end (line 5) (character 34))) (parent (node (document "d0") (qualified-name "Derivation Constraints::vehicle1"))) (authored (membership (kind Feature)) (relationships (typing (reference "MassValue") (range none)) (typing (reference "MassValue") (range (start (line 5) (character 24)) (end (line 5) (character 33)))))))
+    (element (id (node (document "d0") (qualified-name "Derivation Constraints::vehicle2"))) (kind "part") (name "vehicle2") (declared-name "vehicle2") (range (start (line 9) (character 1)) (end (line 9) (character 112))) (parent (node (document "d0") (qualified-name "Derivation Constraints"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle") (range (start (line 9) (character 17)) (end (line 9) (character 24)))))))
+    (element (id (node (document "d0") (qualified-name "Derivation Constraints::vehicle2::totalMass"))) (kind "attribute") (name "totalMass") (declared-name "totalMass") (range (start (line 10) (character 2)) (end (line 10) (character 82))) (parent (node (document "d0") (qualified-name "Derivation Constraints::vehicle2"))) (authored (membership (kind Feature)) (relationships (typing (reference "MassValue") (range none)) (typing (reference "MassValue") (range (start (line 10) (character 24)) (end (line 10) (character 33)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Derivation Constraints::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "SI::*") (range (start (line 1) (character 16)) (end (line 1) (character 18))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Derivation Constraints::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "Constraints Example-1::*") (range (start (line 2) (character 16)) (end (line 2) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Derivation Constraints::vehicle1"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (range (start (line 4) (character 17)) (end (line 4) (character 24))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Derivation Constraints::vehicle1::totalMass"))) (kind featureTyping) (ordinal 0)) (authored-target "MassValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Derivation Constraints::vehicle1::totalMass"))) (kind featureTyping) (ordinal 1)) (authored-target "MassValue") (range (start (line 5) (character 24)) (end (line 5) (character 33))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Derivation Constraints::vehicle2"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (range (start (line 9) (character 17)) (end (line 9) (character 24))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Derivation Constraints::vehicle2::totalMass"))) (kind featureTyping) (ordinal 0)) (authored-target "MassValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Derivation Constraints::vehicle2::totalMass"))) (kind featureTyping) (ordinal 1)) (authored-target "MassValue") (range (start (line 10) (character 24)) (end (line 10) (character 33))) (outcome (status unresolved)))
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Derivation Constraints::Dynamics"))) (status missing-prerequisite) (target "Constraints::ConstraintCheck"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Derivation Constraints::vehicle1"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Derivation Constraints::vehicle1::totalMass"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Derivation Constraints::vehicle2"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Derivation Constraints::vehicle2::totalMass"))) (status missing-prerequisite) (target "Base::dataValues"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/31_derivation_constraints.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 18))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 16) (end 2 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 4 17) (end 4 24))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 5 2) (end 5 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 9 17) (end 9 24))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 10 2) (end 10 82))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "Derivation Constraints::Dynamics")) (expression (status "unresolved") (error "expression has an unresolved reference")))
+    (node (node (document "d0") (qualified-name "Derivation Constraints::vehicle2::totalMass")) (expression (status "unresolved") (error "expression has an unresolved reference")))
   )
 )
 ~~~

@@ -32,6 +32,75 @@ package 'Individuals and Time Slices' {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "28_individuals_and_time_slices.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 51))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_package_body_element")
+        (source "sysml")
+        (range (start 3 1) (end 3 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 3 1) (end 3 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 6 12) (end 6 297))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 9 18) (end 9 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 9 27) (end 9 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 11 16) (end 11 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 15 16) (end 15 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 21 18) (end 21 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 21 27) (end 21 33))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -72,6 +141,30 @@ CloseCurly,EndOfFile,
         (portion_usage timeslice 'bobDriving'
           (item_usage individual ref :>> 'driver' : 'Bob'))))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Person'
+semantic.unresolved_name 'Person'
+semantic.unresolved_name 'Vehicle_1'
+semantic.unresolved_name 'driver'
+semantic.unresolved_name 'start'
+semantic.unresolved_name 'mass'
+semantic.unresolved_name 'done'
+semantic.unresolved_name 'mass'
+semantic.unresolved_name 'driver'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Person'
+semantic.unresolved_name 'Person'
+semantic.unresolved_name 'Vehicle_1'
+semantic.unresolved_name 'driver'
+semantic.unresolved_name 'start'
+semantic.unresolved_name 'mass'
+semantic.unresolved_name 'done'
+semantic.unresolved_name 'mass'
+semantic.unresolved_name 'driver'
+~~~
 # FORMAT
 ~~~sysml
 package 'Individuals and Time Slices' {
@@ -102,161 +195,42 @@ package 'Individuals and Time Slices' {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Person'
-semantic.unresolved_name 'Person'
-semantic.unresolved_name 'Vehicle_1'
-semantic.unresolved_name 'driver'
-semantic.unresolved_name 'start'
-semantic.unresolved_name 'mass'
-semantic.unresolved_name 'done'
-semantic.unresolved_name 'mass'
-semantic.unresolved_name 'driver'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Person'
-semantic.unresolved_name 'Person'
-semantic.unresolved_name 'Vehicle_1'
-semantic.unresolved_name 'driver'
-semantic.unresolved_name 'start'
-semantic.unresolved_name 'mass'
-semantic.unresolved_name 'done'
-semantic.unresolved_name 'mass'
-semantic.unresolved_name 'driver'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Individuals and Time Slices"))) (name "Individuals and Time Slices") (declared-name "Individuals and Time Slices")
-      (contains
-        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::"))) (name "") (declared (properties (individual true)))
-          (contains
-            (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving"))) (name "aliceDriving") (declared-name "aliceDriving") (declared (properties (portion true) (portion-kind "timeslice"))) (effective (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::"))) (name "") (declared (properties (portion true) (portion-kind "snapshot"))) (effective (implied-feature-ownership (composite true) (reference false)))
-                  (contains
-                    (element (kind "attribute") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::::mass"))) (name "mass") (declared-name "mass") (declared (feature-value (kind bound) (expression (kind "realLiteral") (literal (real "2000.0"))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::::mass"))) (role feature-value))) (evaluation (expression (status "ok") (value (integer 2000)))))
-                  )
-                )
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence"))) (name "") (declared (properties (portion true) (portion-kind "snapshot"))) (effective (implied-feature-ownership (composite true) (reference false)))
-                  (contains
-                    (element (kind "attribute") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence::mass"))) (name "mass") (declared-name "mass") (declared (feature-value (kind bound) (expression (kind "realLiteral") (literal (real "1500.0"))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence::mass"))) (role feature-value))) (evaluation (expression (status "ok") (value (integer 1500)))))
-                  )
-                )
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::item"))) (name "item") (declared-name "item") (declared (properties (individual true) (composite false) (reference true))))
-              )
-            )
-            (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::bobDriving"))) (name "bobDriving") (declared-name "bobDriving") (declared (properties (portion true) (portion-kind "timeslice"))) (effective (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::bobDriving::item"))) (name "item") (declared-name "item") (declared (properties (individual true) (composite false) (reference true))))
-              )
-            )
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "Individuals and Time Slices::*"))) (name "*") (declared-name "*"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "2cbaf4ccd8d75818573729f7bb97b11a83a0b814287b6e97257f7a6d7af6fe8e") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Individuals and Time Slices"))) (kind "package") (name "Individuals and Time Slices") (declared-name "Individuals and Time Slices") (range (start (line 0) (character 0)) (end (line 0) (character 473))))
+    (element (id (node (document "d0") (qualified-name "Individuals and Time Slices::"))) (kind "occurrence") (name "") (range (start (line 6) (character 12)) (end (line 6) (character 297))) (parent (node (document "d0") (qualified-name "Individuals and Time Slices"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle_1") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Individuals and Time Slices::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 55))) (parent (node (document "d0") (qualified-name "Individuals and Time Slices"))) (authored (membership (kind Import) (visibility "private") (import (reference "Individuals and Snapshots Example::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 51))))))
+    (element (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving"))) (kind "occurrence") (name "aliceDriving") (declared-name "aliceDriving") (range (start (line 8) (character 12)) (end (line 8) (character 184))) (parent (node (document "d0") (qualified-name "Individuals and Time Slices::"))))
+    (element (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::"))) (kind "occurrence") (name "") (range (start (line 11) (character 12)) (end (line 11) (character 51))) (parent (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "start") (range (start (line 11) (character 16)) (end (line 11) (character 21)))))))
+    (element (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence"))) (kind "occurrence") (name "") (range (start (line 15) (character 12)) (end (line 15) (character 50))) (parent (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "done") (range (start (line 15) (character 16)) (end (line 15) (character 20)))))))
+    (element (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence::mass"))) (kind "attribute") (name "mass") (declared-name "mass") (range (start (line 16) (character 4)) (end (line 16) (character 22))) (parent (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "mass") (range (start (line 16) (character 4)) (end (line 16) (character 12)))))))
+    (element (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::::mass"))) (kind "attribute") (name "mass") (declared-name "mass") (range (start (line 12) (character 4)) (end (line 12) (character 22))) (parent (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "mass") (range (start (line 12) (character 4)) (end (line 12) (character 12)))))))
+    (element (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::item"))) (kind "occurrence") (name "item") (declared-name "item") (range (start (line 9) (character 18)) (end (line 9) (character 42))) (parent (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving"))) (authored (membership (kind Feature)) (relationships (typing (reference "Alice") (range none)) (redefinition (reference "driver") (range (start (line 9) (character 27)) (end (line 9) (character 33)))))))
+    (element (id (node (document "d0") (qualified-name "Individuals and Time Slices::::bobDriving"))) (kind "occurrence") (name "bobDriving") (declared-name "bobDriving") (range (start (line 20) (character 17)) (end (line 20) (character 74))) (parent (node (document "d0") (qualified-name "Individuals and Time Slices::"))))
+    (element (id (node (document "d0") (qualified-name "Individuals and Time Slices::::bobDriving::item"))) (kind "occurrence") (name "item") (declared-name "item") (range (start (line 21) (character 18)) (end (line 21) (character 40))) (parent (node (document "d0") (qualified-name "Individuals and Time Slices::::bobDriving"))) (authored (membership (kind Feature)) (relationships (typing (reference "Bob") (range none)) (redefinition (reference "driver") (range (start (line 21) (character 27)) (end (line 21) (character 33)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Individuals and Time Slices::"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle_1") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Individuals and Time Slices::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Individuals and Snapshots Example::*") (range (start (line 1) (character 16)) (end (line 1) (character 51))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::"))) (kind redefinition) (ordinal 0)) (authored-target "start") (range (start (line 11) (character 16)) (end (line 11) (character 21))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence"))) (kind redefinition) (ordinal 0)) (authored-target "done") (range (start (line 15) (character 16)) (end (line 15) (character 20))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence::mass"))) (kind redefinition) (ordinal 0)) (authored-target "mass") (range (start (line 16) (character 4)) (end (line 16) (character 12))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence::mass")))))
+    (reference (id (source (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::::mass"))) (kind redefinition) (ordinal 0)) (authored-target "mass") (range (start (line 12) (character 4)) (end (line 12) (character 12))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::::mass")))))
+    (reference (id (source (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::item"))) (kind featureTyping) (ordinal 0)) (authored-target "Alice") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::item"))) (kind redefinition) (ordinal 0)) (authored-target "driver") (range (start (line 9) (character 27)) (end (line 9) (character 33))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Individuals and Time Slices::::bobDriving::item"))) (kind featureTyping) (ordinal 0)) (authored-target "Bob") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Individuals and Time Slices::::bobDriving::item"))) (kind redefinition) (ordinal 0)) (authored-target "driver") (range (start (line 21) (character 27)) (end (line 21) (character 33))) (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence::mass"))) (target (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence::mass"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence::mass"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::::mass"))) (target (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::::mass"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::::mass"))) (kind redefinition) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Individuals and Time Slices::"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence::mass"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::::mass"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::item"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Individuals and Time Slices::::bobDriving"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Individuals and Time Slices::::bobDriving::item"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/28_individuals_and_time_slices.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 51))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_package_body_element")
-        (source "sysml")
-        (range (start 3 1) (end 3 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 3 1) (end 3 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 6 12) (end 6 297))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 9 18) (end 9 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 9 18) (end 9 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 11 12) (end 11 51))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 12 4) (end 12 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 15 12) (end 15 50))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 16 4) (end 16 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 21 18) (end 21 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 21 18) (end 21 40))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence::mass")) (expression (status "ok") (value (integer 1500))))
+    (node (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::::mass")) (expression (status "ok") (value (integer 2000))))
   )
 )
 ~~~

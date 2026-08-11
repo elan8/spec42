@@ -17,6 +17,21 @@ package MassRollup_1 {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "mass_rollup_1.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 34))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -39,6 +54,16 @@ CloseCurly,EndOfFile,
       (feature_def composite 'subcomponents' : 'MassedThing' multiplicity)
       (feature_def 'totalMass' : 'ScalarValues::Real' value))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'ScalarValues::Real'
+semantic.unresolved_name 'ScalarValues::Real'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'ScalarValues::Real'
+semantic.unresolved_name 'ScalarValues::Real'
+~~~
 # FORMAT
 ~~~sysml
 package MassRollup_1 {
@@ -53,47 +78,21 @@ package MassRollup_1 {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'ScalarValues::Real'
-semantic.unresolved_name 'ScalarValues::Real'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'ScalarValues::Real'
-semantic.unresolved_name 'ScalarValues::Real'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "MassRollup_1"))) (name "MassRollup_1") (declared-name "MassRollup_1")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "MassRollup_1::*"))) (name "*") (declared-name "*"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "MassRollup_1::MassedThing"))) (name "MassedThing") (declared-name "MassedThing"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "982e1a2606d5123604b889773a45fccaa4896f67f6fdd343ee65716713001ce8") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "MassRollup_1"))) (kind "package") (name "MassRollup_1") (declared-name "MassRollup_1") (range (start (line 0) (character 0)) (end (line 0) (character 257))))
+    (element (id (node (document "d0") (qualified-name "MassRollup_1::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 38))) (parent (node (document "d0") (qualified-name "MassRollup_1"))) (authored (membership (kind Import) (visibility "private") (import (reference "NumericalFunctions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 34))))))
+    (element (id (node (document "d0") (qualified-name "MassRollup_1::MassedThing"))) (kind "classifier decl") (name "MassedThing") (declared-name "MassedThing") (range (start (line 3) (character 1)) (end (line 3) (character 192))) (parent (node (document "d0") (qualified-name "MassRollup_1"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "MassRollup_1::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "NumericalFunctions::*") (range (start (line 1) (character 16)) (end (line 1) (character 34))) (outcome (status unresolved)))
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/mass_rollup_1.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 34))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

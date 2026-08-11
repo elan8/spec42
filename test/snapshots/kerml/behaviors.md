@@ -27,6 +27,15 @@ package Behaviors {
     abstract flow msg of C;
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "behaviors.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -73,6 +82,20 @@ CloseCurly,EndOfFile,
       (flow_feature 'a'))
     (flow_usage 'msg' : 'C')))
 ~~~
+# EXPECTED
+~~~
+semantic.duplicate_name 'a'
+semantic.ambiguous_member 'a'
+semantic.invalid_connection_end_count
+semantic.feature_typing_kind_mismatch
+~~~
+# PROBLEMS
+~~~
+semantic.duplicate_name 'a'
+semantic.ambiguous_member 'a'
+semantic.invalid_connection_end_count
+semantic.feature_typing_kind_mismatch
+~~~
 # FORMAT
 ~~~sysml
 package Behaviors {
@@ -98,60 +121,25 @@ package Behaviors {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.duplicate_name 'a'
-semantic.ambiguous_member 'a'
-semantic.invalid_connection_end_count
-semantic.feature_typing_kind_mismatch
-~~~
-# PROBLEMS
-~~~
-semantic.duplicate_name 'a'
-semantic.ambiguous_member 'a'
-semantic.invalid_connection_end_count
-semantic.feature_typing_kind_mismatch
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Behaviors"))) (name "Behaviors") (declared-name "Behaviors")
-      (contains
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Behaviors::A"))) (name "A") (declared-name "A"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Behaviors::B"))) (name "B") (declared-name "B"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Behaviors::C"))) (name "C") (declared-name "C"))
-        (element (kind "flow") (id (node (document "d0") (qualified-name "Behaviors::msg"))) (name "msg") (declared-name "msg")
-          (contains
-            (element (kind "flow payload") (id (node (document "d0") (qualified-name "Behaviors::msg::_payload"))) (name "_payload") (declared-name "_payload"))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "064c204138ff4566abef35592ad2725319e611e2bb3e378176cd6a44d346775b") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Behaviors"))) (kind "package") (name "Behaviors") (declared-name "Behaviors") (range (start (line 0) (character 0)) (end (line 0) (character 381))))
+    (element (id (node (document "d0") (qualified-name "Behaviors::A"))) (kind "kermlDecl") (name "A") (declared-name "A") (range (start (line 1) (character 4)) (end (line 1) (character 125))) (parent (node (document "d0") (qualified-name "Behaviors"))))
+    (element (id (node (document "d0") (qualified-name "Behaviors::B"))) (kind "kermlDecl") (name "B") (declared-name "B") (range (start (line 8) (character 4)) (end (line 8) (character 71))) (parent (node (document "d0") (qualified-name "Behaviors"))))
+    (element (id (node (document "d0") (qualified-name "Behaviors::C"))) (kind "classifier decl") (name "C") (declared-name "C") (range (start (line 12) (character 4)) (end (line 12) (character 133))) (parent (node (document "d0") (qualified-name "Behaviors"))))
+    (element (id (node (document "d0") (qualified-name "Behaviors::msg"))) (kind "flow") (name "msg") (declared-name "msg") (range (start (line 19) (character 4)) (end (line 19) (character 27))) (parent (node (document "d0") (qualified-name "Behaviors"))))
+    (element (id (node (document "d0") (qualified-name "Behaviors::msg::_payload"))) (kind "flow payload") (name "_payload") (declared-name "_payload") (range (start (line 19) (character 25)) (end (line 19) (character 26))) (parent (node (document "d0") (qualified-name "Behaviors::msg"))) (authored (relationships (typing (reference "C") (range none)))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Behaviors::msg::_payload"))) (kind featureTyping) (ordinal 0)) (authored-target "C") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Behaviors::C")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Behaviors::msg::_payload"))) (target (node (document "d0") (qualified-name "Behaviors::C"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Behaviors::msg::_payload"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Behaviors::msg"))) (status missing-prerequisite) (target "Flows::messages"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/behaviors.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 19 25) (end 19 26))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

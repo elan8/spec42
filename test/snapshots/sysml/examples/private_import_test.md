@@ -39,6 +39,33 @@ package PrivateImportTest {
 	}	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "private_import_test.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 5 17) (end 5 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 27 20) (end 27 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 30 11) (end 30 12))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -93,6 +120,14 @@ CloseCurly,EndOfFile,
       (line_comment)
       (part_usage 'z1' : 'A'))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'A'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'A'
+~~~
 # FORMAT
 ~~~sysml
 package PrivateImportTest {
@@ -130,90 +165,40 @@ package PrivateImportTest {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'A'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'A'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "PrivateImportTest"))) (name "PrivateImportTest") (declared-name "PrivateImportTest")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "PrivateImportTest::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "PrivateImportTest::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "package") (id (node (document "d0") (qualified-name "PrivateImportTest::P1"))) (name "P1") (declared-name "P1")
-          (contains
-            (element (kind "part def") (id (node (document "d0") (qualified-name "PrivateImportTest::P1::A"))) (name "A") (declared-name "A") (declared))
-          )
-        )
-        (element (kind "package") (id (node (document "d0") (qualified-name "PrivateImportTest::P2"))) (name "P2") (declared-name "P2")
-          (contains
-            (element (kind "import") (id (node (document "d0") (qualified-name "PrivateImportTest::P2::*"))) (name "*") (declared-name "*"))
-          )
-        )
-        (element (kind "package") (id (node (document "d0") (qualified-name "PrivateImportTest::P3"))) (name "P3") (declared-name "P3")
-          (contains
-            (element (kind "part def") (id (node (document "d0") (qualified-name "PrivateImportTest::P3::B"))) (name "B") (declared-name "B") (declared))
-          )
-        )
-        (element (kind "package") (id (node (document "d0") (qualified-name "PrivateImportTest::P4"))) (name "P4") (declared-name "P4")
-          (contains
-            (element (kind "import") (id (node (document "d0") (qualified-name "PrivateImportTest::P4::*"))) (name "*") (declared-name "*"))
-            (element (kind "part") (id (node (document "d0") (qualified-name "PrivateImportTest::P4::z1"))) (name "z1") (declared-name "z1") (declared (properties (ordered false))))
-          )
-        )
-        (element (kind "part") (id (node (document "d0") (qualified-name "PrivateImportTest::x"))) (name "x") (declared-name "x") (declared (properties (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "PrivateImportTest::z"))) (name "z") (declared-name "z") (declared (properties (ordered false))))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "4575fe6bf10a131244ddcf5ecc7e8001139c79f9fa9364be232ad07ff01f35cb") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "PrivateImportTest"))) (kind "package") (name "PrivateImportTest") (declared-name "PrivateImportTest") (range (start (line 0) (character 0)) (end (line 0) (character 559))))
+    (element (id (node (document "d0") (qualified-name "PrivateImportTest::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 10) (character 1)) (end (line 10) (character 21))) (parent (node (document "d0") (qualified-name "PrivateImportTest"))) (authored (membership (kind Import) (visibility "public") (import (reference "P2::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 10) (character 15)) (end (line 10) (character 17))))))
+    (element (id (node (document "d0") (qualified-name "PrivateImportTest::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 20) (character 1)) (end (line 20) (character 22))) (parent (node (document "d0") (qualified-name "PrivateImportTest"))) (authored (membership (kind Import) (visibility "private") (import (reference "P3::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 20) (character 16)) (end (line 20) (character 18))))))
+    (element (id (node (document "d0") (qualified-name "PrivateImportTest::P1"))) (kind "package") (name "P1") (declared-name "P1") (range (start (line 1) (character 1)) (end (line 1) (character 30))) (parent (node (document "d0") (qualified-name "PrivateImportTest"))))
+    (element (id (node (document "d0") (qualified-name "PrivateImportTest::P1::A"))) (kind "part def") (name "A") (declared-name "A") (range (start (line 2) (character 2)) (end (line 2) (character 13))) (parent (node (document "d0") (qualified-name "PrivateImportTest::P1"))))
+    (element (id (node (document "d0") (qualified-name "PrivateImportTest::P2"))) (kind "package") (name "P2") (declared-name "P2") (range (start (line 4) (character 1)) (end (line 4) (character 40))) (parent (node (document "d0") (qualified-name "PrivateImportTest"))))
+    (element (id (node (document "d0") (qualified-name "PrivateImportTest::P2::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 5) (character 2)) (end (line 5) (character 23))) (parent (node (document "d0") (qualified-name "PrivateImportTest::P2"))) (authored (membership (kind Import) (visibility "private") (import (reference "P1::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 5) (character 17)) (end (line 5) (character 19))))))
+    (element (id (node (document "d0") (qualified-name "PrivateImportTest::P3"))) (kind "package") (name "P3") (declared-name "P3") (range (start (line 16) (character 1)) (end (line 16) (character 30))) (parent (node (document "d0") (qualified-name "PrivateImportTest"))))
+    (element (id (node (document "d0") (qualified-name "PrivateImportTest::P3::B"))) (kind "part def") (name "B") (declared-name "B") (range (start (line 17) (character 2)) (end (line 17) (character 13))) (parent (node (document "d0") (qualified-name "PrivateImportTest::P3"))))
+    (element (id (node (document "d0") (qualified-name "PrivateImportTest::P4"))) (kind "package") (name "P4") (declared-name "P4") (range (start (line 26) (character 1)) (end (line 26) (character 133))) (parent (node (document "d0") (qualified-name "PrivateImportTest"))))
+    (element (id (node (document "d0") (qualified-name "PrivateImportTest::P4::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 27) (character 2)) (end (line 27) (character 26))) (parent (node (document "d0") (qualified-name "PrivateImportTest::P4"))) (authored (membership (kind Import) (visibility "public") (import (reference "P2::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 27) (character 20)) (end (line 27) (character 22))))))
+    (element (id (node (document "d0") (qualified-name "PrivateImportTest::P4::z1"))) (kind "part") (name "z1") (declared-name "z1") (range (start (line 30) (character 2)) (end (line 30) (character 13))) (parent (node (document "d0") (qualified-name "PrivateImportTest::P4"))) (authored (membership (kind Feature)) (relationships (typing (reference "A") (range (start (line 30) (character 11)) (end (line 30) (character 12)))))))
+    (element (id (node (document "d0") (qualified-name "PrivateImportTest::x"))) (kind "part") (name "x") (declared-name "x") (range (start (line 8) (character 1)) (end (line 8) (character 15))) (parent (node (document "d0") (qualified-name "PrivateImportTest"))) (authored (membership (kind Feature)) (relationships (typing (reference "P1::A") (range (start (line 8) (character 9)) (end (line 8) (character 14)))))))
+    (element (id (node (document "d0") (qualified-name "PrivateImportTest::z"))) (kind "part") (name "z") (declared-name "z") (range (start (line 24) (character 1)) (end (line 24) (character 11))) (parent (node (document "d0") (qualified-name "PrivateImportTest"))) (authored (membership (kind Feature)) (relationships (typing (reference "B") (range (start (line 24) (character 9)) (end (line 24) (character 10)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "PrivateImportTest::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "P2::*") (range (start (line 10) (character 15)) (end (line 10) (character 17))) (outcome (status resolved) (target (node (document "d0") (qualified-name "PrivateImportTest::P2")))))
+    (reference (id (source (node (document "d0") (qualified-name "PrivateImportTest::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "P3::*") (range (start (line 20) (character 16)) (end (line 20) (character 18))) (outcome (status resolved) (target (node (document "d0") (qualified-name "PrivateImportTest::P3")))))
+    (reference (id (source (node (document "d0") (qualified-name "PrivateImportTest::P2::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "P1::*") (range (start (line 5) (character 17)) (end (line 5) (character 19))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "PrivateImportTest::P4::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "P2::*") (range (start (line 27) (character 20)) (end (line 27) (character 22))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "PrivateImportTest::P4::z1"))) (kind featureTyping) (ordinal 0)) (authored-target "A") (range (start (line 30) (character 11)) (end (line 30) (character 12))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "PrivateImportTest::x"))) (kind featureTyping) (ordinal 0)) (authored-target "P1::A") (range (start (line 8) (character 9)) (end (line 8) (character 14))) (outcome (status resolved) (target (node (document "d0") (qualified-name "PrivateImportTest::P1::A")))))
+    (reference (id (source (node (document "d0") (qualified-name "PrivateImportTest::z"))) (kind featureTyping) (ordinal 0)) (authored-target "B") (range (start (line 24) (character 9)) (end (line 24) (character 10))) (outcome (status resolved) (target (node (document "d0") (qualified-name "PrivateImportTest::P3::B")))))
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "PrivateImportTest::P4::z1"))) (to (node (document "d0") (qualified-name "PrivateImportTest::P1::A"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "PrivateImportTest::x"))) (to (node (document "d0") (qualified-name "PrivateImportTest::P1::A"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "PrivateImportTest::z"))) (to (node (document "d0") (qualified-name "PrivateImportTest::P3::B"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "PrivateImportTest::x"))) (target (node (document "d0") (qualified-name "PrivateImportTest::P1::A"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "PrivateImportTest::x"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "PrivateImportTest::z"))) (target (node (document "d0") (qualified-name "PrivateImportTest::P3::B"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "PrivateImportTest::z"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "PrivateImportTest::P1::A"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "PrivateImportTest::P3::B"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "PrivateImportTest::P4::z1"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "PrivateImportTest::x"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "PrivateImportTest::z"))) (status missing-prerequisite) (target "Parts::parts"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/private_import_test.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 5 17) (end 5 19))
-      )
-      (diagnostic
-        (severity warning)
-        (code "invalid_qualified_name_segment")
-        (source "semantic")
-        (range (start 8 9) (end 8 14))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 27 20) (end 27 22))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

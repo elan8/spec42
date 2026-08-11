@@ -38,6 +38,21 @@ package 'Local Clock Example' {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "25_local_clock_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 36))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -88,6 +103,18 @@ CloseCurly,EndOfFile,
         (state_usage 'responding')
         (target_transition)))))
 ~~~
+# EXPECTED
+~~~
+semantic.duplicate_name 'off'
+semantic.unresolved_name 'localClock'
+semantic.unresolved_name 'String'
+~~~
+# PROBLEMS
+~~~
+semantic.duplicate_name 'off'
+semantic.unresolved_name 'localClock'
+semantic.unresolved_name 'String'
+~~~
 # FORMAT
 ~~~sysml
 package 'Local Clock Example' {
@@ -124,122 +151,56 @@ package 'Local Clock Example' {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.duplicate_name 'off'
-semantic.unresolved_name 'localClock'
-semantic.unresolved_name 'String'
-~~~
-# PROBLEMS
-~~~
-semantic.duplicate_name 'off'
-semantic.unresolved_name 'localClock'
-semantic.unresolved_name 'String'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Local Clock Example"))) (name "Local Clock Example") (declared-name "Local Clock Example")
-      (contains
-        (element (kind "item def") (id (node (document "d0") (qualified-name "Local Clock Example::Request"))) (name "Request") (declared-name "Request"))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Local Clock Example::Server"))) (name "Server") (declared-name "Server") (declared)
-          (contains
-            (element (kind "state") (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))) (name "ServerBehavior") (declared-name "ServerBehavior") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Local Clock Example::Server"))))
-              (contains
-                (element (kind "action") (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::_entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "Local Clock Example::Server")))))
-                (element (kind "state") (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::off"))) (name "off") (declared-name "off") (effective (featuring-type (node (document "d0") (qualified-name "Local Clock Example::Server")))))
-                (element (kind "state") (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::responding"))) (name "responding") (declared-name "responding") (effective (featuring-type (node (document "d0") (qualified-name "Local Clock Example::Server")))))
-                (element (kind "transition") (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_off"))) (name "transition_ServerBehavior_to_off") (declared-name "transition_ServerBehavior_to_off") (effective (featuring-type (node (document "d0") (qualified-name "Local Clock Example::Server"))))
-                  (contains
-                    (element (kind "transition trigger") (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_off::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "Local Clock Example::Server")))))
-                  )
-                )
-                (element (kind "transition") (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_responding"))) (name "transition_ServerBehavior_to_responding") (declared-name "transition_ServerBehavior_to_responding") (effective (featuring-type (node (document "d0") (qualified-name "Local Clock Example::Server"))))
-                  (contains
-                    (element (kind "transition trigger") (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_responding::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "Local Clock Example::Server")))))
-                  )
-                )
-                (element (kind "transition") (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_waiting"))) (name "transition_ServerBehavior_to_waiting") (declared-name "transition_ServerBehavior_to_waiting") (effective (featuring-type (node (document "d0") (qualified-name "Local Clock Example::Server"))))
-                  (contains
-                    (element (kind "transition trigger") (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_waiting::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "Local Clock Example::Server")))))
-                  )
-                )
-                (element (kind "transition") (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_waiting#transition"))) (name "transition_ServerBehavior_to_waiting") (declared-name "transition_ServerBehavior_to_waiting") (effective (featuring-type (node (document "d0") (qualified-name "Local Clock Example::Server"))))
-                  (contains
-                    (element (kind "transition trigger") (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_waiting#transition::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "Local Clock Example::Server")))))
-                  )
-                )
-                (element (kind "state") (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::waiting"))) (name "waiting") (declared-name "waiting") (effective (featuring-type (node (document "d0") (qualified-name "Local Clock Example::Server")))))
-              )
-            )
-            (element (kind "part") (id (node (document "d0") (qualified-name "Local Clock Example::Server::localClock"))) (name "localClock") (declared (properties (ordered false)) (feature-value (kind bound) (expression (kind "constructor") (reference "Time::Clock")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Local Clock Example::Server"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Local Clock Example::Server::localClock"))) (role feature-value))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
-            (element (kind "port") (id (node (document "d0") (qualified-name "Local Clock Example::Server::requestPort"))) (name "requestPort") (declared-name "requestPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Local Clock Example::Server")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Local Clock Example::Server::today"))) (name "today") (declared-name "today") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Local Clock Example::Server")))))
-          )
-        )
-        (element (kind "item def") (id (node (document "d0") (qualified-name "Local Clock Example::Start"))) (name "Start") (declared-name "Start"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Local Clock Example::String"))) (name "String") (declared-name "String"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f2c06ab46cdcc62799091ebe0852bc26ed4d8b94b27af787d4deef8fff254c5b") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Local Clock Example"))) (kind "package") (name "Local Clock Example") (declared-name "Local Clock Example") (range (start (line 0) (character 0)) (end (line 0) (character 581))))
+    (element (id (node (document "d0") (qualified-name "Local Clock Example::Request"))) (kind "item def") (name "Request") (declared-name "Request") (range (start (line 4) (character 1)) (end (line 4) (character 18))) (parent (node (document "d0") (qualified-name "Local Clock Example"))))
+    (element (id (node (document "d0") (qualified-name "Local Clock Example::Server"))) (kind "part def") (name "Server") (declared-name "Server") (range (start (line 6) (character 1)) (end (line 6) (character 469))) (parent (node (document "d0") (qualified-name "Local Clock Example"))))
+    (element (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))) (kind "state") (name "ServerBehavior") (declared-name "ServerBehavior") (range (start (line 13) (character 2)) (end (line 13) (character 347))) (parent (node (document "d0") (qualified-name "Local Clock Example::Server"))) (authored (membership (kind Feature)) (relationships (transition (reference "Local Clock Example::Server::ServerBehavior::waiting") (range none)) (transition (reference "Local Clock Example::Server::ServerBehavior::responding") (range none)) (transition (reference "Local Clock Example::Server::ServerBehavior::off") (range none)) (transition (reference "Local Clock Example::Server::ServerBehavior::waiting") (range none)) (initial-state (reference "Local Clock Example::Server::ServerBehavior::off") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::_entry"))) (kind "action") (name "entry") (declared-name "entry") (range (start (line 14) (character 3)) (end (line 14) (character 9))) (parent (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))))
+    (element (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::off"))) (kind "state") (name "off") (declared-name "off") (range (start (line 16) (character 3)) (end (line 16) (character 13))) (parent (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))))
+    (element (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::responding"))) (kind "state") (name "responding") (declared-name "responding") (range (start (line 26) (character 3)) (end (line 26) (character 20))) (parent (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))))
+    (element (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_off"))) (kind "transition") (name "transition_ServerBehavior_to_off") (declared-name "transition_ServerBehavior_to_off") (range (start (line 23) (character 3)) (end (line 23) (character 72))) (parent (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))))
+    (element (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_off::trigger"))) (kind "transition trigger") (name "trigger") (declared-name "trigger") (range (start (line 23) (character 3)) (end (line 23) (character 72))) (parent (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_off"))))
+    (element (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_responding"))) (kind "transition") (name "transition_ServerBehavior_to_responding") (declared-name "transition_ServerBehavior_to_responding") (range (start (line 21) (character 3)) (end (line 21) (character 64))) (parent (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))))
+    (element (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_responding::trigger"))) (kind "transition trigger") (name "trigger") (declared-name "trigger") (range (start (line 21) (character 3)) (end (line 21) (character 64))) (parent (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_responding"))))
+    (element (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_waiting"))) (kind "transition") (name "transition_ServerBehavior_to_waiting") (declared-name "transition_ServerBehavior_to_waiting") (range (start (line 17) (character 3)) (end (line 17) (character 49))) (parent (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))))
+    (element (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_waiting#transition"))) (kind "transition") (name "transition_ServerBehavior_to_waiting") (declared-name "transition_ServerBehavior_to_waiting") (range (start (line 27) (character 3)) (end (line 27) (character 45))) (parent (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))))
+    (element (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_waiting#transition::trigger"))) (kind "transition trigger") (name "trigger") (declared-name "trigger") (range (start (line 27) (character 3)) (end (line 27) (character 45))) (parent (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_waiting#transition"))))
+    (element (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_waiting::trigger"))) (kind "transition trigger") (name "trigger") (declared-name "trigger") (range (start (line 17) (character 3)) (end (line 17) (character 49))) (parent (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_waiting"))))
+    (element (id (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::waiting"))) (kind "state") (name "waiting") (declared-name "waiting") (range (start (line 20) (character 3)) (end (line 20) (character 17))) (parent (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))))
+    (element (id (node (document "d0") (qualified-name "Local Clock Example::Server::localClock"))) (kind "part") (name "localClock") (range (start (line 7) (character 2)) (end (line 7) (character 42))) (parent (node (document "d0") (qualified-name "Local Clock Example::Server"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "localClock") (range (start (line 7) (character 11)) (end (line 7) (character 21)))))))
+    (element (id (node (document "d0") (qualified-name "Local Clock Example::Server::requestPort"))) (kind "port") (name "requestPort") (declared-name "requestPort") (range (start (line 11) (character 2)) (end (line 11) (character 19))) (parent (node (document "d0") (qualified-name "Local Clock Example::Server"))))
+    (element (id (node (document "d0") (qualified-name "Local Clock Example::Server::today"))) (kind "attribute") (name "today") (declared-name "today") (range (start (line 9) (character 2)) (end (line 9) (character 27))) (parent (node (document "d0") (qualified-name "Local Clock Example::Server"))) (authored (membership (kind Feature)) (relationships (typing (reference "String") (range none)) (typing (reference "String") (range (start (line 9) (character 20)) (end (line 9) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "Local Clock Example::Start"))) (kind "item def") (name "Start") (declared-name "Start") (range (start (line 3) (character 1)) (end (line 3) (character 16))) (parent (node (document "d0") (qualified-name "Local Clock Example"))))
+    (element (id (node (document "d0") (qualified-name "Local Clock Example::String"))) (kind "import") (name "String") (declared-name "String") (range (start (line 1) (character 1)) (end (line 1) (character 37))) (parent (node (document "d0") (qualified-name "Local Clock Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::String") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 36))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))) (kind transitionSource) (ordinal 0)) (authored-target "Local Clock Example::Server::ServerBehavior::waiting") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::waiting")))))
+    (reference (id (source (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))) (kind transitionSource) (ordinal 1)) (authored-target "Local Clock Example::Server::ServerBehavior::responding") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::responding")))))
+    (reference (id (source (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))) (kind transitionSource) (ordinal 2)) (authored-target "Local Clock Example::Server::ServerBehavior::off") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::off")))))
+    (reference (id (source (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))) (kind transitionSource) (ordinal 3)) (authored-target "Local Clock Example::Server::ServerBehavior::waiting") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::waiting")))))
+    (reference (id (source (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))) (kind initialStateSource) (ordinal 0)) (authored-target "Local Clock Example::Server::ServerBehavior::off") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::off")))))
+    (reference (id (source (node (document "d0") (qualified-name "Local Clock Example::Server::localClock"))) (kind redefinition) (ordinal 0)) (authored-target "localClock") (range (start (line 7) (character 11)) (end (line 7) (character 21))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Local Clock Example::Server::localClock")))))
+    (reference (id (source (node (document "d0") (qualified-name "Local Clock Example::Server::today"))) (kind featureTyping) (ordinal 0)) (authored-target "String") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Local Clock Example::String")))))
+    (reference (id (source (node (document "d0") (qualified-name "Local Clock Example::Server::today"))) (kind featureTyping) (ordinal 1)) (authored-target "String") (range (start (line 9) (character 20)) (end (line 9) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Local Clock Example::String")))))
+    (reference (id (source (node (document "d0") (qualified-name "Local Clock Example::String"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::String") (range (start (line 1) (character 16)) (end (line 1) (character 36))) (outcome (status unresolved)))
   )
   (relationships
-    (initialState (status resolved) (from (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))) (to (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::off"))) (provenance authored))
-    (transition (status resolved) (from (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))) (to (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::off"))) (provenance authored))
-    (transition (status resolved) (from (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))) (to (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::responding"))) (provenance authored))
-    (transition (status resolved) (from (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))) (to (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::waiting"))) (provenance authored))
+    (relationship (kind transition) (source (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))) (target (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::off"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))) (kind transitionSource) (ordinal 2)))
+    (relationship (kind transition) (source (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))) (target (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::responding"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))) (kind transitionSource) (ordinal 1)))
+    (relationship (kind transition) (source (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))) (target (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::waiting"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))) (kind transitionSource) (ordinal 0)))
+    (relationship (kind transition) (source (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))) (target (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::waiting"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))) (kind transitionSource) (ordinal 3)))
+    (relationship (kind initialState) (source (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))) (target (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::off"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))) (kind initialStateSource) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Local Clock Example::Server::localClock"))) (target (node (document "d0") (qualified-name "Local Clock Example::Server::localClock"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Local Clock Example::Server::localClock"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Local Clock Example::Server::today"))) (target (node (document "d0") (qualified-name "Local Clock Example::String"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Local Clock Example::Server::today"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Local Clock Example::Server::today"))) (target (node (document "d0") (qualified-name "Local Clock Example::String"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Local Clock Example::Server::today"))) (kind featureTyping) (ordinal 1)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Local Clock Example::Request"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Local Clock Example::Server"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior"))) (status missing-prerequisite) (target "States::stateActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::_entry"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::off"))) (status missing-prerequisite) (target "States::stateActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::responding"))) (status missing-prerequisite) (target "States::stateActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_off"))) (status missing-prerequisite) (target "Actions::transitionActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_off::trigger"))) (status missing-prerequisite) (target "Actions::acceptActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_responding"))) (status missing-prerequisite) (target "Actions::transitionActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_responding::trigger"))) (status missing-prerequisite) (target "Actions::acceptActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_waiting"))) (status missing-prerequisite) (target "Actions::transitionActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_waiting#transition"))) (status missing-prerequisite) (target "Actions::transitionActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_waiting#transition::trigger"))) (status missing-prerequisite) (target "Actions::acceptActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::transition_ServerBehavior_to_waiting::trigger"))) (status missing-prerequisite) (target "Actions::acceptActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Local Clock Example::Server::ServerBehavior::waiting"))) (status missing-prerequisite) (target "States::stateActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Local Clock Example::Server::localClock"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Local Clock Example::Server::requestPort"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Local Clock Example::Server::today"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Local Clock Example::Start"))) (status missing-prerequisite) (target "Items::Item"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/25_local_clock_example.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 7 2) (end 7 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "accept_payload_incompatible")
-        (source "semantic")
-        (range (start 21 3) (end 21 64))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "Local Clock Example::Server::localClock")) (expression (status "unsupported") (error "declared expression form is not supported")))
   )
 )
 ~~~

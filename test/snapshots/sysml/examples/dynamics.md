@@ -97,6 +97,249 @@ package Dynamics {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "dynamics.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 7 2) (end 7 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 7 54) (end 7 72))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 7 73) (end 7 91))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 8 2) (end 8 57))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 11 25) (end 11 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 11 44) (end 11 62))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 11 63) (end 11 81))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 12 2) (end 12 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 15 21) (end 15 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 15 40) (end 15 59))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 15 60) (end 15 85))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 16 2) (end 16 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 19 21) (end 19 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 19 40) (end 19 60))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 19 61) (end 19 79))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 20 2) (end 20 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 27 2) (end 27 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 28 2) (end 28 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 31 2) (end 31 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 32 2) (end 32 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 33 2) (end 33 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 35 2) (end 35 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 36 2) (end 36 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 37 2) (end 37 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 53 8) (end 53 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 54 8) (end 54 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 57 8) (end 57 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 58 8) (end 58 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 59 8) (end 59 40))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_action_body_element")
+        (source "sysml")
+        (range (start 63 2) (end 63 76))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 63 2) (end 63 76))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 74 7) (end 74 12))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 74 15) (end 74 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 81 7) (end 81 12))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 81 15) (end 81 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 88 7) (end 88 12))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 88 15) (end 88 20))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -252,6 +495,92 @@ CloseCurly,EndOfFile,
         (connector_end)
         (connector_end)))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'PowerValue'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'SpeedValue'
+semantic.unresolved_name 'PowerValue'
+semantic.unresolved_name 'TimeValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'PowerValue'
+semantic.unresolved_name 'AccelerationValue'
+semantic.unresolved_name 'TimeValue'
+semantic.unresolved_name 'SpeedValue'
+semantic.unresolved_name 'AccelerationValue'
+semantic.unresolved_name 'SpeedValue'
+semantic.unresolved_name 'TimeValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'SpeedValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'TimeValue'
+semantic.unresolved_name 'PowerValue'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'SpeedValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'AccelerationValue'
+semantic.unresolved_name 'SpeedValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'PowerValue'
+semantic.unresolved_name 'TimeValue'
+semantic.unresolved_name 'PowerValue'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'SpeedValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'PowerValue'
+semantic.unresolved_name 'AccelerationValue'
+semantic.unresolved_name 'SpeedValue'
+semantic.unresolved_name 'LengthValue'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'PowerValue'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'SpeedValue'
+semantic.unresolved_name 'PowerValue'
+semantic.unresolved_name 'TimeValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'PowerValue'
+semantic.unresolved_name 'AccelerationValue'
+semantic.unresolved_name 'TimeValue'
+semantic.unresolved_name 'SpeedValue'
+semantic.unresolved_name 'AccelerationValue'
+semantic.unresolved_name 'SpeedValue'
+semantic.unresolved_name 'TimeValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'SpeedValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'TimeValue'
+semantic.unresolved_name 'PowerValue'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'SpeedValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'AccelerationValue'
+semantic.unresolved_name 'SpeedValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'PowerValue'
+semantic.unresolved_name 'TimeValue'
+semantic.unresolved_name 'PowerValue'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'SpeedValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'PowerValue'
+semantic.unresolved_name 'AccelerationValue'
+semantic.unresolved_name 'SpeedValue'
+semantic.unresolved_name 'LengthValue'
+~~~
 # FORMAT
 ~~~sysml
 package Dynamics {
@@ -346,450 +675,119 @@ package Dynamics {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'PowerValue'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'SpeedValue'
-semantic.unresolved_name 'PowerValue'
-semantic.unresolved_name 'TimeValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'PowerValue'
-semantic.unresolved_name 'AccelerationValue'
-semantic.unresolved_name 'TimeValue'
-semantic.unresolved_name 'SpeedValue'
-semantic.unresolved_name 'AccelerationValue'
-semantic.unresolved_name 'SpeedValue'
-semantic.unresolved_name 'TimeValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'SpeedValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'TimeValue'
-semantic.unresolved_name 'PowerValue'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'SpeedValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'AccelerationValue'
-semantic.unresolved_name 'SpeedValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'PowerValue'
-semantic.unresolved_name 'TimeValue'
-semantic.unresolved_name 'PowerValue'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'SpeedValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'PowerValue'
-semantic.unresolved_name 'AccelerationValue'
-semantic.unresolved_name 'SpeedValue'
-semantic.unresolved_name 'LengthValue'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'PowerValue'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'SpeedValue'
-semantic.unresolved_name 'PowerValue'
-semantic.unresolved_name 'TimeValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'PowerValue'
-semantic.unresolved_name 'AccelerationValue'
-semantic.unresolved_name 'TimeValue'
-semantic.unresolved_name 'SpeedValue'
-semantic.unresolved_name 'AccelerationValue'
-semantic.unresolved_name 'SpeedValue'
-semantic.unresolved_name 'TimeValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'SpeedValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'TimeValue'
-semantic.unresolved_name 'PowerValue'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'SpeedValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'AccelerationValue'
-semantic.unresolved_name 'SpeedValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'PowerValue'
-semantic.unresolved_name 'TimeValue'
-semantic.unresolved_name 'PowerValue'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'SpeedValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'PowerValue'
-semantic.unresolved_name 'AccelerationValue'
-semantic.unresolved_name 'SpeedValue'
-semantic.unresolved_name 'LengthValue'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Dynamics"))) (name "Dynamics") (declared-name "Dynamics")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Dynamics::*"))) (name "*") (declared-name "*"))
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "Dynamics::Acceleration"))) (name "Acceleration") (declared-name "Acceleration")
-          (contains
-            (element (kind "return parameter") (id (node (document "d0") (qualified-name "Dynamics::Acceleration::a"))) (name "a") (declared-name "a") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Acceleration")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Acceleration::dt"))) (name "dt") (declared-name "dt") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Acceleration")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Acceleration::tm"))) (name "tm") (declared-name "tm") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Acceleration")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Acceleration::tp"))) (name "tp") (declared-name "tp") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Acceleration")))))
-          )
-        )
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "Dynamics::Position"))) (name "Position") (declared-name "Position")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Position::dt"))) (name "dt") (declared-name "dt") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Position")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Position::v"))) (name "v") (declared-name "v") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Position")))))
-            (element (kind "return parameter") (id (node (document "d0") (qualified-name "Dynamics::Position::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Position")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Position::x0"))) (name "x0") (declared-name "x0") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Position")))))
-          )
-        )
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "Dynamics::Power"))) (name "Power") (declared-name "Power")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Power::Cd"))) (name "Cd") (declared-name "Cd") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Power")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Power::Cf"))) (name "Cf") (declared-name "Cf") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Power")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Power::tm"))) (name "tm") (declared-name "tm") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Power")))))
-            (element (kind "return parameter") (id (node (document "d0") (qualified-name "Dynamics::Power::tp"))) (name "tp") (declared-name "tp") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Power")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Power::v"))) (name "v") (declared-name "v") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Power")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Power::whlpwr"))) (name "whlpwr") (declared-name "whlpwr") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Power")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "Dynamics::Real"))) (name "Real") (declared-name "Real"))
-        (element (kind "action def") (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics"))) (name "StraightLineVehicleDynamics") (declared-name "StraightLineVehicleDynamics")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::Cd"))) (name "Cd") (declared-name "Cd") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::Cf"))) (name "Cf") (declared-name "Cf") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::a_out"))) (name "a_out") (declared-name "a_out") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::dt"))) (name "dt") (declared-name "dt") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::tm"))) (name "tm") (declared-name "tm") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::v_in"))) (name "v_in") (declared-name "v_in") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::v_out"))) (name "v_out") (declared-name "v_out") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::whlpwr"))) (name "whlpwr") (declared-name "whlpwr") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::x_in"))) (name "x_in") (declared-name "x_in") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::x_out"))) (name "x_out") (declared-name "x_out") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
-          )
-        )
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "Dynamics::Velocity"))) (name "Velocity") (declared-name "Velocity")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Velocity::a"))) (name "a") (declared-name "a") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Velocity")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Velocity::dt"))) (name "dt") (declared-name "dt") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Velocity")))))
-            (element (kind "return parameter") (id (node (document "d0") (qualified-name "Dynamics::Velocity::v"))) (name "v") (declared-name "v") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Velocity")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Velocity::v0"))) (name "v0") (declared-name "v0") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Velocity")))))
-          )
-        )
-        (element (kind "action") (id (node (document "d0") (qualified-name "Dynamics::dyn1"))) (name "dyn1") (declared-name "dyn1") (declared)
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::dyn1::Cd"))) (name "Cd") (declared-name "Cd") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::dyn1::Cf"))) (name "Cf") (declared-name "Cf") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::dyn1::dt"))) (name "dt") (declared-name "dt") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::dyn1::tm"))) (name "tm") (declared-name "tm") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
-            (element (kind "action body decl") (id (node (document "d0") (qualified-name "Dynamics::dyn1::tp : PowerValue = Power(whlpwr, Cd, Cf, tm, v_in)"))) (name "tp : PowerValue = Power(whlpwr, Cd, Cf, tm, v_in)") (declared-name "tp : PowerValue = Power(whlpwr, Cd, Cf, tm, v_in)") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::dyn1::v_in"))) (name "v_in") (declared-name "v_in") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::dyn1::whlpwr"))) (name "whlpwr") (declared-name "whlpwr") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::dyn1::x_in"))) (name "x_in") (declared-name "x_in") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
-          )
-        )
-        (element (kind "action") (id (node (document "d0") (qualified-name "Dynamics::dyn2"))) (name "dyn2") (declared-name "dyn2") (declared)
-          (contains
-            (element (kind "action body decl") (id (node (document "d0") (qualified-name "Dynamics::dyn2::acc : Acceleration"))) (name "acc : Acceleration") (declared-name "acc : Acceleration") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
-            (element (kind "action body decl") (id (node (document "d0") (qualified-name "Dynamics::dyn2::pos : Position"))) (name "pos : Position") (declared-name "pos : Position") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
-            (element (kind "action body decl") (id (node (document "d0") (qualified-name "Dynamics::dyn2::vel : Velocity"))) (name "vel : Velocity") (declared-name "vel : Velocity") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "8c477366c3d204950283106cbd2d1ce9e50f5dcd4a6d228fe0bb623977956afc") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Dynamics"))) (kind "package") (name "Dynamics") (declared-name "Dynamics") (range (start (line 0) (character 0)) (end (line 0) (character 2339))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 23))) (parent (node (document "d0") (qualified-name "Dynamics"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 19))))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::Acceleration"))) (kind "calc def") (name "Acceleration") (declared-name "Acceleration") (range (start (line 11) (character 1)) (end (line 11) (character 132))) (parent (node (document "d0") (qualified-name "Dynamics"))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::Acceleration::a"))) (kind "return parameter") (name "a") (declared-name "a") (range (start (line 12) (character 2)) (end (line 12) (character 46))) (parent (node (document "d0") (qualified-name "Dynamics::Acceleration"))) (authored (relationships (typing (reference "AccelerationValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::Acceleration::dt"))) (kind "in out parameter") (name "dt") (declared-name "dt") (range (start (line 11) (character 25)) (end (line 11) (character 43))) (parent (node (document "d0") (qualified-name "Dynamics::Acceleration"))) (authored (relationships (typing (reference "TimeValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::Acceleration::tm"))) (kind "in out parameter") (name "tm") (declared-name "tm") (range (start (line 11) (character 44)) (end (line 11) (character 62))) (parent (node (document "d0") (qualified-name "Dynamics::Acceleration"))) (authored (relationships (typing (reference "MassValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::Acceleration::tp"))) (kind "in out parameter") (name "tp") (declared-name "tp") (range (start (line 11) (character 63)) (end (line 11) (character 81))) (parent (node (document "d0") (qualified-name "Dynamics::Acceleration"))) (authored (relationships (typing (reference "PowerValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::Position"))) (kind "calc def") (name "Position") (declared-name "Position") (range (start (line 19) (character 1)) (end (line 19) (character 123))) (parent (node (document "d0") (qualified-name "Dynamics"))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::Position::dt"))) (kind "in out parameter") (name "dt") (declared-name "dt") (range (start (line 19) (character 21)) (end (line 19) (character 39))) (parent (node (document "d0") (qualified-name "Dynamics::Position"))) (authored (relationships (typing (reference "TimeValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::Position::v"))) (kind "in out parameter") (name "v") (declared-name "v") (range (start (line 19) (character 61)) (end (line 19) (character 79))) (parent (node (document "d0") (qualified-name "Dynamics::Position"))) (authored (relationships (typing (reference "SpeedValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::Position::x"))) (kind "return parameter") (name "x") (declared-name "x") (range (start (line 20) (character 2)) (end (line 20) (character 39))) (parent (node (document "d0") (qualified-name "Dynamics::Position"))) (authored (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::Position::x0"))) (kind "in out parameter") (name "x0") (declared-name "x0") (range (start (line 19) (character 40)) (end (line 19) (character 60))) (parent (node (document "d0") (qualified-name "Dynamics::Position"))) (authored (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::Power"))) (kind "calc def") (name "Power") (declared-name "Power") (range (start (line 6) (character 1)) (end (line 6) (character 170))) (parent (node (document "d0") (qualified-name "Dynamics"))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::Power::Cd"))) (kind "in out parameter") (name "Cd") (declared-name "Cd") (range (start (line 7) (character 26)) (end (line 7) (character 39))) (parent (node (document "d0") (qualified-name "Dynamics::Power"))) (authored (relationships (typing (reference "Real") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::Power::Cf"))) (kind "in out parameter") (name "Cf") (declared-name "Cf") (range (start (line 7) (character 40)) (end (line 7) (character 53))) (parent (node (document "d0") (qualified-name "Dynamics::Power"))) (authored (relationships (typing (reference "Real") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::Power::tm"))) (kind "in out parameter") (name "tm") (declared-name "tm") (range (start (line 7) (character 54)) (end (line 7) (character 72))) (parent (node (document "d0") (qualified-name "Dynamics::Power"))) (authored (relationships (typing (reference "MassValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::Power::tp"))) (kind "return parameter") (name "tp") (declared-name "tp") (range (start (line 8) (character 2)) (end (line 8) (character 57))) (parent (node (document "d0") (qualified-name "Dynamics::Power"))) (authored (relationships (typing (reference "PowerValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::Power::v"))) (kind "in out parameter") (name "v") (declared-name "v") (range (start (line 7) (character 73)) (end (line 7) (character 91))) (parent (node (document "d0") (qualified-name "Dynamics::Power"))) (authored (relationships (typing (reference "SpeedValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::Power::whlpwr"))) (kind "in out parameter") (name "whlpwr") (declared-name "whlpwr") (range (start (line 7) (character 2)) (end (line 7) (character 25))) (parent (node (document "d0") (qualified-name "Dynamics::Power"))) (authored (relationships (typing (reference "PowerValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::Real"))) (kind "import") (name "Real") (declared-name "Real") (range (start (line 1) (character 1)) (end (line 1) (character 35))) (parent (node (document "d0") (qualified-name "Dynamics"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 34))))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics"))) (kind "action def") (name "StraightLineVehicleDynamics") (declared-name "StraightLineVehicleDynamics") (range (start (line 25) (character 1)) (end (line 25) (character 607))) (parent (node (document "d0") (qualified-name "Dynamics"))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::Cd"))) (kind "in out parameter") (name "Cd") (declared-name "Cd") (range (start (line 29) (character 2)) (end (line 29) (character 25))) (parent (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics"))) (authored (relationships (typing (reference "Real") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::Cf"))) (kind "in out parameter") (name "Cf") (declared-name "Cf") (range (start (line 30) (character 2)) (end (line 30) (character 24))) (parent (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics"))) (authored (relationships (typing (reference "Real") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::a_out"))) (kind "in out parameter") (name "a_out") (declared-name "a_out") (range (start (line 35) (character 2)) (end (line 35) (character 42))) (parent (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics"))) (authored (relationships (typing (reference "AccelerationValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::dt"))) (kind "in out parameter") (name "dt") (declared-name "dt") (range (start (line 27) (character 2)) (end (line 27) (character 30))) (parent (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics"))) (authored (relationships (typing (reference "TimeValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::tm"))) (kind "in out parameter") (name "tm") (declared-name "tm") (range (start (line 31) (character 2)) (end (line 31) (character 30))) (parent (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics"))) (authored (relationships (typing (reference "MassValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::v_in"))) (kind "in out parameter") (name "v_in") (declared-name "v_in") (range (start (line 32) (character 2)) (end (line 32) (character 33))) (parent (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics"))) (authored (relationships (typing (reference "SpeedValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::v_out"))) (kind "in out parameter") (name "v_out") (declared-name "v_out") (range (start (line 36) (character 2)) (end (line 36) (character 35))) (parent (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics"))) (authored (relationships (typing (reference "SpeedValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::whlpwr"))) (kind "in out parameter") (name "whlpwr") (declared-name "whlpwr") (range (start (line 28) (character 2)) (end (line 28) (character 35))) (parent (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics"))) (authored (relationships (typing (reference "PowerValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::x_in"))) (kind "in out parameter") (name "x_in") (declared-name "x_in") (range (start (line 33) (character 2)) (end (line 33) (character 34))) (parent (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics"))) (authored (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::x_out"))) (kind "in out parameter") (name "x_out") (declared-name "x_out") (range (start (line 37) (character 2)) (end (line 37) (character 36))) (parent (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics"))) (authored (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::Velocity"))) (kind "calc def") (name "Velocity") (declared-name "Velocity") (range (start (line 15) (character 1)) (end (line 15) (character 127))) (parent (node (document "d0") (qualified-name "Dynamics"))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::Velocity::a"))) (kind "in out parameter") (name "a") (declared-name "a") (range (start (line 15) (character 60)) (end (line 15) (character 85))) (parent (node (document "d0") (qualified-name "Dynamics::Velocity"))) (authored (relationships (typing (reference "AccelerationValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::Velocity::dt"))) (kind "in out parameter") (name "dt") (declared-name "dt") (range (start (line 15) (character 21)) (end (line 15) (character 39))) (parent (node (document "d0") (qualified-name "Dynamics::Velocity"))) (authored (relationships (typing (reference "TimeValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::Velocity::v"))) (kind "return parameter") (name "v") (declared-name "v") (range (start (line 16) (character 2)) (end (line 16) (character 38))) (parent (node (document "d0") (qualified-name "Dynamics::Velocity"))) (authored (relationships (typing (reference "SpeedValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::Velocity::v0"))) (kind "in out parameter") (name "v0") (declared-name "v0") (range (start (line 15) (character 40)) (end (line 15) (character 59))) (parent (node (document "d0") (qualified-name "Dynamics::Velocity"))) (authored (relationships (typing (reference "SpeedValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::dyn1"))) (kind "action") (name "dyn1") (declared-name "dyn1") (range (start (line 52) (character 1)) (end (line 52) (character 584))) (parent (node (document "d0") (qualified-name "Dynamics"))) (authored (membership (kind Feature)) (relationships (typing (reference "StraightLineVehicleDynamics") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::dyn1::Cd"))) (kind "in out parameter") (name "Cd") (declared-name "Cd") (range (start (line 55) (character 8)) (end (line 55) (character 31))) (parent (node (document "d0") (qualified-name "Dynamics::dyn1"))) (authored (relationships (typing (reference "Real") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::dyn1::Cf"))) (kind "in out parameter") (name "Cf") (declared-name "Cf") (range (start (line 56) (character 8)) (end (line 56) (character 30))) (parent (node (document "d0") (qualified-name "Dynamics::dyn1"))) (authored (relationships (typing (reference "Real") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::dyn1::dt"))) (kind "in out parameter") (name "dt") (declared-name "dt") (range (start (line 53) (character 8)) (end (line 53) (character 36))) (parent (node (document "d0") (qualified-name "Dynamics::dyn1"))) (authored (relationships (typing (reference "TimeValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::dyn1::tm"))) (kind "in out parameter") (name "tm") (declared-name "tm") (range (start (line 57) (character 8)) (end (line 57) (character 36))) (parent (node (document "d0") (qualified-name "Dynamics::dyn1"))) (authored (relationships (typing (reference "MassValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::dyn1::tp : PowerValue = Power(whlpwr, Cd, Cf, tm, v_in)"))) (kind "action body decl") (name "tp : PowerValue = Power(whlpwr, Cd, Cf, tm, v_in)") (declared-name "tp : PowerValue = Power(whlpwr, Cd, Cf, tm, v_in)") (range (start (line 61) (character 2)) (end (line 61) (character 62))) (parent (node (document "d0") (qualified-name "Dynamics::dyn1"))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::dyn1::v_in"))) (kind "in out parameter") (name "v_in") (declared-name "v_in") (range (start (line 58) (character 8)) (end (line 58) (character 39))) (parent (node (document "d0") (qualified-name "Dynamics::dyn1"))) (authored (relationships (typing (reference "SpeedValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::dyn1::whlpwr"))) (kind "in out parameter") (name "whlpwr") (declared-name "whlpwr") (range (start (line 54) (character 8)) (end (line 54) (character 41))) (parent (node (document "d0") (qualified-name "Dynamics::dyn1"))) (authored (relationships (typing (reference "PowerValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::dyn1::x_in"))) (kind "in out parameter") (name "x_in") (declared-name "x_in") (range (start (line 59) (character 8)) (end (line 59) (character 40))) (parent (node (document "d0") (qualified-name "Dynamics::dyn1"))) (authored (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::dyn2"))) (kind "action") (name "dyn2") (declared-name "dyn2") (range (start (line 68) (character 1)) (end (line 68) (character 417))) (parent (node (document "d0") (qualified-name "Dynamics"))) (authored (membership (kind Feature)) (relationships (typing (reference "StraightLineVehicleDynamics") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::dyn2::acc : Acceleration"))) (kind "action body decl") (name "acc : Acceleration") (declared-name "acc : Acceleration") (range (start (line 69) (character 2)) (end (line 69) (character 117))) (parent (node (document "d0") (qualified-name "Dynamics::dyn2"))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::dyn2::pos : Position"))) (kind "action body decl") (name "pos : Position") (declared-name "pos : Position") (range (start (line 83) (character 2)) (end (line 83) (character 89))) (parent (node (document "d0") (qualified-name "Dynamics::dyn2"))))
+    (element (id (node (document "d0") (qualified-name "Dynamics::dyn2::vel : Velocity"))) (kind "action body decl") (name "vel : Velocity") (declared-name "vel : Velocity") (range (start (line 76) (character 2)) (end (line 76) (character 89))) (parent (node (document "d0") (qualified-name "Dynamics::dyn2"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ISQ::*") (range (start (line 2) (character 16)) (end (line 2) (character 19))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::Acceleration::a"))) (kind featureTyping) (ordinal 0)) (authored-target "AccelerationValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::Acceleration::dt"))) (kind featureTyping) (ordinal 0)) (authored-target "TimeValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::Acceleration::tm"))) (kind featureTyping) (ordinal 0)) (authored-target "MassValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::Acceleration::tp"))) (kind featureTyping) (ordinal 0)) (authored-target "PowerValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::Position::dt"))) (kind featureTyping) (ordinal 0)) (authored-target "TimeValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::Position::v"))) (kind featureTyping) (ordinal 0)) (authored-target "SpeedValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::Position::x"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::Position::x0"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::Power::Cd"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Dynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::Power::Cf"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Dynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::Power::tm"))) (kind featureTyping) (ordinal 0)) (authored-target "MassValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::Power::tp"))) (kind featureTyping) (ordinal 0)) (authored-target "PowerValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::Power::v"))) (kind featureTyping) (ordinal 0)) (authored-target "SpeedValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::Power::whlpwr"))) (kind featureTyping) (ordinal 0)) (authored-target "PowerValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (range (start (line 1) (character 16)) (end (line 1) (character 34))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::Cd"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Dynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::Cf"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Dynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::a_out"))) (kind featureTyping) (ordinal 0)) (authored-target "AccelerationValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::dt"))) (kind featureTyping) (ordinal 0)) (authored-target "TimeValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::tm"))) (kind featureTyping) (ordinal 0)) (authored-target "MassValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::v_in"))) (kind featureTyping) (ordinal 0)) (authored-target "SpeedValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::v_out"))) (kind featureTyping) (ordinal 0)) (authored-target "SpeedValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::whlpwr"))) (kind featureTyping) (ordinal 0)) (authored-target "PowerValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::x_in"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::x_out"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::Velocity::a"))) (kind featureTyping) (ordinal 0)) (authored-target "AccelerationValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::Velocity::dt"))) (kind featureTyping) (ordinal 0)) (authored-target "TimeValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::Velocity::v"))) (kind featureTyping) (ordinal 0)) (authored-target "SpeedValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::Velocity::v0"))) (kind featureTyping) (ordinal 0)) (authored-target "SpeedValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::dyn1"))) (kind featureTyping) (ordinal 0)) (authored-target "StraightLineVehicleDynamics") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::dyn1::Cd"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Dynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::dyn1::Cf"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Dynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::dyn1::dt"))) (kind featureTyping) (ordinal 0)) (authored-target "TimeValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::dyn1::tm"))) (kind featureTyping) (ordinal 0)) (authored-target "MassValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::dyn1::v_in"))) (kind featureTyping) (ordinal 0)) (authored-target "SpeedValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::dyn1::whlpwr"))) (kind featureTyping) (ordinal 0)) (authored-target "PowerValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::dyn1::x_in"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::dyn2"))) (kind featureTyping) (ordinal 0)) (authored-target "StraightLineVehicleDynamics") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::dyn2"))) (kind bindSource) (ordinal 0)) (authored-target "a_out") (range (start (line 74) (character 7)) (end (line 74) (character 12))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::dyn2"))) (kind bindSource) (ordinal 1)) (authored-target "v_out") (range (start (line 81) (character 7)) (end (line 81) (character 12))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::dyn2"))) (kind bindSource) (ordinal 2)) (authored-target "x_out") (range (start (line 88) (character 7)) (end (line 88) (character 12))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::dyn2"))) (kind bindTarget) (ordinal 0)) (authored-target "acc::a") (range (start (line 74) (character 15)) (end (line 74) (character 20))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::dyn2"))) (kind bindTarget) (ordinal 1)) (authored-target "vel::v") (range (start (line 81) (character 15)) (end (line 81) (character 20))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Dynamics::dyn2"))) (kind bindTarget) (ordinal 2)) (authored-target "pos::x") (range (start (line 88) (character 15)) (end (line 88) (character 20))) (outcome (status unresolved)))
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Dynamics::dyn1"))) (to (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Dynamics::dyn2"))) (to (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Dynamics::Power::Cd"))) (target (node (document "d0") (qualified-name "Dynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Dynamics::Power::Cd"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Dynamics::Power::Cf"))) (target (node (document "d0") (qualified-name "Dynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Dynamics::Power::Cf"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::Cd"))) (target (node (document "d0") (qualified-name "Dynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::Cd"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::Cf"))) (target (node (document "d0") (qualified-name "Dynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::Cf"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Dynamics::dyn1"))) (target (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Dynamics::dyn1"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Dynamics::dyn1::Cd"))) (target (node (document "d0") (qualified-name "Dynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Dynamics::dyn1::Cd"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Dynamics::dyn1::Cf"))) (target (node (document "d0") (qualified-name "Dynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Dynamics::dyn1::Cf"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Dynamics::dyn2"))) (target (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Dynamics::dyn2"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-    (bind (status pending-expression) (document "d0") (source-expression "a_out") (target-expression "acc::a") (container-prefix "Dynamics::dyn2"))
-    (bind (status pending-expression) (document "d0") (source-expression "v_out") (target-expression "vel::v") (container-prefix "Dynamics::dyn2"))
-    (bind (status pending-expression) (document "d0") (source-expression "x_out") (target-expression "pos::x") (container-prefix "Dynamics::dyn2"))
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Dynamics::Acceleration"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Dynamics::Position"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Dynamics::Power"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics"))) (status missing-prerequisite) (target "Actions::Action"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Dynamics::Velocity"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Dynamics::dyn1"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Dynamics::dyn2"))) (status missing-prerequisite) (target "Actions::actions"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/dynamics.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 16) (end 2 19))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 7 2) (end 7 25))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 7 26) (end 7 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 7 40) (end 7 53))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 7 54) (end 7 72))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 7 73) (end 7 91))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 8 2) (end 8 57))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 11 25) (end 11 43))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 11 44) (end 11 62))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 11 63) (end 11 81))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 12 2) (end 12 46))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 15 21) (end 15 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 15 40) (end 15 59))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 15 60) (end 15 85))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 16 2) (end 16 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 19 21) (end 19 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 19 40) (end 19 60))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 19 61) (end 19 79))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 20 2) (end 20 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 27 2) (end 27 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 28 2) (end 28 35))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 29 2) (end 29 25))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 30 2) (end 30 24))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 31 2) (end 31 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 32 2) (end 32 33))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 33 2) (end 33 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 35 2) (end 35 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 36 2) (end 36 35))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 37 2) (end 37 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 53 8) (end 53 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 54 8) (end 54 41))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 55 8) (end 55 31))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 56 8) (end 56 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 57 8) (end 57 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 58 8) (end 58 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 59 8) (end 59 40))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_action_body_element")
-        (source "sysml")
-        (range (start 63 2) (end 63 76))
-      )
-      (diagnostic
-        (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 63 2) (end 63 76))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_expression_relationship")
-        (source "semantic")
-        (range (start 74 7) (end 74 12))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_expression_relationship")
-        (source "semantic")
-        (range (start 81 7) (end 81 12))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_expression_relationship")
-        (source "semantic")
-        (range (start 88 7) (end 88 12))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

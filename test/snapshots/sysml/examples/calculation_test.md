@@ -36,6 +36,69 @@ package CalculationExample {
 	attribute masses2[*] = (vehicles as vehicle).m;
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "calculation_test.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 5 2) (end 5 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 5 16) (end 5 25))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_part_usage_body_element")
+        (source "sysml")
+        (range (start 13 2) (end 13 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 17 2) (end 17 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 18 2) (end 18 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 22 2) (end 22 51))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 26 1) (end 26 39))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -86,6 +149,18 @@ CloseCurly,EndOfFile,
     (attribute_usage 'masses1' multiplicity value)
     (attribute_usage 'masses2' multiplicity value)))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+~~~
 # FORMAT
 ~~~sysml
 package CalculationExample {
@@ -120,122 +195,54 @@ package CalculationExample {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "CalculationExample"))) (name "CalculationExample") (declared-name "CalculationExample")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "CalculationExample::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "CalculationExample::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "CalculationExample::MassSum"))) (name "MassSum") (declared-name "MassSum")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "CalculationExample::MassSum::partMasses"))) (name "partMasses") (declared-name "partMasses") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "CalculationExample::MassSum")))))
-            (element (kind "return parameter") (id (node (document "d0") (qualified-name "CalculationExample::MassSum::totalMass"))) (name "totalMass") (declared-name "totalMass") (effective (featuring-type (node (document "d0") (qualified-name "CalculationExample::MassSum")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "CalculationExample::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "CalculationExample::VehiclePart"))) (name "VehiclePart") (declared-name "VehiclePart") (declared)
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "CalculationExample::VehiclePart::m"))) (name "m") (declared-name "m") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "CalculationExample::VehiclePart")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "CalculationExample::masses1"))) (name "masses1") (declared-name "masses1") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "m") (children (expression (kind "parenthesized") (children (expression (kind "typeCheck") (reference "VehiclePart") (operator "as") (children (expression (kind "featureReference") (reference "vehicles")))))))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "CalculationExample::masses1"))) (role feature-value))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "CalculationExample::masses2"))) (name "masses2") (declared-name "masses2") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "m") (children (expression (kind "parenthesized") (children (expression (kind "typeCheck") (reference "vehicle") (operator "as") (children (expression (kind "featureReference") (reference "vehicles")))))))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "CalculationExample::masses2"))) (role feature-value))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "CalculationExample::ms"))) (name "ms") (declared-name "ms") (declared (own-expression (expression (kind "featureReference") (reference "totalMass")))) (evaluation (expression (status "incomplete") (error "expression is incomplete")))
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "CalculationExample::ms::partMasses"))) (name "partMasses") (declared-name "partMasses") (declared (properties (direction "in")) (own-expression (expression (kind "tuple") (children (expression (kind "memberAccess") (reference "m") (children (expression (kind "memberAccess") (reference "eng") (children (expression (kind "featureReference") (reference "vehicle")))))) (expression (kind "memberAccess") (reference "m") (children (expression (kind "memberAccess") (reference "trans") (children (expression (kind "featureReference") (reference "vehicle")))))))))) (effective (featuring-type (node (document "d0") (qualified-name "CalculationExample::ms")))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
-          )
-        )
-        (element (kind "part") (id (node (document "d0") (qualified-name "CalculationExample::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "CalculationExample::vehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "CalculationExample::Vehicle")))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "CalculationExample::vehicle::trans"))) (name "trans") (declared-name "trans") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "CalculationExample::Vehicle")))))
-          )
-        )
-        (element (kind "part") (id (node (document "d0") (qualified-name "CalculationExample::vehicles"))) (name "vehicles") (declared-name "vehicles") (declared (properties (ordered false)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (provenance authored)) (feature-value (kind bound) (expression (kind "tuple") (children (expression (kind "featureReference") (reference "vehicle")) (expression (kind "featureReference") (reference "vehicle")))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "CalculationExample::vehicles"))) (role feature-value))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "56453e45cfffab1a058a95bfa1e636b9f01dbbd3841a43ae91e9c1cc6fba8cd5") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "CalculationExample"))) (kind "package") (name "CalculationExample") (declared-name "CalculationExample") (range (start (line 0) (character 0)) (end (line 0) (character 659))))
+    (element (id (node (document "d0") (qualified-name "CalculationExample::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 23))) (parent (node (document "d0") (qualified-name "CalculationExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 19))))))
+    (element (id (node (document "d0") (qualified-name "CalculationExample::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 38))) (parent (node (document "d0") (qualified-name "CalculationExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "NumericalFunctions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 34))))))
+    (element (id (node (document "d0") (qualified-name "CalculationExample::MassSum"))) (kind "calc def") (name "MassSum") (declared-name "MassSum") (range (start (line 16) (character 1)) (end (line 16) (character 107))) (parent (node (document "d0") (qualified-name "CalculationExample"))))
+    (element (id (node (document "d0") (qualified-name "CalculationExample::MassSum::partMasses"))) (kind "in out parameter") (name "partMasses") (declared-name "partMasses") (range (start (line 17) (character 2)) (end (line 17) (character 34))) (parent (node (document "d0") (qualified-name "CalculationExample::MassSum"))) (authored (relationships (typing (reference "partMasses : MassValue[0..*]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "CalculationExample::MassSum::totalMass"))) (kind "return parameter") (name "totalMass") (declared-name "totalMass") (range (start (line 18) (character 2)) (end (line 18) (character 49))) (parent (node (document "d0") (qualified-name "CalculationExample::MassSum"))) (authored (relationships (typing (reference "MassValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "CalculationExample::Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (range (start (line 8) (character 1)) (end (line 8) (character 33))) (parent (node (document "d0") (qualified-name "CalculationExample"))) (authored (membership (kind Owning)) (relationships (specializes (reference "VehiclePart") (range (start (line 8) (character 21)) (end (line 8) (character 32)))))))
+    (element (id (node (document "d0") (qualified-name "CalculationExample::VehiclePart"))) (kind "part def") (name "VehiclePart") (declared-name "VehiclePart") (range (start (line 4) (character 1)) (end (line 4) (character 53))) (parent (node (document "d0") (qualified-name "CalculationExample"))))
+    (element (id (node (document "d0") (qualified-name "CalculationExample::VehiclePart::m"))) (kind "attribute") (name "m") (declared-name "m") (range (start (line 5) (character 2)) (end (line 5) (character 26))) (parent (node (document "d0") (qualified-name "CalculationExample::VehiclePart"))) (authored (membership (kind Feature)) (relationships (typing (reference "MassValue") (range none)) (typing (reference "MassValue") (range (start (line 5) (character 16)) (end (line 5) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "CalculationExample::masses1"))) (kind "attribute def") (name "masses1") (declared-name "masses1") (range (start (line 27) (character 1)) (end (line 27) (character 52))) (parent (node (document "d0") (qualified-name "CalculationExample"))))
+    (element (id (node (document "d0") (qualified-name "CalculationExample::masses2"))) (kind "attribute def") (name "masses2") (declared-name "masses2") (range (start (line 28) (character 1)) (end (line 28) (character 48))) (parent (node (document "d0") (qualified-name "CalculationExample"))))
+    (element (id (node (document "d0") (qualified-name "CalculationExample::ms"))) (kind "calc def") (name "ms") (declared-name "ms") (range (start (line 21) (character 1)) (end (line 21) (character 94))) (parent (node (document "d0") (qualified-name "CalculationExample"))))
+    (element (id (node (document "d0") (qualified-name "CalculationExample::ms::partMasses"))) (kind "in out parameter") (name "partMasses") (declared-name "partMasses") (range (start (line 22) (character 2)) (end (line 22) (character 51))) (parent (node (document "d0") (qualified-name "CalculationExample::ms"))) (authored (relationships (typing (reference "") (range none)))))
+    (element (id (node (document "d0") (qualified-name "CalculationExample::vehicle"))) (kind "part") (name "vehicle") (declared-name "vehicle") (range (start (line 10) (character 1)) (end (line 10) (character 120))) (parent (node (document "d0") (qualified-name "CalculationExample"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle") (range (start (line 10) (character 16)) (end (line 10) (character 23)))))))
+    (element (id (node (document "d0") (qualified-name "CalculationExample::vehicle::eng"))) (kind "part") (name "eng") (declared-name "eng") (range (start (line 11) (character 2)) (end (line 11) (character 25))) (parent (node (document "d0") (qualified-name "CalculationExample::vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "VehiclePart") (range (start (line 11) (character 13)) (end (line 11) (character 24)))))))
+    (element (id (node (document "d0") (qualified-name "CalculationExample::vehicle::trans"))) (kind "part") (name "trans") (declared-name "trans") (range (start (line 12) (character 2)) (end (line 12) (character 27))) (parent (node (document "d0") (qualified-name "CalculationExample::vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "VehiclePart") (range (start (line 12) (character 15)) (end (line 12) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "CalculationExample::vehicles"))) (kind "part") (name "vehicles") (declared-name "vehicles") (range (start (line 26) (character 1)) (end (line 26) (character 39))) (parent (node (document "d0") (qualified-name "CalculationExample"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "CalculationExample::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ISQ::*") (range (start (line 1) (character 16)) (end (line 1) (character 19))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "CalculationExample::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "NumericalFunctions::*") (range (start (line 2) (character 16)) (end (line 2) (character 34))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "CalculationExample::MassSum::partMasses"))) (kind featureTyping) (ordinal 0)) (authored-target "partMasses : MassValue[0..*]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "CalculationExample::MassSum::totalMass"))) (kind featureTyping) (ordinal 0)) (authored-target "MassValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "CalculationExample::Vehicle"))) (kind specialization) (ordinal 0)) (authored-target "VehiclePart") (range (start (line 8) (character 21)) (end (line 8) (character 32))) (outcome (status resolved) (target (node (document "d0") (qualified-name "CalculationExample::VehiclePart")))))
+    (reference (id (source (node (document "d0") (qualified-name "CalculationExample::VehiclePart::m"))) (kind featureTyping) (ordinal 0)) (authored-target "MassValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "CalculationExample::VehiclePart::m"))) (kind featureTyping) (ordinal 1)) (authored-target "MassValue") (range (start (line 5) (character 16)) (end (line 5) (character 25))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "CalculationExample::ms::partMasses"))) (kind featureTyping) (ordinal 0)) (authored-target "") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "CalculationExample::vehicle"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (range (start (line 10) (character 16)) (end (line 10) (character 23))) (outcome (status resolved) (target (node (document "d0") (qualified-name "CalculationExample::Vehicle")))))
+    (reference (id (source (node (document "d0") (qualified-name "CalculationExample::vehicle::eng"))) (kind featureTyping) (ordinal 0)) (authored-target "VehiclePart") (range (start (line 11) (character 13)) (end (line 11) (character 24))) (outcome (status resolved) (target (node (document "d0") (qualified-name "CalculationExample::VehiclePart")))))
+    (reference (id (source (node (document "d0") (qualified-name "CalculationExample::vehicle::trans"))) (kind featureTyping) (ordinal 0)) (authored-target "VehiclePart") (range (start (line 12) (character 15)) (end (line 12) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "CalculationExample::VehiclePart")))))
   )
   (relationships
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "CalculationExample::Vehicle"))) (to (node (document "d0") (qualified-name "CalculationExample::VehiclePart"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "CalculationExample::vehicle"))) (to (node (document "d0") (qualified-name "CalculationExample::Vehicle"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "CalculationExample::vehicle::eng"))) (to (node (document "d0") (qualified-name "CalculationExample::VehiclePart"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "CalculationExample::vehicle::trans"))) (to (node (document "d0") (qualified-name "CalculationExample::VehiclePart"))) (provenance authored))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "CalculationExample::Vehicle"))) (target (node (document "d0") (qualified-name "CalculationExample::VehiclePart"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "CalculationExample::Vehicle"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "CalculationExample::vehicle"))) (target (node (document "d0") (qualified-name "CalculationExample::Vehicle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "CalculationExample::vehicle"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "CalculationExample::vehicle::eng"))) (target (node (document "d0") (qualified-name "CalculationExample::VehiclePart"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "CalculationExample::vehicle::eng"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "CalculationExample::vehicle::trans"))) (target (node (document "d0") (qualified-name "CalculationExample::VehiclePart"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "CalculationExample::vehicle::trans"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CalculationExample::MassSum"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CalculationExample::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CalculationExample::VehiclePart"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CalculationExample::VehiclePart::m"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CalculationExample::masses1"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CalculationExample::masses2"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CalculationExample::ms"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CalculationExample::vehicle"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CalculationExample::vehicle::eng"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CalculationExample::vehicle::trans"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CalculationExample::vehicles"))) (status missing-prerequisite) (target "Parts::parts"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/calculation_test.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 19))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 16) (end 2 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 5 2) (end 5 26))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_part_usage_body_element")
-        (source "sysml")
-        (range (start 13 2) (end 13 35))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 17 2) (end 17 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 18 2) (end 18 49))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "CalculationExample::masses1")) (expression (status "unsupported") (error "declared expression form is not supported")))
+    (node (node (document "d0") (qualified-name "CalculationExample::masses2")) (expression (status "unsupported") (error "declared expression form is not supported")))
+    (node (node (document "d0") (qualified-name "CalculationExample::ms")) (expression (status "incomplete") (error "expression is incomplete")))
+    (node (node (document "d0") (qualified-name "CalculationExample::ms::partMasses")) (expression (status "unsupported") (error "declared expression form is not supported")))
+    (node (node (document "d0") (qualified-name "CalculationExample::vehicles")) (expression (status "unsupported") (error "declared expression form is not supported")))
   )
 )
 ~~~

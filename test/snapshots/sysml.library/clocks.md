@@ -162,35 +162,44 @@ standard library package Clocks {
 
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Life'
-semantic.unresolved_name 'self'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Real'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Life'
-semantic.unresolved_name 'self'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Real'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "clocks.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 16) (end 8 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 16) (end 9 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 16) (end 10 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 11 16) (end 11 40))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -335,6 +344,36 @@ CloseCurly,EndOfFile,
       (feature_def in 'o' : 'Occurrence' multiplicity)
       (feature_def in 'clock' : 'BasicClock' multiplicity)
       (return_member))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Life'
+semantic.unresolved_name 'self'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Real'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Life'
+semantic.unresolved_name 'self'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Real'
 ~~~
 # FORMAT
 ~~~sysml
@@ -497,72 +536,35 @@ standard library package Clocks {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Clocks"))) (name "Clocks") (declared-name "Clocks")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Clocks::BasicClock"))) (name "BasicClock") (declared-name "BasicClock"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Clocks::BasicDurationOf"))) (name "BasicDurationOf") (declared-name "BasicDurationOf"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Clocks::BasicTimeOf"))) (name "BasicTimeOf") (declared-name "BasicTimeOf"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Clocks::Clock"))) (name "Clock") (declared-name "Clock"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Clocks::DurationOf"))) (name "DurationOf") (declared-name "DurationOf"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Clocks::Life"))) (name "Life") (declared-name "Life"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Clocks::NumericalValue"))) (name "NumericalValue") (declared-name "NumericalValue"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Clocks::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Clocks::Real"))) (name "Real") (declared-name "Real"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Clocks::TimeOf"))) (name "TimeOf") (declared-name "TimeOf"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Clocks::UniversalClockLife1"))) (name "UniversalClockLife1") (declared-name "UniversalClockLife1"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "Clocks::_documentation"))) (name ""))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Clocks::forAll"))) (name "forAll") (declared-name "forAll"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Clocks::universalClock"))) (name "universalClock") (declared-name "universalClock"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "7ea99f81e772b2569e774cf1629fef2a66befcddc15301a5d61c8d2f013e8feb") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Clocks"))) (kind "package") (name "Clocks") (declared-name "Clocks") (range (start (line 0) (character 0)) (end (line 0) (character 3853))))
+    (element (id (node (document "d0") (qualified-name "Clocks::BasicClock"))) (kind "classifier decl") (name "BasicClock") (declared-name "BasicClock") (range (start (line 122) (character 1)) (end (line 122) (character 155))) (parent (node (document "d0") (qualified-name "Clocks"))))
+    (element (id (node (document "d0") (qualified-name "Clocks::BasicDurationOf"))) (kind "kermlDecl") (name "BasicDurationOf") (declared-name "BasicDurationOf") (range (start (line 143) (character 1)) (end (line 143) (character 242))) (parent (node (document "d0") (qualified-name "Clocks"))))
+    (element (id (node (document "d0") (qualified-name "Clocks::BasicTimeOf"))) (kind "kermlDecl") (name "BasicTimeOf") (declared-name "BasicTimeOf") (range (start (line 131) (character 1)) (end (line 131) (character 224))) (parent (node (document "d0") (qualified-name "Clocks"))))
+    (element (id (node (document "d0") (qualified-name "Clocks::Clock"))) (kind "classifier decl") (name "Clock") (declared-name "Clock") (range (start (line 28) (character 1)) (end (line 28) (character 771))) (parent (node (document "d0") (qualified-name "Clocks"))))
+    (element (id (node (document "d0") (qualified-name "Clocks::DurationOf"))) (kind "kermlDecl") (name "DurationOf") (declared-name "DurationOf") (range (start (line 108) (character 1)) (end (line 108) (character 404))) (parent (node (document "d0") (qualified-name "Clocks"))))
+    (element (id (node (document "d0") (qualified-name "Clocks::Life"))) (kind "import") (name "Life") (declared-name "Life") (range (start (line 10) (character 1)) (end (line 10) (character 34))) (parent (node (document "d0") (qualified-name "Clocks"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::Life") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 10) (character 16)) (end (line 10) (character 33))))))
+    (element (id (node (document "d0") (qualified-name "Clocks::NumericalValue"))) (kind "import") (name "NumericalValue") (declared-name "NumericalValue") (range (start (line 7) (character 1)) (end (line 7) (character 45))) (parent (node (document "d0") (qualified-name "Clocks"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::NumericalValue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 44))))))
+    (element (id (node (document "d0") (qualified-name "Clocks::Occurrence"))) (kind "import") (name "Occurrence") (declared-name "Occurrence") (range (start (line 9) (character 1)) (end (line 9) (character 40))) (parent (node (document "d0") (qualified-name "Clocks"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::Occurrence") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 9) (character 16)) (end (line 9) (character 39))))))
+    (element (id (node (document "d0") (qualified-name "Clocks::Real"))) (kind "import") (name "Real") (declared-name "Real") (range (start (line 8) (character 1)) (end (line 8) (character 35))) (parent (node (document "d0") (qualified-name "Clocks"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 34))))))
+    (element (id (node (document "d0") (qualified-name "Clocks::TimeOf"))) (kind "kermlDecl") (name "TimeOf") (declared-name "TimeOf") (range (start (line 59) (character 1)) (end (line 59) (character 1309))) (parent (node (document "d0") (qualified-name "Clocks"))))
+    (element (id (node (document "d0") (qualified-name "Clocks::UniversalClockLife1"))) (kind "classifier decl") (name "UniversalClockLife1") (declared-name "UniversalClockLife1") (range (start (line 13) (character 1)) (end (line 13) (character 173))) (parent (node (document "d0") (qualified-name "Clocks"))))
+    (element (id (node (document "d0") (qualified-name "Clocks::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 3853))) (parent (node (document "d0") (qualified-name "Clocks"))))
+    (element (id (node (document "d0") (qualified-name "Clocks::forAll"))) (kind "import") (name "forAll") (declared-name "forAll") (range (start (line 11) (character 1)) (end (line 11) (character 41))) (parent (node (document "d0") (qualified-name "Clocks"))) (authored (membership (kind Import) (visibility "private") (import (reference "ControlFunctions::forAll") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 11) (character 16)) (end (line 11) (character 40))))))
+    (element (id (node (document "d0") (qualified-name "Clocks::universalClock"))) (kind "feature decl") (name "universalClock") (declared-name "universalClock") (range (start (line 20) (character 1)) (end (line 20) (character 168))) (parent (node (document "d0") (qualified-name "Clocks"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Clocks::Life"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::Life") (range (start (line 10) (character 16)) (end (line 10) (character 33))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Clocks::NumericalValue"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::NumericalValue") (range (start (line 7) (character 16)) (end (line 7) (character 44))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Clocks::Occurrence"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::Occurrence") (range (start (line 9) (character 16)) (end (line 9) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Clocks::Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (range (start (line 8) (character 16)) (end (line 8) (character 34))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Clocks::forAll"))) (kind membershipImport) (ordinal 0)) (authored-target "ControlFunctions::forAll") (range (start (line 11) (character 16)) (end (line 11) (character 40))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Clocks::_documentation"))) (to (node (document "d0") (qualified-name "Clocks"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/clocks.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 16) (end 7 44))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 16) (end 8 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 9 16) (end 9 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 10 16) (end 10 33))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 11 16) (end 11 40))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

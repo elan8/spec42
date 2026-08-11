@@ -8,13 +8,14 @@ type=file
 attribute def Foo {}
 part p : Foo;
 ~~~
-# EXPECTED
-~~~
-semantic.feature_typing_kind_mismatch
-~~~
-# PROBLEMS
-~~~
-semantic.feature_typing_kind_mismatch
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "feature_typing_mismatch.md"
+    (diagnostics
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -27,6 +28,14 @@ KwPart,Ident,Colon,Ident,Semicolon,EndOfFile,
   (attribute_def 'Foo')
   (part_usage 'p' : 'Foo'))
 ~~~
+# EXPECTED
+~~~
+semantic.feature_typing_kind_mismatch
+~~~
+# PROBLEMS
+~~~
+semantic.feature_typing_kind_mismatch
+~~~
 # FORMAT
 ~~~sysml
 attribute def Foo {}
@@ -35,36 +44,19 @@ part p : Foo;
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "attribute def") (id (node (document "d0") (qualified-name "Foo"))) (name "Foo") (declared-name "Foo") (declared (properties (ordered false) (unique true))))
-    (element (kind "part") (id (node (document "d0") (qualified-name "p"))) (name "p") (declared-name "p") (declared (properties (ordered false))))
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "2814bc9eca9a81de17357b4c5d2fc69bf205bd5e276ec4beee1fe10870deb7f6") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Foo"))) (kind "attribute def") (name "Foo") (declared-name "Foo") (range (start (line 0) (character 0)) (end (line 0) (character 20))))
+    (element (id (node (document "d0") (qualified-name "p"))) (kind "part") (name "p") (declared-name "p") (range (start (line 1) (character 0)) (end (line 1) (character 13))) (authored (membership (kind Feature)) (relationships (typing (reference "Foo") (range (start (line 1) (character 9)) (end (line 1) (character 12)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "p"))) (kind featureTyping) (ordinal 0)) (authored-target "Foo") (range (start (line 1) (character 9)) (end (line 1) (character 12))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Foo")))))
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "p"))) (to (node (document "d0") (qualified-name "Foo"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "p"))) (target (node (document "d0") (qualified-name "Foo"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "p"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Foo"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "p"))) (status missing-prerequisite) (target "Parts::parts"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/feature_typing_mismatch.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "incompatible_type_kind")
-        (source "semantic")
-        (range (start 1 0) (end 1 13))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

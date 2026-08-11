@@ -100,6 +100,15 @@ package ProductSelection_OwnedEnds {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "product_selection_owned_ends.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -250,6 +259,20 @@ CloseCurly,EndOfFile,
         (connector_end)
         (feature_def :>> 'info' value)))))
 ~~~
+# EXPECTED
+~~~
+parse.expected_usage_declaration
+semantic.unresolved_name 'Links::BinaryLink'
+semantic.unresolved_name 'source'
+semantic.unresolved_name 'target'
+~~~
+# PROBLEMS
+~~~
+parse.expected_usage_declaration
+semantic.unresolved_name 'Links::BinaryLink'
+semantic.unresolved_name 'source'
+semantic.unresolved_name 'target'
+~~~
 # FORMAT
 ~~~sysml
 package ProductSelection_OwnedEnds {
@@ -347,55 +370,30 @@ package ProductSelection_OwnedEnds {
 	
 }
 ~~~
-# EXPECTED
-~~~
-parse.expected_usage_declaration
-semantic.unresolved_name 'Links::BinaryLink'
-semantic.unresolved_name 'source'
-semantic.unresolved_name 'target'
-~~~
-# PROBLEMS
-~~~
-parse.expected_usage_declaration
-semantic.unresolved_name 'Links::BinaryLink'
-semantic.unresolved_name 'source'
-semantic.unresolved_name 'target'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds"))) (name "ProductSelection_OwnedEnds") (declared-name "ProductSelection_OwnedEnds")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::OnlineCustomer"))) (name "OnlineCustomer") (declared-name "OnlineCustomer"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::Product"))) (name "Product") (declared-name "Product"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::ProductSelection"))) (name "ProductSelection") (declared-name "ProductSelection"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::ProductSelection1"))) (name "ProductSelection1") (declared-name "ProductSelection1"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::ProductSelection2"))) (name "ProductSelection2") (declared-name "ProductSelection2"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::ProductSelection3"))) (name "ProductSelection3") (declared-name "ProductSelection3"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::SelectionInfo"))) (name "SelectionInfo") (declared-name "SelectionInfo"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::ShoppingCart"))) (name "ShoppingCart") (declared-name "ShoppingCart"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::SingleProductSelection"))) (name "SingleProductSelection") (declared-name "SingleProductSelection"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::SingleProductSelection1"))) (name "SingleProductSelection1") (declared-name "SingleProductSelection1"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::SingleProductSelection2"))) (name "SingleProductSelection2") (declared-name "SingleProductSelection2"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::SingleProductSelection3"))) (name "SingleProductSelection3") (declared-name "SingleProductSelection3"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "78849a67c41682ec240f7c8d1aa8ed2e1353b9e6dfcdf1f1be9ee2f961ceef48") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds"))) (kind "package") (name "ProductSelection_OwnedEnds") (declared-name "ProductSelection_OwnedEnds") (range (start (line 0) (character 0)) (end (line 0) (character 2940))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::OnlineCustomer"))) (kind "classifier decl") (name "OnlineCustomer") (declared-name "OnlineCustomer") (range (start (line 79) (character 1)) (end (line 79) (character 316))) (parent (node (document "d0") (qualified-name "ProductSelection_OwnedEnds"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::Product"))) (kind "classifier decl") (name "Product") (declared-name "Product") (range (start (line 4) (character 1)) (end (line 4) (character 15))) (parent (node (document "d0") (qualified-name "ProductSelection_OwnedEnds"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::ProductSelection"))) (kind "kermlDecl") (name "ProductSelection") (declared-name "ProductSelection") (range (start (line 7) (character 1)) (end (line 7) (character 166))) (parent (node (document "d0") (qualified-name "ProductSelection_OwnedEnds"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::ProductSelection1"))) (kind "kermlDecl") (name "ProductSelection1") (declared-name "ProductSelection1") (range (start (line 15) (character 1)) (end (line 15) (character 179))) (parent (node (document "d0") (qualified-name "ProductSelection_OwnedEnds"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::ProductSelection2"))) (kind "kermlDecl") (name "ProductSelection2") (declared-name "ProductSelection2") (range (start (line 23) (character 1)) (end (line 23) (character 275))) (parent (node (document "d0") (qualified-name "ProductSelection_OwnedEnds"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::ProductSelection3"))) (kind "kermlDecl") (name "ProductSelection3") (declared-name "ProductSelection3") (range (start (line 36) (character 1)) (end (line 36) (character 487))) (parent (node (document "d0") (qualified-name "ProductSelection_OwnedEnds"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::SelectionInfo"))) (kind "classifier decl") (name "SelectionInfo") (declared-name "SelectionInfo") (range (start (line 2) (character 1)) (end (line 2) (character 21))) (parent (node (document "d0") (qualified-name "ProductSelection_OwnedEnds"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::ShoppingCart"))) (kind "classifier decl") (name "ShoppingCart") (declared-name "ShoppingCart") (range (start (line 3) (character 1)) (end (line 3) (character 20))) (parent (node (document "d0") (qualified-name "ProductSelection_OwnedEnds"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::SingleProductSelection"))) (kind "kermlDecl") (name "SingleProductSelection") (declared-name "SingleProductSelection") (range (start (line 49) (character 1)) (end (line 49) (character 157))) (parent (node (document "d0") (qualified-name "ProductSelection_OwnedEnds"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::SingleProductSelection1"))) (kind "kermlDecl") (name "SingleProductSelection1") (declared-name "SingleProductSelection1") (range (start (line 54) (character 1)) (end (line 54) (character 184))) (parent (node (document "d0") (qualified-name "ProductSelection_OwnedEnds"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::SingleProductSelection2"))) (kind "kermlDecl") (name "SingleProductSelection2") (declared-name "SingleProductSelection2") (range (start (line 59) (character 1)) (end (line 59) (character 282))) (parent (node (document "d0") (qualified-name "ProductSelection_OwnedEnds"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::SingleProductSelection3"))) (kind "kermlDecl") (name "SingleProductSelection3") (declared-name "SingleProductSelection3") (range (start (line 68) (character 1)) (end (line 68) (character 486))) (parent (node (document "d0") (qualified-name "ProductSelection_OwnedEnds"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/product_selection_owned_ends.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

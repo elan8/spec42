@@ -30,13 +30,20 @@ package ExpressionCoverage {
     feature meta_access = Vehicle.metadata;
 }
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "coverage_expressions.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_package_body_element")
+        (source "sysml")
+        (range (start 15 34) (end 15 195))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -80,6 +87,14 @@ CloseCurly,EndOfFile,
     (feature_def 'cond' value)
     (feature_def 'meta_access' value)))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package ExpressionCoverage {
@@ -110,45 +125,28 @@ package ExpressionCoverage {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ExpressionCoverage"))) (name "ExpressionCoverage") (declared-name "ExpressionCoverage")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ExpressionCoverage::Item"))) (name "Item") (declared-name "Item"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ExpressionCoverage::Vehicle"))) (name "Vehicle") (declared-name "Vehicle"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "ExpressionCoverage::all_v"))) (name "all_v") (declared-name "all_v"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "ExpressionCoverage::arr"))) (name "arr") (declared-name "arr"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "ExpressionCoverage::coll"))) (name "coll") (declared-name "coll"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "ExpressionCoverage::h"))) (name "h") (declared-name "h"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "ExpressionCoverage::inf"))) (name "inf") (declared-name "inf"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "ExpressionCoverage::items"))) (name "items") (declared-name "items"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "ExpressionCoverage::n"))) (name "n") (declared-name "n"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "ExpressionCoverage::r"))) (name "r") (declared-name "r"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "ExpressionCoverage::r2"))) (name "r2") (declared-name "r2"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "ExpressionCoverage::s"))) (name "s") (declared-name "s"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "c5963c4ffa79d95171d3822a0ab8ec18b217b11356dc25beadc4801ffc1ae142") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ExpressionCoverage"))) (kind "package") (name "ExpressionCoverage") (declared-name "ExpressionCoverage") (range (start (line 0) (character 0)) (end (line 0) (character 501))))
+    (element (id (node (document "d0") (qualified-name "ExpressionCoverage::Item"))) (kind "classifier decl") (name "Item") (declared-name "Item") (range (start (line 2) (character 4)) (end (line 2) (character 20))) (parent (node (document "d0") (qualified-name "ExpressionCoverage"))))
+    (element (id (node (document "d0") (qualified-name "ExpressionCoverage::Vehicle"))) (kind "classifier decl") (name "Vehicle") (declared-name "Vehicle") (range (start (line 1) (character 4)) (end (line 1) (character 23))) (parent (node (document "d0") (qualified-name "ExpressionCoverage"))))
+    (element (id (node (document "d0") (qualified-name "ExpressionCoverage::all_v"))) (kind "feature decl") (name "all_v") (declared-name "all_v") (range (start (line 13) (character 4)) (end (line 13) (character 32))) (parent (node (document "d0") (qualified-name "ExpressionCoverage"))))
+    (element (id (node (document "d0") (qualified-name "ExpressionCoverage::arr"))) (kind "feature decl") (name "arr") (declared-name "arr") (range (start (line 11) (character 4)) (end (line 11) (character 27))) (parent (node (document "d0") (qualified-name "ExpressionCoverage"))))
+    (element (id (node (document "d0") (qualified-name "ExpressionCoverage::coll"))) (kind "feature decl") (name "coll") (declared-name "coll") (range (start (line 15) (character 4)) (end (line 15) (character 34))) (parent (node (document "d0") (qualified-name "ExpressionCoverage"))))
+    (element (id (node (document "d0") (qualified-name "ExpressionCoverage::h"))) (kind "feature decl") (name "h") (declared-name "h") (range (start (line 12) (character 4)) (end (line 12) (character 26))) (parent (node (document "d0") (qualified-name "ExpressionCoverage"))))
+    (element (id (node (document "d0") (qualified-name "ExpressionCoverage::inf"))) (kind "feature decl") (name "inf") (declared-name "inf") (range (start (line 8) (character 4)) (end (line 8) (character 20))) (parent (node (document "d0") (qualified-name "ExpressionCoverage"))))
+    (element (id (node (document "d0") (qualified-name "ExpressionCoverage::items"))) (kind "feature decl") (name "items") (declared-name "items") (range (start (line 10) (character 4)) (end (line 10) (character 28))) (parent (node (document "d0") (qualified-name "ExpressionCoverage"))))
+    (element (id (node (document "d0") (qualified-name "ExpressionCoverage::n"))) (kind "feature decl") (name "n") (declared-name "n") (range (start (line 7) (character 4)) (end (line 7) (character 21))) (parent (node (document "d0") (qualified-name "ExpressionCoverage"))))
+    (element (id (node (document "d0") (qualified-name "ExpressionCoverage::r"))) (kind "feature decl") (name "r") (declared-name "r") (range (start (line 5) (character 4)) (end (line 5) (character 21))) (parent (node (document "d0") (qualified-name "ExpressionCoverage"))))
+    (element (id (node (document "d0") (qualified-name "ExpressionCoverage::r2"))) (kind "feature decl") (name "r2") (declared-name "r2") (range (start (line 6) (character 4)) (end (line 6) (character 20))) (parent (node (document "d0") (qualified-name "ExpressionCoverage"))))
+    (element (id (node (document "d0") (qualified-name "ExpressionCoverage::s"))) (kind "feature decl") (name "s") (declared-name "s") (range (start (line 4) (character 4)) (end (line 4) (character 24))) (parent (node (document "d0") (qualified-name "ExpressionCoverage"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/coverage_expressions.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "recovered_package_body_element")
-        (source "sysml")
-        (range (start 15 34) (end 15 195))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

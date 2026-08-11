@@ -21,6 +21,39 @@ package VerificationMetadataExample {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "verification_metadata_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 38))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 6 29) (end 6 48))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 10 30) (end 10 45))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -52,6 +85,16 @@ CloseCurly,EndOfFile,
         (metadata_feature typed 'VerificationMethod'
           (feature_def 'kind' value))))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'VerificationMethod'
+semantic.unresolved_name 'VerificationMethod'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'VerificationMethod'
+semantic.unresolved_name 'VerificationMethod'
+~~~
 # FORMAT
 ~~~sysml
 package VerificationMetadataExample {
@@ -71,104 +114,32 @@ package VerificationMetadataExample {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'VerificationMethod'
-semantic.unresolved_name 'VerificationMethod'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'VerificationMethod'
-semantic.unresolved_name 'VerificationMethod'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "VerificationMetadataExample"))) (name "VerificationMetadataExample") (declared-name "VerificationMetadataExample")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "VerificationMetadataExample::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "VerificationMetadataExample::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "verification def") (id (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest"))) (name "MassTest") (declared-name "MassTest"))
-        (element (kind "verification") (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))) (name "massTests") (declared-name "massTests")
-          (contains
-            (element (kind "metadata usage") (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::VerificationMethod"))) (name "VerificationMethod") (declared-name "VerificationMethod") (effective (featuring-type (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest"))))
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::VerificationMethod::kind"))) (name "kind") (declared-name "kind") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest")))))
-              )
-            )
-            (element (kind "objective") (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::objective"))) (name "objective") (declared-name "objective") (effective (featuring-type (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest")))))
-            (element (kind "action") (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle"))) (name "weighVehicle") (declared-name "weighVehicle") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest"))))
-              (contains
-                (element (kind "metadata usage") (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle::VerificationMethod"))) (name "VerificationMethod") (declared-name "VerificationMethod") (effective (featuring-type (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest"))))
-                  (contains
-                    (element (kind "attribute") (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle::VerificationMethod::kind"))) (name "kind") (declared-name "kind") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest")))))
-                  )
-                )
-              )
-            )
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "15b5c9627f1f83096660022dd21564323245ad6f2bdf081dc74cb40d821b677d") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "VerificationMetadataExample"))) (kind "package") (name "VerificationMetadataExample") (declared-name "VerificationMetadataExample") (range (start (line 0) (character 0)) (end (line 0) (character 368))))
+    (element (id (node (document "d0") (qualified-name "VerificationMetadataExample::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 37))) (parent (node (document "d0") (qualified-name "VerificationMetadataExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "VerificationCases::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 33))))))
+    (element (id (node (document "d0") (qualified-name "VerificationMetadataExample::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 42))) (parent (node (document "d0") (qualified-name "VerificationMetadataExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "VerificationMethodKind::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 38))))))
+    (element (id (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest"))) (kind "verification def") (name "MassTest") (declared-name "MassTest") (range (start (line 4) (character 4)) (end (line 4) (character 30))) (parent (node (document "d0") (qualified-name "VerificationMetadataExample"))))
+    (element (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))) (kind "verification") (name "massTests") (declared-name "massTests") (range (start (line 5) (character 4)) (end (line 5) (character 212))) (parent (node (document "d0") (qualified-name "VerificationMetadataExample"))) (authored (membership (kind Feature)) (relationships (typing (reference "MassTest") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::VerificationMethod"))) (kind "metadata usage") (name "VerificationMethod") (declared-name "VerificationMethod") (range (start (line 6) (character 8)) (end (line 6) (character 50))) (parent (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))))
+    (element (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::VerificationMethod::kind"))) (kind "attribute") (name "kind") (declared-name "kind") (range (start (line 6) (character 29)) (end (line 6) (character 48))) (parent (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::VerificationMethod"))))
+    (element (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::objective"))) (kind "objective") (name "objective") (declared-name "objective") (range (start (line 7) (character 8)) (end (line 7) (character 29))) (parent (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))))
+    (element (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle"))) (kind "action") (name "weighVehicle") (declared-name "weighVehicle") (range (start (line 9) (character 8)) (end (line 9) (character 87))) (parent (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))))
+    (element (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle::VerificationMethod"))) (kind "metadata usage") (name "VerificationMethod") (declared-name "VerificationMethod") (range (start (line 10) (character 9)) (end (line 10) (character 47))) (parent (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle"))))
+    (element (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle::VerificationMethod::kind"))) (kind "attribute") (name "kind") (declared-name "kind") (range (start (line 10) (character 30)) (end (line 10) (character 45))) (parent (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle::VerificationMethod"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "VerificationMetadataExample::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "VerificationCases::*") (range (start (line 1) (character 16)) (end (line 1) (character 33))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VerificationMetadataExample::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "VerificationMethodKind::*") (range (start (line 2) (character 16)) (end (line 2) (character 38))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))) (kind featureTyping) (ordinal 0)) (authored-target "MassTest") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest")))))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::VerificationMethod"))) (to (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle::VerificationMethod"))) (to (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))) (to (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))) (target (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest"))) (status missing-prerequisite) (target "VerificationCases::VerificationCase"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))) (status missing-prerequisite) (target "VerificationCases::verificationCases"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::VerificationMethod"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::VerificationMethod::kind"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::objective"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle::VerificationMethod"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle::VerificationMethod::kind"))) (status missing-prerequisite) (target "Base::dataValues"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/verification_metadata_example.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 33))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 16) (end 2 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_annotation_unresolved")
-        (source "semantic")
-        (range (start 6 8) (end 6 50))
-      )
-      (diagnostic
-        (severity warning)
-        (code "objective_binding_unresolved")
-        (source "semantic")
-        (range (start 7 8) (end 7 29))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_annotation_unresolved")
-        (source "semantic")
-        (range (start 10 9) (end 10 47))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

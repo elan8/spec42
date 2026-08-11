@@ -13,6 +13,15 @@ package FeatureInheritance {
 	feature u subsets s;
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "feature_inheritance.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -30,6 +39,14 @@ CloseCurly,EndOfFile,
       (feature_def 't' : 'ISQ::TorqueValue'))
     (feature_def 'u' :> 's')))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'ISQ::TorqueValue'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'ISQ::TorqueValue'
+~~~
 # FORMAT
 ~~~sysml
 package FeatureInheritance {
@@ -40,39 +57,20 @@ package FeatureInheritance {
 	feature u subsets s;
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'ISQ::TorqueValue'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'ISQ::TorqueValue'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "FeatureInheritance"))) (name "FeatureInheritance") (declared-name "FeatureInheritance")
-      (contains
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureInheritance::s"))) (name "s") (declared-name "s"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureInheritance::u"))) (name "u") (declared-name "u"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "87701d351d3a7a9344b8a8d07130af7909d5274000f87c594a3ad1dfdfb5f52e") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "FeatureInheritance"))) (kind "package") (name "FeatureInheritance") (declared-name "FeatureInheritance") (range (start (line 0) (character 0)) (end (line 0) (character 102))))
+    (element (id (node (document "d0") (qualified-name "FeatureInheritance::s"))) (kind "feature decl") (name "s") (declared-name "s") (range (start (line 1) (character 1)) (end (line 1) (character 47))) (parent (node (document "d0") (qualified-name "FeatureInheritance"))))
+    (element (id (node (document "d0") (qualified-name "FeatureInheritance::u"))) (kind "feature decl") (name "u") (declared-name "u") (range (start (line 5) (character 1)) (end (line 5) (character 21))) (parent (node (document "d0") (qualified-name "FeatureInheritance"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/feature_inheritance.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

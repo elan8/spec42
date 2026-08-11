@@ -110,6 +110,21 @@ package VehicleUsages {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "vehicle_usages.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 16) (end 6 34))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -266,6 +281,76 @@ CloseCurly,EndOfFile,
         (connector_end)
         (connector_end)))))
 ~~~
+# EXPECTED
+~~~
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'Lugbolt'
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'Lugbolt'
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'AxleAssembly'
+semantic.unresolved_name 'Lugbolt::tighteningTorque'
+semantic.unresolved_name 'Axle'
+semantic.unresolved_name 'VehicleDefinitions::AxleAssembly'
+semantic.unresolved_name 'Lugbolt::tighteningTorque'
+semantic.unresolved_name 'Axle'
+semantic.unresolved_name 'VehicleDefinitions::WheelHubIF'
+semantic.unresolved_name 'VehicleDefinitions::WheelHubIF'
+semantic.unresolved_name 'AxleMountIF'
+semantic.unresolved_name 'AxleMountIF'
+semantic.unresolved_name 'Mounting'
+semantic.unresolved_name 'Mounting'
+semantic.unresolved_name 'WheelHubIF'
+semantic.unresolved_name 'WheelHubIF'
+semantic.unresolved_name 'AxleMountIF'
+semantic.unresolved_name 'AxleMountIF'
+semantic.unresolved_name 'Mounting'
+semantic.unresolved_name 'Mounting'
+semantic.unresolved_name 'Transmission'
+semantic.unresolved_name 'DriveIF'
+semantic.unresolved_name 'DriveIF'
+~~~
+# PROBLEMS
+~~~
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'Lugbolt'
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'Lugbolt'
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'AxleAssembly'
+semantic.unresolved_name 'Lugbolt::tighteningTorque'
+semantic.unresolved_name 'Axle'
+semantic.unresolved_name 'VehicleDefinitions::AxleAssembly'
+semantic.unresolved_name 'Lugbolt::tighteningTorque'
+semantic.unresolved_name 'Axle'
+semantic.unresolved_name 'VehicleDefinitions::WheelHubIF'
+semantic.unresolved_name 'VehicleDefinitions::WheelHubIF'
+semantic.unresolved_name 'AxleMountIF'
+semantic.unresolved_name 'AxleMountIF'
+semantic.unresolved_name 'Mounting'
+semantic.unresolved_name 'Mounting'
+semantic.unresolved_name 'WheelHubIF'
+semantic.unresolved_name 'WheelHubIF'
+semantic.unresolved_name 'AxleMountIF'
+semantic.unresolved_name 'AxleMountIF'
+semantic.unresolved_name 'Mounting'
+semantic.unresolved_name 'Mounting'
+semantic.unresolved_name 'Transmission'
+semantic.unresolved_name 'DriveIF'
+semantic.unresolved_name 'DriveIF'
+~~~
 # FORMAT
 ~~~sysml
 package VehicleUsages {
@@ -373,115 +458,28 @@ package VehicleUsages {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'Lugbolt'
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'Lugbolt'
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'AxleAssembly'
-semantic.unresolved_name 'Lugbolt::tighteningTorque'
-semantic.unresolved_name 'Axle'
-semantic.unresolved_name 'VehicleDefinitions::AxleAssembly'
-semantic.unresolved_name 'Lugbolt::tighteningTorque'
-semantic.unresolved_name 'Axle'
-semantic.unresolved_name 'VehicleDefinitions::WheelHubIF'
-semantic.unresolved_name 'VehicleDefinitions::WheelHubIF'
-semantic.unresolved_name 'AxleMountIF'
-semantic.unresolved_name 'AxleMountIF'
-semantic.unresolved_name 'Mounting'
-semantic.unresolved_name 'Mounting'
-semantic.unresolved_name 'WheelHubIF'
-semantic.unresolved_name 'WheelHubIF'
-semantic.unresolved_name 'AxleMountIF'
-semantic.unresolved_name 'AxleMountIF'
-semantic.unresolved_name 'Mounting'
-semantic.unresolved_name 'Mounting'
-semantic.unresolved_name 'Transmission'
-semantic.unresolved_name 'DriveIF'
-semantic.unresolved_name 'DriveIF'
-~~~
-# PROBLEMS
-~~~
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'Lugbolt'
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'Lugbolt'
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'AxleAssembly'
-semantic.unresolved_name 'Lugbolt::tighteningTorque'
-semantic.unresolved_name 'Axle'
-semantic.unresolved_name 'VehicleDefinitions::AxleAssembly'
-semantic.unresolved_name 'Lugbolt::tighteningTorque'
-semantic.unresolved_name 'Axle'
-semantic.unresolved_name 'VehicleDefinitions::WheelHubIF'
-semantic.unresolved_name 'VehicleDefinitions::WheelHubIF'
-semantic.unresolved_name 'AxleMountIF'
-semantic.unresolved_name 'AxleMountIF'
-semantic.unresolved_name 'Mounting'
-semantic.unresolved_name 'Mounting'
-semantic.unresolved_name 'WheelHubIF'
-semantic.unresolved_name 'WheelHubIF'
-semantic.unresolved_name 'AxleMountIF'
-semantic.unresolved_name 'AxleMountIF'
-semantic.unresolved_name 'Mounting'
-semantic.unresolved_name 'Mounting'
-semantic.unresolved_name 'Transmission'
-semantic.unresolved_name 'DriveIF'
-semantic.unresolved_name 'DriveIF'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "VehicleUsages"))) (name "VehicleUsages") (declared-name "VehicleUsages")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleUsages::*"))) (name "*") (declared-name "*"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "VehicleUsages::T1"))) (name "T1") (declared-name "T1"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "VehicleUsages::T2"))) (name "T2") (declared-name "T2"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleUsages::_documentation"))) (name ""))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "VehicleUsages::narrowRimWheel"))) (name "narrowRimWheel") (declared-name "narrowRimWheel"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1"))) (name "vehicle_C1") (declared-name "vehicle_C1"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2"))) (name "vehicle_C2") (declared-name "vehicle_C2"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3"))) (name "vehicle_C3") (declared-name "vehicle_C3"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "VehicleUsages::wideRimWheel"))) (name "wideRimWheel") (declared-name "wideRimWheel"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "bf3b90df7ed5b38f10a6b183099148f9e7b24d98010107fc50593719984534b5") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "VehicleUsages"))) (kind "package") (name "VehicleUsages") (declared-name "VehicleUsages") (range (start (line 0) (character 0)) (end (line 0) (character 3371))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 6) (character 1)) (end (line 6) (character 38))) (parent (node (document "d0") (qualified-name "VehicleUsages"))) (authored (membership (kind Import) (visibility "private") (import (reference "VehicleDefinitions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 34))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::T1"))) (kind "feature decl") (name "T1") (declared-name "T1") (range (start (line 10) (character 1)) (end (line 10) (character 19))) (parent (node (document "d0") (qualified-name "VehicleUsages"))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::T2"))) (kind "feature decl") (name "T2") (declared-name "T2") (range (start (line 11) (character 1)) (end (line 11) (character 19))) (parent (node (document "d0") (qualified-name "VehicleUsages"))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 3371))) (parent (node (document "d0") (qualified-name "VehicleUsages"))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::narrowRimWheel"))) (kind "feature decl") (name "narrowRimWheel") (declared-name "narrowRimWheel") (range (start (line 15) (character 1)) (end (line 15) (character 136))) (parent (node (document "d0") (qualified-name "VehicleUsages"))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1"))) (kind "feature decl") (name "vehicle_C1") (declared-name "vehicle_C1") (range (start (line 25) (character 1)) (end (line 25) (character 673))) (parent (node (document "d0") (qualified-name "VehicleUsages"))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2"))) (kind "feature decl") (name "vehicle_C2") (declared-name "vehicle_C2") (range (start (line 45) (character 1)) (end (line 45) (character 1703))) (parent (node (document "d0") (qualified-name "VehicleUsages"))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3"))) (kind "feature decl") (name "vehicle_C3") (declared-name "vehicle_C3") (range (start (line 88) (character 1)) (end (line 88) (character 489))) (parent (node (document "d0") (qualified-name "VehicleUsages"))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::wideRimWheel"))) (kind "feature decl") (name "wideRimWheel") (declared-name "wideRimWheel") (range (start (line 20) (character 1)) (end (line 20) (character 132))) (parent (node (document "d0") (qualified-name "VehicleUsages"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "VehicleDefinitions::*") (range (start (line 6) (character 16)) (end (line 6) (character 34))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleUsages::_documentation"))) (to (node (document "d0") (qualified-name "VehicleUsages"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/vehicle_usages.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 6 16) (end 6 34))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

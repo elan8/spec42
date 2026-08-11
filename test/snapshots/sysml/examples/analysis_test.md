@@ -44,6 +44,21 @@ package AnalysisTest {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "analysis_test.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 3 2) (end 3 6))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -97,6 +112,14 @@ CloseCurly,EndOfFile,
       (sysml_decl 'analysisPlan' : 'AnalysisPlan'
         (sysml_decl 'v' value)))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package AnalysisTest {
@@ -139,111 +162,43 @@ package AnalysisTest {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "AnalysisTest"))) (name "AnalysisTest") (declared-name "AnalysisTest")
-      (contains
-        (element (kind "analysis def") (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase"))) (name "AnalysisCase") (declared-name "AnalysisCase")
-          (contains
-            (element (kind "objective") (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase::obj"))) (name "obj") (declared-name "obj") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase")))))
-            (element (kind "subject") (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase::v"))) (name "v") (declared-name "v") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase")))))
-          )
-        )
-        (element (kind "requirement def") (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisObjective"))) (name "AnalysisObjective") (declared-name "AnalysisObjective")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisObjective::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisTest::AnalysisObjective")))))
-          )
-        )
-        (element (kind "analysis def") (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan"))) (name "AnalysisPlan") (declared-name "AnalysisPlan")
-          (contains
-            (element (kind "analysis") (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan::analysisCase"))) (name "analysisCase") (declared-name "analysisCase") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan"))))
-              (contains
-                (element (kind "analysis result") (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan::analysisCase::mass"))) (name "mass") (declared-name "mass") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase")))))
-              )
-            )
-            (element (kind "objective") (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan::objective"))) (name "objective") (declared-name "objective") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan")))))
-            (element (kind "subject") (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan::v"))) (name "v") (declared-name "v") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "AnalysisTest::V"))) (name "V") (declared-name "V") (declared))
-        (element (kind "part") (id (node (document "d0") (qualified-name "AnalysisTest::analysisContext"))) (name "analysisContext") (declared-name "analysisContext") (declared (properties (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "AnalysisTest::vv"))) (name "vv") (declared-name "vv") (declared (properties (ordered false))))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "9754af7c8de7e6f45c1718ead0a356a4b87fe01b54e2424ec126d3b7521966cd") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "AnalysisTest"))) (kind "package") (name "AnalysisTest") (declared-name "AnalysisTest") (range (start (line 0) (character 0)) (end (line 0) (character 488))))
+    (element (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase"))) (kind "analysis def") (name "AnalysisCase") (declared-name "AnalysisCase") (range (start (line 12) (character 1)) (end (line 12) (character 124))) (parent (node (document "d0") (qualified-name "AnalysisTest"))))
+    (element (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase::obj"))) (kind "objective") (name "obj") (declared-name "obj") (range (start (line 15) (character 2)) (end (line 15) (character 63))) (parent (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase"))) (authored (relationships (typing (reference "AnalysisObjective") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase::v"))) (kind "subject") (name "v") (declared-name "v") (range (start (line 13) (character 2)) (end (line 13) (character 16))) (parent (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase"))) (authored (relationships (typing (reference "V") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisObjective"))) (kind "requirement def") (name "AnalysisObjective") (declared-name "AnalysisObjective") (range (start (line 8) (character 1)) (end (line 8) (character 55))) (parent (node (document "d0") (qualified-name "AnalysisTest"))))
+    (element (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisObjective::_documentation"))) (kind "documentation") (name "") (range (start (line 8) (character 1)) (end (line 8) (character 55))) (parent (node (document "d0") (qualified-name "AnalysisTest::AnalysisObjective"))))
+    (element (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan"))) (kind "analysis def") (name "AnalysisPlan") (declared-name "AnalysisPlan") (range (start (line 22) (character 1)) (end (line 22) (character 145))) (parent (node (document "d0") (qualified-name "AnalysisTest"))))
+    (element (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan::analysisCase"))) (kind "analysis") (name "analysisCase") (declared-name "analysisCase") (range (start (line 29) (character 2)) (end (line 29) (character 55))) (parent (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan"))) (authored (membership (kind Feature)) (relationships (typing (reference "AnalysisCase") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan::analysisCase::mass"))) (kind "analysis result") (name "mass") (declared-name "mass") (range (start (line 29) (character 41)) (end (line 29) (character 53))) (parent (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan::analysisCase"))))
+    (element (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan::objective"))) (kind "objective") (name "objective") (declared-name "objective") (range (start (line 25) (character 2)) (end (line 25) (character 34))) (parent (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan"))))
+    (element (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan::v"))) (kind "subject") (name "v") (declared-name "v") (range (start (line 23) (character 2)) (end (line 23) (character 16))) (parent (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan"))) (authored (relationships (typing (reference "V") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AnalysisTest::V"))) (kind "part def") (name "V") (declared-name "V") (range (start (line 2) (character 1)) (end (line 2) (character 21))) (parent (node (document "d0") (qualified-name "AnalysisTest"))))
+    (element (id (node (document "d0") (qualified-name "AnalysisTest::analysisContext"))) (kind "part") (name "analysisContext") (declared-name "analysisContext") (range (start (line 32) (character 1)) (end (line 32) (character 90))) (parent (node (document "d0") (qualified-name "AnalysisTest"))))
+    (element (id (node (document "d0") (qualified-name "AnalysisTest::vv"))) (kind "part") (name "vv") (declared-name "vv") (range (start (line 6) (character 1)) (end (line 6) (character 13))) (parent (node (document "d0") (qualified-name "AnalysisTest"))) (authored (membership (kind Feature)) (relationships (typing (reference "V") (range (start (line 6) (character 11)) (end (line 6) (character 12)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase::obj"))) (kind featureTyping) (ordinal 0)) (authored-target "AnalysisObjective") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "AnalysisTest::AnalysisObjective")))))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase::v"))) (kind featureTyping) (ordinal 0)) (authored-target "V") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "AnalysisTest::V")))))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan::analysisCase"))) (kind featureTyping) (ordinal 0)) (authored-target "AnalysisCase") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase")))))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan::v"))) (kind featureTyping) (ordinal 0)) (authored-target "V") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "AnalysisTest::V")))))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisTest::vv"))) (kind featureTyping) (ordinal 0)) (authored-target "V") (range (start (line 6) (character 11)) (end (line 6) (character 12))) (outcome (status resolved) (target (node (document "d0") (qualified-name "AnalysisTest::V")))))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisTest::AnalysisObjective::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisTest::AnalysisObjective"))) (provenance authored))
-    (subject (status resolved) (from (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase"))) (to (node (document "d0") (qualified-name "AnalysisTest::V"))) (provenance authored))
-    (subject (status resolved) (from (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan"))) (to (node (document "d0") (qualified-name "AnalysisTest::V"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase::obj"))) (to (node (document "d0") (qualified-name "AnalysisTest::AnalysisObjective"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase::v"))) (to (node (document "d0") (qualified-name "AnalysisTest::V"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan::analysisCase"))) (to (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan::v"))) (to (node (document "d0") (qualified-name "AnalysisTest::V"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisTest::vv"))) (to (node (document "d0") (qualified-name "AnalysisTest::V"))) (provenance authored))
+    (relationship (kind subject) (source (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase"))) (target (node (document "d0") (qualified-name "AnalysisTest::V"))) (provenance (derived CaseSubjectFromTypedSubject)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase::obj"))) (target (node (document "d0") (qualified-name "AnalysisTest::AnalysisObjective"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase::obj"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase::v"))) (target (node (document "d0") (qualified-name "AnalysisTest::V"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase::v"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind subject) (source (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan"))) (target (node (document "d0") (qualified-name "AnalysisTest::V"))) (provenance (derived CaseSubjectFromTypedSubject)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan::analysisCase"))) (target (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan::analysisCase"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan::v"))) (target (node (document "d0") (qualified-name "AnalysisTest::V"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan::v"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "AnalysisTest::vv"))) (target (node (document "d0") (qualified-name "AnalysisTest::V"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "AnalysisTest::vv"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase"))) (status missing-prerequisite) (target "AnalysisCases::AnalysisCase"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase::obj"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisTest::AnalysisObjective"))) (status missing-prerequisite) (target "Requirements::RequirementCheck"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan"))) (status missing-prerequisite) (target "AnalysisCases::AnalysisCase"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan::analysisCase"))) (status missing-prerequisite) (target "AnalysisCases::analysisCases"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan::objective"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisTest::V"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisTest::analysisContext"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisTest::vv"))) (status missing-prerequisite) (target "Parts::parts"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/analysis_test.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 3 2) (end 3 6))
-      )
-      (diagnostic
-        (severity warning)
-        (code "case_objective_binding_cardinality")
-        (source "semantic")
-        (range (start 12 1) (end 12 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "objective_binding_unresolved")
-        (source "semantic")
-        (range (start 15 2) (end 15 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "case_objective_binding_cardinality")
-        (source "semantic")
-        (range (start 22 1) (end 22 145))
-      )
-      (diagnostic
-        (severity warning)
-        (code "objective_binding_unresolved")
-        (source "semantic")
-        (range (start 25 2) (end 25 34))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

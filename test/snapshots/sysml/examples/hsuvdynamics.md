@@ -94,6 +94,69 @@ package HSUVDynamics {
 		
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "hsuvdynamics.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 3 16) (end 3 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 5 1) (end 5 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 6 1) (end 6 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 7 1) (end 7 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 8 1) (end 8 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 9 1) (end 9 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 10 1) (end 10 28))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -237,6 +300,32 @@ CloseCurly,EndOfFile,
         (attribute_usage :>> 'x' value)
         (attribute_usage :>> 'dt' value)))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+~~~
 # FORMAT
 ~~~sysml
 package HSUVDynamics {
@@ -328,136 +417,46 @@ package HSUVDynamics {
 		
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "HSUVDynamics"))) (name "HSUVDynamics") (declared-name "HSUVDynamics")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "HSUVDynamics::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "HSUVDynamics::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "HSUVDynamics::Accel"))) (name "Accel") (declared-name "Accel") (declared (properties (ordered false) (unique true))))
-        (element (kind "constraint def") (id (node (document "d0") (qualified-name "HSUVDynamics::AccelerationEquation"))) (name "AccelerationEquation") (declared-name "AccelerationEquation") (declared (own-expression (expression (kind "featureReference") (reference "attribute")))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "HSUVDynamics::Dist"))) (name "Dist") (declared-name "Dist") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "HSUVDynamics::Horsepwr"))) (name "Horsepwr") (declared-name "Horsepwr") (declared (properties (ordered false) (unique true))))
-        (element (kind "constraint def") (id (node (document "d0") (qualified-name "HSUVDynamics::PositionEquation"))) (name "PositionEquation") (declared-name "PositionEquation") (declared (own-expression (expression (kind "featureReference") (reference "attribute")))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-        (element (kind "constraint def") (id (node (document "d0") (qualified-name "HSUVDynamics::PowerEquation"))) (name "PowerEquation") (declared-name "PowerEquation") (declared (own-expression (expression (kind "featureReference") (reference "attribute")))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-        (element (kind "constraint def") (id (node (document "d0") (qualified-name "HSUVDynamics::StraightLineVehicleDynamics"))) (name "StraightLineVehicleDynamics") (declared-name "StraightLineVehicleDynamics") (declared (own-expression (expression (kind "featureReference") (reference "attribute")))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "HSUVDynamics::Time"))) (name "Time") (declared-name "Time") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "HSUVDynamics::Vel"))) (name "Vel") (declared-name "Vel") (declared (properties (ordered false) (unique true))))
-        (element (kind "constraint def") (id (node (document "d0") (qualified-name "HSUVDynamics::VelocityEquation"))) (name "VelocityEquation") (declared-name "VelocityEquation") (declared (own-expression (expression (kind "featureReference") (reference "attribute")))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "HSUVDynamics::Weight"))) (name "Weight") (declared-name "Weight") (declared (properties (ordered false) (unique true))))
-        (element (kind "import") (id (node (document "d0") (qualified-name "HSUVDynamics::size"))) (name "size") (declared-name "size"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "24317a9e7401e8c6f5f4ab7e1429cf1867602a90323669ace81e0b1b9d1e4427") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "HSUVDynamics"))) (kind "package") (name "HSUVDynamics") (declared-name "HSUVDynamics") (range (start (line 0) (character 0)) (end (line 0) (character 2451))))
+    (element (id (node (document "d0") (qualified-name "HSUVDynamics::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "HSUVDynamics"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "HSUVDynamics::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 3) (character 1)) (end (line 3) (character 36))) (parent (node (document "d0") (qualified-name "HSUVDynamics"))) (authored (membership (kind Import) (visibility "private") (import (reference "ControlFunctions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 3) (character 16)) (end (line 3) (character 32))))))
+    (element (id (node (document "d0") (qualified-name "HSUVDynamics::Accel"))) (kind "attribute def") (name "Accel") (declared-name "Accel") (range (start (line 7) (character 1)) (end (line 7) (character 29))) (parent (node (document "d0") (qualified-name "HSUVDynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "Real") (range none)))))
+    (element (id (node (document "d0") (qualified-name "HSUVDynamics::AccelerationEquation"))) (kind "constraint def") (name "AccelerationEquation") (declared-name "AccelerationEquation") (range (start (line 39) (character 1)) (end (line 39) (character 173))) (parent (node (document "d0") (qualified-name "HSUVDynamics"))))
+    (element (id (node (document "d0") (qualified-name "HSUVDynamics::Dist"))) (kind "attribute def") (name "Dist") (declared-name "Dist") (range (start (line 9) (character 1)) (end (line 9) (character 28))) (parent (node (document "d0") (qualified-name "HSUVDynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "Real") (range none)))))
+    (element (id (node (document "d0") (qualified-name "HSUVDynamics::Horsepwr"))) (kind "attribute def") (name "Horsepwr") (declared-name "Horsepwr") (range (start (line 5) (character 1)) (end (line 5) (character 32))) (parent (node (document "d0") (qualified-name "HSUVDynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "Real") (range none)))))
+    (element (id (node (document "d0") (qualified-name "HSUVDynamics::PositionEquation"))) (kind "constraint def") (name "PositionEquation") (declared-name "PositionEquation") (range (start (line 23) (character 1)) (end (line 23) (character 223))) (parent (node (document "d0") (qualified-name "HSUVDynamics"))))
+    (element (id (node (document "d0") (qualified-name "HSUVDynamics::PowerEquation"))) (kind "constraint def") (name "PowerEquation") (declared-name "PowerEquation") (range (start (line 12) (character 1)) (end (line 12) (character 225))) (parent (node (document "d0") (qualified-name "HSUVDynamics"))))
+    (element (id (node (document "d0") (qualified-name "HSUVDynamics::StraightLineVehicleDynamics"))) (kind "constraint def") (name "StraightLineVehicleDynamics") (declared-name "StraightLineVehicleDynamics") (range (start (line 48) (character 1)) (end (line 48) (character 1285))) (parent (node (document "d0") (qualified-name "HSUVDynamics"))))
+    (element (id (node (document "d0") (qualified-name "HSUVDynamics::Time"))) (kind "attribute def") (name "Time") (declared-name "Time") (range (start (line 10) (character 1)) (end (line 10) (character 28))) (parent (node (document "d0") (qualified-name "HSUVDynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "Real") (range none)))))
+    (element (id (node (document "d0") (qualified-name "HSUVDynamics::Vel"))) (kind "attribute def") (name "Vel") (declared-name "Vel") (range (start (line 8) (character 1)) (end (line 8) (character 27))) (parent (node (document "d0") (qualified-name "HSUVDynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "Real") (range none)))))
+    (element (id (node (document "d0") (qualified-name "HSUVDynamics::VelocityEquation"))) (kind "constraint def") (name "VelocityEquation") (declared-name "VelocityEquation") (range (start (line 31) (character 1)) (end (line 31) (character 210))) (parent (node (document "d0") (qualified-name "HSUVDynamics"))))
+    (element (id (node (document "d0") (qualified-name "HSUVDynamics::Weight"))) (kind "attribute def") (name "Weight") (declared-name "Weight") (range (start (line 6) (character 1)) (end (line 6) (character 30))) (parent (node (document "d0") (qualified-name "HSUVDynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "Real") (range none)))))
+    (element (id (node (document "d0") (qualified-name "HSUVDynamics::size"))) (kind "import") (name "size") (declared-name "size") (range (start (line 2) (character 1)) (end (line 2) (character 40))) (parent (node (document "d0") (qualified-name "HSUVDynamics"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::size") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 39))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "HSUVDynamics::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (range (start (line 1) (character 16)) (end (line 1) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "HSUVDynamics::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "ControlFunctions::*") (range (start (line 3) (character 16)) (end (line 3) (character 32))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "HSUVDynamics::Accel"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "HSUVDynamics::Dist"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "HSUVDynamics::Horsepwr"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "HSUVDynamics::Time"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "HSUVDynamics::Vel"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "HSUVDynamics::Weight"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "HSUVDynamics::size"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::size") (range (start (line 2) (character 16)) (end (line 2) (character 39))) (outcome (status unresolved)))
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVDynamics::Accel"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVDynamics::AccelerationEquation"))) (status missing-prerequisite) (target "Constraints::ConstraintCheck"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVDynamics::Dist"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVDynamics::Horsepwr"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVDynamics::PositionEquation"))) (status missing-prerequisite) (target "Constraints::ConstraintCheck"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVDynamics::PowerEquation"))) (status missing-prerequisite) (target "Constraints::ConstraintCheck"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVDynamics::StraightLineVehicleDynamics"))) (status missing-prerequisite) (target "Constraints::ConstraintCheck"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVDynamics::Time"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVDynamics::Vel"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVDynamics::VelocityEquation"))) (status missing-prerequisite) (target "Constraints::ConstraintCheck"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVDynamics::Weight"))) (status missing-prerequisite) (target "Base::DataValue"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/hsuvdynamics.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 16) (end 2 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 3 16) (end 3 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 5 1) (end 5 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 6 1) (end 6 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 7 1) (end 7 29))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 8 1) (end 8 27))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 9 1) (end 9 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 10 1) (end 10 28))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "HSUVDynamics::AccelerationEquation")) (expression (status "unresolved") (error "expression has an unresolved reference")))
+    (node (node (document "d0") (qualified-name "HSUVDynamics::PositionEquation")) (expression (status "unresolved") (error "expression has an unresolved reference")))
+    (node (node (document "d0") (qualified-name "HSUVDynamics::PowerEquation")) (expression (status "unresolved") (error "expression has an unresolved reference")))
+    (node (node (document "d0") (qualified-name "HSUVDynamics::StraightLineVehicleDynamics")) (expression (status "unresolved") (error "expression has an unresolved reference")))
+    (node (node (document "d0") (qualified-name "HSUVDynamics::VelocityEquation")) (expression (status "unresolved") (error "expression has an unresolved reference")))
   )
 )
 ~~~

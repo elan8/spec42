@@ -57,6 +57,87 @@ package TimeVaryingAttribute {
     }
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "time_varying_attribute.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 19) (end 1 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 4 8) (end 4 50))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 9 8) (end 9 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 10 32) (end 10 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 11 22) (end 11 44))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 13 8) (end 13 71))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 15 22) (end 15 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 16 25) (end 16 30))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_occurrence_body_element")
+        (source "sysml")
+        (range (start 18 16) (end 18 53))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 18 16) (end 18 53))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 20 25) (end 20 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 34 25) (end 34 30))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -145,6 +226,28 @@ CloseCurly,EndOfFile,
       (line_comment)
       (line_comment))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'ScalarValues::Integer'
+semantic.unresolved_name 'ISQ::duration'
+semantic.unresolved_name 'localClock::currentTime'
+semantic.unresolved_name 'portionOfLife'
+semantic.unresolved_name 'start'
+semantic.unresolved_name 'done'
+semantic.unresolved_name 'start'
+semantic.unresolved_name 'done'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'ScalarValues::Integer'
+semantic.unresolved_name 'ISQ::duration'
+semantic.unresolved_name 'localClock::currentTime'
+semantic.unresolved_name 'portionOfLife'
+semantic.unresolved_name 'start'
+semantic.unresolved_name 'done'
+semantic.unresolved_name 'start'
+semantic.unresolved_name 'done'
+~~~
 # FORMAT
 ~~~sysml
 package TimeVaryingAttribute {
@@ -200,199 +303,52 @@ package TimeVaryingAttribute {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'ScalarValues::Integer'
-semantic.unresolved_name 'ISQ::duration'
-semantic.unresolved_name 'localClock::currentTime'
-semantic.unresolved_name 'portionOfLife'
-semantic.unresolved_name 'start'
-semantic.unresolved_name 'done'
-semantic.unresolved_name 'start'
-semantic.unresolved_name 'done'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'ScalarValues::Integer'
-semantic.unresolved_name 'ISQ::duration'
-semantic.unresolved_name 'localClock::currentTime'
-semantic.unresolved_name 'portionOfLife'
-semantic.unresolved_name 'start'
-semantic.unresolved_name 'done'
-semantic.unresolved_name 'start'
-semantic.unresolved_name 'done'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "TimeVaryingAttribute"))) (name "TimeVaryingAttribute") (declared-name "TimeVaryingAttribute")
-      (contains
-        (element (kind "item def") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::PwrCmd"))) (name "PwrCmd") (declared-name "PwrCmd")
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::PwrCmd::pwrLevel"))) (name "pwrLevel") (declared-name "pwrLevel") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "TimeVaryingAttribute::PwrCmd")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))) (name "Transport2") (declared-name "Transport2") (declared)
-          (contains
-            (element (kind "occurrence") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::"))) (name "") (declared (properties (portion true) (portion-kind "timeslice"))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))))
-              (contains
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::"))) (name "") (declared (properties (portion true) (portion-kind "snapshot"))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))))
-                  (contains
-                    (element (kind "attribute") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::::elapseTime"))) (name "elapseTime") (declared-name "elapseTime") (declared (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal (integer 0))) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "s")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::::elapseTime"))) (role feature-value))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
-                  )
-                )
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::#occurrence"))) (name "") (declared (properties (portion true) (portion-kind "snapshot"))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))))
-                  (contains
-                    (element (kind "attribute") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::#occurrence::elapseTime"))) (name "elapseTime") (declared-name "elapseTime") (declared (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal (integer 2))) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "s")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::#occurrence::elapseTime"))) (role feature-value))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
-                  )
-                )
-              )
-            )
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::currentTime"))) (name "currentTime") (declared-name "currentTime") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "binary") (operator "+") (children (expression (kind "featureReference") (reference "startTime")) (expression (kind "featureReference") (reference "elapseTime")))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::currentTime"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::elapseTime"))) (name "elapseTime") (declared-name "elapseTime") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::startTime"))) (name "startTime") (declared-name "startTime") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "invocation") (children (expression (kind "featureReference") (reference "TimeOf"))) (arguments (argument (expression (kind "featureReference") (reference "start"))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::startTime"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-            (element (kind "occurrence") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::transportPeriod"))) (name "transportPeriod") (declared-name "transportPeriod") (declared (properties (portion true) (portion-kind "timeslice"))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))))
-              (contains
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::transportPeriod::"))) (name "") (declared (properties (portion true) (portion-kind "snapshot"))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))))
-                  (contains
-                    (element (kind "attribute") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::transportPeriod::::elapseTime"))) (name "elapseTime") (declared-name "elapseTime") (declared (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal (integer 1))) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "s")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::transportPeriod::::elapseTime"))) (role feature-value))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
-                  )
-                )
-              )
-            )
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::s"))) (name "s") (declared-name "s"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "d658ab9258f2ca46cd76996e9f265cca0618e267a9f19bb2a1132f26e2e46ac1") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "TimeVaryingAttribute"))) (kind "package") (name "TimeVaryingAttribute") (declared-name "TimeVaryingAttribute") (range (start (line 0) (character 0)) (end (line 0) (character 1397))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingAttribute::PwrCmd"))) (kind "item def") (name "PwrCmd") (declared-name "PwrCmd") (range (start (line 3) (character 4)) (end (line 3) (character 78))) (parent (node (document "d0") (qualified-name "TimeVaryingAttribute"))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingAttribute::PwrCmd::pwrLevel"))) (kind "attribute") (name "pwrLevel") (declared-name "pwrLevel") (range (start (line 4) (character 8)) (end (line 4) (character 50))) (parent (node (document "d0") (qualified-name "TimeVaryingAttribute::PwrCmd"))) (authored (membership (kind Feature)) (relationships (typing (reference "Integer") (range none)))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))) (kind "part def") (name "Transport2") (declared-name "Transport2") (range (start (line 7) (character 4)) (end (line 7) (character 1249))) (parent (node (document "d0") (qualified-name "TimeVaryingAttribute"))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::"))) (kind "occurrence") (name "") (range (start (line 15) (character 18)) (end (line 15) (character 302))) (parent (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "portionOfLife") (range (start (line 15) (character 22)) (end (line 15) (character 35)))))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::"))) (kind "occurrence") (name "") (range (start (line 16) (character 21)) (end (line 16) (character 127))) (parent (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "start") (range (start (line 16) (character 25)) (end (line 16) (character 30)))))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::#occurrence"))) (kind "occurrence") (name "") (range (start (line 20) (character 21)) (end (line 20) (character 126))) (parent (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "done") (range (start (line 20) (character 25)) (end (line 20) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::#occurrence::elapseTime"))) (kind "attribute") (name "elapseTime") (declared-name "elapseTime") (range (start (line 21) (character 16)) (end (line 21) (character 39))) (parent (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::#occurrence"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "elapseTime") (range (start (line 21) (character 16)) (end (line 21) (character 30)))))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::::elapseTime"))) (kind "attribute") (name "elapseTime") (declared-name "elapseTime") (range (start (line 17) (character 16)) (end (line 17) (character 39))) (parent (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "elapseTime") (range (start (line 17) (character 16)) (end (line 17) (character 30)))))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::currentTime"))) (kind "attribute") (name "currentTime") (declared-name "currentTime") (range (start (line 11) (character 8)) (end (line 11) (character 70))) (parent (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "localClock.currentTime") (range (start (line 11) (character 22)) (end (line 11) (character 44)))))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::elapseTime"))) (kind "attribute") (name "elapseTime") (declared-name "elapseTime") (range (start (line 10) (character 8)) (end (line 10) (character 46))) (parent (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "ISQ::duration") (range (start (line 10) (character 32)) (end (line 10) (character 45)))))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::startTime"))) (kind "attribute") (name "startTime") (declared-name "startTime") (range (start (line 9) (character 8)) (end (line 9) (character 44))) (parent (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::transportPeriod"))) (kind "occurrence") (name "transportPeriod") (declared-name "transportPeriod") (range (start (line 33) (character 18)) (end (line 33) (character 270))) (parent (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::transportPeriod::"))) (kind "occurrence") (name "") (range (start (line 34) (character 21)) (end (line 34) (character 85))) (parent (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::transportPeriod"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "start") (range (start (line 34) (character 25)) (end (line 34) (character 30)))))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::transportPeriod::::elapseTime"))) (kind "attribute") (name "elapseTime") (declared-name "elapseTime") (range (start (line 35) (character 16)) (end (line 35) (character 39))) (parent (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::transportPeriod::"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "elapseTime") (range (start (line 35) (character 16)) (end (line 35) (character 30)))))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingAttribute::s"))) (kind "import") (name "s") (declared-name "s") (range (start (line 1) (character 4)) (end (line 1) (character 25))) (parent (node (document "d0") (qualified-name "TimeVaryingAttribute"))) (authored (membership (kind Import) (visibility "private") (import (reference "SI::s") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 1) (character 19)) (end (line 1) (character 24))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "TimeVaryingAttribute::PwrCmd::pwrLevel"))) (kind featureTyping) (ordinal 0)) (authored-target "Integer") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::"))) (kind redefinition) (ordinal 0)) (authored-target "portionOfLife") (range (start (line 15) (character 22)) (end (line 15) (character 35))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::"))) (kind redefinition) (ordinal 0)) (authored-target "start") (range (start (line 16) (character 25)) (end (line 16) (character 30))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::#occurrence"))) (kind redefinition) (ordinal 0)) (authored-target "done") (range (start (line 20) (character 25)) (end (line 20) (character 29))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::#occurrence::elapseTime"))) (kind redefinition) (ordinal 0)) (authored-target "elapseTime") (range (start (line 21) (character 16)) (end (line 21) (character 30))) (outcome (status resolved) (target (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::#occurrence::elapseTime")))))
+    (reference (id (source (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::::elapseTime"))) (kind redefinition) (ordinal 0)) (authored-target "elapseTime") (range (start (line 17) (character 16)) (end (line 17) (character 30))) (outcome (status resolved) (target (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::::elapseTime")))))
+    (reference (id (source (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::currentTime"))) (kind redefinition) (ordinal 0)) (authored-target "localClock.currentTime") (range (start (line 11) (character 22)) (end (line 11) (character 44))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::elapseTime"))) (kind subsetting) (ordinal 0)) (authored-target "ISQ::duration") (range (start (line 10) (character 32)) (end (line 10) (character 45))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::transportPeriod::"))) (kind redefinition) (ordinal 0)) (authored-target "start") (range (start (line 34) (character 25)) (end (line 34) (character 30))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::transportPeriod::::elapseTime"))) (kind redefinition) (ordinal 0)) (authored-target "elapseTime") (range (start (line 35) (character 16)) (end (line 35) (character 30))) (outcome (status resolved) (target (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::transportPeriod::::elapseTime")))))
+    (reference (id (source (node (document "d0") (qualified-name "TimeVaryingAttribute::s"))) (kind membershipImport) (ordinal 0)) (authored-target "SI::s") (range (start (line 1) (character 19)) (end (line 1) (character 24))) (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::#occurrence::elapseTime"))) (target (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::#occurrence::elapseTime"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::#occurrence::elapseTime"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::::elapseTime"))) (target (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::::elapseTime"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::::elapseTime"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::transportPeriod::::elapseTime"))) (target (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::transportPeriod::::elapseTime"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::transportPeriod::::elapseTime"))) (kind redefinition) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimeVaryingAttribute::PwrCmd"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimeVaryingAttribute::PwrCmd::pwrLevel"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::#occurrence"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::#occurrence::elapseTime"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::::elapseTime"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::currentTime"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::elapseTime"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::startTime"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::transportPeriod"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::transportPeriod::"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::transportPeriod::::elapseTime"))) (status missing-prerequisite) (target "Base::dataValues"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/time_varying_attribute.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 19) (end 1 24))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 4 8) (end 4 50))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 11 8) (end 11 70))
-      )
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 13 8) (end 13 71))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 15 18) (end 15 302))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 16 21) (end 16 127))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unknown_unit_symbol")
-        (source "semantic")
-        (range (start 17 16) (end 17 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 17 16) (end 17 39))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_occurrence_body_element")
-        (source "sysml")
-        (range (start 18 16) (end 18 53))
-      )
-      (diagnostic
-        (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 18 16) (end 18 53))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 20 21) (end 20 126))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unknown_unit_symbol")
-        (source "semantic")
-        (range (start 21 16) (end 21 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 21 16) (end 21 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 34 21) (end 34 85))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unknown_unit_symbol")
-        (source "semantic")
-        (range (start 35 16) (end 35 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 35 16) (end 35 39))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::#occurrence::elapseTime")) (expression (status "unsupported") (error "declared expression form is not supported")))
+    (node (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::::elapseTime")) (expression (status "unsupported") (error "declared expression form is not supported")))
+    (node (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::currentTime")) (expression (status "unresolved") (error "expression has an unresolved reference")))
+    (node (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::startTime")) (expression (status "unresolved") (error "expression has an unresolved reference")))
+    (node (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::transportPeriod::::elapseTime")) (expression (status "unsupported") (error "declared expression form is not supported")))
   )
 )
 ~~~

@@ -58,6 +58,45 @@ package AssignmentTest {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "assignment_test.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 3 2) (end 3 47))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 3 2) (end 3 47))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 3 20) (end 3 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 17 1) (end 17 351))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 17 1) (end 17 351))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -138,6 +177,26 @@ CloseCurly,EndOfFile,
           (assign_node)
           (assign_node))))))
 ~~~
+# EXPECTED
+~~~
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_close_curly
+parse.expected_close_curly
+semantic.unresolved_name 'ScalarValues::Integer'
+semantic.unresolved_name 'c::incr'
+~~~
+# PROBLEMS
+~~~
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_close_curly
+parse.expected_close_curly
+semantic.unresolved_name 'ScalarValues::Integer'
+semantic.unresolved_name 'c::incr'
+~~~
 # FORMAT
 ~~~sysml
 package AssignmentTest {
@@ -193,154 +252,56 @@ package AssignmentTest {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_close_curly
-parse.expected_close_curly
-semantic.unresolved_name 'ScalarValues::Integer'
-semantic.unresolved_name 'c::incr'
-~~~
-# PROBLEMS
-~~~
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_close_curly
-parse.expected_close_curly
-semantic.unresolved_name 'ScalarValues::Integer'
-semantic.unresolved_name 'c::incr'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "AssignmentTest"))) (name "AssignmentTest") (declared-name "AssignmentTest")
-      (contains
-        (element (kind "part def") (id (node (document "d0") (qualified-name "AssignmentTest::Counter"))) (name "Counter") (declared-name "Counter") (declared)
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "AssignmentTest::Counter::count"))) (name "count") (declared-name "count") (declared (properties (ordered false) (unique true)) (feature-value (kind initial) (expression (kind "integerLiteral") (literal (integer 0))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "AssignmentTest::Counter")))) (evaluation (expression (status "ok") (value (integer 0)))))
-            (element (kind "action") (id (node (document "d0") (qualified-name "AssignmentTest::Counter::decr"))) (name "decr") (declared-name "decr") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "AssignmentTest::Counter"))))
-              (contains
-                (element (kind "assign") (id (node (document "d0") (qualified-name "AssignmentTest::Counter::decr::_assign"))) (name "assign") (declared-name "assign") (effective (featuring-type (node (document "d0") (qualified-name "AssignmentTest::Counter")))))
-              )
-            )
-            (element (kind "action") (id (node (document "d0") (qualified-name "AssignmentTest::Counter::incr"))) (name "incr") (declared-name "incr") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "AssignmentTest::Counter"))))
-              (contains
-                (element (kind "assign") (id (node (document "d0") (qualified-name "AssignmentTest::Counter::incr::_assign"))) (name "assign") (declared-name "assign") (effective (featuring-type (node (document "d0") (qualified-name "AssignmentTest::Counter")))))
-              )
-            )
-          )
-        )
-        (element (kind "state def") (id (node (document "d0") (qualified-name "AssignmentTest::Counting"))) (name "Counting") (declared-name "Counting")
-          (contains
-            (element (kind "state") (id (node (document "d0") (qualified-name "AssignmentTest::Counting::decrement"))) (name "decrement") (declared-name "decrement") (effective (featuring-type (node (document "d0") (qualified-name "AssignmentTest::Counting")))))
-            (element (kind "state") (id (node (document "d0") (qualified-name "AssignmentTest::Counting::increment"))) (name "increment") (declared-name "increment") (effective (featuring-type (node (document "d0") (qualified-name "AssignmentTest::Counting")))))
-            (element (kind "transition") (id (node (document "d0") (qualified-name "AssignmentTest::Counting::transition_Counting_to_decrement"))) (name "transition_Counting_to_decrement") (declared-name "transition_Counting_to_decrement") (effective (featuring-type (node (document "d0") (qualified-name "AssignmentTest::Counting"))))
-              (contains
-                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "AssignmentTest::Counting::transition_Counting_to_decrement::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "AssignmentTest::Counting")))))
-              )
-            )
-            (element (kind "transition") (id (node (document "d0") (qualified-name "AssignmentTest::Counting::transition_Counting_to_increment"))) (name "transition_Counting_to_increment") (declared-name "transition_Counting_to_increment") (effective (featuring-type (node (document "d0") (qualified-name "AssignmentTest::Counting"))))
-              (contains
-                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "AssignmentTest::Counting::transition_Counting_to_increment::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "AssignmentTest::Counting")))))
-              )
-            )
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "AssignmentTest::Decr"))) (name "Decr") (declared-name "Decr") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "AssignmentTest::Incr"))) (name "Incr") (declared-name "Incr") (declared (properties (ordered false) (unique true))))
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "AssignmentTest::Increment"))) (name "Increment") (declared-name "Increment") (declared (own-expression (expression (kind "featureReference") (reference "perform")))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference")))
-          (contains
-            (element (kind "return parameter") (id (node (document "d0") (qualified-name "AssignmentTest::Increment::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "AssignmentTest::Increment")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "AssignmentTest::Increment::c"))) (name "c") (declared-name "c") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "AssignmentTest::Increment")))))
-          )
-        )
-        (element (kind "action") (id (node (document "d0") (qualified-name "AssignmentTest::a"))) (name "a") (declared-name "a") (declared)
-          (contains
-            (element (kind "assign") (id (node (document "d0") (qualified-name "AssignmentTest::a::_assign"))) (name "assign") (declared-name "assign"))
-            (element (kind "assign") (id (node (document "d0") (qualified-name "AssignmentTest::a::_assign#assign"))) (name "assign") (declared-name "assign"))
-            (element (kind "state") (id (node (document "d0") (qualified-name "AssignmentTest::a::counting"))) (name "counting") (declared-name "counting") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "8f2077218088e803774512a94869d29e0f39d99a219e378505f72d8cc2baaa77") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "AssignmentTest"))) (kind "package") (name "AssignmentTest") (declared-name "AssignmentTest") (range (start (line 0) (character 0)) (end (line 0) (character 873))))
+    (element (id (node (document "d0") (qualified-name "AssignmentTest::Counter"))) (kind "part def") (name "Counter") (declared-name "Counter") (range (start (line 2) (character 1)) (end (line 2) (character 176))) (parent (node (document "d0") (qualified-name "AssignmentTest"))))
+    (element (id (node (document "d0") (qualified-name "AssignmentTest::Counter::count"))) (kind "attribute") (name "count") (declared-name "count") (range (start (line 3) (character 2)) (end (line 3) (character 47))) (parent (node (document "d0") (qualified-name "AssignmentTest::Counter"))) (authored (membership (kind Feature)) (relationships (typing (reference "Integer") (range none)) (typing (reference "ScalarValues::Integer") (range (start (line 3) (character 20)) (end (line 3) (character 41)))))))
+    (element (id (node (document "d0") (qualified-name "AssignmentTest::Counter::decr"))) (kind "action") (name "decr") (declared-name "decr") (range (start (line 9) (character 2)) (end (line 9) (character 49))) (parent (node (document "d0") (qualified-name "AssignmentTest::Counter"))))
+    (element (id (node (document "d0") (qualified-name "AssignmentTest::Counter::decr::_assign"))) (kind "assign") (name "assign") (declared-name "assign") (range (start (line 10) (character 3)) (end (line 10) (character 29))) (parent (node (document "d0") (qualified-name "AssignmentTest::Counter::decr"))))
+    (element (id (node (document "d0") (qualified-name "AssignmentTest::Counter::incr"))) (kind "action") (name "incr") (declared-name "incr") (range (start (line 5) (character 2)) (end (line 5) (character 49))) (parent (node (document "d0") (qualified-name "AssignmentTest::Counter"))))
+    (element (id (node (document "d0") (qualified-name "AssignmentTest::Counter::incr::_assign"))) (kind "assign") (name "assign") (declared-name "assign") (range (start (line 6) (character 3)) (end (line 6) (character 29))) (parent (node (document "d0") (qualified-name "AssignmentTest::Counter::incr"))))
+    (element (id (node (document "d0") (qualified-name "AssignmentTest::Counting"))) (kind "state def") (name "Counting") (declared-name "Counting") (range (start (line 17) (character 1)) (end (line 17) (character 351))) (parent (node (document "d0") (qualified-name "AssignmentTest"))) (authored (membership (kind Owning)) (relationships (transition (reference "AssignmentTest::Counting::increment") (range none)) (transition (reference "AssignmentTest::Counting::decrement") (range none)) (initial-state (reference "AssignmentTest::Counting::wait") (range none)) (initial-state (reference "AssignmentTest::Counting::wait") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AssignmentTest::Counting::decrement"))) (kind "state") (name "decrement") (declared-name "decrement") (range (start (line 32) (character 2)) (end (line 32) (character 72))) (parent (node (document "d0") (qualified-name "AssignmentTest::Counting"))))
+    (element (id (node (document "d0") (qualified-name "AssignmentTest::Counting::increment"))) (kind "state") (name "increment") (declared-name "increment") (range (start (line 27) (character 2)) (end (line 27) (character 72))) (parent (node (document "d0") (qualified-name "AssignmentTest::Counting"))))
+    (element (id (node (document "d0") (qualified-name "AssignmentTest::Counting::transition_Counting_to_decrement"))) (kind "transition") (name "transition_Counting_to_decrement") (declared-name "transition_Counting_to_decrement") (range (start (line 24) (character 2)) (end (line 24) (character 32))) (parent (node (document "d0") (qualified-name "AssignmentTest::Counting"))))
+    (element (id (node (document "d0") (qualified-name "AssignmentTest::Counting::transition_Counting_to_decrement::trigger"))) (kind "transition trigger") (name "trigger") (declared-name "trigger") (range (start (line 24) (character 2)) (end (line 24) (character 32))) (parent (node (document "d0") (qualified-name "AssignmentTest::Counting::transition_Counting_to_decrement"))))
+    (element (id (node (document "d0") (qualified-name "AssignmentTest::Counting::transition_Counting_to_increment"))) (kind "transition") (name "transition_Counting_to_increment") (declared-name "transition_Counting_to_increment") (range (start (line 22) (character 2)) (end (line 22) (character 32))) (parent (node (document "d0") (qualified-name "AssignmentTest::Counting"))))
+    (element (id (node (document "d0") (qualified-name "AssignmentTest::Counting::transition_Counting_to_increment::trigger"))) (kind "transition trigger") (name "trigger") (declared-name "trigger") (range (start (line 22) (character 2)) (end (line 22) (character 32))) (parent (node (document "d0") (qualified-name "AssignmentTest::Counting::transition_Counting_to_increment"))))
+    (element (id (node (document "d0") (qualified-name "AssignmentTest::Decr"))) (kind "attribute def") (name "Decr") (declared-name "Decr") (range (start (line 15) (character 1)) (end (line 15) (character 20))) (parent (node (document "d0") (qualified-name "AssignmentTest"))))
+    (element (id (node (document "d0") (qualified-name "AssignmentTest::Incr"))) (kind "attribute def") (name "Incr") (declared-name "Incr") (range (start (line 14) (character 1)) (end (line 14) (character 20))) (parent (node (document "d0") (qualified-name "AssignmentTest"))))
+    (element (id (node (document "d0") (qualified-name "AssignmentTest::Increment"))) (kind "calc def") (name "Increment") (declared-name "Increment") (range (start (line 38) (character 1)) (end (line 38) (character 88))) (parent (node (document "d0") (qualified-name "AssignmentTest"))))
+    (element (id (node (document "d0") (qualified-name "AssignmentTest::Increment::"))) (kind "return parameter") (name "") (range (start (line 40) (character 2)) (end (line 40) (character 19))) (parent (node (document "d0") (qualified-name "AssignmentTest::Increment"))) (authored (relationships (typing (reference "Counter") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AssignmentTest::Increment::c"))) (kind "in out parameter") (name "c") (declared-name "c") (range (start (line 39) (character 2)) (end (line 39) (character 17))) (parent (node (document "d0") (qualified-name "AssignmentTest::Increment"))) (authored (relationships (typing (reference "Counter") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AssignmentTest::a"))) (kind "action") (name "a") (declared-name "a") (range (start (line 46) (character 1)) (end (line 46) (character 176))) (parent (node (document "d0") (qualified-name "AssignmentTest"))))
+    (element (id (node (document "d0") (qualified-name "AssignmentTest::a::_assign"))) (kind "assign") (name "assign") (declared-name "assign") (range (start (line 48) (character 2)) (end (line 48) (character 62))) (parent (node (document "d0") (qualified-name "AssignmentTest::a"))))
+    (element (id (node (document "d0") (qualified-name "AssignmentTest::a::_assign#assign"))) (kind "assign") (name "assign") (declared-name "assign") (range (start (line 49) (character 2)) (end (line 49) (character 69))) (parent (node (document "d0") (qualified-name "AssignmentTest::a"))))
+    (element (id (node (document "d0") (qualified-name "AssignmentTest::a::counting"))) (kind "state") (name "counting") (declared-name "counting") (range (start (line 47) (character 2)) (end (line 47) (character 28))) (parent (node (document "d0") (qualified-name "AssignmentTest::a"))) (authored (membership (kind Feature)) (relationships (typing (reference "Counting") (range none)))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "AssignmentTest::Counter::count"))) (kind featureTyping) (ordinal 0)) (authored-target "Integer") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AssignmentTest::Counter::count"))) (kind featureTyping) (ordinal 1)) (authored-target "ScalarValues::Integer") (range (start (line 3) (character 20)) (end (line 3) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AssignmentTest::Counting"))) (kind transitionSource) (ordinal 0)) (authored-target "AssignmentTest::Counting::increment") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "AssignmentTest::Counting::increment")))))
+    (reference (id (source (node (document "d0") (qualified-name "AssignmentTest::Counting"))) (kind transitionSource) (ordinal 1)) (authored-target "AssignmentTest::Counting::decrement") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "AssignmentTest::Counting::decrement")))))
+    (reference (id (source (node (document "d0") (qualified-name "AssignmentTest::Counting"))) (kind initialStateSource) (ordinal 0)) (authored-target "AssignmentTest::Counting::wait") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AssignmentTest::Counting"))) (kind initialStateSource) (ordinal 1)) (authored-target "AssignmentTest::Counting::wait") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AssignmentTest::Increment::"))) (kind featureTyping) (ordinal 0)) (authored-target "Counter") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "AssignmentTest::Counter")))))
+    (reference (id (source (node (document "d0") (qualified-name "AssignmentTest::Increment::c"))) (kind featureTyping) (ordinal 0)) (authored-target "Counter") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "AssignmentTest::Counter")))))
+    (reference (id (source (node (document "d0") (qualified-name "AssignmentTest::a::counting"))) (kind featureTyping) (ordinal 0)) (authored-target "Counting") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "AssignmentTest::Counting")))))
   )
   (relationships
-    (transition (status resolved) (from (node (document "d0") (qualified-name "AssignmentTest::Counting"))) (to (node (document "d0") (qualified-name "AssignmentTest::Counting::decrement"))) (provenance authored))
-    (transition (status resolved) (from (node (document "d0") (qualified-name "AssignmentTest::Counting"))) (to (node (document "d0") (qualified-name "AssignmentTest::Counting::increment"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "AssignmentTest::Increment::"))) (to (node (document "d0") (qualified-name "AssignmentTest::Counter"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "AssignmentTest::Increment::c"))) (to (node (document "d0") (qualified-name "AssignmentTest::Counter"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "AssignmentTest::a::counting"))) (to (node (document "d0") (qualified-name "AssignmentTest::Counting"))) (provenance authored))
+    (relationship (kind transition) (source (node (document "d0") (qualified-name "AssignmentTest::Counting"))) (target (node (document "d0") (qualified-name "AssignmentTest::Counting::decrement"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "AssignmentTest::Counting"))) (kind transitionSource) (ordinal 1)))
+    (relationship (kind transition) (source (node (document "d0") (qualified-name "AssignmentTest::Counting"))) (target (node (document "d0") (qualified-name "AssignmentTest::Counting::increment"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "AssignmentTest::Counting"))) (kind transitionSource) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "AssignmentTest::Increment::"))) (target (node (document "d0") (qualified-name "AssignmentTest::Counter"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "AssignmentTest::Increment::"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "AssignmentTest::Increment::c"))) (target (node (document "d0") (qualified-name "AssignmentTest::Counter"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "AssignmentTest::Increment::c"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "AssignmentTest::a::counting"))) (target (node (document "d0") (qualified-name "AssignmentTest::Counting"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "AssignmentTest::a::counting"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-    (initialState (status pending) (document "d0") (source-qualified "AssignmentTest::Counting") (target-qualified "AssignmentTest::Counting::wait"))
-    (initialState (status pending) (document "d0") (source-qualified "AssignmentTest::Counting") (target-qualified "AssignmentTest::Counting::wait"))
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignmentTest::Counter"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignmentTest::Counter::count"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignmentTest::Counter::decr"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignmentTest::Counter::decr::_assign"))) (status missing-prerequisite) (target "Actions::assignmentActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignmentTest::Counter::incr"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignmentTest::Counter::incr::_assign"))) (status missing-prerequisite) (target "Actions::assignmentActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignmentTest::Counting"))) (status missing-prerequisite) (target "States::StateAction"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignmentTest::Counting::decrement"))) (status missing-prerequisite) (target "States::stateActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignmentTest::Counting::increment"))) (status missing-prerequisite) (target "States::stateActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignmentTest::Counting::transition_Counting_to_decrement"))) (status missing-prerequisite) (target "Actions::transitionActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignmentTest::Counting::transition_Counting_to_decrement::trigger"))) (status missing-prerequisite) (target "Actions::acceptActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignmentTest::Counting::transition_Counting_to_increment"))) (status missing-prerequisite) (target "Actions::transitionActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignmentTest::Counting::transition_Counting_to_increment::trigger"))) (status missing-prerequisite) (target "Actions::acceptActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignmentTest::Decr"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignmentTest::Incr"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignmentTest::Increment"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignmentTest::a"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignmentTest::a::_assign"))) (status missing-prerequisite) (target "Actions::assignmentActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignmentTest::a::_assign#assign"))) (status missing-prerequisite) (target "Actions::assignmentActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignmentTest::a::counting"))) (status missing-prerequisite) (target "States::stateActions"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/assignment_test.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_relationship")
-        (source "semantic")
-        (range (start 0 0) (end 0 0))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_relationship")
-        (source "semantic")
-        (range (start 0 0) (end 0 0))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 3 2) (end 3 47))
-      )
-      (diagnostic
-        (severity information)
-        (code "missing_final_state")
-        (source "semantic")
-        (range (start 17 1) (end 17 351))
-      )
-      (diagnostic
-        (severity information)
-        (code "missing_initial_state")
-        (source "semantic")
-        (range (start 17 1) (end 17 351))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "AssignmentTest::Counter::count")) (expression (status "ok") (value (integer 0))))
+    (node (node (document "d0") (qualified-name "AssignmentTest::Increment")) (expression (status "unresolved") (error "expression has an unresolved reference")))
   )
 )
 ~~~

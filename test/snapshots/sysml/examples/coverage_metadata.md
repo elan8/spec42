@@ -21,13 +21,26 @@ package Annotated {
     #Approval #Classified part def MultiAnnotated;
 }
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "coverage_metadata.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_annotation_syntax")
+        (source "sysml")
+        (range (start 4 4) (end 4 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_annotation_syntax")
+        (source "sysml")
+        (range (start 13 4) (end 13 51))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -55,6 +68,14 @@ CloseCurly,EndOfFile,
     (part_def #'Classified' 'AnnotatedPart')
     (part_def #'Approval', 'Classified' 'MultiAnnotated')))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 metadata def Classified;
@@ -76,59 +97,25 @@ package Annotated {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Annotated"))) (name "Annotated") (declared-name "Annotated")
-      (contains
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Annotated::AnnotatedPart"))) (name "AnnotatedPart") (declared-name "AnnotatedPart") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Annotated::Engine"))) (name "Engine") (declared-name "Engine") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Annotated::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "Annotated::_Classified"))) (name "Classified") (declared-name "Classified"))
-        (element (kind "metadata usage") (id (node (document "d0") (qualified-name "Annotated::m"))) (name "m") (declared-name "m"))
-      )
-    )
-    (element (kind "metadata def") (id (node (document "d0") (qualified-name "Approval"))) (name "Approval") (declared-name "Approval"))
-    (element (kind "metadata def") (id (node (document "d0") (qualified-name "Classified"))) (name "Classified") (declared-name "Classified"))
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "64c429d0a76224d613835c9da21e503ab63994fef49bc145156425f536e8b251") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Annotated"))) (kind "package") (name "Annotated") (declared-name "Annotated") (range (start (line 3) (character 0)) (end (line 3) (character 244))))
+    (element (id (node (document "d0") (qualified-name "Annotated::AnnotatedPart"))) (kind "part def") (name "AnnotatedPart") (declared-name "AnnotatedPart") (range (start (line 11) (character 16)) (end (line 11) (character 39))) (parent (node (document "d0") (qualified-name "Annotated"))))
+    (element (id (node (document "d0") (qualified-name "Annotated::Engine"))) (kind "part def") (name "Engine") (declared-name "Engine") (range (start (line 7) (character 4)) (end (line 7) (character 20))) (parent (node (document "d0") (qualified-name "Annotated"))))
+    (element (id (node (document "d0") (qualified-name "Annotated::Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (range (start (line 6) (character 4)) (end (line 6) (character 21))) (parent (node (document "d0") (qualified-name "Annotated"))))
+    (element (id (node (document "d0") (qualified-name "Annotated::_Classified"))) (kind "metadata keyword") (name "Classified") (declared-name "Classified") (range (start (line 11) (character 4)) (end (line 11) (character 16))) (parent (node (document "d0") (qualified-name "Annotated"))))
+    (element (id (node (document "d0") (qualified-name "Annotated::m"))) (kind "metadata usage") (name "m") (declared-name "m") (range (start (line 9) (character 4)) (end (line 9) (character 50))) (parent (node (document "d0") (qualified-name "Annotated"))) (authored (membership (kind Feature)) (relationships (typing (reference "Classified") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Approval"))) (kind "metadata def") (name "Approval") (declared-name "Approval") (range (start (line 1) (character 0)) (end (line 1) (character 22))))
+    (element (id (node (document "d0") (qualified-name "Classified"))) (kind "metadata def") (name "Classified") (declared-name "Classified") (range (start (line 0) (character 0)) (end (line 0) (character 24))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Annotated::m"))) (kind featureTyping) (ordinal 0)) (authored-target "Classified") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Annotated::_Classified")))))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Annotated::_Classified"))) (to (node (document "d0") (qualified-name "Annotated"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Annotated::m"))) (to (node (document "d0") (qualified-name "Annotated::Engine"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Annotated::m"))) (to (node (document "d0") (qualified-name "Annotated::Vehicle"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Annotated::m"))) (to (node (document "d0") (qualified-name "Classified"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Annotated::m"))) (target (node (document "d0") (qualified-name "Annotated::_Classified"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Annotated::m"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Annotated::AnnotatedPart"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Annotated::Engine"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Annotated::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Annotated::_Classified"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Annotated::m"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Approval"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Classified"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/coverage_metadata.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unsupported_annotation_syntax")
-        (source "sysml")
-        (range (start 4 4) (end 4 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_annotation_syntax")
-        (source "sysml")
-        (range (start 13 4) (end 13 51))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

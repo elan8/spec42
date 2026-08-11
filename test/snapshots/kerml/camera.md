@@ -16,6 +16,15 @@ class Camera {
 	succession focusedState then shotState;
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "camera.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwClass,Ident,OpenCurly,
@@ -36,6 +45,16 @@ CloseCurly,EndOfFile,
       (connector_end)
       (connector_end))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'timeSlices'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'timeSlices'
+~~~
 # FORMAT
 ~~~sysml
 class Camera {
@@ -47,35 +66,17 @@ class Camera {
 	succession focusedState then shotState;
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'timeSlices'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'timeSlices'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "8e617e5ca6363e6976abbfbe1a69e618d9dbedfc24b17181f1dd95e832d62b23") (contract-version "canonical-resolution-v1"))
+  (structure
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/camera.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

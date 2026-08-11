@@ -109,6 +109,21 @@ package JohnIndividualExample {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "john_individual_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 23))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -200,6 +215,38 @@ CloseCurly,EndOfFile,
       (documentation)
       (feature_def :>> 'timeSliceOf' : 'UnitedStates::Life')
       (feature_def :>> 'presidentOfUS' : 'JohnAsPresident'))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Object'
+semantic.unresolved_name 'Occurrences::Life'
+semantic.unresolved_name 'ScalarValues::Natural'
+semantic.unresolved_name 'portions'
+semantic.unresolved_name 'portionOf'
+semantic.unresolved_name 'timeSliceOf'
+semantic.unresolved_name 'Occurrences::Life'
+semantic.unresolved_name 'Object'
+semantic.unresolved_name 'Occurrences::Life'
+semantic.unresolved_name 'portions'
+semantic.unresolved_name 'portionOf'
+semantic.unresolved_name 'Occurrences::Life'
+semantic.unresolved_name 'timeSliceOf'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Object'
+semantic.unresolved_name 'Occurrences::Life'
+semantic.unresolved_name 'ScalarValues::Natural'
+semantic.unresolved_name 'portions'
+semantic.unresolved_name 'portionOf'
+semantic.unresolved_name 'timeSliceOf'
+semantic.unresolved_name 'Occurrences::Life'
+semantic.unresolved_name 'Object'
+semantic.unresolved_name 'Occurrences::Life'
+semantic.unresolved_name 'portions'
+semantic.unresolved_name 'portionOf'
+semantic.unresolved_name 'Occurrences::Life'
+semantic.unresolved_name 'timeSliceOf'
 ~~~
 # FORMAT
 ~~~sysml
@@ -307,75 +354,27 @@ package JohnIndividualExample {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Object'
-semantic.unresolved_name 'Occurrences::Life'
-semantic.unresolved_name 'ScalarValues::Natural'
-semantic.unresolved_name 'portions'
-semantic.unresolved_name 'portionOf'
-semantic.unresolved_name 'timeSliceOf'
-semantic.unresolved_name 'Occurrences::Life'
-semantic.unresolved_name 'Object'
-semantic.unresolved_name 'Occurrences::Life'
-semantic.unresolved_name 'portions'
-semantic.unresolved_name 'portionOf'
-semantic.unresolved_name 'Occurrences::Life'
-semantic.unresolved_name 'timeSliceOf'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Object'
-semantic.unresolved_name 'Occurrences::Life'
-semantic.unresolved_name 'ScalarValues::Natural'
-semantic.unresolved_name 'portions'
-semantic.unresolved_name 'portionOf'
-semantic.unresolved_name 'timeSliceOf'
-semantic.unresolved_name 'Occurrences::Life'
-semantic.unresolved_name 'Object'
-semantic.unresolved_name 'Occurrences::Life'
-semantic.unresolved_name 'portions'
-semantic.unresolved_name 'portionOf'
-semantic.unresolved_name 'Occurrences::Life'
-semantic.unresolved_name 'timeSliceOf'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "JohnIndividualExample"))) (name "JohnIndividualExample") (declared-name "JohnIndividualExample")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "JohnIndividualExample::*"))) (name "*") (declared-name "*"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "JohnIndividualExample::Country"))) (name "Country") (declared-name "Country"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "JohnIndividualExample::John"))) (name "John") (declared-name "John"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "JohnIndividualExample::JohnAsPresident"))) (name "JohnAsPresident") (declared-name "JohnAsPresident"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "JohnIndividualExample::Person"))) (name "Person") (declared-name "Person"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "JohnIndividualExample::President"))) (name "President") (declared-name "President"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "JohnIndividualExample::UnitedStates"))) (name "UnitedStates") (declared-name "UnitedStates"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "JohnIndividualExample::UnitedStatesWithJohnAsPresident"))) (name "UnitedStatesWithJohnAsPresident") (declared-name "UnitedStatesWithJohnAsPresident"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "aa44726e42492d30cda5088df30dac8db4d759ccaee4cc908ffecd66686a0dd2") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "JohnIndividualExample"))) (kind "package") (name "JohnIndividualExample") (declared-name "JohnIndividualExample") (range (start (line 0) (character 0)) (end (line 0) (character 2830))))
+    (element (id (node (document "d0") (qualified-name "JohnIndividualExample::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 27))) (parent (node (document "d0") (qualified-name "JohnIndividualExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "Objects::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 23))))))
+    (element (id (node (document "d0") (qualified-name "JohnIndividualExample::Country"))) (kind "classifier decl") (name "Country") (declared-name "Country") (range (start (line 62) (character 1)) (end (line 62) (character 365))) (parent (node (document "d0") (qualified-name "JohnIndividualExample"))))
+    (element (id (node (document "d0") (qualified-name "JohnIndividualExample::John"))) (kind "classifier decl") (name "John") (declared-name "John") (range (start (line 44) (character 1)) (end (line 44) (character 226))) (parent (node (document "d0") (qualified-name "JohnIndividualExample"))))
+    (element (id (node (document "d0") (qualified-name "JohnIndividualExample::JohnAsPresident"))) (kind "classifier decl") (name "JohnAsPresident") (declared-name "JohnAsPresident") (range (start (line 54) (character 1)) (end (line 54) (character 155))) (parent (node (document "d0") (qualified-name "JohnIndividualExample"))))
+    (element (id (node (document "d0") (qualified-name "JohnIndividualExample::Person"))) (kind "classifier decl") (name "Person") (declared-name "Person") (range (start (line 3) (character 1)) (end (line 3) (character 1013))) (parent (node (document "d0") (qualified-name "JohnIndividualExample"))))
+    (element (id (node (document "d0") (qualified-name "JohnIndividualExample::President"))) (kind "classifier decl") (name "President") (declared-name "President") (range (start (line 33) (character 1)) (end (line 33) (character 269))) (parent (node (document "d0") (qualified-name "JohnIndividualExample"))))
+    (element (id (node (document "d0") (qualified-name "JohnIndividualExample::UnitedStates"))) (kind "classifier decl") (name "UnitedStates") (declared-name "UnitedStates") (range (start (line 78) (character 1)) (end (line 78) (character 409))) (parent (node (document "d0") (qualified-name "JohnIndividualExample"))))
+    (element (id (node (document "d0") (qualified-name "JohnIndividualExample::UnitedStatesWithJohnAsPresident"))) (kind "classifier decl") (name "UnitedStatesWithJohnAsPresident") (declared-name "UnitedStatesWithJohnAsPresident") (range (start (line 92) (character 1)) (end (line 92) (character 310))) (parent (node (document "d0") (qualified-name "JohnIndividualExample"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "JohnIndividualExample::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Objects::*") (range (start (line 1) (character 16)) (end (line 1) (character 23))) (outcome (status unresolved)))
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/john_individual_example.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 23))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

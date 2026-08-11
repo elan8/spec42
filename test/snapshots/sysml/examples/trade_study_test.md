@@ -27,6 +27,39 @@ package TradeStudyTest {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "trade_study_test.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 8 1) (end 8 227))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 10 2) (end 10 32))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -63,6 +96,20 @@ CloseCurly,EndOfFile,
         (return_member))
       (return_member))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'TradeStudy'
+semantic.unresolved_name 'MaximizeObjective'
+semantic.unresolved_name 'evaluationFunction'
+semantic.unresolved_name 'Real'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'TradeStudy'
+semantic.unresolved_name 'MaximizeObjective'
+semantic.unresolved_name 'evaluationFunction'
+semantic.unresolved_name 'Real'
+~~~
 # FORMAT
 ~~~sysml
 package TradeStudyTest {
@@ -88,106 +135,47 @@ package TradeStudyTest {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'TradeStudy'
-semantic.unresolved_name 'MaximizeObjective'
-semantic.unresolved_name 'evaluationFunction'
-semantic.unresolved_name 'Real'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'TradeStudy'
-semantic.unresolved_name 'MaximizeObjective'
-semantic.unresolved_name 'evaluationFunction'
-semantic.unresolved_name 'Real'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "TradeStudyTest"))) (name "TradeStudyTest") (declared-name "TradeStudyTest")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "TradeStudyTest::*"))) (name "*") (declared-name "*"))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "TradeStudyTest::Engine"))) (name "Engine") (declared-name "Engine") (declared))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TradeStudyTest::Real"))) (name "Real") (declared-name "Real"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "TradeStudyTest::engine1"))) (name "engine1") (declared-name "engine1") (declared (properties (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "TradeStudyTest::engine2"))) (name "engine2") (declared-name "engine2") (declared (properties (ordered false))))
-        (element (kind "analysis") (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy"))) (name "engineTradeStudy") (declared-name "engineTradeStudy")
-          (contains
-            (element (kind "subject") (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::"))) (name ""))
-            (element (kind "analysis result") (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#analysis_result"))) (name ""))
-            (element (kind "calc") (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::evaluationFunction"))) (name "evaluationFunction") (declared-name "evaluationFunction")
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#part"))) (name "") (declared (properties (direction "in") (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
-                (element (kind "return parameter") (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::evaluationFunction::"))) (name ""))
-              )
-            )
-            (element (kind "objective") (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::objective"))) (name "objective") (declared-name "objective"))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5ecbfd207914be179a6fe96fef80e4b2334d95310dc5511c78187acbacb45e0e") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "TradeStudyTest"))) (kind "package") (name "TradeStudyTest") (declared-name "TradeStudyTest") (range (start (line 0) (character 0)) (end (line 0) (character 393))))
+    (element (id (node (document "d0") (qualified-name "TradeStudyTest::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 32))) (parent (node (document "d0") (qualified-name "TradeStudyTest"))) (authored (membership (kind Import) (visibility "private") (import (reference "TradeStudies::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "TradeStudyTest::Engine"))) (kind "part def") (name "Engine") (declared-name "Engine") (range (start (line 4) (character 1)) (end (line 4) (character 17))) (parent (node (document "d0") (qualified-name "TradeStudyTest"))))
+    (element (id (node (document "d0") (qualified-name "TradeStudyTest::Real"))) (kind "import") (name "Real") (declared-name "Real") (range (start (line 1) (character 1)) (end (line 1) (character 35))) (parent (node (document "d0") (qualified-name "TradeStudyTest"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 34))))))
+    (element (id (node (document "d0") (qualified-name "TradeStudyTest::engine1"))) (kind "part") (name "engine1") (declared-name "engine1") (range (start (line 5) (character 1)) (end (line 5) (character 22))) (parent (node (document "d0") (qualified-name "TradeStudyTest"))) (authored (membership (kind Feature)) (relationships (typing (reference "Engine") (range (start (line 5) (character 15)) (end (line 5) (character 21)))))))
+    (element (id (node (document "d0") (qualified-name "TradeStudyTest::engine2"))) (kind "part") (name "engine2") (declared-name "engine2") (range (start (line 6) (character 1)) (end (line 6) (character 22))) (parent (node (document "d0") (qualified-name "TradeStudyTest"))) (authored (membership (kind Feature)) (relationships (typing (reference "Engine") (range (start (line 6) (character 15)) (end (line 6) (character 21)))))))
+    (element (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy"))) (kind "analysis") (name "engineTradeStudy") (declared-name "engineTradeStudy") (range (start (line 8) (character 1)) (end (line 8) (character 227))) (parent (node (document "d0") (qualified-name "TradeStudyTest"))) (authored (membership (kind Feature)) (relationships (typing (reference "TradeStudy") (range none)))))
+    (element (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::"))) (kind "subject") (name "") (range (start (line 9) (character 2)) (end (line 9) (character 46))) (parent (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy"))) (authored (relationships (typing (reference "Engine") (range none)))))
+    (element (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#analysis_result"))) (kind "analysis result") (name "") (range (start (line 17) (character 2)) (end (line 17) (character 23))) (parent (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy"))) (authored (relationships (typing (reference "Engine") (range none)))))
+    (element (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#part"))) (kind "part") (name "") (range (start (line 13) (character 3)) (end (line 13) (character 20))) (parent (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::evaluationFunction"))) (authored (membership (kind Feature)) (relationships (typing (reference "Engine") (range (start (line 13) (character 13)) (end (line 13) (character 19)))))))
+    (element (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::evaluationFunction"))) (kind "calc") (name "evaluationFunction") (declared-name "evaluationFunction") (range (start (line 12) (character 2)) (end (line 12) (character 74))) (parent (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy"))))
+    (element (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::evaluationFunction::"))) (kind "return parameter") (name "") (range (start (line 14) (character 3)) (end (line 14) (character 17))) (parent (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::evaluationFunction"))) (authored (relationships (typing (reference "Real") (range none)))))
+    (element (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::objective"))) (kind "objective") (name "objective") (declared-name "objective") (range (start (line 10) (character 2)) (end (line 10) (character 32))) (parent (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy"))) (authored (relationships (typing (reference "MaximizeObjective") (range none)))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "TradeStudyTest::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "TradeStudies::*") (range (start (line 2) (character 16)) (end (line 2) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TradeStudyTest::Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (range (start (line 1) (character 16)) (end (line 1) (character 34))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TradeStudyTest::engine1"))) (kind featureTyping) (ordinal 0)) (authored-target "Engine") (range (start (line 5) (character 15)) (end (line 5) (character 21))) (outcome (status resolved) (target (node (document "d0") (qualified-name "TradeStudyTest::Engine")))))
+    (reference (id (source (node (document "d0") (qualified-name "TradeStudyTest::engine2"))) (kind featureTyping) (ordinal 0)) (authored-target "Engine") (range (start (line 6) (character 15)) (end (line 6) (character 21))) (outcome (status resolved) (target (node (document "d0") (qualified-name "TradeStudyTest::Engine")))))
+    (reference (id (source (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy"))) (kind featureTyping) (ordinal 0)) (authored-target "TradeStudy") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::"))) (kind featureTyping) (ordinal 0)) (authored-target "Engine") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "TradeStudyTest::Engine")))))
+    (reference (id (source (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#analysis_result"))) (kind featureTyping) (ordinal 0)) (authored-target "Engine") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "TradeStudyTest::Engine")))))
+    (reference (id (source (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#part"))) (kind featureTyping) (ordinal 0)) (authored-target "Engine") (range (start (line 13) (character 13)) (end (line 13) (character 19))) (outcome (status resolved) (target (node (document "d0") (qualified-name "TradeStudyTest::Engine")))))
+    (reference (id (source (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::evaluationFunction::"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "TradeStudyTest::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::objective"))) (kind featureTyping) (ordinal 0)) (authored-target "MaximizeObjective") (range none) (outcome (status unresolved)))
   )
   (relationships
-    (subject (status resolved) (from (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy"))) (to (node (document "d0") (qualified-name "TradeStudyTest::Engine"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "TradeStudyTest::engine1"))) (to (node (document "d0") (qualified-name "TradeStudyTest::Engine"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "TradeStudyTest::engine2"))) (to (node (document "d0") (qualified-name "TradeStudyTest::Engine"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::"))) (to (node (document "d0") (qualified-name "TradeStudyTest::Engine"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#analysis_result"))) (to (node (document "d0") (qualified-name "TradeStudyTest::Engine"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#part"))) (to (node (document "d0") (qualified-name "TradeStudyTest::Engine"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "TradeStudyTest::engine1"))) (target (node (document "d0") (qualified-name "TradeStudyTest::Engine"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "TradeStudyTest::engine1"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "TradeStudyTest::engine2"))) (target (node (document "d0") (qualified-name "TradeStudyTest::Engine"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "TradeStudyTest::engine2"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind subject) (source (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy"))) (target (node (document "d0") (qualified-name "TradeStudyTest::Engine"))) (provenance (derived CaseSubjectFromTypedSubject)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::"))) (target (node (document "d0") (qualified-name "TradeStudyTest::Engine"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#analysis_result"))) (target (node (document "d0") (qualified-name "TradeStudyTest::Engine"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#analysis_result"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#part"))) (target (node (document "d0") (qualified-name "TradeStudyTest::Engine"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#part"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::evaluationFunction::"))) (target (node (document "d0") (qualified-name "TradeStudyTest::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::evaluationFunction::"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TradeStudyTest::Engine"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TradeStudyTest::engine1"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TradeStudyTest::engine2"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy"))) (status missing-prerequisite) (target "AnalysisCases::analysisCases"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#part"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::evaluationFunction"))) (status missing-prerequisite) (target "Calculations::calculations"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::objective"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/trade_study_test.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 16) (end 2 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 8 1) (end 8 227))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 10 2) (end 10 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 14 3) (end 14 17))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

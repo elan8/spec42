@@ -43,6 +43,27 @@ package ProductSelection_UnownedEnds_SysML {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "product_selection_unowned_ends.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 13 41) (end 13 63))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 14 47) (end 14 68))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -104,6 +125,18 @@ CloseCurly,EndOfFile,
         (connector_end)
         (default_ref_usage :>> 'info' value)))))
 ~~~
+# EXPECTED
+~~~
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+semantic.invalid_connection_end_count
+~~~
+# PROBLEMS
+~~~
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+semantic.invalid_connection_end_count
+~~~
 # FORMAT
 ~~~sysml
 package ProductSelection_UnownedEnds_SysML {
@@ -144,78 +177,40 @@ package ProductSelection_UnownedEnds_SysML {
 	
 }
 ~~~
-# EXPECTED
-~~~
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-semantic.invalid_connection_end_count
-~~~
-# PROBLEMS
-~~~
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-semantic.invalid_connection_end_count
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML"))) (name "ProductSelection_UnownedEnds_SysML") (declared-name "ProductSelection_UnownedEnds_SysML")
-      (contains
-        (element (kind "item def") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer"))) (name "OnlineCustomer") (declared-name "OnlineCustomer"))
-        (element (kind "item def") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::Product"))) (name "Product") (declared-name "Product"))
-        (element (kind "connection def") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection"))) (name "ProductSelection") (declared-name "ProductSelection")
-          (contains
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::cart"))) (name "cart") (declared-name "cart") (declared (properties (end true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection")))))
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::selectedProduct"))) (name "selectedProduct") (declared-name "selectedProduct") (declared (properties (end true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection")))))
-          )
-        )
-        (element (kind "item def") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SelectionInfo"))) (name "SelectionInfo") (declared-name "SelectionInfo"))
-        (element (kind "item def") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart"))) (name "ShoppingCart") (declared-name "ShoppingCart"))
-        (element (kind "connection def") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection"))) (name "SingleProductSelection") (declared-name "SingleProductSelection")
-          (contains
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection::cart"))) (name "cart") (declared-name "cart") (declared (properties (end true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection")))))
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection::selectedProduct"))) (name "selectedProduct") (declared-name "selectedProduct") (declared (properties (end true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection")))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "3f3002401d0725d12523470c6279c75cf08a7ca99f6f52727772fd14a7bcb43c") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML"))) (kind "package") (name "ProductSelection_UnownedEnds_SysML") (declared-name "ProductSelection_UnownedEnds_SysML") (range (start (line 0) (character 0)) (end (line 0) (character 879))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer"))) (kind "item def") (name "OnlineCustomer") (declared-name "OnlineCustomer") (range (start (line 22) (character 1)) (end (line 22) (character 318))) (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::Product"))) (kind "item def") (name "Product") (declared-name "Product") (range (start (line 6) (character 1)) (end (line 6) (character 57))) (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection"))) (kind "connection def") (name "ProductSelection") (declared-name "ProductSelection") (range (start (line 10) (character 1)) (end (line 10) (character 206))) (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::cart"))) (kind "interface end") (name "cart") (declared-name "cart") (range (start (line 13) (character 2)) (end (line 13) (character 64))) (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection"))) (authored (relationships (typing (reference "ShoppingCart") (range none)) (cross-subsetting (reference "selectedProduct.inCart") (range (start (line 13) (character 41)) (end (line 13) (character 63)))))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::selectedProduct"))) (kind "interface end") (name "selectedProduct") (declared-name "selectedProduct") (range (start (line 14) (character 2)) (end (line 14) (character 69))) (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection"))) (authored (relationships (typing (reference "Product") (range none)) (cross-subsetting (reference "cart.selectedProducts") (range (start (line 14) (character 47)) (end (line 14) (character 68)))))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SelectionInfo"))) (kind "item def") (name "SelectionInfo") (declared-name "SelectionInfo") (range (start (line 2) (character 1)) (end (line 2) (character 24))) (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart"))) (kind "item def") (name "ShoppingCart") (declared-name "ShoppingCart") (range (start (line 3) (character 1)) (end (line 3) (character 68))) (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection"))) (kind "connection def") (name "SingleProductSelection") (declared-name "SingleProductSelection") (range (start (line 17) (character 1)) (end (line 17) (character 144))) (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ProductSelection") (range (start (line 17) (character 42)) (end (line 17) (character 58)))))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection::cart"))) (kind "interface end") (name "cart") (declared-name "cart") (range (start (line 18) (character 2)) (end (line 18) (character 33))) (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection"))) (authored (relationships (typing (reference "ShoppingCart") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection::selectedProduct"))) (kind "interface end") (name "selectedProduct") (declared-name "selectedProduct") (range (start (line 19) (character 2)) (end (line 19) (character 46))) (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection"))) (authored (relationships (typing (reference "Product") (range none)))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::cart"))) (kind featureTyping) (ordinal 0)) (authored-target "ShoppingCart") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart")))))
+    (reference (id (source (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::cart"))) (kind crossSubsetting) (ordinal 0)) (authored-target "selectedProduct.inCart") (range (start (line 13) (character 41)) (end (line 13) (character 63))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::selectedProduct"))) (kind featureTyping) (ordinal 0)) (authored-target "Product") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::Product")))))
+    (reference (id (source (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::selectedProduct"))) (kind crossSubsetting) (ordinal 0)) (authored-target "cart.selectedProducts") (range (start (line 14) (character 47)) (end (line 14) (character 68))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection"))) (kind specialization) (ordinal 0)) (authored-target "ProductSelection") (range (start (line 17) (character 42)) (end (line 17) (character 58))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection")))))
+    (reference (id (source (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection::cart"))) (kind featureTyping) (ordinal 0)) (authored-target "ShoppingCart") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart")))))
+    (reference (id (source (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection::selectedProduct"))) (kind featureTyping) (ordinal 0)) (authored-target "Product") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::Product")))))
   )
   (relationships
-    (connection (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart"))) (to (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::Product"))) (provenance authored))
-    (connection (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart"))) (to (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::Product"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection"))) (to (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::cart"))) (to (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::selectedProduct"))) (to (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::Product"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection::cart"))) (to (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection::selectedProduct"))) (to (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::Product"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::cart"))) (target (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::cart"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::selectedProduct"))) (target (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::Product"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::selectedProduct"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection"))) (target (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection::cart"))) (target (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection::cart"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection::selectedProduct"))) (target (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::Product"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection::selectedProduct"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::Product"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection"))) (status missing-prerequisite) (target "Connections::Connection"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SelectionInfo"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection"))) (status missing-prerequisite) (target "Connections::Connection"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/product_selection_unowned_ends.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "incompatible_specializes_kind")
-        (source "semantic")
-        (range (start 17 1) (end 17 144))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

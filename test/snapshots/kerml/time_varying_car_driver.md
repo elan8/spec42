@@ -126,6 +126,21 @@ package TimeVaryingCarDriver {
     
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "time_varying_car_driver.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 19) (end 1 31))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -304,6 +319,74 @@ CloseCurly,EndOfFile,
       (line_comment)
       (malformed))))
 ~~~
+# EXPECTED
+~~~
+parse.expected_usage_declaration
+parse.unexpected_token
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Person_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Person_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'Car_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'Car_startShot_snapshots'
+semantic.unresolved_name 'Car1_::startShot'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'Car_operated_snapshots'
+semantic.unresolved_name 'Car_operated_driver_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'Car_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'Car_snapshots1'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'Car_snapshots1'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+~~~
+# PROBLEMS
+~~~
+parse.expected_usage_declaration
+parse.unexpected_token
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Person_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Person_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'Car_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'Car_startShot_snapshots'
+semantic.unresolved_name 'Car1_::startShot'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'Car_operated_snapshots'
+semantic.unresolved_name 'Car_operated_driver_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'Car_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'Car_snapshots1'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'Car_snapshots1'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+~~~
 # FORMAT
 ~~~sysml
 package TimeVaryingCarDriver {
@@ -427,110 +510,26 @@ package TimeVaryingCarDriver {
     
 }
 ~~~
-# EXPECTED
-~~~
-parse.expected_usage_declaration
-parse.unexpected_token
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Person_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Person_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'Car_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'Car_startShot_snapshots'
-semantic.unresolved_name 'Car1_::startShot'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'Car_operated_snapshots'
-semantic.unresolved_name 'Car_operated_driver_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'Car_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'Car_snapshots1'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'Car_snapshots1'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-~~~
-# PROBLEMS
-~~~
-parse.expected_usage_declaration
-parse.unexpected_token
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Person_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Person_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'Car_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'Car_startShot_snapshots'
-semantic.unresolved_name 'Car1_::startShot'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'Car_operated_snapshots'
-semantic.unresolved_name 'Car_operated_driver_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'Car_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'Car_snapshots1'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'Car_snapshots1'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "TimeVaryingCarDriver"))) (name "TimeVaryingCarDriver") (declared-name "TimeVaryingCarDriver")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::*"))) (name "*") (declared-name "*"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Car0"))) (name "Car0") (declared-name "Car0"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Car1"))) (name "Car1") (declared-name "Car1"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Car1_"))) (name "Car1_") (declared-name "Car1_"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Person0"))) (name "Person0") (declared-name "Person0"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Person1"))) (name "Person1") (declared-name "Person1"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Person1_"))) (name "Person1_") (declared-name "Person1_"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "597038379d974f5312c7d9fce5c636a5433be36d443bbfae26f7778957c6b83f") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver"))) (kind "package") (name "TimeVaryingCarDriver") (declared-name "TimeVaryingCarDriver") (range (start (line 0) (character 0)) (end (line 0) (character 4313))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 4)) (end (line 1) (character 35))) (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 19)) (end (line 1) (character 31))))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Car0"))) (kind "classifier decl") (name "Car0") (declared-name "Car0") (range (start (line 9) (character 4)) (end (line 9) (character 562))) (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Car1"))) (kind "classifier decl") (name "Car1") (declared-name "Car1") (range (start (line 37) (character 4)) (end (line 37) (character 597))) (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Car1_"))) (kind "classifier decl") (name "Car1_") (declared-name "Car1_") (range (start (line 72) (character 4)) (end (line 72) (character 2226))) (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Person0"))) (kind "classifier decl") (name "Person0") (declared-name "Person0") (range (start (line 5) (character 4)) (end (line 5) (character 71))) (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Person1"))) (kind "classifier decl") (name "Person1") (declared-name "Person1") (range (start (line 33) (character 4)) (end (line 33) (character 72))) (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Person1_"))) (kind "classifier decl") (name "Person1_") (declared-name "Person1_") (range (start (line 62) (character 4)) (end (line 62) (character 457))) (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "TimeVaryingCarDriver::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (range (start (line 1) (character 19)) (end (line 1) (character 31))) (outcome (status unresolved)))
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/time_varying_car_driver.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 19) (end 1 31))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

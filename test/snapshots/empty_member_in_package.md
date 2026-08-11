@@ -7,42 +7,6 @@ type=file
 ~~~sysml
 package MyPkg {;}
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,Semicolon,CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'MyPkg'))
-~~~
-# FORMAT
-~~~sysml
-package MyPkg {;}
-
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
-# SMG
-~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "MyPkg"))) (name "MyPkg") (declared-name "MyPkg"))
-  )
-  (relationships
-  )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
@@ -55,6 +19,43 @@ NIL
         (range (start 0 15) (end 0 16))
       )
     )
+  )
+)
+~~~
+# TOKENS
+~~~zig
+KwPackage,Ident,OpenCurly,Semicolon,CloseCurly,EndOfFile,
+~~~
+# AST
+~~~
+(root
+  (package_def 'MyPkg'))
+~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
+# FORMAT
+~~~sysml
+package MyPkg {;}
+
+~~~
+# SMG
+~~~
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "5c4c34d16f297c1585bd325b0d51f94236ef25fdcf1d1f1e30dc8567f5886adb") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "MyPkg"))) (kind "package") (name "MyPkg") (declared-name "MyPkg") (range (start (line 0) (character 0)) (end (line 0) (character 17))))
+  )
+  (references
+  )
+  (relationships
+  )
+  (evaluation
   )
 )
 ~~~

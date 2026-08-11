@@ -41,6 +41,15 @@ package ConjugationTest {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "conjugation_test.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -98,6 +107,14 @@ CloseCurly,EndOfFile,
         (interface_end end 'p3' : 'P' references 'p.p1')
         (interface_end end 'p4' : 'P' references 'p.p2')))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package ConjugationTest {
@@ -137,117 +154,62 @@ package ConjugationTest {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ConjugationTest"))) (name "ConjugationTest") (declared-name "ConjugationTest")
-      (contains
-        (element (kind "connection def") (id (node (document "d0") (qualified-name "ConjugationTest::A"))) (name "A") (declared-name "A")
-          (contains
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "ConjugationTest::A::p1"))) (name "p1") (declared-name "p1") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "ConjugationTest::A")))))
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "ConjugationTest::A::p2"))) (name "p2") (declared-name "p2") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "ConjugationTest::A")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "ConjugationTest::B"))) (name "B") (declared-name "B") (declared)
-          (contains
-            (element (kind "port") (id (node (document "d0") (qualified-name "ConjugationTest::B::p1"))) (name "p1") (declared-name "p1") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ConjugationTest::B")))))
-            (element (kind "port") (id (node (document "d0") (qualified-name "ConjugationTest::B::p2"))) (name "p2") (declared-name "p2") (declared (properties (conjugated true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ConjugationTest::B")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "ConjugationTest::B1"))) (name "B1") (declared-name "B1") (declared)
-          (contains
-            (element (kind "connection") (id (node (document "d0") (qualified-name "ConjugationTest::B1::a"))) (name "a") (declared-name "a") (effective (featuring-type (node (document "d0") (qualified-name "ConjugationTest::B1"))))
-              (contains
-                (element (kind "interface end") (id (node (document "d0") (qualified-name "ConjugationTest::B1::a::p3"))) (name "p3") (declared-name "p3") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "ConjugationTest::A")))))
-                (element (kind "interface end") (id (node (document "d0") (qualified-name "ConjugationTest::B1::a::p4"))) (name "p4") (declared-name "p4") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "ConjugationTest::A")))))
-              )
-            )
-            (element (kind "part") (id (node (document "d0") (qualified-name "ConjugationTest::B1::p"))) (name "p") (declared-name "p") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ConjugationTest::B1"))))
-              (contains
-                (element (kind "port") (id (node (document "d0") (qualified-name "ConjugationTest::B1::p::p1"))) (name "p1") (declared-name "p1") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ConjugationTest::B1")))))
-                (element (kind "port") (id (node (document "d0") (qualified-name "ConjugationTest::B1::p::p2"))) (name "p2") (declared-name "p2") (declared (properties (conjugated true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ConjugationTest::B1")))))
-              )
-            )
-          )
-        )
-        (element (kind "interface def") (id (node (document "d0") (qualified-name "ConjugationTest::I"))) (name "I") (declared-name "I")
-          (contains
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "ConjugationTest::I::p1"))) (name "p1") (declared-name "p1") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "ConjugationTest::I")))))
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "ConjugationTest::I::p2"))) (name "p2") (declared-name "p2") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "ConjugationTest::I")))))
-          )
-        )
-        (element (kind "port def") (id (node (document "d0") (qualified-name "ConjugationTest::P"))) (name "P") (declared-name "P")
-          (contains
-            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "ConjugationTest::P::~P"))) (name "~P") (declared-name "~P") (effective (featuring-type (node (document "d0") (qualified-name "ConjugationTest::P")))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "37db3f2c358db743c9a5295c9b31a7bac93052fb337f6ccf80b98b26d5ae2ca9") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ConjugationTest"))) (kind "package") (name "ConjugationTest") (declared-name "ConjugationTest") (range (start (line 0) (character 0)) (end (line 0) (character 434))))
+    (element (id (node (document "d0") (qualified-name "ConjugationTest::A"))) (kind "connection def") (name "A") (declared-name "A") (range (start (line 8) (character 1)) (end (line 8) (character 59))) (parent (node (document "d0") (qualified-name "ConjugationTest"))))
+    (element (id (node (document "d0") (qualified-name "ConjugationTest::A::p1"))) (kind "interface end") (name "p1") (declared-name "p1") (range (start (line 9) (character 2)) (end (line 9) (character 17))) (parent (node (document "d0") (qualified-name "ConjugationTest::A"))) (authored (relationships (typing (reference "P") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ConjugationTest::A::p2"))) (kind "interface end") (name "p2") (declared-name "p2") (range (start (line 10) (character 2)) (end (line 10) (character 18))) (parent (node (document "d0") (qualified-name "ConjugationTest::A"))) (authored (relationships (typing (reference "~P") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ConjugationTest::B"))) (kind "part def") (name "B") (declared-name "B") (range (start (line 3) (character 1)) (end (line 3) (character 45))) (parent (node (document "d0") (qualified-name "ConjugationTest"))))
+    (element (id (node (document "d0") (qualified-name "ConjugationTest::B1"))) (kind "part def") (name "B1") (declared-name "B1") (range (start (line 18) (character 1)) (end (line 18) (character 228))) (parent (node (document "d0") (qualified-name "ConjugationTest"))))
+    (element (id (node (document "d0") (qualified-name "ConjugationTest::B1::a"))) (kind "connection") (name "a") (declared-name "a") (range (start (line 24) (character 2)) (end (line 24) (character 80))) (parent (node (document "d0") (qualified-name "ConjugationTest::B1"))) (authored (membership (kind Feature)) (relationships (typing (reference "A") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ConjugationTest::B1::a::p3"))) (kind "interface end") (name "p3") (declared-name "p3") (range (start (line 25) (character 3)) (end (line 25) (character 27))) (parent (node (document "d0") (qualified-name "ConjugationTest::B1::a"))) (authored (relationships (typing (reference "P") (range none)) (reference-subsetting (reference "p.p1") (range (start (line 25) (character 22)) (end (line 25) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ConjugationTest::B1::a::p4"))) (kind "interface end") (name "p4") (declared-name "p4") (range (start (line 26) (character 3)) (end (line 26) (character 28))) (parent (node (document "d0") (qualified-name "ConjugationTest::B1::a"))) (authored (relationships (typing (reference "~P") (range none)) (reference-subsetting (reference "p.p2") (range (start (line 26) (character 23)) (end (line 26) (character 27)))))))
+    (element (id (node (document "d0") (qualified-name "ConjugationTest::B1::p"))) (kind "part") (name "p") (declared-name "p") (range (start (line 19) (character 2)) (end (line 19) (character 47))) (parent (node (document "d0") (qualified-name "ConjugationTest::B1"))))
+    (element (id (node (document "d0") (qualified-name "ConjugationTest::B1::p::p1"))) (kind "port") (name "p1") (declared-name "p1") (range (start (line 20) (character 3)) (end (line 20) (character 14))) (parent (node (document "d0") (qualified-name "ConjugationTest::B1::p"))) (authored (membership (kind Feature)) (relationships (typing (reference "P") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ConjugationTest::B1::p::p2"))) (kind "port") (name "p2") (declared-name "p2") (range (start (line 21) (character 3)) (end (line 21) (character 15))) (parent (node (document "d0") (qualified-name "ConjugationTest::B1::p"))) (authored (membership (kind Feature)) (relationships (typing (reference "~P") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ConjugationTest::B::p1"))) (kind "port") (name "p1") (declared-name "p1") (range (start (line 4) (character 2)) (end (line 4) (character 13))) (parent (node (document "d0") (qualified-name "ConjugationTest::B"))) (authored (membership (kind Feature)) (relationships (typing (reference "P") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ConjugationTest::B::p2"))) (kind "port") (name "p2") (declared-name "p2") (range (start (line 5) (character 2)) (end (line 5) (character 14))) (parent (node (document "d0") (qualified-name "ConjugationTest::B"))) (authored (membership (kind Feature)) (relationships (typing (reference "~P") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ConjugationTest::I"))) (kind "interface def") (name "I") (declared-name "I") (range (start (line 13) (character 1)) (end (line 13) (character 48))) (parent (node (document "d0") (qualified-name "ConjugationTest"))))
+    (element (id (node (document "d0") (qualified-name "ConjugationTest::I::p1"))) (kind "interface end") (name "p1") (declared-name "p1") (range (start (line 14) (character 2)) (end (line 14) (character 12))) (parent (node (document "d0") (qualified-name "ConjugationTest::I"))) (authored (relationships (typing (reference "P") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ConjugationTest::I::p2"))) (kind "interface end") (name "p2") (declared-name "p2") (range (start (line 15) (character 2)) (end (line 15) (character 13))) (parent (node (document "d0") (qualified-name "ConjugationTest::I"))) (authored (relationships (typing (reference "~P") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ConjugationTest::P"))) (kind "port def") (name "P") (declared-name "P") (range (start (line 1) (character 1)) (end (line 1) (character 12))) (parent (node (document "d0") (qualified-name "ConjugationTest"))))
+    (element (id (node (document "d0") (qualified-name "ConjugationTest::P::~P"))) (kind "conjugated port definition") (name "~P") (declared-name "~P") (range (start (line 1) (character 1)) (end (line 1) (character 12))) (parent (node (document "d0") (qualified-name "ConjugationTest::P"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "ConjugationTest::A::p1"))) (kind featureTyping) (ordinal 0)) (authored-target "P") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConjugationTest::P")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConjugationTest::A::p2"))) (kind featureTyping) (ordinal 0)) (authored-target "~P") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConjugationTest::P")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConjugationTest::B1::a"))) (kind featureTyping) (ordinal 0)) (authored-target "A") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConjugationTest::A")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConjugationTest::B1::a::p3"))) (kind featureTyping) (ordinal 0)) (authored-target "P") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConjugationTest::P")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConjugationTest::B1::a::p3"))) (kind referenceSubsetting) (ordinal 0)) (authored-target "p.p1") (range (start (line 25) (character 22)) (end (line 25) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConjugationTest::B1::p::p1")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConjugationTest::B1::a::p4"))) (kind featureTyping) (ordinal 0)) (authored-target "~P") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConjugationTest::P")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConjugationTest::B1::a::p4"))) (kind referenceSubsetting) (ordinal 0)) (authored-target "p.p2") (range (start (line 26) (character 23)) (end (line 26) (character 27))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConjugationTest::B1::p::p2")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConjugationTest::B1::p::p1"))) (kind featureTyping) (ordinal 0)) (authored-target "P") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConjugationTest::P")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConjugationTest::B1::p::p2"))) (kind featureTyping) (ordinal 0)) (authored-target "~P") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConjugationTest::P")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConjugationTest::B::p1"))) (kind featureTyping) (ordinal 0)) (authored-target "P") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConjugationTest::P")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConjugationTest::B::p2"))) (kind featureTyping) (ordinal 0)) (authored-target "~P") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConjugationTest::P")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConjugationTest::I::p1"))) (kind featureTyping) (ordinal 0)) (authored-target "P") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConjugationTest::P")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConjugationTest::I::p2"))) (kind featureTyping) (ordinal 0)) (authored-target "~P") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConjugationTest::P")))))
   )
   (relationships
-    (connection (status resolved) (from (node (document "d0") (qualified-name "ConjugationTest::P"))) (to (node (document "d0") (qualified-name "ConjugationTest::P::~P"))) (provenance authored))
-    (connection (status resolved) (from (node (document "d0") (qualified-name "ConjugationTest::P"))) (to (node (document "d0") (qualified-name "ConjugationTest::P::~P"))) (provenance authored))
-    (connection (status resolved) (from (node (document "d0") (qualified-name "ConjugationTest::P"))) (to (node (document "d0") (qualified-name "ConjugationTest::P::~P"))) (provenance authored))
-    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "ConjugationTest::P::~P"))) (to (node (document "d0") (qualified-name "ConjugationTest::P"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ConjugationTest::A::p1"))) (to (node (document "d0") (qualified-name "ConjugationTest::P"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ConjugationTest::A::p2"))) (to (node (document "d0") (qualified-name "ConjugationTest::P::~P"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ConjugationTest::B1::a"))) (to (node (document "d0") (qualified-name "ConjugationTest::A"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ConjugationTest::B1::a::p3"))) (to (node (document "d0") (qualified-name "ConjugationTest::P"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ConjugationTest::B1::a::p4"))) (to (node (document "d0") (qualified-name "ConjugationTest::P::~P"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ConjugationTest::B1::p::p1"))) (to (node (document "d0") (qualified-name "ConjugationTest::P"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ConjugationTest::B1::p::p2"))) (to (node (document "d0") (qualified-name "ConjugationTest::P::~P"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ConjugationTest::B::p1"))) (to (node (document "d0") (qualified-name "ConjugationTest::P"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ConjugationTest::B::p2"))) (to (node (document "d0") (qualified-name "ConjugationTest::P::~P"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ConjugationTest::I::p1"))) (to (node (document "d0") (qualified-name "ConjugationTest::P"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ConjugationTest::I::p2"))) (to (node (document "d0") (qualified-name "ConjugationTest::P::~P"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ConjugationTest::A::p1"))) (target (node (document "d0") (qualified-name "ConjugationTest::P"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConjugationTest::A::p1"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ConjugationTest::A::p2"))) (target (node (document "d0") (qualified-name "ConjugationTest::P"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConjugationTest::A::p2"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ConjugationTest::B1::a"))) (target (node (document "d0") (qualified-name "ConjugationTest::A"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConjugationTest::B1::a"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ConjugationTest::B1::a::p3"))) (target (node (document "d0") (qualified-name "ConjugationTest::P"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConjugationTest::B1::a::p3"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind referenceSubsetting) (source (node (document "d0") (qualified-name "ConjugationTest::B1::a::p3"))) (target (node (document "d0") (qualified-name "ConjugationTest::B1::p::p1"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConjugationTest::B1::a::p3"))) (kind referenceSubsetting) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ConjugationTest::B1::a::p4"))) (target (node (document "d0") (qualified-name "ConjugationTest::P"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConjugationTest::B1::a::p4"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind referenceSubsetting) (source (node (document "d0") (qualified-name "ConjugationTest::B1::a::p4"))) (target (node (document "d0") (qualified-name "ConjugationTest::B1::p::p2"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConjugationTest::B1::a::p4"))) (kind referenceSubsetting) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ConjugationTest::B1::p::p1"))) (target (node (document "d0") (qualified-name "ConjugationTest::P"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConjugationTest::B1::p::p1"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ConjugationTest::B1::p::p2"))) (target (node (document "d0") (qualified-name "ConjugationTest::P"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConjugationTest::B1::p::p2"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ConjugationTest::B::p1"))) (target (node (document "d0") (qualified-name "ConjugationTest::P"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConjugationTest::B::p1"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ConjugationTest::B::p2"))) (target (node (document "d0") (qualified-name "ConjugationTest::P"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConjugationTest::B::p2"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ConjugationTest::I::p1"))) (target (node (document "d0") (qualified-name "ConjugationTest::P"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConjugationTest::I::p1"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ConjugationTest::I::p2"))) (target (node (document "d0") (qualified-name "ConjugationTest::P"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConjugationTest::I::p2"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConjugationTest::A"))) (status missing-prerequisite) (target "Connections::Connection"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConjugationTest::B"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConjugationTest::B1"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConjugationTest::B1::a"))) (status missing-prerequisite) (target "Connections::connections"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConjugationTest::B1::p"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConjugationTest::B1::p::p1"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConjugationTest::B1::p::p2"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConjugationTest::B::p1"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConjugationTest::B::p2"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConjugationTest::I"))) (status missing-prerequisite) (target "Interfaces::Interface"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConjugationTest::P"))) (status missing-prerequisite) (target "Ports::Port"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConjugationTest::P::~P"))) (status missing-prerequisite) (target "Ports::Port"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/conjugation_test.md"
-    (diagnostics
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 20 3) (end 20 14))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 21 3) (end 21 15))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

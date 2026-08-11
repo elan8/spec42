@@ -36,6 +36,153 @@ package '15_03-Value Expression' {
     }
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "15_03_value_expression.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 19) (end 1 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 19) (end 2 35))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 5 8) (end 5 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 5 8) (end 5 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 5 24) (end 5 33))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 6 8) (end 6 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 6 8) (end 6 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 6 26) (end 6 37))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 12 5) (end 12 52))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 12 5) (end 12 52))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 12 28) (end 12 39))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 13 8) (end 13 48))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 13 8) (end 13 48))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 13 25) (end 13 36))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 14 8) (end 14 263))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 14 8) (end 14 263))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 14 33) (end 14 44))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 25 5) (end 25 58))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 25 5) (end 25 58))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 25 29) (end 25 40))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 27 5) (end 27 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 27 5) (end 27 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 27 23) (end 27 34))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -86,6 +233,26 @@ CloseCurly,EndOfFile,
         (result_expr_member))
       (attribute_usage 'height' : 'LengthValue' value))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'LengthValue'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'LengthValue'
+~~~
 # FORMAT
 ~~~sysml
 package '15_03-Value Expression' {
@@ -120,181 +287,62 @@ package '15_03-Value Expression' {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'LengthValue'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'LengthValue'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "15_03-Value Expression"))) (name "15_03-Value Expression") (declared-name "15_03-Value Expression")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "15_03-Value Expression::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "15_03-Value Expression::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "15_03-Value Expression::Tire"))) (name "Tire") (declared-name "Tire") (declared)
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_03-Value Expression::Tire::height"))) (name "height") (declared-name "height") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal (integer 45))) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "15_03-Value Expression::Tire"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_03-Value Expression::Tire::height"))) (role feature-value))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_03-Value Expression::Tire::profileDepth"))) (name "profileDepth") (declared-name "profileDepth") (declared (properties (ordered false) (unique true)) (feature-value (kind default) (expression (kind "literalWithUnit") (children (expression (kind "realLiteral") (literal (real "6.0"))) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "15_03-Value Expression::Tire")))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1"))) (name "Vehicle_1") (declared-name "Vehicle_1") (declared)
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::leftFrontWheel"))) (name "leftFrontWheel") (declared-name "leftFrontWheel") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::length"))) (name "length") (declared-name "length") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "realLiteral") (literal (real "4.82"))) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "m")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::length"))) (role feature-value))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::mass"))) (name "mass") (declared-name "mass") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal (integer 1200))) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::mass"))) (role feature-value))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::rightFrontWheel"))) (name "rightFrontWheel") (declared-name "rightFrontWheel") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "15_03-Value Expression::Wheel"))) (name "Wheel") (declared-name "Wheel") (declared)
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::hubDiameter"))) (name "hubDiameter") (declared-name "hubDiameter") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal (integer 18))) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "in")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "15_03-Value Expression::Wheel"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::hubDiameter"))) (role feature-value))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::outerDiameter"))) (name "outerDiameter") (declared-name "outerDiameter") (declared (properties (ordered false) (unique true)) (multiplicity (lower unevaluated) (upper unevaluated) (ordered false) (provenance authored)) (feature-value (kind bound) (expression (kind "parenthesized") (children (expression (kind "binary") (operator "+") (children (expression (kind "featureReference") (reference "hubDiameter")) (expression (kind "binary") (operator "*") (children (expression (kind "integerLiteral") (literal (integer 2))) (expression (kind "memberAccess") (reference "height") (children (expression (kind "featureReference") (reference "tire")))))))))))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "15_03-Value Expression::Wheel"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::outerDiameter"))) (role feature-value))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::tire"))) (name "tire") (declared-name "tire") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "15_03-Value Expression::Wheel")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::width"))) (name "width") (declared-name "width") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal (integer 245))) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "15_03-Value Expression::Wheel"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::width"))) (role feature-value))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5ad0d1a929a196c5612b056ed6eaf783ef06324cca393cd9a4da7ff48a402c8c") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "15_03-Value Expression"))) (kind "package") (name "15_03-Value Expression") (declared-name "15_03-Value Expression") (range (start (line 0) (character 0)) (end (line 0) (character 931))))
+    (element (id (node (document "d0") (qualified-name "15_03-Value Expression::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 4)) (end (line 1) (character 25))) (parent (node (document "d0") (qualified-name "15_03-Value Expression"))) (authored (membership (kind Import) (visibility "private") (import (reference "SI::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 19)) (end (line 1) (character 21))))))
+    (element (id (node (document "d0") (qualified-name "15_03-Value Expression::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 4)) (end (line 2) (character 39))) (parent (node (document "d0") (qualified-name "15_03-Value Expression"))) (authored (membership (kind Import) (visibility "private") (import (reference "USCustomaryUnits::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 19)) (end (line 2) (character 35))))))
+    (element (id (node (document "d0") (qualified-name "15_03-Value Expression::Tire"))) (kind "part def") (name "Tire") (declared-name "Tire") (range (start (line 24) (character 4)) (end (line 24) (character 197))) (parent (node (document "d0") (qualified-name "15_03-Value Expression"))))
+    (element (id (node (document "d0") (qualified-name "15_03-Value Expression::Tire::height"))) (kind "attribute") (name "height") (declared-name "height") (range (start (line 27) (character 5)) (end (line 27) (character 45))) (parent (node (document "d0") (qualified-name "15_03-Value Expression::Tire"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthValue") (range none)) (typing (reference "LengthValue") (range (start (line 27) (character 23)) (end (line 27) (character 34)))))))
+    (element (id (node (document "d0") (qualified-name "15_03-Value Expression::Tire::profileDepth"))) (kind "attribute") (name "profileDepth") (declared-name "profileDepth") (range (start (line 25) (character 5)) (end (line 25) (character 58))) (parent (node (document "d0") (qualified-name "15_03-Value Expression::Tire"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthValue") (range none)) (typing (reference "LengthValue") (range (start (line 25) (character 29)) (end (line 25) (character 40)))))))
+    (element (id (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1"))) (kind "part def") (name "Vehicle_1") (declared-name "Vehicle_1") (range (start (line 4) (character 4)) (end (line 4) (character 202))) (parent (node (document "d0") (qualified-name "15_03-Value Expression"))))
+    (element (id (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::leftFrontWheel"))) (kind "part") (name "leftFrontWheel") (declared-name "leftFrontWheel") (range (start (line 7) (character 8)) (end (line 7) (character 36))) (parent (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1"))) (authored (membership (kind Feature)) (relationships (typing (reference "Wheel") (range (start (line 7) (character 30)) (end (line 7) (character 35)))))))
+    (element (id (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::length"))) (kind "attribute") (name "length") (declared-name "length") (range (start (line 6) (character 8)) (end (line 6) (character 49))) (parent (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthValue") (range none)) (typing (reference "LengthValue") (range (start (line 6) (character 26)) (end (line 6) (character 37)))))))
+    (element (id (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::mass"))) (kind "attribute") (name "mass") (declared-name "mass") (range (start (line 5) (character 8)) (end (line 5) (character 46))) (parent (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1"))) (authored (membership (kind Feature)) (relationships (typing (reference "MassValue") (range none)) (typing (reference "MassValue") (range (start (line 5) (character 24)) (end (line 5) (character 33)))))))
+    (element (id (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::rightFrontWheel"))) (kind "part") (name "rightFrontWheel") (declared-name "rightFrontWheel") (range (start (line 8) (character 8)) (end (line 8) (character 37))) (parent (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1"))) (authored (membership (kind Feature)) (relationships (typing (reference "Wheel") (range (start (line 8) (character 31)) (end (line 8) (character 36)))))))
+    (element (id (node (document "d0") (qualified-name "15_03-Value Expression::Wheel"))) (kind "part def") (name "Wheel") (declared-name "Wheel") (range (start (line 11) (character 4)) (end (line 11) (character 420))) (parent (node (document "d0") (qualified-name "15_03-Value Expression"))))
+    (element (id (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::hubDiameter"))) (kind "attribute") (name "hubDiameter") (declared-name "hubDiameter") (range (start (line 12) (character 5)) (end (line 12) (character 52))) (parent (node (document "d0") (qualified-name "15_03-Value Expression::Wheel"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthValue") (range none)) (typing (reference "LengthValue") (range (start (line 12) (character 28)) (end (line 12) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::outerDiameter"))) (kind "attribute") (name "outerDiameter") (declared-name "outerDiameter") (range (start (line 14) (character 8)) (end (line 14) (character 263))) (parent (node (document "d0") (qualified-name "15_03-Value Expression::Wheel"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthValue") (range none)) (typing (reference "LengthValue") (range (start (line 14) (character 33)) (end (line 14) (character 44)))))))
+    (element (id (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::tire"))) (kind "part") (name "tire") (declared-name "tire") (range (start (line 21) (character 8)) (end (line 21) (character 27))) (parent (node (document "d0") (qualified-name "15_03-Value Expression::Wheel"))) (authored (membership (kind Feature)) (relationships (typing (reference "Tire") (range (start (line 21) (character 19)) (end (line 21) (character 23)))))))
+    (element (id (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::width"))) (kind "attribute") (name "width") (declared-name "width") (range (start (line 13) (character 8)) (end (line 13) (character 48))) (parent (node (document "d0") (qualified-name "15_03-Value Expression::Wheel"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthValue") (range none)) (typing (reference "LengthValue") (range (start (line 13) (character 25)) (end (line 13) (character 36)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "15_03-Value Expression::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "SI::*") (range (start (line 1) (character 19)) (end (line 1) (character 21))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_03-Value Expression::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "USCustomaryUnits::*") (range (start (line 2) (character 19)) (end (line 2) (character 35))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_03-Value Expression::Tire::height"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_03-Value Expression::Tire::height"))) (kind featureTyping) (ordinal 1)) (authored-target "LengthValue") (range (start (line 27) (character 23)) (end (line 27) (character 34))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_03-Value Expression::Tire::profileDepth"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_03-Value Expression::Tire::profileDepth"))) (kind featureTyping) (ordinal 1)) (authored-target "LengthValue") (range (start (line 25) (character 29)) (end (line 25) (character 40))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::leftFrontWheel"))) (kind featureTyping) (ordinal 0)) (authored-target "Wheel") (range (start (line 7) (character 30)) (end (line 7) (character 35))) (outcome (status resolved) (target (node (document "d0") (qualified-name "15_03-Value Expression::Wheel")))))
+    (reference (id (source (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::length"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::length"))) (kind featureTyping) (ordinal 1)) (authored-target "LengthValue") (range (start (line 6) (character 26)) (end (line 6) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::mass"))) (kind featureTyping) (ordinal 0)) (authored-target "MassValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::mass"))) (kind featureTyping) (ordinal 1)) (authored-target "MassValue") (range (start (line 5) (character 24)) (end (line 5) (character 33))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::rightFrontWheel"))) (kind featureTyping) (ordinal 0)) (authored-target "Wheel") (range (start (line 8) (character 31)) (end (line 8) (character 36))) (outcome (status resolved) (target (node (document "d0") (qualified-name "15_03-Value Expression::Wheel")))))
+    (reference (id (source (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::hubDiameter"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::hubDiameter"))) (kind featureTyping) (ordinal 1)) (authored-target "LengthValue") (range (start (line 12) (character 28)) (end (line 12) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::outerDiameter"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::outerDiameter"))) (kind featureTyping) (ordinal 1)) (authored-target "LengthValue") (range (start (line 14) (character 33)) (end (line 14) (character 44))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::tire"))) (kind featureTyping) (ordinal 0)) (authored-target "Tire") (range (start (line 21) (character 19)) (end (line 21) (character 23))) (outcome (status resolved) (target (node (document "d0") (qualified-name "15_03-Value Expression::Tire")))))
+    (reference (id (source (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::width"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::width"))) (kind featureTyping) (ordinal 1)) (authored-target "LengthValue") (range (start (line 13) (character 25)) (end (line 13) (character 36))) (outcome (status unresolved)))
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::leftFrontWheel"))) (to (node (document "d0") (qualified-name "15_03-Value Expression::Wheel"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::rightFrontWheel"))) (to (node (document "d0") (qualified-name "15_03-Value Expression::Wheel"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::tire"))) (to (node (document "d0") (qualified-name "15_03-Value Expression::Tire"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::leftFrontWheel"))) (target (node (document "d0") (qualified-name "15_03-Value Expression::Wheel"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::leftFrontWheel"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::rightFrontWheel"))) (target (node (document "d0") (qualified-name "15_03-Value Expression::Wheel"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::rightFrontWheel"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::tire"))) (target (node (document "d0") (qualified-name "15_03-Value Expression::Tire"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::tire"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Tire"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Tire::height"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Tire::profileDepth"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::leftFrontWheel"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::length"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::mass"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::rightFrontWheel"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Wheel"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::hubDiameter"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::outerDiameter"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::tire"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::width"))) (status missing-prerequisite) (target "Base::dataValues"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/validation/15_03_value_expression.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 19) (end 1 21))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 19) (end 2 35))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unknown_unit_symbol")
-        (source "semantic")
-        (range (start 5 8) (end 5 46))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 5 8) (end 5 46))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unknown_unit_symbol")
-        (source "semantic")
-        (range (start 6 8) (end 6 49))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 6 8) (end 6 49))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unknown_unit_symbol")
-        (source "semantic")
-        (range (start 12 5) (end 12 52))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 12 5) (end 12 52))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unknown_unit_symbol")
-        (source "semantic")
-        (range (start 13 8) (end 13 48))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 13 8) (end 13 48))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 14 8) (end 14 263))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unknown_unit_symbol")
-        (source "semantic")
-        (range (start 25 5) (end 25 58))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 25 5) (end 25 58))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unknown_unit_symbol")
-        (source "semantic")
-        (range (start 27 5) (end 27 45))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 27 5) (end 27 45))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "15_03-Value Expression::Tire::height")) (expression (status "unsupported") (error "declared expression form is not supported")))
+    (node (node (document "d0") (qualified-name "15_03-Value Expression::Tire::profileDepth")) (expression (status "unsupported") (error "declared expression form is not supported")))
+    (node (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::length")) (expression (status "unsupported") (error "declared expression form is not supported")))
+    (node (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::mass")) (expression (status "unsupported") (error "declared expression form is not supported")))
+    (node (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::hubDiameter")) (expression (status "unsupported") (error "declared expression form is not supported")))
+    (node (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::outerDiameter")) (expression (status "unsupported") (error "declared expression form is not supported")))
+    (node (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::width")) (expression (status "unsupported") (error "declared expression form is not supported")))
   )
 )
 ~~~

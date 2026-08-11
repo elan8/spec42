@@ -45,6 +45,27 @@ package IndividualTest {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "individual_test.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_package_body_element")
+        (source "sysml")
+        (range (start 2 1) (end 2 62))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 2 1) (end 2 62))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -107,6 +128,14 @@ CloseCurly,EndOfFile,
     (action_def individual 'IA2' :> 'A'
       (action_usage individual :>> 'a' : 'IA2'))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package IndividualTest {
@@ -150,95 +179,43 @@ package IndividualTest {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "IndividualTest"))) (name "IndividualTest") (declared-name "IndividualTest")
-      (contains
-        (element (kind "action def") (id (node (document "d0") (qualified-name "IndividualTest::A"))) (name "A") (declared-name "A")
-          (contains
-            (element (kind "action") (id (node (document "d0") (qualified-name "IndividualTest::A::a"))) (name "a") (declared-name "a") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "IndividualTest::A")))))
-          )
-        )
-        (element (kind "item def") (id (node (document "d0") (qualified-name "IndividualTest::I"))) (name "I") (declared-name "I")
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "IndividualTest::I::i"))) (name "i") (declared-name "i") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "IndividualTest::I")))))
-          )
-        )
-        (element (kind "individual def") (id (node (document "d0") (qualified-name "IndividualTest::IO1"))) (name "IO1") (declared-name "IO1"))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "IndividualTest::IP1"))) (name "IP1") (declared-name "IP1") (declared (properties (individual true)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "IndividualTest::IP1::p"))) (name "p") (declared-name "p") (declared (properties (individual true) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "IndividualTest::IP1")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "IndividualTest::IP2"))) (name "IP2") (declared-name "IP2") (declared (properties (individual true)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "IndividualTest::IP2::p"))) (name "p") (declared-name "p") (declared (properties (individual true) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "IndividualTest::IP2")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "IndividualTest::P"))) (name "P") (declared-name "P") (declared)
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "IndividualTest::P::p"))) (name "p") (declared-name "p") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "IndividualTest::P")))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "da4bcfced120889430d987b4507305f3dcf842dac76e1f3bab317e3222307367") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "IndividualTest"))) (kind "package") (name "IndividualTest") (declared-name "IndividualTest") (range (start (line 0) (character 0)) (end (line 0) (character 593))))
+    (element (id (node (document "d0") (qualified-name "IndividualTest::A"))) (kind "action def") (name "A") (declared-name "A") (range (start (line 32) (character 1)) (end (line 32) (character 34))) (parent (node (document "d0") (qualified-name "IndividualTest"))) (authored (membership (kind Owning)) (relationships (perform (reference "IndividualTest::A::a") (range none)))))
+    (element (id (node (document "d0") (qualified-name "IndividualTest::A::a"))) (kind "action") (name "a") (declared-name "a") (range (start (line 33) (character 2)) (end (line 33) (character 15))) (parent (node (document "d0") (qualified-name "IndividualTest::A"))) (authored (membership (kind Feature)) (relationships (typing (reference "A") (range none)))))
+    (element (id (node (document "d0") (qualified-name "IndividualTest::I"))) (kind "item def") (name "I") (declared-name "I") (range (start (line 10) (character 1)) (end (line 10) (character 30))) (parent (node (document "d0") (qualified-name "IndividualTest"))))
+    (element (id (node (document "d0") (qualified-name "IndividualTest::I::i"))) (kind "part") (name "i") (declared-name "i") (range (start (line 11) (character 2)) (end (line 11) (character 13))) (parent (node (document "d0") (qualified-name "IndividualTest::I"))) (authored (membership (kind Feature)) (relationships (typing (reference "I") (range (start (line 11) (character 11)) (end (line 11) (character 12)))))))
+    (element (id (node (document "d0") (qualified-name "IndividualTest::IO1"))) (kind "individual def") (name "IO1") (declared-name "IO1") (range (start (line 1) (character 1)) (end (line 1) (character 20))) (parent (node (document "d0") (qualified-name "IndividualTest"))))
+    (element (id (node (document "d0") (qualified-name "IndividualTest::IP1"))) (kind "part def") (name "IP1") (declared-name "IP1") (range (start (line 17) (character 1)) (end (line 17) (character 56))) (parent (node (document "d0") (qualified-name "IndividualTest"))))
+    (element (id (node (document "d0") (qualified-name "IndividualTest::IP1::p"))) (kind "part") (name "p") (declared-name "p") (range (start (line 18) (character 2)) (end (line 18) (character 26))) (parent (node (document "d0") (qualified-name "IndividualTest::IP1"))) (authored (membership (kind Feature)) (relationships (typing (reference "IP1") (range (start (line 18) (character 22)) (end (line 18) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "IndividualTest::IP2"))) (kind "part def") (name "IP2") (declared-name "IP2") (range (start (line 24) (character 1)) (end (line 24) (character 65))) (parent (node (document "d0") (qualified-name "IndividualTest"))) (authored (membership (kind Owning)) (relationships (specializes (reference "P") (range (start (line 24) (character 28)) (end (line 24) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "IndividualTest::IP2::p"))) (kind "part") (name "p") (declared-name "p") (range (start (line 25) (character 2)) (end (line 25) (character 30))) (parent (node (document "d0") (qualified-name "IndividualTest::IP2"))) (authored (membership (kind Feature)) (relationships (typing (reference "IP2") (range (start (line 25) (character 26)) (end (line 25) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "IndividualTest::P"))) (kind "part def") (name "P") (declared-name "P") (range (start (line 21) (character 1)) (end (line 21) (character 30))) (parent (node (document "d0") (qualified-name "IndividualTest"))))
+    (element (id (node (document "d0") (qualified-name "IndividualTest::P::p"))) (kind "part") (name "p") (declared-name "p") (range (start (line 22) (character 2)) (end (line 22) (character 13))) (parent (node (document "d0") (qualified-name "IndividualTest::P"))) (authored (membership (kind Feature)) (relationships (typing (reference "P") (range (start (line 22) (character 11)) (end (line 22) (character 12)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "IndividualTest::A"))) (kind performSource) (ordinal 0)) (authored-target "IndividualTest::A::a") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "IndividualTest::A::a")))))
+    (reference (id (source (node (document "d0") (qualified-name "IndividualTest::A::a"))) (kind featureTyping) (ordinal 0)) (authored-target "A") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "IndividualTest::A")))))
+    (reference (id (source (node (document "d0") (qualified-name "IndividualTest::I::i"))) (kind featureTyping) (ordinal 0)) (authored-target "I") (range (start (line 11) (character 11)) (end (line 11) (character 12))) (outcome (status resolved) (target (node (document "d0") (qualified-name "IndividualTest::I")))))
+    (reference (id (source (node (document "d0") (qualified-name "IndividualTest::IP1::p"))) (kind featureTyping) (ordinal 0)) (authored-target "IP1") (range (start (line 18) (character 22)) (end (line 18) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "IndividualTest::IP1")))))
+    (reference (id (source (node (document "d0") (qualified-name "IndividualTest::IP2"))) (kind specialization) (ordinal 0)) (authored-target "P") (range (start (line 24) (character 28)) (end (line 24) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "IndividualTest::P")))))
+    (reference (id (source (node (document "d0") (qualified-name "IndividualTest::IP2::p"))) (kind featureTyping) (ordinal 0)) (authored-target "IP2") (range (start (line 25) (character 26)) (end (line 25) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "IndividualTest::IP2")))))
+    (reference (id (source (node (document "d0") (qualified-name "IndividualTest::P::p"))) (kind featureTyping) (ordinal 0)) (authored-target "P") (range (start (line 22) (character 11)) (end (line 22) (character 12))) (outcome (status resolved) (target (node (document "d0") (qualified-name "IndividualTest::P")))))
   )
   (relationships
-    (perform (status resolved) (from (node (document "d0") (qualified-name "IndividualTest::A"))) (to (node (document "d0") (qualified-name "IndividualTest::A::a"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "IndividualTest::IP2"))) (to (node (document "d0") (qualified-name "IndividualTest::P"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "IndividualTest::A::a"))) (to (node (document "d0") (qualified-name "IndividualTest::A"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "IndividualTest::I::i"))) (to (node (document "d0") (qualified-name "IndividualTest::I"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "IndividualTest::IP1::p"))) (to (node (document "d0") (qualified-name "IndividualTest::IP1"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "IndividualTest::IP2::p"))) (to (node (document "d0") (qualified-name "IndividualTest::IP2"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "IndividualTest::P::p"))) (to (node (document "d0") (qualified-name "IndividualTest::P"))) (provenance authored))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "IndividualTest::A"))) (target (node (document "d0") (qualified-name "IndividualTest::A::a"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "IndividualTest::A"))) (kind performSource) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "IndividualTest::A::a"))) (target (node (document "d0") (qualified-name "IndividualTest::A"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "IndividualTest::A::a"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "IndividualTest::I::i"))) (target (node (document "d0") (qualified-name "IndividualTest::I"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "IndividualTest::I::i"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "IndividualTest::IP1::p"))) (target (node (document "d0") (qualified-name "IndividualTest::IP1"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "IndividualTest::IP1::p"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "IndividualTest::IP2"))) (target (node (document "d0") (qualified-name "IndividualTest::P"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "IndividualTest::IP2"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "IndividualTest::IP2::p"))) (target (node (document "d0") (qualified-name "IndividualTest::IP2"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "IndividualTest::IP2::p"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "IndividualTest::P::p"))) (target (node (document "d0") (qualified-name "IndividualTest::P"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "IndividualTest::P::p"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "IndividualTest::A"))) (status missing-prerequisite) (target "Actions::Action"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "IndividualTest::A::a"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "IndividualTest::I"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "IndividualTest::I::i"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "IndividualTest::IO1"))) (status missing-prerequisite) (target "Occurrences::Life"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "IndividualTest::IP1"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "IndividualTest::IP1::p"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "IndividualTest::IP2"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "IndividualTest::IP2::p"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "IndividualTest::P"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "IndividualTest::P::p"))) (status missing-prerequisite) (target "Parts::parts"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/individual_test.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "recovered_package_body_element")
-        (source "sysml")
-        (range (start 2 1) (end 2 62))
-      )
-      (diagnostic
-        (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 2 1) (end 2 62))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

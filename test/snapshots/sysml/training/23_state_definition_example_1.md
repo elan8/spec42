@@ -38,6 +38,15 @@ package 'State Definition Example-1' {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "23_state_definition_example_1.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -82,6 +91,14 @@ CloseCurly,EndOfFile,
       (state_usage 'on')
       (transition_usage 'on_to_off'))))
 ~~~
+# EXPECTED
+~~~
+semantic.duplicate_name 'off'
+~~~
+# PROBLEMS
+~~~
+semantic.duplicate_name 'off'
+~~~
 # FORMAT
 ~~~sysml
 package 'State Definition Example-1' {
@@ -118,83 +135,40 @@ package 'State Definition Example-1' {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.duplicate_name 'off'
-~~~
-# PROBLEMS
-~~~
-semantic.duplicate_name 'off'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "State Definition Example-1"))) (name "State Definition Example-1") (declared-name "State Definition Example-1")
-      (contains
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleOffSignal"))) (name "VehicleOffSignal") (declared-name "VehicleOffSignal") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleOnSignal"))) (name "VehicleOnSignal") (declared-name "VehicleOnSignal") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStartSignal"))) (name "VehicleStartSignal") (declared-name "VehicleStartSignal") (declared (properties (ordered false) (unique true))))
-        (element (kind "state def") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates"))) (name "VehicleStates") (declared-name "VehicleStates")
-          (contains
-            (element (kind "action") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::_entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates")))))
-            (element (kind "state") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off"))) (name "off") (declared-name "off") (effective (featuring-type (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates")))))
-            (element (kind "transition") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off_to_starting"))) (name "off_to_starting") (declared-name "off_to_starting") (effective (featuring-type (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates"))))
-              (contains
-                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off_to_starting::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates")))))
-              )
-            )
-            (element (kind "state") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::on"))) (name "on") (declared-name "on") (effective (featuring-type (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates")))))
-            (element (kind "transition") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::on_to_off"))) (name "on_to_off") (declared-name "on_to_off") (effective (featuring-type (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates"))))
-              (contains
-                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::on_to_off::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates")))))
-              )
-            )
-            (element (kind "state") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::starting"))) (name "starting") (declared-name "starting") (effective (featuring-type (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates")))))
-            (element (kind "transition") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::starting_to_on"))) (name "starting_to_on") (declared-name "starting_to_on") (effective (featuring-type (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates"))))
-              (contains
-                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::starting_to_on::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates")))))
-              )
-            )
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "084f6b243b2f804b9e796403bc51c41255a522128f782acea44ff4d63fd1de71") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "State Definition Example-1"))) (kind "package") (name "State Definition Example-1") (declared-name "State Definition Example-1") (range (start (line 0) (character 0)) (end (line 0) (character 508))))
+    (element (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleOffSignal"))) (kind "attribute def") (name "VehicleOffSignal") (declared-name "VehicleOffSignal") (range (start (line 4) (character 1)) (end (line 4) (character 32))) (parent (node (document "d0") (qualified-name "State Definition Example-1"))))
+    (element (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleOnSignal"))) (kind "attribute def") (name "VehicleOnSignal") (declared-name "VehicleOnSignal") (range (start (line 3) (character 1)) (end (line 3) (character 31))) (parent (node (document "d0") (qualified-name "State Definition Example-1"))))
+    (element (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStartSignal"))) (kind "attribute def") (name "VehicleStartSignal") (declared-name "VehicleStartSignal") (range (start (line 2) (character 1)) (end (line 2) (character 34))) (parent (node (document "d0") (qualified-name "State Definition Example-1"))))
+    (element (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates"))) (kind "state def") (name "VehicleStates") (declared-name "VehicleStates") (range (start (line 6) (character 1)) (end (line 6) (character 360))) (parent (node (document "d0") (qualified-name "State Definition Example-1"))) (authored (membership (kind Owning)) (relationships (initial-state (reference "State Definition Example-1::VehicleStates::off") (range none)))))
+    (element (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::_entry"))) (kind "action") (name "entry") (declared-name "entry") (range (start (line 7) (character 2)) (end (line 7) (character 8))) (parent (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates"))))
+    (element (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off"))) (kind "state") (name "off") (declared-name "off") (range (start (line 9) (character 2)) (end (line 9) (character 12))) (parent (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates"))) (authored (membership (kind Feature)) (relationships (transition (reference "State Definition Example-1::VehicleStates::starting") (range none)))))
+    (element (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off_to_starting"))) (kind "transition") (name "off_to_starting") (declared-name "off_to_starting") (range (start (line 11) (character 2)) (end (line 11) (character 89))) (parent (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates"))))
+    (element (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off_to_starting::trigger"))) (kind "transition trigger") (name "trigger") (declared-name "trigger") (range (start (line 11) (character 2)) (end (line 11) (character 89))) (parent (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off_to_starting"))))
+    (element (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::on"))) (kind "state") (name "on") (declared-name "on") (range (start (line 23) (character 2)) (end (line 23) (character 11))) (parent (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates"))) (authored (membership (kind Feature)) (relationships (transition (reference "State Definition Example-1::VehicleStates::off") (range none)))))
+    (element (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::on_to_off"))) (kind "transition") (name "on_to_off") (declared-name "on_to_off") (range (start (line 25) (character 2)) (end (line 25) (character 74))) (parent (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates"))))
+    (element (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::on_to_off::trigger"))) (kind "transition trigger") (name "trigger") (declared-name "trigger") (range (start (line 25) (character 2)) (end (line 25) (character 74))) (parent (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::on_to_off"))))
+    (element (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::starting"))) (kind "state") (name "starting") (declared-name "starting") (range (start (line 16) (character 2)) (end (line 16) (character 17))) (parent (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates"))) (authored (membership (kind Feature)) (relationships (transition (reference "State Definition Example-1::VehicleStates::on") (range none)))))
+    (element (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::starting_to_on"))) (kind "transition") (name "starting_to_on") (declared-name "starting_to_on") (range (start (line 18) (character 2)) (end (line 18) (character 83))) (parent (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates"))))
+    (element (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::starting_to_on::trigger"))) (kind "transition trigger") (name "trigger") (declared-name "trigger") (range (start (line 18) (character 2)) (end (line 18) (character 83))) (parent (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::starting_to_on"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates"))) (kind initialStateSource) (ordinal 0)) (authored-target "State Definition Example-1::VehicleStates::off") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off")))))
+    (reference (id (source (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off"))) (kind transitionSource) (ordinal 0)) (authored-target "State Definition Example-1::VehicleStates::starting") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::starting")))))
+    (reference (id (source (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::on"))) (kind transitionSource) (ordinal 0)) (authored-target "State Definition Example-1::VehicleStates::off") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off")))))
+    (reference (id (source (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::starting"))) (kind transitionSource) (ordinal 0)) (authored-target "State Definition Example-1::VehicleStates::on") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::on")))))
   )
   (relationships
-    (initialState (status resolved) (from (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates"))) (to (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off"))) (provenance authored))
-    (transition (status resolved) (from (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off"))) (to (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::starting"))) (provenance authored))
-    (transition (status resolved) (from (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::on"))) (to (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off"))) (provenance authored))
-    (transition (status resolved) (from (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::starting"))) (to (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::on"))) (provenance authored))
+    (relationship (kind initialState) (source (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates"))) (target (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates"))) (kind initialStateSource) (ordinal 0)))
+    (relationship (kind transition) (source (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off"))) (target (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::starting"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off"))) (kind transitionSource) (ordinal 0)))
+    (relationship (kind transition) (source (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::on"))) (target (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::on"))) (kind transitionSource) (ordinal 0)))
+    (relationship (kind transition) (source (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::starting"))) (target (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::on"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::starting"))) (kind transitionSource) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "State Definition Example-1::VehicleOffSignal"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "State Definition Example-1::VehicleOnSignal"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "State Definition Example-1::VehicleStartSignal"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates"))) (status missing-prerequisite) (target "States::StateAction"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::_entry"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off"))) (status missing-prerequisite) (target "States::stateActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off_to_starting"))) (status missing-prerequisite) (target "Actions::transitionActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off_to_starting::trigger"))) (status missing-prerequisite) (target "Actions::acceptActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::on"))) (status missing-prerequisite) (target "States::stateActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::on_to_off"))) (status missing-prerequisite) (target "Actions::transitionActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::on_to_off::trigger"))) (status missing-prerequisite) (target "Actions::acceptActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::starting"))) (status missing-prerequisite) (target "States::stateActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::starting_to_on"))) (status missing-prerequisite) (target "Actions::transitionActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::starting_to_on::trigger"))) (status missing-prerequisite) (target "Actions::acceptActions"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/23_state_definition_example_1.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

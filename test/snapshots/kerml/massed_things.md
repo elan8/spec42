@@ -19,6 +19,21 @@ package MassedThings {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "massed_things.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 0 15) (end 0 27))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
@@ -45,6 +60,16 @@ CloseCurly,EndOfFile,
       (feature_def public end 'assembly' multiplicity : 'MassedThing')
       (feature_def public end 'parts' multiplicity : 'MassedThing'))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Real'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Real'
+~~~
 # FORMAT
 ~~~sysml
 private import ScalarValues::*;
@@ -61,48 +86,22 @@ package MassedThings {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Real'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Real'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "import") (id (node (document "d0") (qualified-name "*"))) (name "*") (declared-name "*"))
-    (element (kind "package") (id (node (document "d0") (qualified-name "MassedThings"))) (name "MassedThings") (declared-name "MassedThings")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "MassedThings::MassedThing"))) (name "MassedThing") (declared-name "MassedThing"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "MassedThings::MassedThingAssembly"))) (name "MassedThingAssembly") (declared-name "MassedThingAssembly"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ac71f42929e77fd38ceca50c52a09270d1a01db4281433cff95b64e33d6538fa") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 0) (character 0)) (end (line 0) (character 31))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 0) (character 15)) (end (line 0) (character 27))))))
+    (element (id (node (document "d0") (qualified-name "MassedThings"))) (kind "package") (name "MassedThings") (declared-name "MassedThings") (range (start (line 1) (character 0)) (end (line 1) (character 245))))
+    (element (id (node (document "d0") (qualified-name "MassedThings::MassedThing"))) (kind "classifier decl") (name "MassedThing") (declared-name "MassedThing") (range (start (line 3) (character 1)) (end (line 3) (character 78))) (parent (node (document "d0") (qualified-name "MassedThings"))))
+    (element (id (node (document "d0") (qualified-name "MassedThings::MassedThingAssembly"))) (kind "kermlDecl") (name "MassedThingAssembly") (declared-name "MassedThingAssembly") (range (start (line 8) (character 1)) (end (line 8) (character 137))) (parent (node (document "d0") (qualified-name "MassedThings"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (range (start (line 0) (character 15)) (end (line 0) (character 27))) (outcome (status unresolved)))
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/massed_things.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 0 15) (end 0 27))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

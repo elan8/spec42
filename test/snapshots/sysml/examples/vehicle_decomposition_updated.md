@@ -74,6 +74,27 @@ package 'Vehicle Decomposition - Updated' {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "vehicle_decomposition_updated.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_part_usage_body_element")
+        (source "sysml")
+        (range (start 42 3) (end 42 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 42 3) (end 42 46))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -169,6 +190,14 @@ CloseCurly,EndOfFile,
       (part_usage :>> 'eng'
         (part_usage :>> 'cyl' multiplicity)))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package 'Vehicle Decomposition - Updated' {
@@ -240,224 +269,92 @@ package 'Vehicle Decomposition - Updated' {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated"))) (name "Vehicle Decomposition - Updated") (declared-name "Vehicle Decomposition - Updated")
-      (contains
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Chassis Assembly"))) (name "Chassis Assembly") (declared-name "Chassis Assembly") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Cylinder"))) (name "Cylinder") (declared-name "Cylinder") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Engine"))) (name "Engine") (declared-name "Engine") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::HeavyRollBar"))) (name "HeavyRollBar") (declared-name "HeavyRollBar") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::LightRollBar"))) (name "LightRollBar") (declared-name "LightRollBar") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::LugBolt"))) (name "LugBolt") (declared-name "LugBolt") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::RollBar"))) (name "RollBar") (declared-name "RollBar") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Wheel"))) (name "Wheel") (declared-name "Wheel") (declared))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::_documentation"))) (name ""))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs"))) (name "chs") (declared-name "chs") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Vehicle"))))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::rb"))) (name "rb") (declared-name "rb") (declared (properties (ordered false)) (multiplicity (lower 0) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Chassis Assembly")))))
-                (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::w"))) (name "w") (declared-name "w") (declared (properties (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Chassis Assembly"))))
-                  (contains
-                    (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::w::lb"))) (name "lb") (declared-name "lb") (declared (properties (ordered false)) (multiplicity (lower 6) (upper 10) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Wheel")))))
-                  )
-                )
-              )
-            )
-            (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Vehicle"))))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::eng::cyl"))) (name "cyl") (declared-name "cyl") (declared (properties (ordered false)) (multiplicity (lower 4) (upper 8) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Engine")))))
-              )
-            )
-          )
-        )
-        (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1"))) (name "vehicle model 1") (declared-name "vehicle model 1") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs"))) (name "chs") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs::w"))) (name "w") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-                  (contains
-                    (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs::w::lb"))) (name "lb") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-                  )
-                )
-              )
-            )
-            (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::eng"))) (name "eng") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::eng::cyl"))) (name "cyl") (declared (properties (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false))))
-              )
-            )
-          )
-        )
-        (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2"))) (name "vehicle model 2") (declared-name "vehicle model 2") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs"))) (name "chs") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::rb"))) (name "rb") (declared (properties (ordered false)) (multiplicity (lower 0) (upper 0) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false))))
-                (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::w"))) (name "w") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-                  (contains
-                    (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::w::lb"))) (name "lb") (declared (properties (ordered false)) (multiplicity (lower 6) (upper 7) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false))))
-                  )
-                )
-              )
-            )
-            (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::eng"))) (name "eng") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::eng::cyl"))) (name "cyl") (declared (properties (ordered false)) (multiplicity (lower 6) (upper 8) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false))))
-              )
-            )
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "4abfec6ca54ad16bbe7570adf98d65f1dc1f58e8cc9556e3ef41ef2b9a1f3dbc") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated"))) (kind "package") (name "Vehicle Decomposition - Updated") (declared-name "Vehicle Decomposition - Updated") (range (start (line 0) (character 0)) (end (line 0) (character 1194))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Chassis Assembly"))) (kind "part def") (name "Chassis Assembly") (declared-name "Chassis Assembly") (range (start (line 11) (character 1)) (end (line 11) (character 29))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated"))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Cylinder"))) (kind "part def") (name "Cylinder") (declared-name "Cylinder") (range (start (line 23) (character 1)) (end (line 23) (character 19))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated"))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Engine"))) (kind "part def") (name "Engine") (declared-name "Engine") (range (start (line 21) (character 1)) (end (line 21) (character 17))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated"))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::HeavyRollBar"))) (kind "part def") (name "HeavyRollBar") (declared-name "HeavyRollBar") (range (start (line 18) (character 1)) (end (line 18) (character 34))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated"))) (authored (membership (kind Owning)) (relationships (specializes (reference "RollBar") (range (start (line 18) (character 26)) (end (line 18) (character 33)))))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::LightRollBar"))) (kind "part def") (name "LightRollBar") (declared-name "LightRollBar") (range (start (line 19) (character 1)) (end (line 19) (character 34))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated"))) (authored (membership (kind Owning)) (relationships (specializes (reference "RollBar") (range (start (line 19) (character 26)) (end (line 19) (character 33)))))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::LugBolt"))) (kind "part def") (name "LugBolt") (declared-name "LugBolt") (range (start (line 15) (character 1)) (end (line 15) (character 18))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated"))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::RollBar"))) (kind "part def") (name "RollBar") (declared-name "RollBar") (range (start (line 17) (character 1)) (end (line 17) (character 18))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated"))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (range (start (line 9) (character 1)) (end (line 9) (character 18))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated"))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Wheel"))) (kind "part def") (name "Wheel") (declared-name "Wheel") (range (start (line 13) (character 1)) (end (line 13) (character 16))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated"))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 1194))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated"))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle"))) (kind "part") (name "vehicle") (declared-name "vehicle") (range (start (line 27) (character 1)) (end (line 27) (character 213))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle") (range (start (line 27) (character 16)) (end (line 27) (character 23)))))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1"))) (kind "part") (name "vehicle model 1") (declared-name "vehicle model 1") (range (start (line 40) (character 1)) (end (line 40) (character 288))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "vehicle") (range (start (line 40) (character 27)) (end (line 40) (character 34)))))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs"))) (kind "part") (name "chs") (range (start (line 41) (character 2)) (end (line 41) (character 119))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "chs") (range (start (line 41) (character 17)) (end (line 41) (character 20)))))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs::w"))) (kind "part") (name "w") (range (start (line 43) (character 3)) (end (line 43) (character 49))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "w") (range (start (line 43) (character 18)) (end (line 43) (character 19)))))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs::w::lb"))) (kind "part") (name "lb") (range (start (line 44) (character 4)) (end (line 44) (character 22))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs::w"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "lb") (range (start (line 44) (character 19)) (end (line 44) (character 21)))))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::eng"))) (kind "part") (name "eng") (range (start (line 47) (character 2)) (end (line 47) (character 52))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "eng") (range (start (line 47) (character 17)) (end (line 47) (character 20)))))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::eng::cyl"))) (kind "part") (name "cyl") (range (start (line 48) (character 3)) (end (line 48) (character 25))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::eng"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "cyl") (range (start (line 48) (character 18)) (end (line 48) (character 21)))))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2"))) (kind "part") (name "vehicle model 2") (declared-name "vehicle model 2") (range (start (line 55) (character 1)) (end (line 55) (character 251))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "vehicle") (range (start (line 55) (character 27)) (end (line 55) (character 34)))))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs"))) (kind "part") (name "chs") (range (start (line 56) (character 2)) (end (line 56) (character 155))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "chs") (range (start (line 56) (character 17)) (end (line 56) (character 20)))))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::rb"))) (kind "part") (name "rb") (range (start (line 57) (character 3)) (end (line 57) (character 24))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "rb") (range (start (line 57) (character 18)) (end (line 57) (character 20)))))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::w"))) (kind "part") (name "w") (range (start (line 58) (character 3)) (end (line 58) (character 103))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "w") (range (start (line 58) (character 18)) (end (line 58) (character 19)))))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::w::lb"))) (kind "part") (name "lb") (range (start (line 60) (character 4)) (end (line 60) (character 28))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::w"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "lb") (range (start (line 60) (character 19)) (end (line 60) (character 21)))))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::eng"))) (kind "part") (name "eng") (range (start (line 63) (character 2)) (end (line 63) (character 55))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "eng") (range (start (line 63) (character 17)) (end (line 63) (character 20)))))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::eng::cyl"))) (kind "part") (name "cyl") (range (start (line 64) (character 3)) (end (line 64) (character 28))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::eng"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "cyl") (range (start (line 64) (character 18)) (end (line 64) (character 21)))))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs"))) (kind "part") (name "chs") (declared-name "chs") (range (start (line 28) (character 2)) (end (line 28) (character 126))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Chassis Assembly") (range (start (line 28) (character 13)) (end (line 28) (character 31)))))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::rb"))) (kind "part") (name "rb") (declared-name "rb") (range (start (line 29) (character 3)) (end (line 29) (character 27))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs"))) (authored (membership (kind Feature)) (relationships (typing (reference "RollBar") (range (start (line 29) (character 13)) (end (line 29) (character 20)))))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::w"))) (kind "part") (name "w") (declared-name "w") (range (start (line 30) (character 3)) (end (line 30) (character 57))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs"))) (authored (membership (kind Feature)) (relationships (typing (reference "Wheel") (range (start (line 30) (character 12)) (end (line 30) (character 17)))))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::w::lb"))) (kind "part") (name "lb") (declared-name "lb") (range (start (line 31) (character 4)) (end (line 31) (character 29))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::w"))) (authored (membership (kind Feature)) (relationships (typing (reference "LugBolt") (range (start (line 31) (character 14)) (end (line 31) (character 21)))))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::eng"))) (kind "part") (name "eng") (declared-name "eng") (range (start (line 34) (character 2)) (end (line 34) (character 57))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Engine") (range (start (line 34) (character 12)) (end (line 34) (character 18)))))))
+    (element (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::eng::cyl"))) (kind "part") (name "cyl") (declared-name "cyl") (range (start (line 35) (character 3)) (end (line 35) (character 29))) (parent (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::eng"))) (authored (membership (kind Feature)) (relationships (typing (reference "Cylinder") (range (start (line 35) (character 14)) (end (line 35) (character 22)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::HeavyRollBar"))) (kind specialization) (ordinal 0)) (authored-target "RollBar") (range (start (line 18) (character 26)) (end (line 18) (character 33))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::RollBar")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::LightRollBar"))) (kind specialization) (ordinal 0)) (authored-target "RollBar") (range (start (line 19) (character 26)) (end (line 19) (character 33))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::RollBar")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (range (start (line 27) (character 16)) (end (line 27) (character 23))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Vehicle")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1"))) (kind subsetting) (ordinal 0)) (authored-target "vehicle") (range (start (line 40) (character 27)) (end (line 40) (character 34))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs"))) (kind redefinition) (ordinal 0)) (authored-target "chs") (range (start (line 41) (character 17)) (end (line 41) (character 20))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs::w"))) (kind redefinition) (ordinal 0)) (authored-target "w") (range (start (line 43) (character 18)) (end (line 43) (character 19))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs::w")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs::w::lb"))) (kind redefinition) (ordinal 0)) (authored-target "lb") (range (start (line 44) (character 19)) (end (line 44) (character 21))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs::w::lb")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::eng"))) (kind redefinition) (ordinal 0)) (authored-target "eng") (range (start (line 47) (character 17)) (end (line 47) (character 20))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::eng")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::eng::cyl"))) (kind redefinition) (ordinal 0)) (authored-target "cyl") (range (start (line 48) (character 18)) (end (line 48) (character 21))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::eng::cyl")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2"))) (kind subsetting) (ordinal 0)) (authored-target "vehicle") (range (start (line 55) (character 27)) (end (line 55) (character 34))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs"))) (kind redefinition) (ordinal 0)) (authored-target "chs") (range (start (line 56) (character 17)) (end (line 56) (character 20))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::rb"))) (kind redefinition) (ordinal 0)) (authored-target "rb") (range (start (line 57) (character 18)) (end (line 57) (character 20))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::rb")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::w"))) (kind redefinition) (ordinal 0)) (authored-target "w") (range (start (line 58) (character 18)) (end (line 58) (character 19))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::w")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::w::lb"))) (kind redefinition) (ordinal 0)) (authored-target "lb") (range (start (line 60) (character 19)) (end (line 60) (character 21))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::w::lb")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::eng"))) (kind redefinition) (ordinal 0)) (authored-target "eng") (range (start (line 63) (character 17)) (end (line 63) (character 20))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::eng")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::eng::cyl"))) (kind redefinition) (ordinal 0)) (authored-target "cyl") (range (start (line 64) (character 18)) (end (line 64) (character 21))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::eng::cyl")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs"))) (kind featureTyping) (ordinal 0)) (authored-target "Chassis Assembly") (range (start (line 28) (character 13)) (end (line 28) (character 31))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Chassis Assembly")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::rb"))) (kind featureTyping) (ordinal 0)) (authored-target "RollBar") (range (start (line 29) (character 13)) (end (line 29) (character 20))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::RollBar")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::w"))) (kind featureTyping) (ordinal 0)) (authored-target "Wheel") (range (start (line 30) (character 12)) (end (line 30) (character 17))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Wheel")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::w::lb"))) (kind featureTyping) (ordinal 0)) (authored-target "LugBolt") (range (start (line 31) (character 14)) (end (line 31) (character 21))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::LugBolt")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::eng"))) (kind featureTyping) (ordinal 0)) (authored-target "Engine") (range (start (line 34) (character 12)) (end (line 34) (character 18))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Engine")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::eng::cyl"))) (kind featureTyping) (ordinal 0)) (authored-target "Cylinder") (range (start (line 35) (character 14)) (end (line 35) (character 22))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Cylinder")))))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::_documentation"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition - Updated"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::HeavyRollBar"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::RollBar"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::LightRollBar"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::RollBar"))) (provenance authored))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle"))) (provenance authored))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Vehicle"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Chassis Assembly"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::rb"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::RollBar"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::w"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Wheel"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::w::lb"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::LugBolt"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::eng"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Engine"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::eng::cyl"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Cylinder"))) (provenance authored))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::HeavyRollBar"))) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::RollBar"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::HeavyRollBar"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::LightRollBar"))) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::RollBar"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::LightRollBar"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle"))) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Vehicle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1"))) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs"))) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs::w"))) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs::w"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs::w"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs::w::lb"))) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs::w::lb"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs::w::lb"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::eng"))) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::eng"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::eng"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::eng::cyl"))) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::eng::cyl"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::eng::cyl"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2"))) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs"))) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::rb"))) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::rb"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::rb"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::w"))) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::w"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::w"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::w::lb"))) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::w::lb"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::w::lb"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::eng"))) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::eng"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::eng"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::eng::cyl"))) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::eng::cyl"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::eng::cyl"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs"))) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Chassis Assembly"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::rb"))) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::RollBar"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::rb"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::w"))) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Wheel"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::w"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::w::lb"))) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::LugBolt"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::w::lb"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::eng"))) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Engine"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::eng"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::eng::cyl"))) (target (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Cylinder"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::eng::cyl"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Chassis Assembly"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Cylinder"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Engine"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::HeavyRollBar"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::LightRollBar"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::LugBolt"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::RollBar"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Wheel"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs::w"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs::w::lb"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::eng"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::eng::cyl"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::rb"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::w"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::w::lb"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::eng"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::eng::cyl"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::rb"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::w"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::w::lb"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::eng"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::eng::cyl"))) (status missing-prerequisite) (target "Parts::parts"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/vehicle_decomposition_updated.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 41 2) (end 41 119))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_part_usage_body_element")
-        (source "sysml")
-        (range (start 42 3) (end 42 46))
-      )
-      (diagnostic
-        (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 42 3) (end 42 46))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 43 3) (end 43 49))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 44 4) (end 44 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 47 2) (end 47 52))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 48 3) (end 48 25))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 56 2) (end 56 155))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 57 3) (end 57 24))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 58 3) (end 58 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 60 4) (end 60 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 63 2) (end 63 55))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 64 3) (end 64 28))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

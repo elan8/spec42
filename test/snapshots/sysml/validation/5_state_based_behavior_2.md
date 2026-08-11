@@ -134,6 +134,153 @@ package '5-State-based Behavior-2' {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "5_state_based_behavior_2.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 3 16) (end 3 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 7 3) (end 7 51))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 20 35) (end 20 62))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 33 17) (end 33 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 35 2) (end 35 50))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 36 2) (end 36 54))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 37 2) (end 37 50))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 39 2) (end 39 1249))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 69 29) (end 69 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 92 2) (end 92 250))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 106 20) (end 106 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 108 4) (end 108 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 111 3) (end 111 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 111 38) (end 111 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 112 3) (end 112 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 112 30) (end 112 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 113 3) (end 113 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 113 19) (end 113 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 119 32) (end 119 58))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 121 27) (end 121 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 122 36) (end 122 74))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -314,6 +461,30 @@ CloseCurly,EndOfFile,
         (part_usage 'vehicleController' : 'VehicleController'
           (exhibit_state ''controller states'' :>> 'VehicleController::'controller states''))))))
 ~~~
+# EXPECTED
+~~~
+semantic.duplicate_name 'off'
+semantic.duplicate_name 'normal'
+semantic.duplicate_name 'off'
+semantic.unresolved_name 'Provide Power'
+semantic.unresolved_name 'TemperatureValue'
+semantic.unresolved_name 'FuelCmd'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Time::DateTime'
+semantic.unresolved_name 'TemperatureValue'
+~~~
+# PROBLEMS
+~~~
+semantic.duplicate_name 'off'
+semantic.duplicate_name 'normal'
+semantic.duplicate_name 'off'
+semantic.unresolved_name 'Provide Power'
+semantic.unresolved_name 'TemperatureValue'
+semantic.unresolved_name 'FuelCmd'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Time::DateTime'
+semantic.unresolved_name 'TemperatureValue'
+~~~
 # FORMAT
 ~~~sysml
 package '5-State-based Behavior-2' {
@@ -446,382 +617,153 @@ package '5-State-based Behavior-2' {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.duplicate_name 'off'
-semantic.duplicate_name 'normal'
-semantic.duplicate_name 'off'
-semantic.unresolved_name 'Provide Power'
-semantic.unresolved_name 'TemperatureValue'
-semantic.unresolved_name 'FuelCmd'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Time::DateTime'
-semantic.unresolved_name 'TemperatureValue'
-~~~
-# PROBLEMS
-~~~
-semantic.duplicate_name 'off'
-semantic.duplicate_name 'normal'
-semantic.duplicate_name 'off'
-semantic.unresolved_name 'Provide Power'
-semantic.unresolved_name 'TemperatureValue'
-semantic.unresolved_name 'FuelCmd'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Time::DateTime'
-semantic.unresolved_name 'TemperatureValue'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "5-State-based Behavior-2"))) (name "5-State-based Behavior-2") (declared-name "5-State-based Behavior-2")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::*#import2"))) (name "*") (declared-name "*"))
-        (element (kind "package") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions"))) (name "Definitions") (declared-name "Definitions")
-          (contains
-            (element (kind "action def") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Apply Parking Brake"))) (name "Apply Parking Brake") (declared-name "Apply Parking Brake"))
-            (element (kind "state def") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Controller States"))) (name "Controller States") (declared-name "Controller States"))
-            (element (kind "attribute def") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Off Signal"))) (name "Off Signal") (declared-name "Off Signal") (declared (properties (ordered false) (unique true))))
-            (element (kind "attribute def") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Over Temp"))) (name "Over Temp") (declared-name "Over Temp") (declared (properties (ordered false) (unique true))))
-            (element (kind "action def") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Perform Self Test"))) (name "Perform Self Test") (declared-name "Perform Self Test"))
-            (element (kind "attribute def") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Return to Normal"))) (name "Return to Normal") (declared-name "Return to Normal") (declared (properties (ordered false) (unique true))))
-            (element (kind "action def") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Sense Temperature"))) (name "Sense Temperature") (declared-name "Sense Temperature")
-              (contains
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Sense Temperature::temp"))) (name "temp") (declared-name "temp") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Sense Temperature")))))
-              )
-            )
-            (element (kind "attribute def") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Start Signal"))) (name "Start Signal") (declared-name "Start Signal") (declared (properties (ordered false) (unique true))))
-            (element (kind "attribute def") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle Off Signal"))) (name "Vehicle Off Signal") (declared-name "Vehicle Off Signal") (declared (properties (ordered false) (unique true))))
-            (element (kind "attribute def") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle On Signal"))) (name "Vehicle On Signal") (declared-name "Vehicle On Signal") (declared (properties (ordered false) (unique true))))
-            (element (kind "attribute def") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle Start Signal"))) (name "Vehicle Start Signal") (declared-name "Vehicle Start Signal") (declared (properties (ordered false) (unique true))))
-            (element (kind "state def") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States"))) (name "Vehicle States") (declared-name "Vehicle States"))
-            (element (kind "part def") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA"))) (name "VehicleA") (declared-name "VehicleA") (declared)
-              (contains
-                (element (kind "action") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA::provide power"))) (name "provide power") (declared-name "provide power") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA")))))
-                (element (kind "exhibit state") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA::vehicle states"))) (name "vehicle states") (declared-name "vehicle states") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA")))))
-              )
-            )
-            (element (kind "part def") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleController"))) (name "VehicleController") (declared-name "VehicleController") (declared)
-              (contains
-                (element (kind "exhibit state") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleController::controller states"))) (name "controller states") (declared-name "controller states") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleController")))))
-              )
-            )
-          )
-        )
-        (element (kind "package") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages"))) (name "Usages") (declared-name "Usages")
-          (contains
-            (element (kind "import") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::*"))) (name "*") (declared-name "*"))
-            (element (kind "action") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::apply parking brake"))) (name "apply parking brake") (declared-name "apply parking brake") (declared))
-            (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states"))) (name "controller states") (declared-name "controller states") (declared)
-              (contains
-                (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states"))) (name "operational controller states") (declared-name "operational controller states") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Controller States"))))
-                  (contains
-                    (element (kind "action") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::_entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Controller States")))))
-                    (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::off"))) (name "off") (declared-name "off") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Controller States")))))
-                    (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::on"))) (name "on") (declared-name "on") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Controller States")))))
-                    (element (kind "transition") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::transition_operational controller states_to_off"))) (name "transition_operational controller states_to_off") (declared-name "transition_operational controller states_to_off") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Controller States"))))
-                      (contains
-                        (element (kind "transition trigger") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::transition_operational controller states_to_off::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Controller States")))))
-                      )
-                    )
-                    (element (kind "transition") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::transition_operational controller states_to_on"))) (name "transition_operational controller states_to_on") (declared-name "transition_operational controller states_to_on") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Controller States"))))
-                      (contains
-                        (element (kind "transition trigger") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::transition_operational controller states_to_on::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Controller States")))))
-                      )
-                    )
-                  )
-                )
-              )
-            )
-            (element (kind "action") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::perform self test"))) (name "perform self test") (declared-name "perform self test") (declared))
-            (element (kind "action") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::sense temperature"))) (name "sense temperature") (declared-name "sense temperature") (declared))
-            (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states"))) (name "vehicle states") (declared-name "vehicle states") (declared)
-              (contains
-                (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))) (name "health states") (declared-name "health states") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States"))))
-                  (contains
-                    (element (kind "action") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::_do"))) (name "do") (declared-name "do") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States"))))
-                      (contains
-                        (element (kind "in out parameter") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::_do::temp"))) (name "temp") (declared-name "temp") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States")))))
-                      )
-                    )
-                    (element (kind "action") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::_entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States")))))
-                    (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::degraded"))) (name "degraded") (declared-name "degraded") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States")))))
-                    (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::maintenance"))) (name "maintenance") (declared-name "maintenance") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States")))))
-                    (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::normal"))) (name "normal") (declared-name "normal") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States")))))
-                    (element (kind "transition") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_degraded"))) (name "transition_health states_to_degraded") (declared-name "transition_health states_to_degraded") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States"))))
-                      (contains
-                        (element (kind "transition effect") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_degraded::effect"))) (name "effect") (declared-name "effect") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States")))))
-                        (element (kind "transition trigger") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_degraded::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States")))))
-                      )
-                    )
-                    (element (kind "transition") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_maintenance"))) (name "transition_health states_to_maintenance") (declared-name "transition_health states_to_maintenance") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States"))))
-                      (contains
-                        (element (kind "transition trigger") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_maintenance::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States")))))
-                      )
-                    )
-                    (element (kind "transition") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_normal"))) (name "transition_health states_to_normal") (declared-name "transition_health states_to_normal") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States"))))
-                      (contains
-                        (element (kind "transition trigger") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_normal::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States")))))
-                      )
-                    )
-                    (element (kind "transition") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_normal#transition"))) (name "transition_health states_to_normal") (declared-name "transition_health states_to_normal") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States"))))
-                      (contains
-                        (element (kind "transition trigger") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_normal#transition::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States")))))
-                      )
-                    )
-                  )
-                )
-                (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))) (name "operational states") (declared-name "operational states") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States"))))
-                  (contains
-                    (element (kind "action") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::_entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States")))))
-                    (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::off"))) (name "off") (declared-name "off") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States")))))
-                    (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::on"))) (name "on") (declared-name "on") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States"))))
-                      (contains
-                        (element (kind "action") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::on::_do"))) (name "do") (declared-name "do") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States")))))
-                        (element (kind "action") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::on::_entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States")))))
-                        (element (kind "action") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::on::_exit"))) (name "exit") (declared-name "exit") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States")))))
-                      )
-                    )
-                    (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::starting"))) (name "starting") (declared-name "starting") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States")))))
-                    (element (kind "transition") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_off"))) (name "transition_operational states_to_off") (declared-name "transition_operational states_to_off") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States"))))
-                      (contains
-                        (element (kind "transition trigger") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_off::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States")))))
-                      )
-                    )
-                    (element (kind "transition") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_on"))) (name "transition_operational states_to_on") (declared-name "transition_operational states_to_on") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States"))))
-                      (contains
-                        (element (kind "transition trigger") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_on::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States")))))
-                      )
-                    )
-                    (element (kind "transition") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_starting"))) (name "transition_operational states_to_starting") (declared-name "transition_operational states_to_starting") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States"))))
-                      (contains
-                        (element (kind "transition effect") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_starting::effect"))) (name "effect") (declared-name "effect") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States")))))
-                        (element (kind "transition guard") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_starting::guard"))) (name "guard") (declared-name "guard") (declared (own-expression (expression (kind "memberAccess") (reference "brake pedal depressed") (children (expression (kind "featureReference") (reference "vehicle1_c1")))))) (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States")))) (evaluation (expression (status "incomplete") (error "expression is incomplete"))))
-                        (element (kind "transition trigger") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_starting::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States")))))
-                      )
-                    )
-                  )
-                )
-              )
-            )
-            (element (kind "part") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1"))) (name "vehicle1_c1") (declared-name "vehicle1_c1") (declared (properties (ordered false)))
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::Tmax"))) (name "Tmax") (declared-name "Tmax") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA")))))
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::brake pedal depressed"))) (name "brake pedal depressed") (declared-name "brake pedal depressed") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA")))))
-                (element (kind "port") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::fuelCmdPort"))) (name "fuelCmdPort") (declared-name "fuelCmdPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA"))))
-                  (contains
-                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::fuelCmdPort::fuelCmd"))) (name "fuelCmd") (declared-name "fuelCmd") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA")))))
-                  )
-                )
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::maintenanceTime"))) (name "maintenanceTime") (declared-name "maintenanceTime") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA")))))
-                (element (kind "action") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::provide power"))) (name "provide power") (declared-name "provide power") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA")))))
-                (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::vehicle states"))) (name "vehicle states") (declared-name "vehicle states") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA")))))
-                (element (kind "part") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::vehicleController"))) (name "vehicleController") (declared-name "vehicleController") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA"))))
-                  (contains
-                    (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::vehicleController::controller states"))) (name "controller states") (declared-name "controller states") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleController")))))
-                  )
-                )
-              )
-            )
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6563bdf52bdb3590700dae7af30b5caebb2f354fc17f310a71d0259ecf00cdbc") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2"))) (kind "package") (name "5-State-based Behavior-2") (declared-name "5-State-based Behavior-2") (range (start (line 0) (character 0)) (end (line 0) (character 3110))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 23))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 19))))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::*#import2"))) (kind "import") (name "*") (declared-name "*") (range (start (line 3) (character 1)) (end (line 3) (character 50))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2"))) (authored (membership (kind Import) (visibility "private") (import (reference "3a-Function-based Behavior-1::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 3) (character 16)) (end (line 3) (character 46))))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions"))) (kind "package") (name "Definitions") (declared-name "Definitions") (range (start (line 5) (character 1)) (end (line 5) (character 702))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Apply Parking Brake"))) (kind "action def") (name "Apply Parking Brake") (declared-name "Apply Parking Brake") (range (start (line 19) (character 2)) (end (line 19) (character 35))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Controller States"))) (kind "state def") (name "Controller States") (declared-name "Controller States") (range (start (line 16) (character 2)) (end (line 16) (character 32))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Off Signal"))) (kind "attribute def") (name "Off Signal") (declared-name "Off Signal") (range (start (line 27) (character 2)) (end (line 27) (character 29))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Over Temp"))) (kind "attribute def") (name "Over Temp") (declared-name "Over Temp") (range (start (line 28) (character 2)) (end (line 28) (character 28))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Perform Self Test"))) (kind "action def") (name "Perform Self Test") (declared-name "Perform Self Test") (range (start (line 18) (character 2)) (end (line 18) (character 33))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Return to Normal"))) (kind "attribute def") (name "Return to Normal") (declared-name "Return to Normal") (range (start (line 29) (character 2)) (end (line 29) (character 35))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Sense Temperature"))) (kind "action def") (name "Sense Temperature") (declared-name "Sense Temperature") (range (start (line 20) (character 2)) (end (line 20) (character 64))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Sense Temperature::temp"))) (kind "in out parameter") (name "temp") (declared-name "temp") (range (start (line 20) (character 35)) (end (line 20) (character 62))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Sense Temperature"))) (authored (relationships (typing (reference "TemperatureValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Start Signal"))) (kind "attribute def") (name "Start Signal") (declared-name "Start Signal") (range (start (line 26) (character 2)) (end (line 26) (character 31))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle Off Signal"))) (kind "attribute def") (name "Vehicle Off Signal") (declared-name "Vehicle Off Signal") (range (start (line 24) (character 2)) (end (line 24) (character 37))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle On Signal"))) (kind "attribute def") (name "Vehicle On Signal") (declared-name "Vehicle On Signal") (range (start (line 23) (character 2)) (end (line 23) (character 36))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle Start Signal"))) (kind "attribute def") (name "Vehicle Start Signal") (declared-name "Vehicle Start Signal") (range (start (line 22) (character 2)) (end (line 22) (character 39))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States"))) (kind "state def") (name "Vehicle States") (declared-name "Vehicle States") (range (start (line 15) (character 2)) (end (line 15) (character 29))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA"))) (kind "part def") (name "VehicleA") (declared-name "VehicleA") (range (start (line 6) (character 2)) (end (line 6) (character 130))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions"))) (authored (membership (kind Owning)) (relationships (perform (reference "5-State-based Behavior-2::Definitions::VehicleA::provide power") (range none)))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA::provide power"))) (kind "action") (name "provide power") (declared-name "provide power") (range (start (line 7) (character 3)) (end (line 7) (character 51))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA"))) (authored (relationships (typing (reference "Provide Power") (range none)))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA::vehicle states"))) (kind "exhibit state") (name "vehicle states") (declared-name "vehicle states") (range (start (line 8) (character 3)) (end (line 8) (character 52))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA"))) (authored (relationships (typing (reference "Vehicle States") (range none)))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleController"))) (kind "part def") (name "VehicleController") (declared-name "VehicleController") (range (start (line 11) (character 2)) (end (line 11) (character 93))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleController::controller states"))) (kind "exhibit state") (name "controller states") (declared-name "controller states") (range (start (line 12) (character 3)) (end (line 12) (character 58))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleController"))) (authored (relationships (typing (reference "Controller States") (range none)))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages"))) (kind "package") (name "Usages") (declared-name "Usages") (range (start (line 32) (character 1)) (end (line 32) (character 2254))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 33) (character 2)) (end (line 33) (character 32))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages"))) (authored (membership (kind Import) (visibility "private") (import (reference "Definitions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 33) (character 17)) (end (line 33) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::apply parking brake"))) (kind "action") (name "apply parking brake") (declared-name "apply parking brake") (range (start (line 36) (character 2)) (end (line 36) (character 54))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages"))) (authored (membership (kind Feature)) (relationships (typing (reference "Apply Parking Brake") (range none)))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states"))) (kind "state") (name "controller states") (declared-name "controller states") (range (start (line 92) (character 2)) (end (line 92) (character 250))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages"))) (authored (membership (kind Feature)) (relationships (typing (reference "Controller States") (range none)))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states"))) (kind "state") (name "operational controller states") (declared-name "operational controller states") (range (start (line 93) (character 3)) (end (line 93) (character 186))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states"))) (authored (membership (kind Feature)) (relationships (transition (reference "5-State-based Behavior-2::Usages::controller states::operational controller states::on") (range none)) (transition (reference "5-State-based Behavior-2::Usages::controller states::operational controller states::off") (range none)) (initial-state (reference "5-State-based Behavior-2::Usages::controller states::operational controller states::off") (range none)))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::_entry"))) (kind "action") (name "entry") (declared-name "entry") (range (start (line 94) (character 4)) (end (line 94) (character 10))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::off"))) (kind "state") (name "off") (declared-name "off") (range (start (line 96) (character 4)) (end (line 96) (character 14))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::on"))) (kind "state") (name "on") (declared-name "on") (range (start (line 100) (character 4)) (end (line 100) (character 13))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::transition_operational controller states_to_off"))) (kind "transition") (name "transition_operational controller states_to_off") (declared-name "transition_operational controller states_to_off") (range (start (line 101) (character 4)) (end (line 101) (character 38))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::transition_operational controller states_to_off::trigger"))) (kind "transition trigger") (name "trigger") (declared-name "trigger") (range (start (line 101) (character 4)) (end (line 101) (character 38))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::transition_operational controller states_to_off"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::transition_operational controller states_to_on"))) (kind "transition") (name "transition_operational controller states_to_on") (declared-name "transition_operational controller states_to_on") (range (start (line 97) (character 4)) (end (line 97) (character 39))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::transition_operational controller states_to_on::trigger"))) (kind "transition trigger") (name "trigger") (declared-name "trigger") (range (start (line 97) (character 4)) (end (line 97) (character 39))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::transition_operational controller states_to_on"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::perform self test"))) (kind "action") (name "perform self test") (declared-name "perform self test") (range (start (line 35) (character 2)) (end (line 35) (character 50))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages"))) (authored (membership (kind Feature)) (relationships (typing (reference "Perform Self Test") (range none)))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::sense temperature"))) (kind "action") (name "sense temperature") (declared-name "sense temperature") (range (start (line 37) (character 2)) (end (line 37) (character 50))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages"))) (authored (membership (kind Feature)) (relationships (typing (reference "Sense Temperature") (range none)))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states"))) (kind "state") (name "vehicle states") (declared-name "vehicle states") (range (start (line 39) (character 2)) (end (line 39) (character 1249))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle States") (range none)))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))) (kind "state") (name "health states") (declared-name "health states") (range (start (line 67) (character 3)) (end (line 67) (character 580))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states"))) (authored (membership (kind Feature)) (relationships (transition (reference "5-State-based Behavior-2::Usages::vehicle states::health states::maintenance") (range none)) (transition (reference "5-State-based Behavior-2::Usages::vehicle states::health states::degraded") (range none)) (transition (reference "5-State-based Behavior-2::Usages::vehicle states::health states::normal") (range none)) (transition (reference "5-State-based Behavior-2::Usages::vehicle states::health states::normal") (range none)) (initial-state (reference "5-State-based Behavior-2::Usages::vehicle states::health states::normal") (range none)))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::_do"))) (kind "action") (name "do") (declared-name "do") (range (start (line 69) (character 4)) (end (line 69) (character 40))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::_do::temp"))) (kind "in out parameter") (name "temp") (declared-name "temp") (range (start (line 69) (character 29)) (end (line 69) (character 38))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::_do"))) (authored (relationships (typing (reference "") (range none)))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::_entry"))) (kind "action") (name "entry") (declared-name "entry") (range (start (line 68) (character 4)) (end (line 68) (character 10))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::degraded"))) (kind "state") (name "degraded") (declared-name "degraded") (range (start (line 86) (character 4)) (end (line 86) (character 19))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::maintenance"))) (kind "state") (name "maintenance") (declared-name "maintenance") (range (start (line 82) (character 4)) (end (line 82) (character 22))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::normal"))) (kind "state") (name "normal") (declared-name "normal") (range (start (line 75) (character 4)) (end (line 75) (character 17))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_degraded"))) (kind "transition") (name "transition_health states_to_degraded") (declared-name "transition_health states_to_degraded") (range (start (line 78) (character 4)) (end (line 78) (character 144))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_degraded::effect"))) (kind "transition effect") (name "effect") (declared-name "effect") (range (start (line 78) (character 4)) (end (line 78) (character 144))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_degraded"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_degraded::trigger"))) (kind "transition trigger") (name "trigger") (declared-name "trigger") (range (start (line 78) (character 4)) (end (line 78) (character 144))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_degraded"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_maintenance"))) (kind "transition") (name "transition_health states_to_maintenance") (declared-name "transition_health states_to_maintenance") (range (start (line 76) (character 4)) (end (line 76) (character 64))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_maintenance::trigger"))) (kind "transition trigger") (name "trigger") (declared-name "trigger") (range (start (line 76) (character 4)) (end (line 76) (character 64))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_maintenance"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_normal"))) (kind "transition") (name "transition_health states_to_normal") (declared-name "transition_health states_to_normal") (range (start (line 83) (character 4)) (end (line 83) (character 47))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_normal#transition"))) (kind "transition") (name "transition_health states_to_normal") (declared-name "transition_health states_to_normal") (range (start (line 87) (character 4)) (end (line 87) (character 47))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_normal#transition::trigger"))) (kind "transition trigger") (name "trigger") (declared-name "trigger") (range (start (line 87) (character 4)) (end (line 87) (character 47))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_normal#transition"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_normal::trigger"))) (kind "transition trigger") (name "trigger") (declared-name "trigger") (range (start (line 83) (character 4)) (end (line 83) (character 47))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_normal"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))) (kind "state") (name "operational states") (declared-name "operational states") (range (start (line 41) (character 3)) (end (line 41) (character 605))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states"))) (authored (membership (kind Feature)) (relationships (transition (reference "5-State-based Behavior-2::Usages::vehicle states::operational states::starting") (range none)) (transition (reference "5-State-based Behavior-2::Usages::vehicle states::operational states::on") (range none)) (transition (reference "5-State-based Behavior-2::Usages::vehicle states::operational states::off") (range none)) (initial-state (reference "5-State-based Behavior-2::Usages::vehicle states::operational states::off") (range none)))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::_entry"))) (kind "action") (name "entry") (declared-name "entry") (range (start (line 42) (character 4)) (end (line 42) (character 10))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::off"))) (kind "state") (name "off") (declared-name "off") (range (start (line 48) (character 4)) (end (line 48) (character 14))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::on"))) (kind "state") (name "on") (declared-name "on") (range (start (line 58) (character 4)) (end (line 58) (character 110))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::on::_do"))) (kind "action") (name "do") (declared-name "do") (range (start (line 60) (character 5)) (end (line 60) (character 24))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::on"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::on::_entry"))) (kind "action") (name "entry") (declared-name "entry") (range (start (line 59) (character 5)) (end (line 59) (character 31))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::on"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::on::_exit"))) (kind "action") (name "exit") (declared-name "exit") (range (start (line 61) (character 5)) (end (line 61) (character 32))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::on"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::starting"))) (kind "state") (name "starting") (declared-name "starting") (range (start (line 54) (character 4)) (end (line 54) (character 19))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_off"))) (kind "transition") (name "transition_operational states_to_off") (declared-name "transition_operational states_to_off") (range (start (line 63) (character 4)) (end (line 63) (character 46))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_off::trigger"))) (kind "transition trigger") (name "trigger") (declared-name "trigger") (range (start (line 63) (character 4)) (end (line 63) (character 46))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_off"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_on"))) (kind "transition") (name "transition_operational states_to_on") (declared-name "transition_operational states_to_on") (range (start (line 55) (character 4)) (end (line 55) (character 44))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_on::trigger"))) (kind "transition trigger") (name "trigger") (declared-name "trigger") (range (start (line 55) (character 4)) (end (line 55) (character 44))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_on"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_starting"))) (kind "transition") (name "transition_operational states_to_starting") (declared-name "transition_operational states_to_starting") (range (start (line 49) (character 4)) (end (line 49) (character 165))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_starting::effect"))) (kind "transition effect") (name "effect") (declared-name "effect") (range (start (line 49) (character 4)) (end (line 49) (character 165))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_starting"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_starting::guard"))) (kind "transition guard") (name "guard") (declared-name "guard") (range (start (line 50) (character 8)) (end (line 50) (character 43))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_starting"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_starting::trigger"))) (kind "transition trigger") (name "trigger") (declared-name "trigger") (range (start (line 49) (character 4)) (end (line 49) (character 165))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_starting"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1"))) (kind "part") (name "vehicle1_c1") (declared-name "vehicle1_c1") (range (start (line 106) (character 2)) (end (line 106) (character 529))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages"))) (authored (membership (kind Feature)) (relationships (typing (reference "VehicleA") (range (start (line 106) (character 20)) (end (line 106) (character 28)))) (perform (reference "5-State-based Behavior-2::Usages::vehicle1_c1::provide power") (range none)))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::Tmax"))) (kind "attribute") (name "Tmax") (declared-name "Tmax") (range (start (line 113) (character 3)) (end (line 113) (character 36))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1"))) (authored (membership (kind Feature)) (relationships (typing (reference "TemperatureValue") (range none)) (typing (reference "TemperatureValue") (range (start (line 113) (character 19)) (end (line 113) (character 35)))))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::brake pedal depressed"))) (kind "attribute") (name "brake pedal depressed") (declared-name "brake pedal depressed") (range (start (line 111) (character 3)) (end (line 111) (character 46))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1"))) (authored (membership (kind Feature)) (relationships (typing (reference "Boolean") (range none)) (typing (reference "Boolean") (range (start (line 111) (character 38)) (end (line 111) (character 45)))))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::fuelCmdPort"))) (kind "port") (name "fuelCmdPort") (declared-name "fuelCmdPort") (range (start (line 107) (character 3)) (end (line 107) (character 51))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::fuelCmdPort::fuelCmd"))) (kind "in out parameter") (name "fuelCmd") (declared-name "fuelCmd") (range (start (line 108) (character 4)) (end (line 108) (character 24))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::fuelCmdPort"))) (authored (relationships (typing (reference "FuelCmd") (range none)))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::maintenanceTime"))) (kind "attribute") (name "maintenanceTime") (declared-name "maintenanceTime") (range (start (line 112) (character 3)) (end (line 112) (character 45))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1"))) (authored (membership (kind Feature)) (relationships (typing (reference "DateTime") (range none)) (typing (reference "Time::DateTime") (range (start (line 112) (character 30)) (end (line 112) (character 44)))))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::provide power"))) (kind "action") (name "provide power") (declared-name "provide power") (range (start (line 115) (character 3)) (end (line 115) (character 101))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1"))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::vehicle states"))) (kind "state") (name "vehicle states") (declared-name "vehicle states") (range (start (line 119) (character 3)) (end (line 119) (character 59))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "VehicleA::vehicle states") (range (start (line 119) (character 32)) (end (line 119) (character 58)))))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::vehicleController"))) (kind "part") (name "vehicleController") (declared-name "vehicleController") (range (start (line 121) (character 3)) (end (line 121) (character 127))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1"))) (authored (membership (kind Feature)) (relationships (typing (reference "VehicleController") (range (start (line 121) (character 27)) (end (line 121) (character 44)))))))
+    (element (id (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::vehicleController::controller states"))) (kind "state") (name "controller states") (declared-name "controller states") (range (start (line 122) (character 4)) (end (line 122) (character 75))) (parent (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::vehicleController"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "VehicleController::controller states") (range (start (line 122) (character 36)) (end (line 122) (character 74)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (range (start (line 1) (character 16)) (end (line 1) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "ISQ::*") (range (start (line 2) (character 16)) (end (line 2) (character 19))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::*#import2"))) (kind namespaceImport) (ordinal 0)) (authored-target "3a-Function-based Behavior-1::*") (range (start (line 3) (character 16)) (end (line 3) (character 46))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Sense Temperature::temp"))) (kind featureTyping) (ordinal 0)) (authored-target "TemperatureValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA"))) (kind performSource) (ordinal 0)) (authored-target "5-State-based Behavior-2::Definitions::VehicleA::provide power") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA::provide power")))))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA::provide power"))) (kind featureTyping) (ordinal 0)) (authored-target "Provide Power") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA::vehicle states"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle States") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States")))))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleController::controller states"))) (kind featureTyping) (ordinal 0)) (authored-target "Controller States") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Controller States")))))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Definitions::*") (range (start (line 33) (character 17)) (end (line 33) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::apply parking brake"))) (kind featureTyping) (ordinal 0)) (authored-target "Apply Parking Brake") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states"))) (kind featureTyping) (ordinal 0)) (authored-target "Controller States") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states"))) (kind transitionSource) (ordinal 0)) (authored-target "5-State-based Behavior-2::Usages::controller states::operational controller states::on") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::on")))))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states"))) (kind transitionSource) (ordinal 1)) (authored-target "5-State-based Behavior-2::Usages::controller states::operational controller states::off") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::off")))))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states"))) (kind initialStateSource) (ordinal 0)) (authored-target "5-State-based Behavior-2::Usages::controller states::operational controller states::off") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::off")))))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::perform self test"))) (kind featureTyping) (ordinal 0)) (authored-target "Perform Self Test") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::sense temperature"))) (kind featureTyping) (ordinal 0)) (authored-target "Sense Temperature") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle States") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))) (kind transitionSource) (ordinal 0)) (authored-target "5-State-based Behavior-2::Usages::vehicle states::health states::maintenance") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::maintenance")))))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))) (kind transitionSource) (ordinal 1)) (authored-target "5-State-based Behavior-2::Usages::vehicle states::health states::degraded") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::degraded")))))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))) (kind transitionSource) (ordinal 2)) (authored-target "5-State-based Behavior-2::Usages::vehicle states::health states::normal") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::normal")))))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))) (kind transitionSource) (ordinal 3)) (authored-target "5-State-based Behavior-2::Usages::vehicle states::health states::normal") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::normal")))))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))) (kind initialStateSource) (ordinal 0)) (authored-target "5-State-based Behavior-2::Usages::vehicle states::health states::normal") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::normal")))))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::_do::temp"))) (kind featureTyping) (ordinal 0)) (authored-target "") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))) (kind transitionSource) (ordinal 0)) (authored-target "5-State-based Behavior-2::Usages::vehicle states::operational states::starting") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::starting")))))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))) (kind transitionSource) (ordinal 1)) (authored-target "5-State-based Behavior-2::Usages::vehicle states::operational states::on") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::on")))))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))) (kind transitionSource) (ordinal 2)) (authored-target "5-State-based Behavior-2::Usages::vehicle states::operational states::off") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::off")))))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))) (kind initialStateSource) (ordinal 0)) (authored-target "5-State-based Behavior-2::Usages::vehicle states::operational states::off") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::off")))))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1"))) (kind featureTyping) (ordinal 0)) (authored-target "VehicleA") (range (start (line 106) (character 20)) (end (line 106) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1"))) (kind performSource) (ordinal 0)) (authored-target "5-State-based Behavior-2::Usages::vehicle1_c1::provide power") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::provide power")))))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::Tmax"))) (kind featureTyping) (ordinal 0)) (authored-target "TemperatureValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::Tmax"))) (kind featureTyping) (ordinal 1)) (authored-target "TemperatureValue") (range (start (line 113) (character 19)) (end (line 113) (character 35))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::brake pedal depressed"))) (kind featureTyping) (ordinal 0)) (authored-target "Boolean") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::brake pedal depressed"))) (kind featureTyping) (ordinal 1)) (authored-target "Boolean") (range (start (line 111) (character 38)) (end (line 111) (character 45))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::fuelCmdPort::fuelCmd"))) (kind featureTyping) (ordinal 0)) (authored-target "FuelCmd") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::maintenanceTime"))) (kind featureTyping) (ordinal 0)) (authored-target "DateTime") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::maintenanceTime"))) (kind featureTyping) (ordinal 1)) (authored-target "Time::DateTime") (range (start (line 112) (character 30)) (end (line 112) (character 44))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::vehicle states"))) (kind redefinition) (ordinal 0)) (authored-target "VehicleA::vehicle states") (range (start (line 119) (character 32)) (end (line 119) (character 58))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::vehicleController"))) (kind featureTyping) (ordinal 0)) (authored-target "VehicleController") (range (start (line 121) (character 27)) (end (line 121) (character 44))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::vehicleController::controller states"))) (kind redefinition) (ordinal 0)) (authored-target "VehicleController::controller states") (range (start (line 122) (character 36)) (end (line 122) (character 74))) (outcome (status unresolved)))
   )
   (relationships
-    (initialState (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::off"))) (provenance authored))
-    (initialState (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::normal"))) (provenance authored))
-    (initialState (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::off"))) (provenance authored))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA::provide power"))) (provenance authored))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::provide power"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::vehicle states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA::vehicle states"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::vehicleController::controller states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleController::controller states"))) (provenance authored))
-    (transition (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::off"))) (provenance authored))
-    (transition (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::on"))) (provenance authored))
-    (transition (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::degraded"))) (provenance authored))
-    (transition (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::maintenance"))) (provenance authored))
-    (transition (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::normal"))) (provenance authored))
-    (transition (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::normal"))) (provenance authored))
-    (transition (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::off"))) (provenance authored))
-    (transition (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::on"))) (provenance authored))
-    (transition (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::starting"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA::vehicle states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleController::controller states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Controller States"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::apply parking brake"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Apply Parking Brake"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Controller States"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::perform self test"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Perform Self Test"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::sense temperature"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Sense Temperature"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::vehicleController"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleController"))) (provenance authored))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA"))) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA::provide power"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA"))) (kind performSource) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA::vehicle states"))) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA::vehicle states"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleController::controller states"))) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Controller States"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleController::controller states"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind transition) (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states"))) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::off"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states"))) (kind transitionSource) (ordinal 1)))
+    (relationship (kind transition) (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states"))) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::on"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states"))) (kind transitionSource) (ordinal 0)))
+    (relationship (kind initialState) (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states"))) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::off"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states"))) (kind initialStateSource) (ordinal 0)))
+    (relationship (kind transition) (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::degraded"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))) (kind transitionSource) (ordinal 1)))
+    (relationship (kind transition) (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::maintenance"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))) (kind transitionSource) (ordinal 0)))
+    (relationship (kind transition) (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::normal"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))) (kind transitionSource) (ordinal 2)))
+    (relationship (kind transition) (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::normal"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))) (kind transitionSource) (ordinal 3)))
+    (relationship (kind initialState) (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::normal"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))) (kind initialStateSource) (ordinal 0)))
+    (relationship (kind transition) (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::off"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))) (kind transitionSource) (ordinal 2)))
+    (relationship (kind transition) (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::on"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))) (kind transitionSource) (ordinal 1)))
+    (relationship (kind transition) (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::starting"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))) (kind transitionSource) (ordinal 0)))
+    (relationship (kind initialState) (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::off"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))) (kind initialStateSource) (ordinal 0)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1"))) (target (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::provide power"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1"))) (kind performSource) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Apply Parking Brake"))) (status missing-prerequisite) (target "Actions::Action"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Controller States"))) (status missing-prerequisite) (target "States::StateAction"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Off Signal"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Over Temp"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Perform Self Test"))) (status missing-prerequisite) (target "Actions::Action"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Return to Normal"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Sense Temperature"))) (status missing-prerequisite) (target "Actions::Action"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Start Signal"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle Off Signal"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle On Signal"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle Start Signal"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States"))) (status missing-prerequisite) (target "States::StateAction"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA::provide power"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Definitions::VehicleController"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::apply parking brake"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states"))) (status missing-prerequisite) (target "States::stateActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states"))) (status missing-prerequisite) (target "States::stateActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::_entry"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::off"))) (status missing-prerequisite) (target "States::stateActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::on"))) (status missing-prerequisite) (target "States::stateActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::transition_operational controller states_to_off"))) (status missing-prerequisite) (target "Actions::transitionActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::transition_operational controller states_to_off::trigger"))) (status missing-prerequisite) (target "Actions::acceptActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::transition_operational controller states_to_on"))) (status missing-prerequisite) (target "Actions::transitionActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::controller states::operational controller states::transition_operational controller states_to_on::trigger"))) (status missing-prerequisite) (target "Actions::acceptActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::perform self test"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::sense temperature"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states"))) (status missing-prerequisite) (target "States::stateActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states"))) (status missing-prerequisite) (target "States::stateActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::_do"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::_entry"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::degraded"))) (status missing-prerequisite) (target "States::stateActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::maintenance"))) (status missing-prerequisite) (target "States::stateActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::normal"))) (status missing-prerequisite) (target "States::stateActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_degraded"))) (status missing-prerequisite) (target "Actions::transitionActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_degraded::effect"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_degraded::trigger"))) (status missing-prerequisite) (target "Actions::acceptActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_maintenance"))) (status missing-prerequisite) (target "Actions::transitionActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_maintenance::trigger"))) (status missing-prerequisite) (target "Actions::acceptActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_normal"))) (status missing-prerequisite) (target "Actions::transitionActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_normal#transition"))) (status missing-prerequisite) (target "Actions::transitionActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_normal#transition::trigger"))) (status missing-prerequisite) (target "Actions::acceptActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::health states::transition_health states_to_normal::trigger"))) (status missing-prerequisite) (target "Actions::acceptActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states"))) (status missing-prerequisite) (target "States::stateActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::_entry"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::off"))) (status missing-prerequisite) (target "States::stateActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::on"))) (status missing-prerequisite) (target "States::stateActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::on::_do"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::on::_entry"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::on::_exit"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::starting"))) (status missing-prerequisite) (target "States::stateActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_off"))) (status missing-prerequisite) (target "Actions::transitionActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_off::trigger"))) (status missing-prerequisite) (target "Actions::acceptActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_on"))) (status missing-prerequisite) (target "Actions::transitionActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_on::trigger"))) (status missing-prerequisite) (target "Actions::acceptActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_starting"))) (status missing-prerequisite) (target "Actions::transitionActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_starting::effect"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_starting::trigger"))) (status missing-prerequisite) (target "Actions::acceptActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::Tmax"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::brake pedal depressed"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::fuelCmdPort"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::maintenanceTime"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::provide power"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::vehicle states"))) (status missing-prerequisite) (target "States::stateActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::vehicleController"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::vehicleController::controller states"))) (status missing-prerequisite) (target "States::stateActions"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/validation/5_state_based_behavior_2.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 16) (end 2 19))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 3 16) (end 3 46))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 7 3) (end 7 51))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 20 35) (end 20 62))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 33 17) (end 33 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "transition_guard_non_boolean")
-        (source "semantic")
-        (range (start 49 4) (end 49 165))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 107 3) (end 107 51))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 108 4) (end 108 24))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 111 3) (end 111 46))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 112 3) (end 112 45))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 113 3) (end 113 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 119 3) (end 119 59))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 122 4) (end 122 75))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "5-State-based Behavior-2::Usages::vehicle states::operational states::transition_operational states_to_starting::guard")) (expression (status "incomplete") (error "expression is incomplete")))
   )
 )
 ~~~

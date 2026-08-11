@@ -38,6 +38,57 @@ package OccurrenceTest {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "occurrence_test.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 5 2) (end 5 12))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 6 2) (end 6 9))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 6 2) (end 6 9))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_occurrence_def_body_element")
+        (source "sysml")
+        (range (start 8 2) (end 8 33))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 15 2) (end 15 11))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_package_body_element")
+        (source "sysml")
+        (range (start 18 1) (end 18 68))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 18 1) (end 18 68))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -95,6 +146,14 @@ CloseCurly,EndOfFile,
     (occurrence_usage 'o1'
       (occurrence_usage 'o2'))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package OccurrenceTest {
@@ -131,107 +190,37 @@ package OccurrenceTest {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "OccurrenceTest"))) (name "OccurrenceTest") (declared-name "OccurrenceTest")
-      (contains
-        (element (kind "occurrence def") (id (node (document "d0") (qualified-name "OccurrenceTest::Occ"))) (name "Occ") (declared-name "Occ") (declared)
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "OccurrenceTest::Occ::a"))) (name "a") (declared-name "a") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "OccurrenceTest::Occ")))))
-            (element (kind "occurrence") (id (node (document "d0") (qualified-name "OccurrenceTest::Occ::occ2"))) (name "occ2") (declared-name "occ2") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "OccurrenceTest::Occ")))))
-            (element (kind "occurrence") (id (node (document "d0") (qualified-name "OccurrenceTest::Occ::t"))) (name "t") (declared-name "t") (declared (properties (portion true) (portion-kind "timeslice"))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "OccurrenceTest::Occ")))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "OccurrenceTest::Occ::y"))) (name "y") (declared-name "y") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "OccurrenceTest::Occ")))))
-          )
-        )
-        (element (kind "occurrence") (id (node (document "d0") (qualified-name "OccurrenceTest::o1"))) (name "o1") (declared-name "o1") (declared)
-          (contains
-            (element (kind "occurrence") (id (node (document "d0") (qualified-name "OccurrenceTest::o1::o2"))) (name "o2") (declared-name "o2") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
-          )
-        )
-        (element (kind "occurrence") (id (node (document "d0") (qualified-name "OccurrenceTest::occ"))) (name "occ") (declared-name "occ") (declared)
-          (contains
-            (element (kind "occurrence") (id (node (document "d0") (qualified-name "OccurrenceTest::occ::o1"))) (name "o1") (declared-name "o1") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "OccurrenceTest::Occ")))))
-            (element (kind "occurrence") (id (node (document "d0") (qualified-name "OccurrenceTest::occ::o2"))) (name "o2") (declared-name "o2") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "OccurrenceTest::Occ")))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "3b047879cdfc579ca5de8d017998f5a3c58a32f7a4b1d7e566335bc08af6d47b") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "OccurrenceTest"))) (kind "package") (name "OccurrenceTest") (declared-name "OccurrenceTest") (range (start (line 0) (character 0)) (end (line 0) (character 515))))
+    (element (id (node (document "d0") (qualified-name "OccurrenceTest::Occ"))) (kind "occurrence def") (name "Occ") (declared-name "Occ") (range (start (line 1) (character 1)) (end (line 1) (character 162))) (parent (node (document "d0") (qualified-name "OccurrenceTest"))))
+    (element (id (node (document "d0") (qualified-name "OccurrenceTest::Occ::a"))) (kind "attribute") (name "a") (declared-name "a") (range (start (line 2) (character 2)) (end (line 2) (character 14))) (parent (node (document "d0") (qualified-name "OccurrenceTest::Occ"))))
+    (element (id (node (document "d0") (qualified-name "OccurrenceTest::Occ::occ2"))) (kind "occurrence") (name "occ2") (declared-name "occ2") (range (start (line 4) (character 13)) (end (line 4) (character 24))) (parent (node (document "d0") (qualified-name "OccurrenceTest::Occ"))) (authored (membership (kind Feature)) (relationships (typing (reference "Occ") (range none)))))
+    (element (id (node (document "d0") (qualified-name "OccurrenceTest::Occ::t"))) (kind "occurrence") (name "t") (declared-name "t") (range (start (line 9) (character 12)) (end (line 9) (character 14))) (parent (node (document "d0") (qualified-name "OccurrenceTest::Occ"))))
+    (element (id (node (document "d0") (qualified-name "OccurrenceTest::Occ::y"))) (kind "part") (name "y") (declared-name "y") (range (start (line 6) (character 2)) (end (line 6) (character 9))) (parent (node (document "d0") (qualified-name "OccurrenceTest::Occ"))) (authored (membership (kind Feature)) (relationships (typing (reference "") (range none)))))
+    (element (id (node (document "d0") (qualified-name "OccurrenceTest::o1"))) (kind "occurrence") (name "o1") (declared-name "o1") (range (start (line 28) (character 12)) (end (line 28) (character 37))) (parent (node (document "d0") (qualified-name "OccurrenceTest"))))
+    (element (id (node (document "d0") (qualified-name "OccurrenceTest::o1::o2"))) (kind "occurrence") (name "o2") (declared-name "o2") (range (start (line 29) (character 14)) (end (line 29) (character 17))) (parent (node (document "d0") (qualified-name "OccurrenceTest::o1"))))
+    (element (id (node (document "d0") (qualified-name "OccurrenceTest::occ"))) (kind "occurrence") (name "occ") (declared-name "occ") (range (start (line 12) (character 12)) (end (line 12) (character 86))) (parent (node (document "d0") (qualified-name "OccurrenceTest"))) (authored (membership (kind Feature)) (relationships (typing (reference "Occ") (range none)))))
+    (element (id (node (document "d0") (qualified-name "OccurrenceTest::occ::o1"))) (kind "occurrence") (name "o1") (declared-name "o1") (range (start (line 13) (character 13)) (end (line 13) (character 22))) (parent (node (document "d0") (qualified-name "OccurrenceTest::occ"))) (authored (membership (kind Feature)) (relationships (typing (reference "Occ") (range none)))))
+    (element (id (node (document "d0") (qualified-name "OccurrenceTest::occ::o2"))) (kind "occurrence") (name "o2") (declared-name "o2") (range (start (line 14) (character 17)) (end (line 14) (character 26))) (parent (node (document "d0") (qualified-name "OccurrenceTest::occ"))) (authored (membership (kind Feature)) (relationships (typing (reference "Occ") (range none)))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "OccurrenceTest::Occ::occ2"))) (kind featureTyping) (ordinal 0)) (authored-target "Occ") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "OccurrenceTest::Occ")))))
+    (reference (id (source (node (document "d0") (qualified-name "OccurrenceTest::Occ::y"))) (kind featureTyping) (ordinal 0)) (authored-target "") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "OccurrenceTest::occ"))) (kind featureTyping) (ordinal 0)) (authored-target "Occ") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "OccurrenceTest::Occ")))))
+    (reference (id (source (node (document "d0") (qualified-name "OccurrenceTest::occ::o1"))) (kind featureTyping) (ordinal 0)) (authored-target "Occ") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "OccurrenceTest::Occ")))))
+    (reference (id (source (node (document "d0") (qualified-name "OccurrenceTest::occ::o2"))) (kind featureTyping) (ordinal 0)) (authored-target "Occ") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "OccurrenceTest::Occ")))))
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "OccurrenceTest::Occ::occ2"))) (to (node (document "d0") (qualified-name "OccurrenceTest::Occ"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "OccurrenceTest::occ"))) (to (node (document "d0") (qualified-name "OccurrenceTest::Occ"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "OccurrenceTest::occ::o1"))) (to (node (document "d0") (qualified-name "OccurrenceTest::Occ"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "OccurrenceTest::occ::o2"))) (to (node (document "d0") (qualified-name "OccurrenceTest::Occ"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "OccurrenceTest::Occ::occ2"))) (target (node (document "d0") (qualified-name "OccurrenceTest::Occ"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "OccurrenceTest::Occ::occ2"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "OccurrenceTest::occ"))) (target (node (document "d0") (qualified-name "OccurrenceTest::Occ"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "OccurrenceTest::occ"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "OccurrenceTest::occ::o1"))) (target (node (document "d0") (qualified-name "OccurrenceTest::Occ"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "OccurrenceTest::occ::o1"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "OccurrenceTest::occ::o2"))) (target (node (document "d0") (qualified-name "OccurrenceTest::Occ"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "OccurrenceTest::occ::o2"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OccurrenceTest::Occ::a"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OccurrenceTest::Occ::occ2"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OccurrenceTest::Occ::t"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OccurrenceTest::Occ::y"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OccurrenceTest::o1"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OccurrenceTest::o1::o2"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OccurrenceTest::occ"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OccurrenceTest::occ::o1"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OccurrenceTest::occ::o2"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/occurrence_test.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 5 2) (end 5 12))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 6 2) (end 6 9))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_occurrence_def_body_element")
-        (source "sysml")
-        (range (start 8 2) (end 8 33))
-      )
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 15 2) (end 15 11))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_package_body_element")
-        (source "sysml")
-        (range (start 18 1) (end 18 68))
-      )
-      (diagnostic
-        (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 18 1) (end 18 68))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

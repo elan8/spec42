@@ -30,6 +30,15 @@ package 'Comment Example' {
 	alias Torque for ISQ::TorqueValue;
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "01_comment_example.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -60,6 +69,14 @@ CloseCurly,EndOfFile,
     (line_comment)
     (alias_member 'Torque' for 'ISQ::TorqueValue')))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package 'Comment Example' {
@@ -88,43 +105,21 @@ package 'Comment Example' {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Comment Example"))) (name "Comment Example") (declared-name "Comment Example")
-      (contains
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Comment Example::Automobile"))) (name "Automobile") (declared-name "Automobile") (declared))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "Comment Example::Car"))) (name "Car") (declared-name "Car"))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "Comment Example::Torque"))) (name "Torque") (declared-name "Torque"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d47ea1b6ed0749eaf1efd2263e2f3e6c13b8809ef82f571ab32980e10d54050f") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Comment Example"))) (kind "package") (name "Comment Example") (declared-name "Comment Example") (range (start (line 0) (character 0)) (end (line 0) (character 566))))
+    (element (id (node (document "d0") (qualified-name "Comment Example::Automobile"))) (kind "part def") (name "Automobile") (declared-name "Automobile") (range (start (line 11) (character 1)) (end (line 11) (character 21))) (parent (node (document "d0") (qualified-name "Comment Example"))))
+    (element (id (node (document "d0") (qualified-name "Comment Example::Car"))) (kind "alias") (name "Car") (declared-name "Car") (range (start (line 13) (character 1)) (end (line 13) (character 100))) (parent (node (document "d0") (qualified-name "Comment Example"))))
+    (element (id (node (document "d0") (qualified-name "Comment Example::Torque"))) (kind "alias") (name "Torque") (declared-name "Torque") (range (start (line 22) (character 1)) (end (line 22) (character 35))) (parent (node (document "d0") (qualified-name "Comment Example"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Comment Example::Automobile"))) (status missing-prerequisite) (target "Parts::Part"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/01_comment_example.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

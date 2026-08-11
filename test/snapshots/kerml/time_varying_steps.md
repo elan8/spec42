@@ -61,6 +61,15 @@ package TimeVaryingSteps {
 
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "time_varying_steps.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -162,6 +171,40 @@ CloseCurly,EndOfFile,
       (step_def
         (feature_def member 'Camera_snapshots' :>> 'Occurrences::Occurrence::snapshots' featured by 'Camera')))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'ControlPerformances::MergePerformance'
+semantic.unresolved_name 'TakePicture_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'TakePicture_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'TakePicture_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'ControlPerformances::DecisionPerformance'
+semantic.unresolved_name 'TakePicture_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'Camera_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'Camera_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'ControlPerformances::MergePerformance'
+semantic.unresolved_name 'TakePicture_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'TakePicture_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'TakePicture_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'ControlPerformances::DecisionPerformance'
+semantic.unresolved_name 'TakePicture_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'Camera_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'Camera_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+~~~
 # FORMAT
 ~~~sysml
 package TimeVaryingSteps {
@@ -220,66 +263,21 @@ package TimeVaryingSteps {
 
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'ControlPerformances::MergePerformance'
-semantic.unresolved_name 'TakePicture_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'TakePicture_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'TakePicture_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'ControlPerformances::DecisionPerformance'
-semantic.unresolved_name 'TakePicture_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'Camera_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'Camera_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'ControlPerformances::MergePerformance'
-semantic.unresolved_name 'TakePicture_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'TakePicture_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'TakePicture_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'ControlPerformances::DecisionPerformance'
-semantic.unresolved_name 'TakePicture_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'Camera_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'Camera_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "TimeVaryingSteps"))) (name "TimeVaryingSteps") (declared-name "TimeVaryingSteps")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingSteps::Camera"))) (name "Camera") (declared-name "Camera"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingSteps::MultiCamera"))) (name "MultiCamera") (declared-name "MultiCamera"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TimeVaryingSteps::TakePicture"))) (name "TakePicture") (declared-name "TakePicture"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "2c417b38449e4627fa10eac882c1d819a27506ffd5e1259b7e1e3ff86c39603c") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "TimeVaryingSteps"))) (kind "package") (name "TimeVaryingSteps") (declared-name "TimeVaryingSteps") (range (start (line 0) (character 0)) (end (line 0) (character 2323))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingSteps::Camera"))) (kind "classifier decl") (name "Camera") (declared-name "Camera") (range (start (line 38) (character 1)) (end (line 38) (character 279))) (parent (node (document "d0") (qualified-name "TimeVaryingSteps"))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingSteps::MultiCamera"))) (kind "classifier decl") (name "MultiCamera") (declared-name "MultiCamera") (range (start (line 46) (character 1)) (end (line 46) (character 285))) (parent (node (document "d0") (qualified-name "TimeVaryingSteps"))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingSteps::TakePicture"))) (kind "kermlDecl") (name "TakePicture") (declared-name "TakePicture") (range (start (line 1) (character 1)) (end (line 1) (character 1724))) (parent (node (document "d0") (qualified-name "TimeVaryingSteps"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/time_varying_steps.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

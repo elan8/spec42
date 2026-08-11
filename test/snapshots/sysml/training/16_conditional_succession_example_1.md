@@ -38,6 +38,45 @@ package 'Conditional Succession Example-1' {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "16_conditional_succession_example_1.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 16 3) (end 16 38))
+      )
+      (diagnostic
+        (severity error)
+        (code "missing_semicolon")
+        (source "sysml")
+        (range (start 20 2) (end 20 64))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 23 27) (end 23 38))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_action_body_element")
+        (source "sysml")
+        (range (start 26 3) (end 26 16))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 27 3) (end 27 43))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -100,6 +139,16 @@ CloseCurly,EndOfFile,
         (item_usage in)
         (item_usage out 'picture' value)))))
 ~~~
+# EXPECTED
+~~~
+semantic.duplicate_name 'shoot'
+semantic.unresolved_name 'ScalarValues::Boolean'
+~~~
+# PROBLEMS
+~~~
+semantic.duplicate_name 'shoot'
+semantic.unresolved_name 'ScalarValues::Boolean'
+~~~
 # FORMAT
 ~~~sysml
 package 'Conditional Succession Example-1' {
@@ -136,130 +185,65 @@ package 'Conditional Succession Example-1' {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.duplicate_name 'shoot'
-semantic.unresolved_name 'ScalarValues::Boolean'
-~~~
-# PROBLEMS
-~~~
-semantic.duplicate_name 'shoot'
-semantic.unresolved_name 'ScalarValues::Boolean'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Conditional Succession Example-1"))) (name "Conditional Succession Example-1") (declared-name "Conditional Succession Example-1")
-      (contains
-        (element (kind "action def") (id (node (document "d0") (qualified-name "Conditional Succession Example-1::Focus"))) (name "Focus") (declared-name "Focus")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Conditional Succession Example-1::Focus::image"))) (name "image") (declared-name "image") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Conditional Succession Example-1::Focus")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Conditional Succession Example-1::Focus::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Conditional Succession Example-1::Focus")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Conditional Succession Example-1::Image"))) (name "Image") (declared-name "Image") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Conditional Succession Example-1::Picture"))) (name "Picture") (declared-name "Picture") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Conditional Succession Example-1::Scene"))) (name "Scene") (declared-name "Scene") (declared))
-        (element (kind "action def") (id (node (document "d0") (qualified-name "Conditional Succession Example-1::Shoot"))) (name "Shoot") (declared-name "Shoot")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Conditional Succession Example-1::Shoot::image"))) (name "image") (declared-name "image") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Conditional Succession Example-1::Shoot")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Conditional Succession Example-1::Shoot::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Conditional Succession Example-1::Shoot")))))
-          )
-        )
-        (element (kind "action def") (id (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture"))) (name "TakePicture") (declared-name "TakePicture")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture")))))
-          )
-        )
-        (element (kind "action") (id (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture"))) (name "takePicture") (declared-name "takePicture") (declared)
-          (contains
-            (element (kind "action") (id (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::focus"))) (name "focus") (declared-name "focus") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture"))))
-              (contains
-                (element (kind "item") (id (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::focus::image"))) (name "image") (declared-name "image") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Conditional Succession Example-1::Focus")))))
-                (element (kind "item") (id (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::focus::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in")) (feature-value (kind bound) (expression (kind "featureReference") (reference "takePicture::scene")))) (effective (featuring-type (node (document "d0") (qualified-name "Conditional Succession Example-1::Focus"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::focus::scene"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-              )
-            )
-            (element (kind "flow") (id (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::from"))) (name "from") (declared-name "from") (effective (featuring-type (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture")))))
-            (element (kind "item") (id (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture")))))
-            (element (kind "item") (id (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture")))))
-            (element (kind "action") (id (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::shoot"))) (name "shoot") (declared-name "shoot") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture"))))
-              (contains
-                (element (kind "item") (id (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::shoot::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out")) (feature-value (kind bound) (expression (kind "featureReference") (reference "takePicture::picture")))) (effective (featuring-type (node (document "d0") (qualified-name "Conditional Succession Example-1::Shoot"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::shoot::picture"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-              )
-            )
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "d1447de42a6052dfaf8671f67231b2317af6690df04137e47c35346efd048fa4") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Conditional Succession Example-1"))) (kind "package") (name "Conditional Succession Example-1") (declared-name "Conditional Succession Example-1") (range (start (line 0) (character 0)) (end (line 0) (character 701))))
+    (element (id (node (document "d0") (qualified-name "Conditional Succession Example-1::Focus"))) (kind "action def") (name "Focus") (declared-name "Focus") (range (start (line 7) (character 1)) (end (line 7) (character 58))) (parent (node (document "d0") (qualified-name "Conditional Succession Example-1"))))
+    (element (id (node (document "d0") (qualified-name "Conditional Succession Example-1::Focus::image"))) (kind "in out parameter") (name "image") (declared-name "image") (range (start (line 7) (character 38)) (end (line 7) (character 56))) (parent (node (document "d0") (qualified-name "Conditional Succession Example-1::Focus"))) (authored (relationships (typing (reference "Image") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Conditional Succession Example-1::Focus::scene"))) (kind "in out parameter") (name "scene") (declared-name "scene") (range (start (line 7) (character 20)) (end (line 7) (character 37))) (parent (node (document "d0") (qualified-name "Conditional Succession Example-1::Focus"))) (authored (relationships (typing (reference "Scene") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Conditional Succession Example-1::Image"))) (kind "part def") (name "Image") (declared-name "Image") (range (start (line 2) (character 1)) (end (line 2) (character 60))) (parent (node (document "d0") (qualified-name "Conditional Succession Example-1"))))
+    (element (id (node (document "d0") (qualified-name "Conditional Succession Example-1::Picture"))) (kind "part def") (name "Picture") (declared-name "Picture") (range (start (line 5) (character 1)) (end (line 5) (character 18))) (parent (node (document "d0") (qualified-name "Conditional Succession Example-1"))))
+    (element (id (node (document "d0") (qualified-name "Conditional Succession Example-1::Scene"))) (kind "part def") (name "Scene") (declared-name "Scene") (range (start (line 1) (character 1)) (end (line 1) (character 16))) (parent (node (document "d0") (qualified-name "Conditional Succession Example-1"))))
+    (element (id (node (document "d0") (qualified-name "Conditional Succession Example-1::Shoot"))) (kind "action def") (name "Shoot") (declared-name "Shoot") (range (start (line 8) (character 1)) (end (line 8) (character 61))) (parent (node (document "d0") (qualified-name "Conditional Succession Example-1"))))
+    (element (id (node (document "d0") (qualified-name "Conditional Succession Example-1::Shoot::image"))) (kind "in out parameter") (name "image") (declared-name "image") (range (start (line 8) (character 20)) (end (line 8) (character 36))) (parent (node (document "d0") (qualified-name "Conditional Succession Example-1::Shoot"))) (authored (relationships (typing (reference "Image") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Conditional Succession Example-1::Shoot::picture"))) (kind "in out parameter") (name "picture") (declared-name "picture") (range (start (line 8) (character 37)) (end (line 8) (character 59))) (parent (node (document "d0") (qualified-name "Conditional Succession Example-1::Shoot"))) (authored (relationships (typing (reference "Picture") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture"))) (kind "action def") (name "TakePicture") (declared-name "TakePicture") (range (start (line 9) (character 1)) (end (line 9) (character 68))) (parent (node (document "d0") (qualified-name "Conditional Succession Example-1"))))
+    (element (id (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture::picture"))) (kind "in out parameter") (name "picture") (declared-name "picture") (range (start (line 9) (character 44)) (end (line 9) (character 66))) (parent (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture"))) (authored (relationships (typing (reference "Picture") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture::scene"))) (kind "in out parameter") (name "scene") (declared-name "scene") (range (start (line 9) (character 26)) (end (line 9) (character 43))) (parent (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture"))) (authored (relationships (typing (reference "Scene") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture"))) (kind "action") (name "takePicture") (declared-name "takePicture") (range (start (line 11) (character 1)) (end (line 11) (character 360))) (parent (node (document "d0") (qualified-name "Conditional Succession Example-1"))) (authored (membership (kind Feature)) (relationships (typing (reference "TakePicture") (range none)) (perform (reference "Conditional Succession Example-1::takePicture::focus") (range none)) (perform (reference "Conditional Succession Example-1::takePicture::shoot") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::focus"))) (kind "action") (name "focus") (declared-name "focus") (range (start (line 15) (character 2)) (end (line 15) (character 87))) (parent (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture"))) (authored (membership (kind Feature)) (relationships (typing (reference "Focus") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::focus::image"))) (kind "item") (name "image") (declared-name "image") (range (start (line 17) (character 3)) (end (line 17) (character 18))) (parent (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::focus"))))
+    (element (id (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::focus::scene"))) (kind "item") (name "scene") (declared-name "scene") (range (start (line 16) (character 3)) (end (line 16) (character 38))) (parent (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::focus"))))
+    (element (id (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::from"))) (kind "flow") (name "from") (declared-name "from") (range (start (line 23) (character 2)) (end (line 23) (character 39))) (parent (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture"))))
+    (element (id (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::picture"))) (kind "item") (name "picture") (declared-name "picture") (range (start (line 13) (character 2)) (end (line 13) (character 19))) (parent (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture"))))
+    (element (id (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::scene"))) (kind "item") (name "scene") (declared-name "scene") (range (start (line 12) (character 2)) (end (line 12) (character 16))) (parent (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture"))))
+    (element (id (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::shoot"))) (kind "action") (name "shoot") (declared-name "shoot") (range (start (line 25) (character 2)) (end (line 25) (character 85))) (parent (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture"))) (authored (membership (kind Feature)) (relationships (typing (reference "Shoot") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::shoot::picture"))) (kind "item") (name "picture") (declared-name "picture") (range (start (line 27) (character 3)) (end (line 27) (character 43))) (parent (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::shoot"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Conditional Succession Example-1::Focus::image"))) (kind featureTyping) (ordinal 0)) (authored-target "Image") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Conditional Succession Example-1::Image")))))
+    (reference (id (source (node (document "d0") (qualified-name "Conditional Succession Example-1::Focus::scene"))) (kind featureTyping) (ordinal 0)) (authored-target "Scene") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Conditional Succession Example-1::Scene")))))
+    (reference (id (source (node (document "d0") (qualified-name "Conditional Succession Example-1::Shoot::image"))) (kind featureTyping) (ordinal 0)) (authored-target "Image") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Conditional Succession Example-1::Image")))))
+    (reference (id (source (node (document "d0") (qualified-name "Conditional Succession Example-1::Shoot::picture"))) (kind featureTyping) (ordinal 0)) (authored-target "Picture") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Conditional Succession Example-1::Picture")))))
+    (reference (id (source (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture::picture"))) (kind featureTyping) (ordinal 0)) (authored-target "Picture") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Conditional Succession Example-1::Picture")))))
+    (reference (id (source (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture::scene"))) (kind featureTyping) (ordinal 0)) (authored-target "Scene") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Conditional Succession Example-1::Scene")))))
+    (reference (id (source (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture"))) (kind featureTyping) (ordinal 0)) (authored-target "TakePicture") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture")))))
+    (reference (id (source (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture"))) (kind flowSource) (ordinal 0)) (authored-target "focus::image") (range (start (line 23) (character 12)) (end (line 23) (character 23))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::focus::image")))))
+    (reference (id (source (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture"))) (kind flowTarget) (ordinal 0)) (authored-target "shoot::image") (range (start (line 23) (character 27)) (end (line 23) (character 38))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture"))) (kind performSource) (ordinal 0)) (authored-target "Conditional Succession Example-1::takePicture::focus") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::focus")))))
+    (reference (id (source (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture"))) (kind performSource) (ordinal 1)) (authored-target "Conditional Succession Example-1::takePicture::shoot") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::shoot")))))
+    (reference (id (source (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::focus"))) (kind featureTyping) (ordinal 0)) (authored-target "Focus") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Conditional Succession Example-1::Focus")))))
+    (reference (id (source (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::shoot"))) (kind featureTyping) (ordinal 0)) (authored-target "Shoot") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Conditional Succession Example-1::Shoot")))))
   )
   (relationships
-    (perform (status resolved) (from (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture"))) (to (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::focus"))) (provenance authored))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture"))) (to (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::shoot"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Conditional Succession Example-1::Focus::image"))) (to (node (document "d0") (qualified-name "Conditional Succession Example-1::Image"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Conditional Succession Example-1::Focus::scene"))) (to (node (document "d0") (qualified-name "Conditional Succession Example-1::Scene"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Conditional Succession Example-1::Shoot::image"))) (to (node (document "d0") (qualified-name "Conditional Succession Example-1::Image"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Conditional Succession Example-1::Shoot::picture"))) (to (node (document "d0") (qualified-name "Conditional Succession Example-1::Picture"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture::picture"))) (to (node (document "d0") (qualified-name "Conditional Succession Example-1::Picture"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture::scene"))) (to (node (document "d0") (qualified-name "Conditional Succession Example-1::Scene"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture"))) (to (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::focus"))) (to (node (document "d0") (qualified-name "Conditional Succession Example-1::Focus"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::shoot"))) (to (node (document "d0") (qualified-name "Conditional Succession Example-1::Shoot"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Conditional Succession Example-1::Focus::image"))) (target (node (document "d0") (qualified-name "Conditional Succession Example-1::Image"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Conditional Succession Example-1::Focus::image"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Conditional Succession Example-1::Focus::scene"))) (target (node (document "d0") (qualified-name "Conditional Succession Example-1::Scene"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Conditional Succession Example-1::Focus::scene"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Conditional Succession Example-1::Shoot::image"))) (target (node (document "d0") (qualified-name "Conditional Succession Example-1::Image"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Conditional Succession Example-1::Shoot::image"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Conditional Succession Example-1::Shoot::picture"))) (target (node (document "d0") (qualified-name "Conditional Succession Example-1::Picture"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Conditional Succession Example-1::Shoot::picture"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture::picture"))) (target (node (document "d0") (qualified-name "Conditional Succession Example-1::Picture"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture::picture"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture::scene"))) (target (node (document "d0") (qualified-name "Conditional Succession Example-1::Scene"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture::scene"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture"))) (target (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture"))) (target (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::focus"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture"))) (kind performSource) (ordinal 0)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture"))) (target (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::shoot"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture"))) (kind performSource) (ordinal 1)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::focus"))) (target (node (document "d0") (qualified-name "Conditional Succession Example-1::Focus"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::focus"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::shoot"))) (target (node (document "d0") (qualified-name "Conditional Succession Example-1::Shoot"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::shoot"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Conditional Succession Example-1::Focus"))) (status missing-prerequisite) (target "Actions::Action"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Conditional Succession Example-1::Image"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Conditional Succession Example-1::Picture"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Conditional Succession Example-1::Scene"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Conditional Succession Example-1::Shoot"))) (status missing-prerequisite) (target "Actions::Action"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Conditional Succession Example-1::TakePicture"))) (status missing-prerequisite) (target "Actions::Action"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::focus"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::focus::image"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::focus::scene"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::from"))) (status missing-prerequisite) (target "Flows::messages"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::picture"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::scene"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::shoot"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::shoot::picture"))) (status missing-prerequisite) (target "Items::items"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/16_conditional_succession_example_1.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 16 3) (end 16 38))
-      )
-      (diagnostic
-        (severity error)
-        (code "missing_semicolon")
-        (source "sysml")
-        (range (start 20 2) (end 20 64))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_action_body_element")
-        (source "sysml")
-        (range (start 26 3) (end 26 16))
-      )
-      (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 27 3) (end 27 43))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::focus::scene")) (expression (status "unresolved") (error "expression has an unresolved reference")))
+    (node (node (document "d0") (qualified-name "Conditional Succession Example-1::takePicture::shoot::picture")) (expression (status "unresolved") (error "expression has an unresolved reference")))
   )
 )
 ~~~

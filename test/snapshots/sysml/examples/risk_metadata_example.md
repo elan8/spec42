@@ -25,6 +25,45 @@ package RiskMetadataExample {
         
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "risk_metadata_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 29))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 6 12) (end 6 29))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 7 12) (end 7 35))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 8 12) (end 8 34))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -61,6 +100,18 @@ CloseCurly,EndOfFile,
           (feature_def 'probability' value)
           (feature_def 'impact' value))))))
 ~~~
+# EXPECTED
+~~~
+semantic.duplicate_name 'totalRisk'
+semantic.unresolved_name 'Risk'
+semantic.unresolved_name 'Risk'
+~~~
+# PROBLEMS
+~~~
+semantic.duplicate_name 'totalRisk'
+semantic.unresolved_name 'Risk'
+semantic.unresolved_name 'Risk'
+~~~
 # FORMAT
 ~~~sysml
 package RiskMetadataExample {
@@ -84,89 +135,28 @@ package RiskMetadataExample {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.duplicate_name 'totalRisk'
-semantic.unresolved_name 'Risk'
-semantic.unresolved_name 'Risk'
-~~~
-# PROBLEMS
-~~~
-semantic.duplicate_name 'totalRisk'
-semantic.unresolved_name 'Risk'
-semantic.unresolved_name 'Risk'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "RiskMetadataExample"))) (name "RiskMetadataExample") (declared-name "RiskMetadataExample")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "RiskMetadataExample::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "RiskMetadataExample::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl"))) (name "engine4cyl") (declared-name "engine4cyl") (declared (properties (ordered false)))
-          (contains
-            (element (kind "metadata usage") (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk"))) (name "Risk") (declared-name "Risk")
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk::scheduleRisk"))) (name "scheduleRisk") (declared-name "scheduleRisk") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk::technicalRisk"))) (name "technicalRisk") (declared-name "technicalRisk") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk::totalRisk"))) (name "totalRisk") (declared-name "totalRisk") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
-              )
-            )
-            (element (kind "metadata usage") (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk#metadata_usage"))) (name "Risk") (declared-name "Risk"))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "53489f089dba22f94cf2e98a2224e454365520a735c2ae88e9fdf6c0844a7d9d") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "RiskMetadataExample"))) (kind "package") (name "RiskMetadataExample") (declared-name "RiskMetadataExample") (range (start (line 0) (character 0)) (end (line 0) (character 384))))
+    (element (id (node (document "d0") (qualified-name "RiskMetadataExample::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "RiskMetadataExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "RiskMetadata::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "RiskMetadataExample::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 33))) (parent (node (document "d0") (qualified-name "RiskMetadataExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "RiskLevelEnum::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 29))))))
+    (element (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl"))) (kind "part") (name "engine4cyl") (declared-name "engine4cyl") (range (start (line 4) (character 4)) (end (line 4) (character 274))) (parent (node (document "d0") (qualified-name "RiskMetadataExample"))))
+    (element (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk"))) (kind "metadata usage") (name "Risk") (declared-name "Risk") (range (start (line 5) (character 8)) (end (line 5) (character 126))) (parent (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl"))))
+    (element (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk#metadata_usage"))) (kind "metadata usage") (name "Risk") (declared-name "Risk") (range (start (line 10) (character 8)) (end (line 10) (character 120))) (parent (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl"))))
+    (element (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk::scheduleRisk"))) (kind "attribute") (name "scheduleRisk") (declared-name "scheduleRisk") (range (start (line 8) (character 12)) (end (line 8) (character 34))) (parent (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk"))))
+    (element (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk::technicalRisk"))) (kind "attribute") (name "technicalRisk") (declared-name "technicalRisk") (range (start (line 7) (character 12)) (end (line 7) (character 35))) (parent (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk"))))
+    (element (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk::totalRisk"))) (kind "attribute") (name "totalRisk") (declared-name "totalRisk") (range (start (line 6) (character 12)) (end (line 6) (character 29))) (parent (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "RiskMetadataExample::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "RiskMetadata::*") (range (start (line 1) (character 16)) (end (line 1) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "RiskMetadataExample::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "RiskLevelEnum::*") (range (start (line 2) (character 16)) (end (line 2) (character 29))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk"))) (to (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk#metadata_usage"))) (to (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk#metadata_usage"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk::scheduleRisk"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk::technicalRisk"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk::totalRisk"))) (status missing-prerequisite) (target "Base::dataValues"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/risk_metadata_example.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 16) (end 2 29))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_annotation_unresolved")
-        (source "semantic")
-        (range (start 5 8) (end 5 126))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_annotation_unresolved")
-        (source "semantic")
-        (range (start 10 8) (end 10 120))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

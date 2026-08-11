@@ -20,57 +20,6 @@ er E specializes C intersects A, B;
 	classifier F union^ A unions B;
 }
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-MalformedMultilineNote,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'ers'
-    (malformed)))
-~~~
-# FORMAT
-~~~sysml
-package ers {
-	//*>> baseTyclassifier A;,	classifier B;
-
-	specializaaaaaaaaaaaaaaaaaaaaaaaaaaA specializes B;
-	specialization swbclassifier B :> A;
-
-	Uubclassifier C s cializes A;
-	subclassifier C speciaer D disjoint fr_m C differecializes A, B;
-		caassifier D disjoint fr_m C differences A, B;
-	cla[sifie Conjugation {
-er E specializes C intersects A, B;
-	classifier F union^ A unions B;
-}
-~~~
-# EXPECTED
-~~~
-tokenize.UnclosedMultilineNote
-parse.expected_close_curly
-~~~
-# PROBLEMS
-~~~
-tokenize.UnclosedMultilineNote
-parse.expected_close_curly
-~~~
-# SMG
-~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ers"))) (name "ers") (declared-name "ers"))
-  )
-  (relationships
-  )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
@@ -89,6 +38,58 @@ parse.expected_close_curly
         (range (start 12 1) (end 12 2))
       )
     )
+  )
+)
+~~~
+# TOKENS
+~~~zig
+KwPackage,Ident,OpenCurly,
+MalformedMultilineNote,EndOfFile,
+~~~
+# AST
+~~~
+(root
+  (package_def 'ers'
+    (malformed)))
+~~~
+# EXPECTED
+~~~
+tokenize.UnclosedMultilineNote
+parse.expected_close_curly
+~~~
+# PROBLEMS
+~~~
+tokenize.UnclosedMultilineNote
+parse.expected_close_curly
+~~~
+# FORMAT
+~~~sysml
+package ers {
+	//*>> baseTyclassifier A;,	classifier B;
+
+	specializaaaaaaaaaaaaaaaaaaaaaaaaaaA specializes B;
+	specialization swbclassifier B :> A;
+
+	Uubclassifier C s cializes A;
+	subclassifier C speciaer D disjoint fr_m C differecializes A, B;
+		caassifier D disjoint fr_m C differences A, B;
+	cla[sifie Conjugation {
+er E specializes C intersects A, B;
+	classifier F union^ A unions B;
+}
+~~~
+# SMG
+~~~
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "056fd865fc7716e800642260a4493a0ca926d35f9fbc552e18abdf81c548acfe") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ers"))) (kind "package") (name "ers") (declared-name "ers") (range (start (line 0) (character 0)) (end (line 0) (character 390))))
+  )
+  (references
+  )
+  (relationships
+  )
+  (evaluation
   )
 )
 ~~~

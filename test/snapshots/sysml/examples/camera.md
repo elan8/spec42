@@ -20,6 +20,33 @@ part def Camera {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "camera.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_part_def_body_element")
+        (source "sysml")
+        (range (start 3 1) (end 3 65))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 5 1) (end 5 57))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 9 1) (end 9 56))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPart,KwDef,Ident,OpenCurly,
@@ -44,6 +71,18 @@ CloseCurly,EndOfFile,
     (part_usage 'imagingSubsystem'
       (perform_action :>> 'takePicture.shoot'))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'PictureTaking::takePicture'
+semantic.unresolved_name 'takePicture::focus'
+semantic.unresolved_name 'takePicture::shoot'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'PictureTaking::takePicture'
+semantic.unresolved_name 'takePicture::focus'
+semantic.unresolved_name 'takePicture::shoot'
+~~~
 # FORMAT
 ~~~sysml
 part def Camera {
@@ -62,78 +101,24 @@ part def Camera {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'PictureTaking::takePicture'
-semantic.unresolved_name 'takePicture::focus'
-semantic.unresolved_name 'takePicture::shoot'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'PictureTaking::takePicture'
-semantic.unresolved_name 'takePicture::focus'
-semantic.unresolved_name 'takePicture::shoot'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "part def") (id (node (document "d0") (qualified-name "Camera"))) (name "Camera") (declared-name "Camera") (declared)
-      (contains
-        (element (kind "part") (id (node (document "d0") (qualified-name "Camera::focusingSubsystem"))) (name "focusingSubsystem") (declared-name "focusingSubsystem") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Camera"))))
-          (contains
-            (element (kind "action") (id (node (document "d0") (qualified-name "Camera::focusingSubsystem::takePicture.focus"))) (name "takePicture.focus") (declared-name "takePicture.focus") (effective (featuring-type (node (document "d0") (qualified-name "Camera")))))
-          )
-        )
-        (element (kind "part") (id (node (document "d0") (qualified-name "Camera::imagingSubsystem"))) (name "imagingSubsystem") (declared-name "imagingSubsystem") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Camera"))))
-          (contains
-            (element (kind "action") (id (node (document "d0") (qualified-name "Camera::imagingSubsystem::takePicture.shoot"))) (name "takePicture.shoot") (declared-name "takePicture.shoot") (effective (featuring-type (node (document "d0") (qualified-name "Camera")))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "e94283c71b107d765f4afca3b02bd0a4c3591be8b4ccce27ce318ebf4bdd5206") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Camera"))) (kind "part def") (name "Camera") (declared-name "Camera") (range (start (line 0) (character 0)) (end (line 0) (character 238))))
+    (element (id (node (document "d0") (qualified-name "Camera::focusingSubsystem"))) (kind "part") (name "focusingSubsystem") (declared-name "focusingSubsystem") (range (start (line 5) (character 1)) (end (line 5) (character 57))) (parent (node (document "d0") (qualified-name "Camera"))) (authored (membership (kind Feature)) (relationships (perform (reference "Camera::focusingSubsystem::takePicture::focus") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Camera::focusingSubsystem::takePicture.focus"))) (kind "action") (name "takePicture.focus") (declared-name "takePicture.focus") (range (start (line 6) (character 2)) (end (line 6) (character 28))) (parent (node (document "d0") (qualified-name "Camera::focusingSubsystem"))))
+    (element (id (node (document "d0") (qualified-name "Camera::imagingSubsystem"))) (kind "part") (name "imagingSubsystem") (declared-name "imagingSubsystem") (range (start (line 9) (character 1)) (end (line 9) (character 56))) (parent (node (document "d0") (qualified-name "Camera"))) (authored (membership (kind Feature)) (relationships (perform (reference "Camera::imagingSubsystem::takePicture::shoot") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Camera::imagingSubsystem::takePicture.shoot"))) (kind "action") (name "takePicture.shoot") (declared-name "takePicture.shoot") (range (start (line 10) (character 2)) (end (line 10) (character 28))) (parent (node (document "d0") (qualified-name "Camera::imagingSubsystem"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Camera::focusingSubsystem"))) (kind performSource) (ordinal 0)) (authored-target "Camera::focusingSubsystem::takePicture::focus") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Camera::imagingSubsystem"))) (kind performSource) (ordinal 0)) (authored-target "Camera::imagingSubsystem::takePicture::shoot") (range none) (outcome (status unresolved)))
   )
   (relationships
   )
-  (pending-relationships
-    (perform (status pending) (document "d0") (source-qualified "Camera::focusingSubsystem") (target-qualified "Camera::focusingSubsystem::takePicture::focus"))
-    (perform (status pending) (document "d0") (source-qualified "Camera::imagingSubsystem") (target-qualified "Camera::imagingSubsystem::takePicture::shoot"))
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Camera"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Camera::focusingSubsystem"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Camera::focusingSubsystem::takePicture.focus"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Camera::imagingSubsystem"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Camera::imagingSubsystem::takePicture.shoot"))) (status missing-prerequisite) (target "Actions::actions"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/camera.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_relationship")
-        (source "semantic")
-        (range (start 0 0) (end 0 0))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_relationship")
-        (source "semantic")
-        (range (start 0 0) (end 0 0))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_part_def_body_element")
-        (source "sysml")
-        (range (start 3 1) (end 3 65))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

@@ -86,91 +86,44 @@ standard library package BaseFunctions {
 	
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Positive'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Object'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Metaobject'
-semantic.unresolved_name 'Metaobject'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Metaobject'
-semantic.unresolved_name 'Metaobject'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Positive'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Object'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Metaobject'
-semantic.unresolved_name 'Metaobject'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Metaobject'
-semantic.unresolved_name 'Metaobject'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "base_functions.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 16) (end 8 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 16) (end 9 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 16) (end 10 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 11 16) (end 11 28))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -305,6 +258,92 @@ CloseCurly,EndOfFile,
       (feature_def in 'seq' : 'Metaobject' multiplicity ordered nonunique)
       (return_member))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Positive'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Object'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Metaobject'
+semantic.unresolved_name 'Metaobject'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Metaobject'
+semantic.unresolved_name 'Metaobject'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Positive'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Object'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Metaobject'
+semantic.unresolved_name 'Metaobject'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Metaobject'
+semantic.unresolved_name 'Metaobject'
+~~~
 # FORMAT
 ~~~sysml
 standard library package BaseFunctions {
@@ -390,85 +429,42 @@ standard library package BaseFunctions {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "BaseFunctions"))) (name "BaseFunctions") (declared-name "BaseFunctions")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "BaseFunctions::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "BaseFunctions::Anything"))) (name "Anything") (declared-name "Anything"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "BaseFunctions::Metaclass"))) (name "Metaclass") (declared-name "Metaclass"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "BaseFunctions::Metaobject"))) (name "Metaobject") (declared-name "Metaobject"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "BaseFunctions::Object"))) (name "Object") (declared-name "Object"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::ToString"))) (name "ToString") (declared-name "ToString"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "BaseFunctions::_documentation"))) (name ""))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in"))) (name "in") (declared-name "in"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl"))) (name "in") (declared-name "in"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl10"))) (name "in") (declared-name "in"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl11"))) (name "in") (declared-name "in"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl12"))) (name "in") (declared-name "in"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl2"))) (name "in") (declared-name "in"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl3"))) (name "in") (declared-name "in"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl4"))) (name "in") (declared-name "in"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl5"))) (name "in") (declared-name "in"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl6"))) (name "in") (declared-name "in"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl7"))) (name "in") (declared-name "in"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl8"))) (name "in") (declared-name "in"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl9"))) (name "in") (declared-name "in"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::return"))) (name "return") (declared-name "return"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "58641288fa5434c29e29d198594308c05b97e862e679955a4accdf8c50142ad5") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "BaseFunctions"))) (kind "package") (name "BaseFunctions") (declared-name "BaseFunctions") (range (start (line 0) (character 0)) (end (line 0) (character 2044))))
+    (element (id (node (document "d0") (qualified-name "BaseFunctions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 11) (character 1)) (end (line 11) (character 32))) (parent (node (document "d0") (qualified-name "BaseFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 11) (character 16)) (end (line 11) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "BaseFunctions::Anything"))) (kind "import") (name "Anything") (declared-name "Anything") (range (start (line 7) (character 1)) (end (line 7) (character 31))) (parent (node (document "d0") (qualified-name "BaseFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::Anything") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 30))))))
+    (element (id (node (document "d0") (qualified-name "BaseFunctions::Metaclass"))) (kind "import") (name "Metaclass") (declared-name "Metaclass") (range (start (line 10) (character 1)) (end (line 10) (character 33))) (parent (node (document "d0") (qualified-name "BaseFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "KerML::Metaclass") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 10) (character 16)) (end (line 10) (character 32))))))
+    (element (id (node (document "d0") (qualified-name "BaseFunctions::Metaobject"))) (kind "import") (name "Metaobject") (declared-name "Metaobject") (range (start (line 9) (character 1)) (end (line 9) (character 40))) (parent (node (document "d0") (qualified-name "BaseFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "Metaobjects::Metaobject") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 9) (character 16)) (end (line 9) (character 39))))))
+    (element (id (node (document "d0") (qualified-name "BaseFunctions::Object"))) (kind "import") (name "Object") (declared-name "Object") (range (start (line 8) (character 1)) (end (line 8) (character 32))) (parent (node (document "d0") (qualified-name "BaseFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "Objects::Object") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 31))))))
+    (element (id (node (document "d0") (qualified-name "BaseFunctions::ToString"))) (kind "kermlDecl") (name "ToString") (declared-name "ToString") (range (start (line 27) (character 1)) (end (line 27) (character 73))) (parent (node (document "d0") (qualified-name "BaseFunctions"))))
+    (element (id (node (document "d0") (qualified-name "BaseFunctions::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 2044))) (parent (node (document "d0") (qualified-name "BaseFunctions"))))
+    (element (id (node (document "d0") (qualified-name "BaseFunctions::in"))) (kind "kermlDecl") (name "in") (declared-name "in") (range (start (line 13) (character 1)) (end (line 13) (character 95))) (parent (node (document "d0") (qualified-name "BaseFunctions"))))
+    (element (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl"))) (kind "kermlDecl") (name "in") (declared-name "in") (range (start (line 16) (character 1)) (end (line 16) (character 101))) (parent (node (document "d0") (qualified-name "BaseFunctions"))))
+    (element (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl10"))) (kind "kermlDecl") (name "in") (declared-name "in") (range (start (line 63) (character 1)) (end (line 63) (character 104))) (parent (node (document "d0") (qualified-name "BaseFunctions"))))
+    (element (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl11"))) (kind "kermlDecl") (name "in") (declared-name "in") (range (start (line 69) (character 1)) (end (line 69) (character 118))) (parent (node (document "d0") (qualified-name "BaseFunctions"))))
+    (element (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl12"))) (kind "kermlDecl") (name "in") (declared-name "in") (range (start (line 74) (character 1)) (end (line 74) (character 124))) (parent (node (document "d0") (qualified-name "BaseFunctions"))))
+    (element (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl2"))) (kind "kermlDecl") (name "in") (declared-name "in") (range (start (line 20) (character 1)) (end (line 20) (character 96))) (parent (node (document "d0") (qualified-name "BaseFunctions"))))
+    (element (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl3"))) (kind "kermlDecl") (name "in") (declared-name "in") (range (start (line 23) (character 1)) (end (line 23) (character 103))) (parent (node (document "d0") (qualified-name "BaseFunctions"))))
+    (element (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl4"))) (kind "kermlDecl") (name "in") (declared-name "in") (range (start (line 31) (character 1)) (end (line 31) (character 128))) (parent (node (document "d0") (qualified-name "BaseFunctions"))))
+    (element (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl5"))) (kind "kermlDecl") (name "in") (declared-name "in") (range (start (line 34) (character 1)) (end (line 34) (character 140))) (parent (node (document "d0") (qualified-name "BaseFunctions"))))
+    (element (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl6"))) (kind "kermlDecl") (name "in") (declared-name "in") (range (start (line 37) (character 1)) (end (line 37) (character 158))) (parent (node (document "d0") (qualified-name "BaseFunctions"))))
+    (element (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl7"))) (kind "kermlDecl") (name "in") (declared-name "in") (range (start (line 45) (character 1)) (end (line 45) (character 104))) (parent (node (document "d0") (qualified-name "BaseFunctions"))))
+    (element (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl8"))) (kind "kermlDecl") (name "in") (declared-name "in") (range (start (line 51) (character 1)) (end (line 51) (character 102))) (parent (node (document "d0") (qualified-name "BaseFunctions"))))
+    (element (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl9"))) (kind "kermlDecl") (name "in") (declared-name "in") (range (start (line 57) (character 1)) (end (line 57) (character 99))) (parent (node (document "d0") (qualified-name "BaseFunctions"))))
+    (element (id (node (document "d0") (qualified-name "BaseFunctions::return"))) (kind "kermlDecl") (name "return") (declared-name "return") (range (start (line 41) (character 4)) (end (line 41) (character 63))) (parent (node (document "d0") (qualified-name "BaseFunctions"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "BaseFunctions::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (range (start (line 11) (character 16)) (end (line 11) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "BaseFunctions::Anything"))) (kind membershipImport) (ordinal 0)) (authored-target "Base::Anything") (range (start (line 7) (character 16)) (end (line 7) (character 30))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "BaseFunctions::Metaclass"))) (kind membershipImport) (ordinal 0)) (authored-target "KerML::Metaclass") (range (start (line 10) (character 16)) (end (line 10) (character 32))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "BaseFunctions::Metaobject"))) (kind membershipImport) (ordinal 0)) (authored-target "Metaobjects::Metaobject") (range (start (line 9) (character 16)) (end (line 9) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "BaseFunctions::Object"))) (kind membershipImport) (ordinal 0)) (authored-target "Objects::Object") (range (start (line 8) (character 16)) (end (line 8) (character 31))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "BaseFunctions::_documentation"))) (to (node (document "d0") (qualified-name "BaseFunctions"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/base_functions.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 16) (end 7 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 16) (end 8 31))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 9 16) (end 9 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 10 16) (end 10 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 11 16) (end 11 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 16 1) (end 16 101))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

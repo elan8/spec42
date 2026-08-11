@@ -31,41 +31,20 @@ package RelationshipCoverage {
     type DiffType differences A, B;
 }
 ~~~
-# EXPECTED
-~~~
-parse.expected_specialization_or_body
-parse.expected_specialization_or_body
-parse.expected_specialization_or_body
-parse.expected_specialization_or_body
-parse.expected_general_type
-parse.expected_specialization_or_body
-parse.expected_specialization_or_body
-parse.expected_specialization_or_body
-semantic.ambiguous_member 'malformed'
-semantic.ambiguous_member 'malformed'
-semantic.ambiguous_member 'malformed'
-semantic.ambiguous_member 'malformed'
-semantic.ambiguous_member 'malformed'
-semantic.ambiguous_member 'malformed'
-semantic.ambiguous_member 'malformed'
-~~~
-# PROBLEMS
-~~~
-parse.expected_specialization_or_body
-parse.expected_specialization_or_body
-parse.expected_specialization_or_body
-parse.expected_specialization_or_body
-parse.expected_general_type
-parse.expected_specialization_or_body
-parse.expected_specialization_or_body
-parse.expected_specialization_or_body
-semantic.ambiguous_member 'malformed'
-semantic.ambiguous_member 'malformed'
-semantic.ambiguous_member 'malformed'
-semantic.ambiguous_member 'malformed'
-semantic.ambiguous_member 'malformed'
-semantic.ambiguous_member 'malformed'
-semantic.ambiguous_member 'malformed'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "coverage_relationships.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 1 4) (end 1 435))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -114,6 +93,42 @@ CloseCurly,EndOfFile,
     (malformed)
     (malformed)))
 ~~~
+# EXPECTED
+~~~
+parse.expected_specialization_or_body
+parse.expected_specialization_or_body
+parse.expected_specialization_or_body
+parse.expected_specialization_or_body
+parse.expected_general_type
+parse.expected_specialization_or_body
+parse.expected_specialization_or_body
+parse.expected_specialization_or_body
+semantic.ambiguous_member 'malformed'
+semantic.ambiguous_member 'malformed'
+semantic.ambiguous_member 'malformed'
+semantic.ambiguous_member 'malformed'
+semantic.ambiguous_member 'malformed'
+semantic.ambiguous_member 'malformed'
+semantic.ambiguous_member 'malformed'
+~~~
+# PROBLEMS
+~~~
+parse.expected_specialization_or_body
+parse.expected_specialization_or_body
+parse.expected_specialization_or_body
+parse.expected_specialization_or_body
+parse.expected_general_type
+parse.expected_specialization_or_body
+parse.expected_specialization_or_body
+parse.expected_specialization_or_body
+semantic.ambiguous_member 'malformed'
+semantic.ambiguous_member 'malformed'
+semantic.ambiguous_member 'malformed'
+semantic.ambiguous_member 'malformed'
+semantic.ambiguous_member 'malformed'
+semantic.ambiguous_member 'malformed'
+semantic.ambiguous_member 'malformed'
+~~~
 # FORMAT
 ~~~sysml
 package RelationshipCoverage {
@@ -145,30 +160,16 @@ package RelationshipCoverage {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "RelationshipCoverage"))) (name "RelationshipCoverage") (declared-name "RelationshipCoverage"))
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "8275809ebc1db3e14434ecee14187cb0d1d8872f6804ad211f5a9f45772f20c6") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "RelationshipCoverage"))) (kind "package") (name "RelationshipCoverage") (declared-name "RelationshipCoverage") (range (start (line 0) (character 0)) (end (line 0) (character 467))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/coverage_relationships.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 1 4) (end 1 435))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

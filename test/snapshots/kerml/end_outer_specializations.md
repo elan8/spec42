@@ -25,6 +25,46 @@ assoc JustOutsideOf specializes OutsideOf {
 	end feature redefines separateSpace: Occurrence crosses separateSpaceToo.justOutsideOfOccurrences;
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "end_outer_specializations.md"
+    (diagnostics
+    )
+  )
+)
+~~~
+# TOKENS
+~~~zig
+KwAssoc,Ident,KwSpecializes,Ident,OpenCurly,
+KwEnd,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,KwCrosses,Ident,Dot,Ident,Semicolon,
+KwEnd,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,KwSubsets,Ident,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,Semicolon,
+CloseCurly,
+KwAssoc,Ident,KwSpecializes,Ident,OpenCurly,
+KwEnd,Ident,KwSubsets,Ident,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,Semicolon,
+CloseCurly,
+KwAssoc,Ident,KwSpecializes,Ident,OpenCurly,
+KwEnd,Ident,KwSubsets,Ident,KwFeature,Ident,KwRedefines,Ident,Semicolon,
+CloseCurly,
+KwAssoc,Ident,KwSpecializes,Ident,OpenCurly,
+KwEnd,KwFeature,KwRedefines,Ident,Colon,Ident,KwCrosses,Ident,Dot,Ident,Semicolon,
+KwEnd,KwFeature,KwRedefines,Ident,Colon,Ident,KwCrosses,Ident,Dot,Ident,Semicolon,
+CloseCurly,EndOfFile,
+~~~
+# AST
+~~~
+(root
+  (association_def 'HappensDuring' :> 'HappensLink'
+    (feature_def end 'shorterOccurrence' : 'Occurrence' :>> 'sourceOccurrence' crosses 'longerOccurrence.timeEnclosedOccurrences')
+    (feature_def end 'thatOccurrence' multiplicity :> 'timeCoincidentOccurrences' : 'Occurrence' :>> 'longerOccurrence'))
+  (association_def 'PortionOf' :> 'Within'
+    (feature_def end 'portionedOccurrence' :> 'portionOf' : 'Occurrence' :>> 'largerOccurrence'))
+  (association_def 'WithinBoth' :> 'Within'
+    (feature_def end 'thatOccurrence' :> 'spaceTimeCoincidentOccurrences' :>> 'largerOccurrence'))
+  (association_def 'JustOutsideOf' :> 'OutsideOf'
+    (feature_def end :>> 'separateSpaceToo' : 'Occurrence' crosses 'separateSpace.justOutsideOfOccurrences')
+    (feature_def end :>> 'separateSpace' : 'Occurrence' crosses 'separateSpaceToo.justOutsideOfOccurrences')))
+~~~
 # EXPECTED
 ~~~
 semantic.unresolved_name 'HappensLink'
@@ -73,37 +113,6 @@ semantic.unresolved_name 'separateSpace'
 semantic.unresolved_name 'Occurrence'
 semantic.unresolved_name 'separateSpaceToo::justOutsideOfOccurrences'
 ~~~
-# TOKENS
-~~~zig
-KwAssoc,Ident,KwSpecializes,Ident,OpenCurly,
-KwEnd,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,KwCrosses,Ident,Dot,Ident,Semicolon,
-KwEnd,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,KwSubsets,Ident,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,Semicolon,
-CloseCurly,
-KwAssoc,Ident,KwSpecializes,Ident,OpenCurly,
-KwEnd,Ident,KwSubsets,Ident,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,Semicolon,
-CloseCurly,
-KwAssoc,Ident,KwSpecializes,Ident,OpenCurly,
-KwEnd,Ident,KwSubsets,Ident,KwFeature,Ident,KwRedefines,Ident,Semicolon,
-CloseCurly,
-KwAssoc,Ident,KwSpecializes,Ident,OpenCurly,
-KwEnd,KwFeature,KwRedefines,Ident,Colon,Ident,KwCrosses,Ident,Dot,Ident,Semicolon,
-KwEnd,KwFeature,KwRedefines,Ident,Colon,Ident,KwCrosses,Ident,Dot,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (association_def 'HappensDuring' :> 'HappensLink'
-    (feature_def end 'shorterOccurrence' : 'Occurrence' :>> 'sourceOccurrence' crosses 'longerOccurrence.timeEnclosedOccurrences')
-    (feature_def end 'thatOccurrence' multiplicity :> 'timeCoincidentOccurrences' : 'Occurrence' :>> 'longerOccurrence'))
-  (association_def 'PortionOf' :> 'Within'
-    (feature_def end 'portionedOccurrence' :> 'portionOf' : 'Occurrence' :>> 'largerOccurrence'))
-  (association_def 'WithinBoth' :> 'Within'
-    (feature_def end 'thatOccurrence' :> 'spaceTimeCoincidentOccurrences' :>> 'largerOccurrence'))
-  (association_def 'JustOutsideOf' :> 'OutsideOf'
-    (feature_def end :>> 'separateSpaceToo' : 'Occurrence' crosses 'separateSpace.justOutsideOfOccurrences')
-    (feature_def end :>> 'separateSpace' : 'Occurrence' crosses 'separateSpaceToo.justOutsideOfOccurrences')))
-~~~
 # FORMAT
 ~~~sysml
 assoc HappensDuring specializes HappensLink {
@@ -126,23 +135,15 @@ assoc JustOutsideOf specializes OutsideOf {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c744cd17606555e8ead1c5da13a4b310d1ef10dcfed432f70326aef217342383") (contract-version "canonical-resolution-v1"))
+  (structure
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/end_outer_specializations.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

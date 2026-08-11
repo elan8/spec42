@@ -13,13 +13,14 @@ package AssignTest {
     }
 }
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "assign_seq_index.md"
+    (diagnostics
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -40,6 +41,14 @@ CloseCurly,EndOfFile,
       (assign_node)
       (assign_node))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package AssignTest {
@@ -53,40 +62,20 @@ package AssignTest {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "AssignTest"))) (name "AssignTest") (declared-name "AssignTest")
-      (contains
-        (element (kind "action def") (id (node (document "d0") (qualified-name "AssignTest::A"))) (name "A") (declared-name "A")
-          (contains
-            (element (kind "assign") (id (node (document "d0") (qualified-name "AssignTest::A::_assign"))) (name "assign") (declared-name "assign") (effective (featuring-type (node (document "d0") (qualified-name "AssignTest::A")))))
-            (element (kind "assign") (id (node (document "d0") (qualified-name "AssignTest::A::_assign#assign"))) (name "assign") (declared-name "assign") (effective (featuring-type (node (document "d0") (qualified-name "AssignTest::A")))))
-            (element (kind "assign") (id (node (document "d0") (qualified-name "AssignTest::A::_assign#assign2"))) (name "assign") (declared-name "assign") (effective (featuring-type (node (document "d0") (qualified-name "AssignTest::A")))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "58c846cf54d5a5fbeba75b27a9ba720181c326f7e319b4a12f5bd536eb32cde0") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "AssignTest"))) (kind "package") (name "AssignTest") (declared-name "AssignTest") (range (start (line 0) (character 0)) (end (line 0) (character 145))))
+    (element (id (node (document "d0") (qualified-name "AssignTest::A"))) (kind "action def") (name "A") (declared-name "A") (range (start (line 1) (character 4)) (end (line 1) (character 122))) (parent (node (document "d0") (qualified-name "AssignTest"))))
+    (element (id (node (document "d0") (qualified-name "AssignTest::A::_assign"))) (kind "assign") (name "assign") (declared-name "assign") (range (start (line 2) (character 8)) (end (line 2) (character 28))) (parent (node (document "d0") (qualified-name "AssignTest::A"))))
+    (element (id (node (document "d0") (qualified-name "AssignTest::A::_assign#assign"))) (kind "assign") (name "assign") (declared-name "assign") (range (start (line 3) (character 8)) (end (line 3) (character 35))) (parent (node (document "d0") (qualified-name "AssignTest::A"))))
+    (element (id (node (document "d0") (qualified-name "AssignTest::A::_assign#assign2"))) (kind "assign") (name "assign") (declared-name "assign") (range (start (line 4) (character 8)) (end (line 4) (character 32))) (parent (node (document "d0") (qualified-name "AssignTest::A"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignTest::A"))) (status missing-prerequisite) (target "Actions::Action"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignTest::A::_assign"))) (status missing-prerequisite) (target "Actions::assignmentActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignTest::A::_assign#assign"))) (status missing-prerequisite) (target "Actions::assignmentActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignTest::A::_assign#assign2"))) (status missing-prerequisite) (target "Actions::assignmentActions"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/assign_seq_index.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

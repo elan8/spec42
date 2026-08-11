@@ -31,6 +31,21 @@ package MassRollup2 {
 	metadata def SafetyFeature;
 	metadata def Securi
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz_crash_0.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "missing_closing_brace")
+        (source "sysml")
+        (range (start 22 20) (end 22 21))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -65,6 +80,22 @@ KwMetadata,KwDef,Ident,EndOfFile,
       (default_ref_usage 'arValuete' :>> 'totalMass' value))
     (malformed)))
 ~~~
+# EXPECTED
+~~~
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_close_curly
+semantic.unresolved_name 'ISQ::mass'
+semantic.unresolved_name 'ISQ::mass'
+~~~
+# PROBLEMS
+~~~
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_close_curly
+semantic.unresolved_name 'ISQ::mass'
+semantic.unresolved_name 'ISQ::mass'
+~~~
 # FORMAT
 ~~~sysml
 package MassRollup2 {
@@ -92,47 +123,17 @@ package MassRollup2 {
             metadata def Securi
 
 ~~~
-# EXPECTED
-~~~
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_close_curly
-semantic.unresolved_name 'ISQ::mass'
-semantic.unresolved_name 'ISQ::mass'
-~~~
-# PROBLEMS
-~~~
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_close_curly
-semantic.unresolved_name 'ISQ::mass'
-semantic.unresolved_name 'ISQ::mass'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "1bb648a870b2b9884611cb6d0c51824cae5589dbb72e2747357fa2fe7e18a2fa") (contract-version "canonical-resolution-v1"))
+  (structure
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "fuzz_crash_0.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "missing_closing_brace")
-        (source "sysml")
-        (range (start 22 20) (end 22 21))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

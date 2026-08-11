@@ -20,6 +20,15 @@ package 'Documentation Example' {
 	alias Torque for ISQ::TorqueValue;
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "01_documentation_example.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -44,6 +53,14 @@ CloseCurly,EndOfFile,
       (documentation))
     (alias_member 'Torque' for 'ISQ::TorqueValue')))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package 'Documentation Example' {
@@ -62,50 +79,23 @@ package 'Documentation Example' {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Documentation Example"))) (name "Documentation Example") (declared-name "Documentation Example")
-      (contains
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Documentation Example::Automobile"))) (name "Automobile") (declared-name "Automobile") (declared)
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Documentation Example::Automobile::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Documentation Example::Automobile")))))
-          )
-        )
-        (element (kind "alias") (id (node (document "d0") (qualified-name "Documentation Example::Car"))) (name "Car") (declared-name "Car"))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "Documentation Example::Torque"))) (name "Torque") (declared-name "Torque"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "Documentation Example::_documentation"))) (name ""))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "84f77ef0bcc3a0b727346ebc686087fb99127cad4de444e33ec32cad7b127571") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Documentation Example"))) (kind "package") (name "Documentation Example") (declared-name "Documentation Example") (range (start (line 0) (character 0)) (end (line 0) (character 307))))
+    (element (id (node (document "d0") (qualified-name "Documentation Example::Automobile"))) (kind "part def") (name "Automobile") (declared-name "Automobile") (range (start (line 5) (character 1)) (end (line 5) (character 81))) (parent (node (document "d0") (qualified-name "Documentation Example"))))
+    (element (id (node (document "d0") (qualified-name "Documentation Example::Automobile::_documentation"))) (kind "documentation") (name "") (range (start (line 5) (character 1)) (end (line 5) (character 81))) (parent (node (document "d0") (qualified-name "Documentation Example::Automobile"))))
+    (element (id (node (document "d0") (qualified-name "Documentation Example::Car"))) (kind "alias") (name "Car") (declared-name "Car") (range (start (line 9) (character 1)) (end (line 9) (character 78))) (parent (node (document "d0") (qualified-name "Documentation Example"))))
+    (element (id (node (document "d0") (qualified-name "Documentation Example::Torque"))) (kind "alias") (name "Torque") (declared-name "Torque") (range (start (line 12) (character 1)) (end (line 12) (character 35))) (parent (node (document "d0") (qualified-name "Documentation Example"))))
+    (element (id (node (document "d0") (qualified-name "Documentation Example::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 307))) (parent (node (document "d0") (qualified-name "Documentation Example"))))
+  )
+  (references
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Documentation Example::Automobile::_documentation"))) (to (node (document "d0") (qualified-name "Documentation Example::Automobile"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Documentation Example::_documentation"))) (to (node (document "d0") (qualified-name "Documentation Example"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Documentation Example::Automobile"))) (status missing-prerequisite) (target "Parts::Part"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/01_documentation_example.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

@@ -42,6 +42,21 @@ package Types {
 	type F :> Base::Anything differences A, B;
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "types.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_package_body_element")
+        (source "sysml")
+        (range (start 1 1) (end 1 947))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -102,6 +117,36 @@ CloseCurly,EndOfFile,
     (type_def 'E' :> 'Base::Anything' intersects 'A', 'B')
     (type_def 'F' :> 'Base::Anything' differences 'A', 'B')))
 ~~~
+# EXPECTED
+~~~
+parse.unexpected_token
+semantic.unresolved_name 'Base::Anything'
+semantic.unresolved_name 'Base::things'
+semantic.unresolved_name 'Base::Anything'
+semantic.unresolved_name 'Base::Anything'
+semantic.unresolved_name 'Base::Anything'
+semantic.unresolved_name 'Base::Anything'
+semantic.unresolved_name 'Base::Anything'
+semantic.unresolved_name 'Base::Anything'
+semantic.unresolved_name 'Base::Anything'
+semantic.unresolved_name 'Base::Anything'
+semantic.unresolved_name 'Base::Anything'
+~~~
+# PROBLEMS
+~~~
+parse.unexpected_token
+semantic.unresolved_name 'Base::Anything'
+semantic.unresolved_name 'Base::things'
+semantic.unresolved_name 'Base::Anything'
+semantic.unresolved_name 'Base::Anything'
+semantic.unresolved_name 'Base::Anything'
+semantic.unresolved_name 'Base::Anything'
+semantic.unresolved_name 'Base::Anything'
+semantic.unresolved_name 'Base::Anything'
+semantic.unresolved_name 'Base::Anything'
+semantic.unresolved_name 'Base::Anything'
+semantic.unresolved_name 'Base::Anything'
+~~~
 # FORMAT
 ~~~sysml
 package Types {
@@ -142,62 +187,18 @@ package Types {
 }
 
 ~~~
-# EXPECTED
-~~~
-parse.unexpected_token
-semantic.unresolved_name 'Base::Anything'
-semantic.unresolved_name 'Base::things'
-semantic.unresolved_name 'Base::Anything'
-semantic.unresolved_name 'Base::Anything'
-semantic.unresolved_name 'Base::Anything'
-semantic.unresolved_name 'Base::Anything'
-semantic.unresolved_name 'Base::Anything'
-semantic.unresolved_name 'Base::Anything'
-semantic.unresolved_name 'Base::Anything'
-semantic.unresolved_name 'Base::Anything'
-semantic.unresolved_name 'Base::Anything'
-~~~
-# PROBLEMS
-~~~
-parse.unexpected_token
-semantic.unresolved_name 'Base::Anything'
-semantic.unresolved_name 'Base::things'
-semantic.unresolved_name 'Base::Anything'
-semantic.unresolved_name 'Base::Anything'
-semantic.unresolved_name 'Base::Anything'
-semantic.unresolved_name 'Base::Anything'
-semantic.unresolved_name 'Base::Anything'
-semantic.unresolved_name 'Base::Anything'
-semantic.unresolved_name 'Base::Anything'
-semantic.unresolved_name 'Base::Anything'
-semantic.unresolved_name 'Base::Anything'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Types"))) (name "Types") (declared-name "Types"))
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "66245800fd506c0db3a2ae7ad740b104dc80d7070f52e60d1f29abffb025ab35") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Types"))) (kind "package") (name "Types") (declared-name "Types") (range (start (line 0) (character 0)) (end (line 0) (character 964))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/types.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "recovered_package_body_element")
-        (source "sysml")
-        (range (start 1 1) (end 1 947))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

@@ -25,13 +25,14 @@ package ClassifierCoverage {
     abstract metaclass AbstractMeta;
 }
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "coverage_classifiers.md"
+    (diagnostics
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -73,6 +74,14 @@ CloseCurly,EndOfFile,
     (association_def abstract 'AbstractRel')
     (metaclass_def abstract 'AbstractMeta')))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package ClassifierCoverage {
@@ -98,42 +107,31 @@ package ClassifierCoverage {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ClassifierCoverage"))) (name "ClassifierCoverage") (declared-name "ClassifierCoverage")
-      (contains
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ClassifierCoverage::A"))) (name "A") (declared-name "A"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ClassifierCoverage::AbstractMeta"))) (name "AbstractMeta") (declared-name "AbstractMeta"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ClassifierCoverage::AbstractRel"))) (name "AbstractRel") (declared-name "AbstractRel"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ClassifierCoverage::AbstractScalar"))) (name "AbstractScalar") (declared-name "AbstractScalar"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ClassifierCoverage::AbstractVector"))) (name "AbstractVector") (declared-name "AbstractVector"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ClassifierCoverage::C"))) (name "C") (declared-name "C"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ClassifierCoverage::D"))) (name "D") (declared-name "D"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ClassifierCoverage::Entity"))) (name "Entity") (declared-name "Entity"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ClassifierCoverage::M"))) (name "M") (declared-name "M"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ClassifierCoverage::MetaEntity"))) (name "MetaEntity") (declared-name "MetaEntity"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ClassifierCoverage::Relationship"))) (name "Relationship") (declared-name "Relationship"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ClassifierCoverage::S"))) (name "S") (declared-name "S"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ClassifierCoverage::Scalar"))) (name "Scalar") (declared-name "Scalar"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ClassifierCoverage::Vector"))) (name "Vector") (declared-name "Vector"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ClassifierCoverage::struct"))) (name "struct") (declared-name "struct"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b40b741e60d9b2a11a935208780d91e7e01f868f566185b680546453a6a3f2e1") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ClassifierCoverage"))) (kind "package") (name "ClassifierCoverage") (declared-name "ClassifierCoverage") (range (start (line 0) (character 0)) (end (line 0) (character 473))))
+    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::A"))) (kind "kermlDecl") (name "A") (declared-name "A") (range (start (line 11) (character 4)) (end (line 11) (character 28))) (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
+    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::AbstractMeta"))) (kind "kermlDecl") (name "AbstractMeta") (declared-name "AbstractMeta") (range (start (line 17) (character 4)) (end (line 17) (character 36))) (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
+    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::AbstractRel"))) (kind "kermlDecl") (name "AbstractRel") (declared-name "AbstractRel") (range (start (line 16) (character 4)) (end (line 16) (character 31))) (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
+    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::AbstractScalar"))) (kind "kermlDecl") (name "AbstractScalar") (declared-name "AbstractScalar") (range (start (line 14) (character 4)) (end (line 14) (character 37))) (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
+    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::AbstractVector"))) (kind "classifier decl") (name "AbstractVector") (declared-name "AbstractVector") (range (start (line 15) (character 4)) (end (line 15) (character 35))) (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
+    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::C"))) (kind "classifier decl") (name "C") (declared-name "C") (range (start (line 9) (character 4)) (end (line 9) (character 22))) (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
+    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::D"))) (kind "kermlDecl") (name "D") (declared-name "D") (range (start (line 8) (character 4)) (end (line 8) (character 34))) (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
+    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::Entity"))) (kind "classifier decl") (name "Entity") (declared-name "Entity") (range (start (line 2) (character 4)) (end (line 2) (character 17))) (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
+    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::M"))) (kind "kermlDecl") (name "M") (declared-name "M") (range (start (line 12) (character 4)) (end (line 12) (character 39))) (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
+    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::MetaEntity"))) (kind "kermlDecl") (name "MetaEntity") (declared-name "MetaEntity") (range (start (line 6) (character 4)) (end (line 6) (character 25))) (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
+    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::Relationship"))) (kind "kermlDecl") (name "Relationship") (declared-name "Relationship") (range (start (line 4) (character 4)) (end (line 4) (character 23))) (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
+    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::S"))) (kind "classifier decl") (name "S") (declared-name "S") (range (start (line 10) (character 4)) (end (line 10) (character 32))) (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
+    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::Scalar"))) (kind "kermlDecl") (name "Scalar") (declared-name "Scalar") (range (start (line 1) (character 4)) (end (line 1) (character 20))) (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
+    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::Vector"))) (kind "classifier decl") (name "Vector") (declared-name "Vector") (range (start (line 3) (character 4)) (end (line 3) (character 18))) (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
+    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::struct"))) (kind "kermlDecl") (name "struct") (declared-name "struct") (range (start (line 5) (character 4)) (end (line 5) (character 29))) (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/coverage_classifiers.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

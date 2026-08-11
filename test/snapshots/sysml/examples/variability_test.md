@@ -47,6 +47,27 @@ package VariabilityTest {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "variability_test.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_part_usage_body_element")
+        (source "sysml")
+        (range (start 15 2) (end 15 45))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 20 1) (end 20 19))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -118,6 +139,16 @@ CloseCurly,EndOfFile,
       (variant_usage
         (requirement_usage 'r1')))))
 ~~~
+# EXPECTED
+~~~
+parse.expected_usage_declaration
+parse.expected_usage_declaration
+~~~
+# PROBLEMS
+~~~
+parse.expected_usage_declaration
+parse.expected_usage_declaration
+~~~
 # FORMAT
 ~~~sysml
 package VariabilityTest {
@@ -162,90 +193,52 @@ package VariabilityTest {
 	
 }
 ~~~
-# EXPECTED
-~~~
-parse.expected_usage_declaration
-parse.expected_usage_declaration
-~~~
-# PROBLEMS
-~~~
-parse.expected_usage_declaration
-parse.expected_usage_declaration
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "VariabilityTest"))) (name "VariabilityTest") (declared-name "VariabilityTest")
-      (contains
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VariabilityTest::A"))) (name "A") (declared-name "A"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "VariabilityTest::B"))) (name "B") (declared-name "B") (declared (properties (ordered false) (unique true))))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "VariabilityTest::P"))) (name "P") (declared-name "P") (declared)
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "VariabilityTest::P::a"))) (name "a") (declared-name "a") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "VariabilityTest::P")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "VariabilityTest::Q"))) (name "Q") (declared-name "Q") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "VariabilityTest::V"))) (name "V") (declared-name "V") (declared (properties (variation true)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "VariabilityTest::V::x"))) (name "x") (declared-name "x") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "VariabilityTest::V"))))
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "VariabilityTest::V::x::b"))) (name "b") (declared-name "b") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "VariabilityTest::Q")))))
-              )
-            )
-          )
-        )
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VariabilityTest::a1"))) (name "a1") (declared-name "a1"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "VariabilityTest::q"))) (name "q") (declared-name "q") (declared (properties (ordered false))))
-        (element (kind "requirement") (id (node (document "d0") (qualified-name "VariabilityTest::r"))) (name "r") (declared-name "r"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VariabilityTest::uc1"))) (name "uc1") (declared-name "uc1"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "VariabilityTest::v"))) (name "v") (declared-name "v") (declared (properties (variation true) (ordered false))))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VariabilityTest::v1"))) (name "v1") (declared-name "v1"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "VariabilityTest::y"))) (name "y") (declared-name "y") (declared (properties (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "v::q")))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "VariabilityTest::y"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "6443efe3ada14b41055651ca59d4b7d3d790c425c070af47caaf83c8a03ed0ed") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "VariabilityTest"))) (kind "package") (name "VariabilityTest") (declared-name "VariabilityTest") (range (start (line 0) (character 0)) (end (line 0) (character 589))))
+    (element (id (node (document "d0") (qualified-name "VariabilityTest::A"))) (kind "kermlDecl") (name "A") (declared-name "A") (range (start (line 22) (character 1)) (end (line 22) (character 70))) (parent (node (document "d0") (qualified-name "VariabilityTest"))))
+    (element (id (node (document "d0") (qualified-name "VariabilityTest::B"))) (kind "attribute def") (name "B") (declared-name "B") (range (start (line 6) (character 1)) (end (line 6) (character 17))) (parent (node (document "d0") (qualified-name "VariabilityTest"))))
+    (element (id (node (document "d0") (qualified-name "VariabilityTest::P"))) (kind "part def") (name "P") (declared-name "P") (range (start (line 1) (character 1)) (end (line 1) (character 31))) (parent (node (document "d0") (qualified-name "VariabilityTest"))))
+    (element (id (node (document "d0") (qualified-name "VariabilityTest::P::a"))) (kind "attribute") (name "a") (declared-name "a") (range (start (line 2) (character 2)) (end (line 2) (character 14))) (parent (node (document "d0") (qualified-name "VariabilityTest::P"))))
+    (element (id (node (document "d0") (qualified-name "VariabilityTest::Q"))) (kind "part def") (name "Q") (declared-name "Q") (range (start (line 5) (character 1)) (end (line 5) (character 17))) (parent (node (document "d0") (qualified-name "VariabilityTest"))) (authored (membership (kind Owning)) (relationships (specializes (reference "P") (range (start (line 5) (character 15)) (end (line 5) (character 16)))))))
+    (element (id (node (document "d0") (qualified-name "VariabilityTest::V"))) (kind "part def") (name "V") (declared-name "V") (range (start (line 7) (character 1)) (end (line 7) (character 84))) (parent (node (document "d0") (qualified-name "VariabilityTest"))) (authored (membership (kind Owning)) (relationships (specializes (reference "P") (range (start (line 7) (character 25)) (end (line 7) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "VariabilityTest::V::x"))) (kind "part") (name "x") (declared-name "x") (range (start (line 8) (character 10)) (end (line 8) (character 52))) (parent (node (document "d0") (qualified-name "VariabilityTest::V"))) (authored (membership (kind Feature)) (relationships (typing (reference "Q") (range (start (line 8) (character 19)) (end (line 8) (character 20)))))))
+    (element (id (node (document "d0") (qualified-name "VariabilityTest::V::x::b"))) (kind "attribute") (name "b") (declared-name "b") (range (start (line 9) (character 3)) (end (line 9) (character 25))) (parent (node (document "d0") (qualified-name "VariabilityTest::V::x"))) (authored (membership (kind Feature)) (relationships (typing (reference "B") (range none)) (typing (reference "B") (range (start (line 9) (character 17)) (end (line 9) (character 18)))) (redefinition (reference "a") (range (start (line 9) (character 23)) (end (line 9) (character 24)))))))
+    (element (id (node (document "d0") (qualified-name "VariabilityTest::a1"))) (kind "kermlDecl") (name "a1") (declared-name "a1") (range (start (line 32) (character 4)) (end (line 32) (character 26))) (parent (node (document "d0") (qualified-name "VariabilityTest"))))
+    (element (id (node (document "d0") (qualified-name "VariabilityTest::q"))) (kind "part") (name "q") (declared-name "q") (range (start (line 13) (character 1)) (end (line 13) (character 12))) (parent (node (document "d0") (qualified-name "VariabilityTest"))) (authored (membership (kind Feature)) (relationships (typing (reference "Q") (range (start (line 13) (character 10)) (end (line 13) (character 11)))))))
+    (element (id (node (document "d0") (qualified-name "VariabilityTest::r"))) (kind "requirement") (name "r") (declared-name "r") (range (start (line 36) (character 4)) (end (line 36) (character 64))) (parent (node (document "d0") (qualified-name "VariabilityTest"))))
+    (element (id (node (document "d0") (qualified-name "VariabilityTest::uc1"))) (kind "kermlDecl") (name "uc1") (declared-name "uc1") (range (start (line 27) (character 1)) (end (line 27) (character 87))) (parent (node (document "d0") (qualified-name "VariabilityTest"))))
+    (element (id (node (document "d0") (qualified-name "VariabilityTest::v"))) (kind "part") (name "v") (declared-name "v") (range (start (line 14) (character 1)) (end (line 14) (character 70))) (parent (node (document "d0") (qualified-name "VariabilityTest"))) (authored (membership (kind Feature)) (relationships (typing (reference "P") (range (start (line 14) (character 20)) (end (line 14) (character 21)))))))
+    (element (id (node (document "d0") (qualified-name "VariabilityTest::v1"))) (kind "kermlDecl") (name "v1") (declared-name "v1") (range (start (line 34) (character 4)) (end (line 34) (character 30))) (parent (node (document "d0") (qualified-name "VariabilityTest"))))
+    (element (id (node (document "d0") (qualified-name "VariabilityTest::y"))) (kind "part") (name "y") (declared-name "y") (range (start (line 20) (character 1)) (end (line 20) (character 19))) (parent (node (document "d0") (qualified-name "VariabilityTest"))) (authored (membership (kind Feature)) (relationships (typing (reference "P") (range (start (line 20) (character 10)) (end (line 20) (character 11)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "VariabilityTest::Q"))) (kind specialization) (ordinal 0)) (authored-target "P") (range (start (line 5) (character 15)) (end (line 5) (character 16))) (outcome (status resolved) (target (node (document "d0") (qualified-name "VariabilityTest::P")))))
+    (reference (id (source (node (document "d0") (qualified-name "VariabilityTest::V"))) (kind specialization) (ordinal 0)) (authored-target "P") (range (start (line 7) (character 25)) (end (line 7) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "VariabilityTest::P")))))
+    (reference (id (source (node (document "d0") (qualified-name "VariabilityTest::V::x"))) (kind featureTyping) (ordinal 0)) (authored-target "Q") (range (start (line 8) (character 19)) (end (line 8) (character 20))) (outcome (status resolved) (target (node (document "d0") (qualified-name "VariabilityTest::Q")))))
+    (reference (id (source (node (document "d0") (qualified-name "VariabilityTest::V::x::b"))) (kind featureTyping) (ordinal 0)) (authored-target "B") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "VariabilityTest::B")))))
+    (reference (id (source (node (document "d0") (qualified-name "VariabilityTest::V::x::b"))) (kind featureTyping) (ordinal 1)) (authored-target "B") (range (start (line 9) (character 17)) (end (line 9) (character 18))) (outcome (status resolved) (target (node (document "d0") (qualified-name "VariabilityTest::B")))))
+    (reference (id (source (node (document "d0") (qualified-name "VariabilityTest::V::x::b"))) (kind redefinition) (ordinal 0)) (authored-target "a") (range (start (line 9) (character 23)) (end (line 9) (character 24))) (outcome (status resolved) (target (node (document "d0") (qualified-name "VariabilityTest::P::a")))))
+    (reference (id (source (node (document "d0") (qualified-name "VariabilityTest::q"))) (kind featureTyping) (ordinal 0)) (authored-target "Q") (range (start (line 13) (character 10)) (end (line 13) (character 11))) (outcome (status resolved) (target (node (document "d0") (qualified-name "VariabilityTest::Q")))))
+    (reference (id (source (node (document "d0") (qualified-name "VariabilityTest::v"))) (kind featureTyping) (ordinal 0)) (authored-target "P") (range (start (line 14) (character 20)) (end (line 14) (character 21))) (outcome (status resolved) (target (node (document "d0") (qualified-name "VariabilityTest::P")))))
+    (reference (id (source (node (document "d0") (qualified-name "VariabilityTest::y"))) (kind featureTyping) (ordinal 0)) (authored-target "P") (range (start (line 20) (character 10)) (end (line 20) (character 11))) (outcome (status resolved) (target (node (document "d0") (qualified-name "VariabilityTest::P")))))
   )
   (relationships
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "VariabilityTest::V::x::b"))) (to (node (document "d0") (qualified-name "VariabilityTest::P::a"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "VariabilityTest::Q"))) (to (node (document "d0") (qualified-name "VariabilityTest::P"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "VariabilityTest::V"))) (to (node (document "d0") (qualified-name "VariabilityTest::P"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "VariabilityTest::V::x"))) (to (node (document "d0") (qualified-name "VariabilityTest::Q"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "VariabilityTest::V::x::b"))) (to (node (document "d0") (qualified-name "VariabilityTest::B"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "VariabilityTest::q"))) (to (node (document "d0") (qualified-name "VariabilityTest::Q"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "VariabilityTest::v"))) (to (node (document "d0") (qualified-name "VariabilityTest::P"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "VariabilityTest::y"))) (to (node (document "d0") (qualified-name "VariabilityTest::P"))) (provenance authored))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "VariabilityTest::Q"))) (target (node (document "d0") (qualified-name "VariabilityTest::P"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VariabilityTest::Q"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "VariabilityTest::V"))) (target (node (document "d0") (qualified-name "VariabilityTest::P"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VariabilityTest::V"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "VariabilityTest::V::x"))) (target (node (document "d0") (qualified-name "VariabilityTest::Q"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VariabilityTest::V::x"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "VariabilityTest::V::x::b"))) (target (node (document "d0") (qualified-name "VariabilityTest::B"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VariabilityTest::V::x::b"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "VariabilityTest::V::x::b"))) (target (node (document "d0") (qualified-name "VariabilityTest::B"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VariabilityTest::V::x::b"))) (kind featureTyping) (ordinal 1)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "VariabilityTest::V::x::b"))) (target (node (document "d0") (qualified-name "VariabilityTest::P::a"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VariabilityTest::V::x::b"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "VariabilityTest::q"))) (target (node (document "d0") (qualified-name "VariabilityTest::Q"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VariabilityTest::q"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "VariabilityTest::v"))) (target (node (document "d0") (qualified-name "VariabilityTest::P"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VariabilityTest::v"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "VariabilityTest::y"))) (target (node (document "d0") (qualified-name "VariabilityTest::P"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VariabilityTest::y"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VariabilityTest::B"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VariabilityTest::P"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VariabilityTest::P::a"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VariabilityTest::Q"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VariabilityTest::V"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VariabilityTest::V::x"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VariabilityTest::V::x::b"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VariabilityTest::q"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VariabilityTest::r"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VariabilityTest::v"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VariabilityTest::y"))) (status missing-prerequisite) (target "Parts::parts"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/variability_test.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "recovered_part_usage_body_element")
-        (source "sysml")
-        (range (start 15 2) (end 15 45))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "VariabilityTest::y")) (expression (status "unresolved") (error "expression has an unresolved reference")))
   )
 )
 ~~~

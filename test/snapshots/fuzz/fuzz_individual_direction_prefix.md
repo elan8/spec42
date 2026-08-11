@@ -9,6 +9,21 @@ semantic_graph_skip_reason=parser recovery for non-empty source produced no type
 ~~~sysml
 in individual it;
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz_individual_direction_prefix.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "expected_keyword")
+        (source "sysml")
+        (range (start 0 0) (end 0 17))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwIn,KwIndividual,Ident,Semicolon,EndOfFile,
@@ -18,11 +33,6 @@ KwIn,KwIndividual,Ident,Semicolon,EndOfFile,
 (root
   (individual_usage in individual 'it'))
 ~~~
-# FORMAT
-~~~sysml
-in individual it;
-
-~~~
 # EXPECTED
 ~~~
 NIL
@@ -31,31 +41,22 @@ NIL
 ~~~
 NIL
 ~~~
+# FORMAT
+~~~sysml
+in individual it;
+
+~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "fba7f7a4eab7831067db6c753457650efe2daaf8352f6c2207063aaad1dcd817") (contract-version "canonical-resolution-v1"))
+  (structure
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "fuzz/fuzz_individual_direction_prefix.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "expected_keyword")
-        (source "sysml")
-        (range (start 0 0) (end 0 17))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

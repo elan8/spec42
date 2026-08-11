@@ -60,6 +60,15 @@ package ExtendedOccurrences {
 
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "extended_occurrences.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -163,6 +172,40 @@ CloseCurly,EndOfFile,
     (structure_def 'ExtendedObject' :> 'ExtendedOccurrence'
       (feature_def 'self' : 'ExtendedObject' :>> 'Objects::Object::self', 'ExtendedOccurrence::self'))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'self'
+semantic.unresolved_name 'self'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'snapshots'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'Occurrences::occurrences'
+semantic.unresolved_name 'Occurrences::HappensDuring'
+semantic.unresolved_name 'Occurrences::occurrences'
+semantic.unresolved_name 'Occurrences::HappensDuring'
+semantic.unresolved_name 'Performances::performances'
+semantic.unresolved_name 'Occurrences::HappensDuring'
+semantic.unresolved_name 'Objects::Object::self'
+semantic.unresolved_name 'ExtendedOccurrence::self'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'self'
+semantic.unresolved_name 'self'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'snapshots'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'Occurrences::occurrences'
+semantic.unresolved_name 'Occurrences::HappensDuring'
+semantic.unresolved_name 'Occurrences::occurrences'
+semantic.unresolved_name 'Occurrences::HappensDuring'
+semantic.unresolved_name 'Performances::performances'
+semantic.unresolved_name 'Occurrences::HappensDuring'
+semantic.unresolved_name 'Objects::Object::self'
+semantic.unresolved_name 'ExtendedOccurrence::self'
+~~~
 # FORMAT
 ~~~sysml
 package ExtendedOccurrences {
@@ -220,70 +263,25 @@ package ExtendedOccurrences {
 
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'self'
-semantic.unresolved_name 'self'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'snapshots'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'Occurrences::occurrences'
-semantic.unresolved_name 'Occurrences::HappensDuring'
-semantic.unresolved_name 'Occurrences::occurrences'
-semantic.unresolved_name 'Occurrences::HappensDuring'
-semantic.unresolved_name 'Performances::performances'
-semantic.unresolved_name 'Occurrences::HappensDuring'
-semantic.unresolved_name 'Objects::Object::self'
-semantic.unresolved_name 'ExtendedOccurrence::self'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'self'
-semantic.unresolved_name 'self'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'snapshots'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'Occurrences::occurrences'
-semantic.unresolved_name 'Occurrences::HappensDuring'
-semantic.unresolved_name 'Occurrences::occurrences'
-semantic.unresolved_name 'Occurrences::HappensDuring'
-semantic.unresolved_name 'Performances::performances'
-semantic.unresolved_name 'Occurrences::HappensDuring'
-semantic.unresolved_name 'Objects::Object::self'
-semantic.unresolved_name 'ExtendedOccurrence::self'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ExtendedOccurrences"))) (name "ExtendedOccurrences") (declared-name "ExtendedOccurrences")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ExtendedOccurrences::ExtendedObject"))) (name "ExtendedObject") (declared-name "ExtendedObject"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ExtendedOccurrences::ExtendedOccurrence"))) (name "ExtendedOccurrence") (declared-name "ExtendedOccurrence"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ExtendedOccurrences::Interval"))) (name "Interval") (declared-name "Interval"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ExtendedOccurrences::Life"))) (name "Life") (declared-name "Life"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ExtendedOccurrences::Moment"))) (name "Moment") (declared-name "Moment"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ExtendedOccurrences::Snapshot"))) (name "Snapshot") (declared-name "Snapshot"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ExtendedOccurrences::Timeslice"))) (name "Timeslice") (declared-name "Timeslice"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a487ccc4f721c14cf94475a2113ff763c8d9ab9bad377be39f1d993cfc40a5b6") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences"))) (kind "package") (name "ExtendedOccurrences") (declared-name "ExtendedOccurrences") (range (start (line 0) (character 0)) (end (line 0) (character 2023))))
+    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::ExtendedObject"))) (kind "classifier decl") (name "ExtendedObject") (declared-name "ExtendedObject") (range (start (line 49) (character 4)) (end (line 49) (character 146))) (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
+    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::ExtendedOccurrence"))) (kind "classifier decl") (name "ExtendedOccurrence") (declared-name "ExtendedOccurrence") (range (start (line 12) (character 4)) (end (line 12) (character 1554))) (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
+    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::Interval"))) (kind "classifier decl") (name "Interval") (declared-name "Interval") (range (start (line 1) (character 4)) (end (line 1) (character 19))) (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
+    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::Life"))) (kind "classifier decl") (name "Life") (declared-name "Life") (range (start (line 11) (character 4)) (end (line 11) (character 28))) (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
+    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::Moment"))) (kind "classifier decl") (name "Moment") (declared-name "Moment") (range (start (line 2) (character 4)) (end (line 2) (character 29))) (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
+    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::Snapshot"))) (kind "classifier decl") (name "Snapshot") (declared-name "Snapshot") (range (start (line 7) (character 4)) (end (line 7) (character 114))) (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
+    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::Timeslice"))) (kind "classifier decl") (name "Timeslice") (declared-name "Timeslice") (range (start (line 3) (character 4)) (end (line 3) (character 94))) (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/extended_occurrences.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

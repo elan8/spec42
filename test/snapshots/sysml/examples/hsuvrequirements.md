@@ -45,6 +45,51 @@ package HSUVRequirements {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "hsuvrequirements.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 3 1) (end 3 199))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 10 1) (end 10 211))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 11 2) (end 11 138))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 16 1) (end 16 340))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 18 2) (end 18 178))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -109,6 +154,22 @@ CloseCurly,EndOfFile,
       (sysml_decl 'Performance')
       (sysml_decl 'Ergonomics'))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'FunctionalRequirementCheck'
+semantic.unresolved_name 'PerformanceRequirementCheck'
+semantic.unresolved_name 'PerformanceRequirementCheck'
+semantic.unresolved_name 'PerformanceRequirementCheck'
+semantic.unresolved_name 'PerformanceRequirementCheck'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'FunctionalRequirementCheck'
+semantic.unresolved_name 'PerformanceRequirementCheck'
+semantic.unresolved_name 'PerformanceRequirementCheck'
+semantic.unresolved_name 'PerformanceRequirementCheck'
+semantic.unresolved_name 'PerformanceRequirementCheck'
+~~~
 # FORMAT
 ~~~sysml
 package HSUVRequirements {
@@ -152,132 +213,43 @@ package HSUVRequirements {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'FunctionalRequirementCheck'
-semantic.unresolved_name 'PerformanceRequirementCheck'
-semantic.unresolved_name 'PerformanceRequirementCheck'
-semantic.unresolved_name 'PerformanceRequirementCheck'
-semantic.unresolved_name 'PerformanceRequirementCheck'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'FunctionalRequirementCheck'
-semantic.unresolved_name 'PerformanceRequirementCheck'
-semantic.unresolved_name 'PerformanceRequirementCheck'
-semantic.unresolved_name 'PerformanceRequirementCheck'
-semantic.unresolved_name 'PerformanceRequirementCheck'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "HSUVRequirements"))) (name "HSUVRequirements") (declared-name "HSUVRequirements")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "HSUVRequirements::*"))) (name "*") (declared-name "*"))
-        (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::EcoFriendliness"))) (name "EcoFriendliness") (declared-name "EcoFriendliness")
-          (contains
-            (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::EcoFriendliness::Emissions"))) (name "Emissions") (declared-name "Emissions"))
-          )
-        )
-        (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::Ergonomics"))) (name "Ergonomics") (declared-name "Ergonomics"))
-        (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec"))) (name "HybridSUVSpec") (declared-name "HybridSUVSpec")
-          (contains
-            (element (kind "require constraint") (id (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0"))
-            (element (kind "require constraint") (id (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec::_requireConstraint_1"))) (name "_requireConstraint_1") (declared-name "_requireConstraint_1"))
-            (element (kind "require constraint") (id (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec::_requireConstraint_2"))) (name "_requireConstraint_2") (declared-name "_requireConstraint_2"))
-            (element (kind "require constraint") (id (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec::_requireConstraint_3"))) (name "_requireConstraint_3") (declared-name "_requireConstraint_3"))
-          )
-        )
-        (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::Load"))) (name "Load") (declared-name "Load")
-          (contains
-            (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::Load::Cargo"))) (name "Cargo") (declared-name "Cargo"))
-            (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::Load::FuelCapacity"))) (name "FuelCapacity") (declared-name "FuelCapacity"))
-            (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::Load::Passengers"))) (name "Passengers") (declared-name "Passengers"))
-          )
-        )
-        (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::Performance"))) (name "Performance") (declared-name "Performance")
-          (contains
-            (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::Performance::Acceleration"))) (name "Acceleration") (declared-name "Acceleration"))
-            (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::Performance::Braking"))) (name "Braking") (declared-name "Braking"))
-            (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::Performance::FuelEconomy"))) (name "FuelEconomy") (declared-name "FuelEconomy"))
-            (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::Performance::Power"))) (name "Power") (declared-name "Power"))
-            (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::Performance::Range"))) (name "Range") (declared-name "Range"))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b8909fc498f3faa8d94f76643fe632d251ae77b0d52f07fff4a1d67e102214f8") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "HSUVRequirements"))) (kind "package") (name "HSUVRequirements") (declared-name "HSUVRequirements") (range (start (line 0) (character 0)) (end (line 0) (character 1106))))
+    (element (id (node (document "d0") (qualified-name "HSUVRequirements::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "HSUVRequirements"))) (authored (membership (kind Import) (visibility "private") (import (reference "Requirements::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "HSUVRequirements::EcoFriendliness"))) (kind "requirement") (name "EcoFriendliness") (declared-name "EcoFriendliness") (range (start (line 10) (character 1)) (end (line 10) (character 211))) (parent (node (document "d0") (qualified-name "HSUVRequirements"))) (authored (membership (kind Feature)) (relationships (typing (reference "PerformanceRequirementCheck") (range none)))))
+    (element (id (node (document "d0") (qualified-name "HSUVRequirements::EcoFriendliness::Emissions"))) (kind "requirement") (name "Emissions") (declared-name "Emissions") (range (start (line 11) (character 2)) (end (line 11) (character 138))) (parent (node (document "d0") (qualified-name "HSUVRequirements::EcoFriendliness"))) (authored (membership (kind Feature)) (relationships (typing (reference "PerformanceRequirementCheck") (range none)))))
+    (element (id (node (document "d0") (qualified-name "HSUVRequirements::Ergonomics"))) (kind "requirement") (name "Ergonomics") (declared-name "Ergonomics") (range (start (line 28) (character 1)) (end (line 28) (character 34))) (parent (node (document "d0") (qualified-name "HSUVRequirements"))))
+    (element (id (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec"))) (kind "requirement") (name "HybridSUVSpec") (declared-name "HybridSUVSpec") (range (start (line 31) (character 1)) (end (line 31) (character 180))) (parent (node (document "d0") (qualified-name "HSUVRequirements"))))
+    (element (id (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec::_requireConstraint_0"))) (kind "require constraint") (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (range (start (line 33) (character 2)) (end (line 33) (character 15))) (parent (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec"))))
+    (element (id (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec::_requireConstraint_1"))) (kind "require constraint") (name "_requireConstraint_1") (declared-name "_requireConstraint_1") (range (start (line 34) (character 2)) (end (line 34) (character 26))) (parent (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec"))))
+    (element (id (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec::_requireConstraint_2"))) (kind "require constraint") (name "_requireConstraint_2") (declared-name "_requireConstraint_2") (range (start (line 35) (character 2)) (end (line 35) (character 22))) (parent (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec"))))
+    (element (id (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec::_requireConstraint_3"))) (kind "require constraint") (name "_requireConstraint_3") (declared-name "_requireConstraint_3") (range (start (line 36) (character 2)) (end (line 36) (character 21))) (parent (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec"))))
+    (element (id (node (document "d0") (qualified-name "HSUVRequirements::Load"))) (kind "requirement") (name "Load") (declared-name "Load") (range (start (line 3) (character 1)) (end (line 3) (character 199))) (parent (node (document "d0") (qualified-name "HSUVRequirements"))) (authored (membership (kind Feature)) (relationships (typing (reference "FunctionalRequirementCheck") (range none)))))
+    (element (id (node (document "d0") (qualified-name "HSUVRequirements::Load::Cargo"))) (kind "requirement") (name "Cargo") (declared-name "Cargo") (range (start (line 7) (character 2)) (end (line 7) (character 20))) (parent (node (document "d0") (qualified-name "HSUVRequirements::Load"))))
+    (element (id (node (document "d0") (qualified-name "HSUVRequirements::Load::FuelCapacity"))) (kind "requirement") (name "FuelCapacity") (declared-name "FuelCapacity") (range (start (line 6) (character 2)) (end (line 6) (character 27))) (parent (node (document "d0") (qualified-name "HSUVRequirements::Load"))))
+    (element (id (node (document "d0") (qualified-name "HSUVRequirements::Load::Passengers"))) (kind "requirement") (name "Passengers") (declared-name "Passengers") (range (start (line 5) (character 2)) (end (line 5) (character 25))) (parent (node (document "d0") (qualified-name "HSUVRequirements::Load"))))
+    (element (id (node (document "d0") (qualified-name "HSUVRequirements::Performance"))) (kind "requirement") (name "Performance") (declared-name "Performance") (range (start (line 16) (character 1)) (end (line 16) (character 340))) (parent (node (document "d0") (qualified-name "HSUVRequirements"))) (authored (membership (kind Feature)) (relationships (typing (reference "PerformanceRequirementCheck") (range none)))))
+    (element (id (node (document "d0") (qualified-name "HSUVRequirements::Performance::Acceleration"))) (kind "requirement") (name "Acceleration") (declared-name "Acceleration") (range (start (line 17) (character 2)) (end (line 17) (character 27))) (parent (node (document "d0") (qualified-name "HSUVRequirements::Performance"))))
+    (element (id (node (document "d0") (qualified-name "HSUVRequirements::Performance::Braking"))) (kind "requirement") (name "Braking") (declared-name "Braking") (range (start (line 23) (character 2)) (end (line 23) (character 22))) (parent (node (document "d0") (qualified-name "HSUVRequirements::Performance"))))
+    (element (id (node (document "d0") (qualified-name "HSUVRequirements::Performance::FuelEconomy"))) (kind "requirement") (name "FuelEconomy") (declared-name "FuelEconomy") (range (start (line 18) (character 2)) (end (line 18) (character 178))) (parent (node (document "d0") (qualified-name "HSUVRequirements::Performance"))) (authored (membership (kind Feature)) (relationships (typing (reference "PerformanceRequirementCheck") (range none)))))
+    (element (id (node (document "d0") (qualified-name "HSUVRequirements::Performance::Power"))) (kind "requirement") (name "Power") (declared-name "Power") (range (start (line 25) (character 2)) (end (line 25) (character 20))) (parent (node (document "d0") (qualified-name "HSUVRequirements::Performance"))))
+    (element (id (node (document "d0") (qualified-name "HSUVRequirements::Performance::Range"))) (kind "requirement") (name "Range") (declared-name "Range") (range (start (line 24) (character 2)) (end (line 24) (character 20))) (parent (node (document "d0") (qualified-name "HSUVRequirements::Performance"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "HSUVRequirements::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Requirements::*") (range (start (line 1) (character 16)) (end (line 1) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "HSUVRequirements::EcoFriendliness"))) (kind featureTyping) (ordinal 0)) (authored-target "PerformanceRequirementCheck") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "HSUVRequirements::EcoFriendliness::Emissions"))) (kind featureTyping) (ordinal 0)) (authored-target "PerformanceRequirementCheck") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "HSUVRequirements::Load"))) (kind featureTyping) (ordinal 0)) (authored-target "FunctionalRequirementCheck") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "HSUVRequirements::Performance"))) (kind featureTyping) (ordinal 0)) (authored-target "PerformanceRequirementCheck") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "HSUVRequirements::Performance::FuelEconomy"))) (kind featureTyping) (ordinal 0)) (authored-target "PerformanceRequirementCheck") (range none) (outcome (status unresolved)))
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::EcoFriendliness"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::EcoFriendliness::Emissions"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::Ergonomics"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec::_requireConstraint_0"))) (status missing-prerequisite) (target "Constraints::constraintChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec::_requireConstraint_1"))) (status missing-prerequisite) (target "Constraints::constraintChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec::_requireConstraint_2"))) (status missing-prerequisite) (target "Constraints::constraintChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec::_requireConstraint_3"))) (status missing-prerequisite) (target "Constraints::constraintChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::Load"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::Load::Cargo"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::Load::FuelCapacity"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::Load::Passengers"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::Performance"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::Performance::Acceleration"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::Performance::Braking"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::Performance::FuelEconomy"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::Performance::Power"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::Performance::Range"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/hsuvrequirements.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 3 1) (end 3 199))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 10 1) (end 10 211))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 11 2) (end 11 138))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 16 1) (end 16 340))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 18 2) (end 18 178))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

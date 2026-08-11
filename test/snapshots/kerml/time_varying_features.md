@@ -75,6 +75,15 @@ package TimeVaryingFeatures {
     }
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "time_varying_features.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -186,6 +195,70 @@ CloseCurly,EndOfFile,
             (feature_def member :>> 'CC1::t::y' value featured by 'CC1_t_t1_startShot_snapshots'
               (feature_def member 'CC1_t_t1_startShot_snapshots' :>> 'CC1_t_snapshots' featured by 'CC1::t::t1::startShot'))))))))
 ~~~
+# EXPECTED
+~~~
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'CC1_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'CC1_startShot_snapshots'
+semantic.unresolved_name 'CC1::startShot'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'CC1_t_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'CC1_t_startShot_snapshots'
+semantic.unresolved_name 'CC1::t::startShot'
+semantic.unresolved_name 'CC1_t_startShot_snapshots'
+semantic.unresolved_name 'CC1::t::startShot'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'CC1_t_t1_startShot_snapshots'
+semantic.unresolved_name 'CC1::t::t1::startShot'
+semantic.unresolved_name 'CC1_t_t1_startShot_snapshots'
+semantic.unresolved_name 'CC1::t::t1::startShot'
+~~~
+# PROBLEMS
+~~~
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'CC1_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'CC1_startShot_snapshots'
+semantic.unresolved_name 'CC1::startShot'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'CC1_t_snapshots'
+semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'CC1_t_startShot_snapshots'
+semantic.unresolved_name 'CC1::t::startShot'
+semantic.unresolved_name 'CC1_t_startShot_snapshots'
+semantic.unresolved_name 'CC1::t::startShot'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'CC1_t_t1_startShot_snapshots'
+semantic.unresolved_name 'CC1::t::t1::startShot'
+semantic.unresolved_name 'CC1_t_t1_startShot_snapshots'
+semantic.unresolved_name 'CC1::t::t1::startShot'
+~~~
 # FORMAT
 ~~~sysml
 package TimeVaryingFeatures {
@@ -258,95 +331,20 @@ package TimeVaryingFeatures {
     }
 }
 ~~~
-# EXPECTED
-~~~
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'CC1_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'CC1_startShot_snapshots'
-semantic.unresolved_name 'CC1::startShot'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'CC1_t_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'CC1_t_startShot_snapshots'
-semantic.unresolved_name 'CC1::t::startShot'
-semantic.unresolved_name 'CC1_t_startShot_snapshots'
-semantic.unresolved_name 'CC1::t::startShot'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'CC1_t_t1_startShot_snapshots'
-semantic.unresolved_name 'CC1::t::t1::startShot'
-semantic.unresolved_name 'CC1_t_t1_startShot_snapshots'
-semantic.unresolved_name 'CC1::t::t1::startShot'
-~~~
-# PROBLEMS
-~~~
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'CC1_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'CC1_startShot_snapshots'
-semantic.unresolved_name 'CC1::startShot'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'CC1_t_snapshots'
-semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'CC1_t_startShot_snapshots'
-semantic.unresolved_name 'CC1::t::startShot'
-semantic.unresolved_name 'CC1_t_startShot_snapshots'
-semantic.unresolved_name 'CC1::t::startShot'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'CC1_t_t1_startShot_snapshots'
-semantic.unresolved_name 'CC1::t::t1::startShot'
-semantic.unresolved_name 'CC1_t_t1_startShot_snapshots'
-semantic.unresolved_name 'CC1::t::t1::startShot'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "TimeVaryingFeatures"))) (name "TimeVaryingFeatures") (declared-name "TimeVaryingFeatures")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingFeatures::CC0"))) (name "CC0") (declared-name "CC0"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingFeatures::CC1"))) (name "CC1") (declared-name "CC1"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c5a3cad04f1ad807b63d66a196b701da578953d024e389715efeac994d2d1b83") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "TimeVaryingFeatures"))) (kind "package") (name "TimeVaryingFeatures") (declared-name "TimeVaryingFeatures") (range (start (line 0) (character 0)) (end (line 0) (character 2637))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingFeatures::CC0"))) (kind "classifier decl") (name "CC0") (declared-name "CC0") (range (start (line 1) (character 4)) (end (line 1) (character 562))) (parent (node (document "d0") (qualified-name "TimeVaryingFeatures"))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingFeatures::CC1"))) (kind "classifier decl") (name "CC1") (declared-name "CC1") (range (start (line 25) (character 4)) (end (line 25) (character 2037))) (parent (node (document "d0") (qualified-name "TimeVaryingFeatures"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/time_varying_features.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

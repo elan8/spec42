@@ -27,6 +27,33 @@ package ProductSelection_N_ary_SysML {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "product_selection_n_ary.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 15 2) (end 15 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 16 2) (end 16 62))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 17 2) (end 17 50))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -65,6 +92,14 @@ CloseCurly,EndOfFile,
       (interface_end end 'selectedProducts' : 'Product' multiplicity)
       (interface_end end 'withAccount' : 'Account' multiplicity))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package ProductSelection_N_ary_SysML {
@@ -90,84 +125,38 @@ package ProductSelection_N_ary_SysML {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML"))) (name "ProductSelection_N_ary_SysML") (declared-name "ProductSelection_N_ary_SysML")
-      (contains
-        (element (kind "item def") (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::Account"))) (name "Account") (declared-name "Account"))
-        (element (kind "item def") (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::Product"))) (name "Product") (declared-name "Product"))
-        (element (kind "connection def") (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection"))) (name "ProductSelection") (declared-name "ProductSelection")
-          (contains
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::account"))) (name "account") (declared-name "account") (declared (properties (end true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection")))))
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::cart"))) (name "cart") (declared-name "cart") (declared (properties (end true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection")))))
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::selectedProduct"))) (name "selectedProduct") (declared-name "selectedProduct") (declared (properties (end true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection")))))
-          )
-        )
-        (element (kind "connection def") (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1"))) (name "ProductSelection1") (declared-name "ProductSelection1")
-          (contains
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1::inCart"))) (name "inCart") (declared-name "inCart") (declared (properties (end true)) (multiplicity (lower 0) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1")))))
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1::selectedProducts"))) (name "selectedProducts") (declared-name "selectedProducts") (declared (properties (end true)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1")))))
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1::withAccount"))) (name "withAccount") (declared-name "withAccount") (declared (properties (end true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1")))))
-          )
-        )
-        (element (kind "item def") (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ShoppingCart"))) (name "ShoppingCart") (declared-name "ShoppingCart"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "269e0acbb3059936fbcedd9fbea2ad023a8549d4a897a160a0c7713e8a9450aa") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML"))) (kind "package") (name "ProductSelection_N_ary_SysML") (declared-name "ProductSelection_N_ary_SysML") (range (start (line 0) (character 0)) (end (line 0) (character 596))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::Account"))) (kind "item def") (name "Account") (declared-name "Account") (range (start (line 4) (character 1)) (end (line 4) (character 18))) (parent (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::Product"))) (kind "item def") (name "Product") (declared-name "Product") (range (start (line 3) (character 1)) (end (line 3) (character 18))) (parent (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection"))) (kind "connection def") (name "ProductSelection") (declared-name "ProductSelection") (range (start (line 7) (character 1)) (end (line 7) (character 165))) (parent (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1"))) (kind "connection def") (name "ProductSelection1") (declared-name "ProductSelection1") (range (start (line 14) (character 1)) (end (line 14) (character 199))) (parent (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1::inCart"))) (kind "interface end") (name "inCart") (declared-name "inCart") (range (start (line 15) (character 2)) (end (line 15) (character 46))) (parent (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1"))) (authored (relationships (typing (reference "") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1::selectedProducts"))) (kind "interface end") (name "selectedProducts") (declared-name "selectedProducts") (range (start (line 16) (character 2)) (end (line 16) (character 62))) (parent (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1"))) (authored (relationships (typing (reference "") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1::withAccount"))) (kind "interface end") (name "withAccount") (declared-name "withAccount") (range (start (line 17) (character 2)) (end (line 17) (character 50))) (parent (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1"))) (authored (relationships (typing (reference "") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::account"))) (kind "interface end") (name "account") (declared-name "account") (range (start (line 10) (character 2)) (end (line 10) (character 39))) (parent (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection"))) (authored (relationships (typing (reference "Account") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::cart"))) (kind "interface end") (name "cart") (declared-name "cart") (range (start (line 8) (character 2)) (end (line 8) (character 40))) (parent (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection"))) (authored (relationships (typing (reference "ShoppingCart") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::selectedProduct"))) (kind "interface end") (name "selectedProduct") (declared-name "selectedProduct") (range (start (line 9) (character 2)) (end (line 9) (character 46))) (parent (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection"))) (authored (relationships (typing (reference "Product") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ShoppingCart"))) (kind "item def") (name "ShoppingCart") (declared-name "ShoppingCart") (range (start (line 2) (character 1)) (end (line 2) (character 23))) (parent (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1::inCart"))) (kind featureTyping) (ordinal 0)) (authored-target "") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1::selectedProducts"))) (kind featureTyping) (ordinal 0)) (authored-target "") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1::withAccount"))) (kind featureTyping) (ordinal 0)) (authored-target "") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::account"))) (kind featureTyping) (ordinal 0)) (authored-target "Account") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::Account")))))
+    (reference (id (source (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::cart"))) (kind featureTyping) (ordinal 0)) (authored-target "ShoppingCart") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ShoppingCart")))))
+    (reference (id (source (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::selectedProduct"))) (kind featureTyping) (ordinal 0)) (authored-target "Product") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::Product")))))
   )
   (relationships
-    (connection (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ShoppingCart"))) (to (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::Account"))) (provenance authored))
-    (connection (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ShoppingCart"))) (to (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::Product"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::account"))) (to (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::Account"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::cart"))) (to (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ShoppingCart"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::selectedProduct"))) (to (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::Product"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::account"))) (target (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::Account"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::account"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::cart"))) (target (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ShoppingCart"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::cart"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::selectedProduct"))) (target (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::Product"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::selectedProduct"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::Account"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::Product"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection"))) (status missing-prerequisite) (target "Connections::Connection"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1"))) (status missing-prerequisite) (target "Connections::Connection"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ShoppingCart"))) (status missing-prerequisite) (target "Items::Item"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/product_selection_n_ary.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "interface_end_invalid")
-        (source "semantic")
-        (range (start 15 2) (end 15 46))
-      )
-      (diagnostic
-        (severity warning)
-        (code "interface_end_invalid")
-        (source "semantic")
-        (range (start 16 2) (end 16 62))
-      )
-      (diagnostic
-        (severity warning)
-        (code "interface_end_invalid")
-        (source "semantic")
-        (range (start 17 2) (end 17 50))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

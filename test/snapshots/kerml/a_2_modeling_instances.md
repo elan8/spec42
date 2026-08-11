@@ -44,6 +44,21 @@ package ModelingInstancesWithAtoms {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "a_2_modeling_instances.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 16 16) (end 16 27))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -98,6 +113,14 @@ CloseCurly,EndOfFile,
     (classifier_def #'atom' 'OurGarage' :> 'Garage'
       (feature_def :>> 'stores' : 'OurBicycle' multiplicity))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package ModelingInstances {
@@ -139,94 +162,35 @@ package ModelingInstancesWithAtoms {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ModelingInstances"))) (name "ModelingInstances") (declared-name "ModelingInstances")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ModelingInstances::Bicycle"))) (name "Bicycle") (declared-name "Bicycle"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ModelingInstances::MyBike"))) (name "MyBike") (declared-name "MyBike"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ModelingInstances::Vehicle"))) (name "Vehicle") (declared-name "Vehicle"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ModelingInstances::YourBike"))) (name "YourBike") (declared-name "YourBike"))
-      )
-    )
-    (element (kind "package") (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))) (name "ModelingInstancesWithAtoms") (declared-name "ModelingInstancesWithAtoms")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::Bicycle"))) (name "Bicycle") (declared-name "Bicycle"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::Garage"))) (name "Garage") (declared-name "Garage"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::MyBike"))) (name "MyBike") (declared-name "MyBike"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::OurBicycle"))) (name "OurBicycle") (declared-name "OurBicycle"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::OurGarage"))) (name "OurGarage") (declared-name "OurGarage"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::Vehicle"))) (name "Vehicle") (declared-name "Vehicle"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::YourBike"))) (name "YourBike") (declared-name "YourBike"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::_atom"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::_atom#metadata_keyword"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::_atom#metadata_keyword2"))) (name "atom") (declared-name "atom"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::atom"))) (name "atom") (declared-name "atom"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c063a9ae14a7fc3b2301e61b50687d20e1a16966b75fa5762268d2474a6ba0ff") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ModelingInstances"))) (kind "package") (name "ModelingInstances") (declared-name "ModelingInstances") (range (start (line 0) (character 0)) (end (line 0) (character 218))))
+    (element (id (node (document "d0") (qualified-name "ModelingInstances::Bicycle"))) (kind "classifier decl") (name "Bicycle") (declared-name "Bicycle") (range (start (line 6) (character 1)) (end (line 6) (character 40))) (parent (node (document "d0") (qualified-name "ModelingInstances"))))
+    (element (id (node (document "d0") (qualified-name "ModelingInstances::MyBike"))) (kind "classifier decl") (name "MyBike") (declared-name "MyBike") (range (start (line 7) (character 1)) (end (line 7) (character 43))) (parent (node (document "d0") (qualified-name "ModelingInstances"))))
+    (element (id (node (document "d0") (qualified-name "ModelingInstances::Vehicle"))) (kind "classifier decl") (name "Vehicle") (declared-name "Vehicle") (range (start (line 5) (character 1)) (end (line 5) (character 20))) (parent (node (document "d0") (qualified-name "ModelingInstances"))))
+    (element (id (node (document "d0") (qualified-name "ModelingInstances::YourBike"))) (kind "classifier decl") (name "YourBike") (declared-name "YourBike") (range (start (line 8) (character 1)) (end (line 8) (character 66))) (parent (node (document "d0") (qualified-name "ModelingInstances"))))
+    (element (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))) (kind "package") (name "ModelingInstancesWithAtoms") (declared-name "ModelingInstancesWithAtoms") (range (start (line 11) (character 0)) (end (line 11) (character 481))))
+    (element (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::Bicycle"))) (kind "classifier decl") (name "Bicycle") (declared-name "Bicycle") (range (start (line 19) (character 1)) (end (line 19) (character 40))) (parent (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))))
+    (element (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::Garage"))) (kind "classifier decl") (name "Garage") (declared-name "Garage") (range (start (line 28) (character 1)) (end (line 28) (character 55))) (parent (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))))
+    (element (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::MyBike"))) (kind "classifier decl") (name "MyBike") (declared-name "MyBike") (range (start (line 22) (character 1)) (end (line 22) (character 39))) (parent (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))))
+    (element (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::OurBicycle"))) (kind "classifier decl") (name "OurBicycle") (declared-name "OurBicycle") (range (start (line 31) (character 1)) (end (line 31) (character 47))) (parent (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))))
+    (element (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::OurGarage"))) (kind "classifier decl") (name "OurGarage") (declared-name "OurGarage") (range (start (line 34) (character 1)) (end (line 34) (character 90))) (parent (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))))
+    (element (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::Vehicle"))) (kind "classifier decl") (name "Vehicle") (declared-name "Vehicle") (range (start (line 18) (character 1)) (end (line 18) (character 20))) (parent (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))))
+    (element (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::YourBike"))) (kind "classifier decl") (name "YourBike") (declared-name "YourBike") (range (start (line 24) (character 1)) (end (line 24) (character 41))) (parent (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))))
+    (element (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::_atom"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 21) (character 1)) (end (line 21) (character 8))) (parent (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))))
+    (element (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::_atom#metadata_keyword"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 23) (character 1)) (end (line 23) (character 8))) (parent (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))))
+    (element (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::_atom#metadata_keyword2"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 33) (character 1)) (end (line 33) (character 8))) (parent (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))))
+    (element (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::atom"))) (kind "import") (name "atom") (declared-name "atom") (range (start (line 16) (character 1)) (end (line 16) (character 28))) (parent (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))) (authored (membership (kind Import) (visibility "private") (import (reference "Atoms::atom") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 16) (character 16)) (end (line 16) (character 27))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::atom"))) (kind membershipImport) (ordinal 0)) (authored-target "Atoms::atom") (range (start (line 16) (character 16)) (end (line 16) (character 27))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::_atom"))) (to (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::_atom#metadata_keyword"))) (to (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::_atom#metadata_keyword2"))) (to (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::_atom"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::_atom#metadata_keyword"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::_atom#metadata_keyword2"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/a_2_modeling_instances.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 16 16) (end 16 27))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 21 1) (end 21 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 23 1) (end 23 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 23 1) (end 23 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 33 1) (end 33 8))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

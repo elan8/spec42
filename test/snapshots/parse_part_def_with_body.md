@@ -10,6 +10,15 @@ part def Vehicle {
     part def Wheel;
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "parse_part_def_with_body.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPart,KwDef,Ident,OpenCurly,
@@ -24,14 +33,6 @@ CloseCurly,EndOfFile,
     (part_def 'Engine')
     (part_def 'Wheel')))
 ~~~
-# FORMAT
-~~~sysml
-part def Vehicle {
-    part def Engine;
-    part def Wheel;
-}
-
-~~~
 # EXPECTED
 ~~~
 NIL
@@ -40,36 +41,28 @@ NIL
 ~~~
 NIL
 ~~~
+# FORMAT
+~~~sysml
+part def Vehicle {
+    part def Engine;
+    part def Wheel;
+}
+
+~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
-      (contains
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle::Engine"))) (name "Engine") (declared-name "Engine") (declared) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle::Wheel"))) (name "Wheel") (declared-name "Wheel") (declared) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "bc702f31b0368fc84f99bd2fe7f8374f228aab87c7825b457e3bb3c64f6aaa92") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (range (start (line 0) (character 0)) (end (line 0) (character 61))))
+    (element (id (node (document "d0") (qualified-name "Vehicle::Engine"))) (kind "part def") (name "Engine") (declared-name "Engine") (range (start (line 1) (character 4)) (end (line 1) (character 20))) (parent (node (document "d0") (qualified-name "Vehicle"))))
+    (element (id (node (document "d0") (qualified-name "Vehicle::Wheel"))) (kind "part def") (name "Wheel") (declared-name "Wheel") (range (start (line 2) (character 4)) (end (line 2) (character 19))) (parent (node (document "d0") (qualified-name "Vehicle"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle::Engine"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle::Wheel"))) (status missing-prerequisite) (target "Parts::Part"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "parse_part_def_with_body.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

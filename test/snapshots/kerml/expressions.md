@@ -81,6 +81,39 @@ package Expressions {
 	feature w1 = w(xx);
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "expressions.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 3 16) (end 3 32))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 5 1) (end 5 1670))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -207,6 +240,40 @@ CloseCurly,EndOfFile,
     (feature_def 'l' value)
     (feature_def 'w1' value)))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'ControlPerformances::LoopPerformance'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'FeatureReferencingPerformances::FeatureWritePerformance'
+semantic.unresolved_name 'startingAt'
+semantic.unresolved_name 'accessedFeature'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'ScalarValues::Integer'
+semantic.unresolved_name 'ScalarValues::Integer'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'ControlPerformances::LoopPerformance'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'FeatureReferencingPerformances::FeatureWritePerformance'
+semantic.unresolved_name 'startingAt'
+semantic.unresolved_name 'accessedFeature'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'ScalarValues::Integer'
+semantic.unresolved_name 'ScalarValues::Integer'
+~~~
 # FORMAT
 ~~~sysml
 package Expressions {
@@ -286,90 +353,24 @@ package Expressions {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'ControlPerformances::LoopPerformance'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'FeatureReferencingPerformances::FeatureWritePerformance'
-semantic.unresolved_name 'startingAt'
-semantic.unresolved_name 'accessedFeature'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'ScalarValues::Integer'
-semantic.unresolved_name 'ScalarValues::Integer'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'ControlPerformances::LoopPerformance'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'FeatureReferencingPerformances::FeatureWritePerformance'
-semantic.unresolved_name 'startingAt'
-semantic.unresolved_name 'accessedFeature'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'ScalarValues::Integer'
-semantic.unresolved_name 'ScalarValues::Integer'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Expressions"))) (name "Expressions") (declared-name "Expressions")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Expressions::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Expressions::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Expressions::ToString"))) (name "ToString") (declared-name "ToString"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "53945bbbacaf71b9bb488bdc6a8d6451e42fe6ffd1fb72dc7e840cdf28520406") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Expressions"))) (kind "package") (name "Expressions") (declared-name "Expressions") (range (start (line 0) (character 0)) (end (line 0) (character 1809))))
+    (element (id (node (document "d0") (qualified-name "Expressions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 35))) (parent (node (document "d0") (qualified-name "Expressions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarFunctions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 31))))))
+    (element (id (node (document "d0") (qualified-name "Expressions::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 3) (character 1)) (end (line 3) (character 36))) (parent (node (document "d0") (qualified-name "Expressions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ControlFunctions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 3) (character 16)) (end (line 3) (character 32))))))
+    (element (id (node (document "d0") (qualified-name "Expressions::ToString"))) (kind "import") (name "ToString") (declared-name "ToString") (range (start (line 2) (character 1)) (end (line 2) (character 40))) (parent (node (document "d0") (qualified-name "Expressions"))) (authored (membership (kind Import) (visibility "private") (import (reference "BaseFunctions::ToString") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 39))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Expressions::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarFunctions::*") (range (start (line 1) (character 16)) (end (line 1) (character 31))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Expressions::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "ControlFunctions::*") (range (start (line 3) (character 16)) (end (line 3) (character 32))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Expressions::ToString"))) (kind membershipImport) (ordinal 0)) (authored-target "BaseFunctions::ToString") (range (start (line 2) (character 16)) (end (line 2) (character 39))) (outcome (status unresolved)))
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/expressions.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 31))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 16) (end 2 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 3 16) (end 3 32))
-      )
-      (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 5 1) (end 5 1670))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

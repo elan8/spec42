@@ -89,19 +89,32 @@ standard library package CausationConnections {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'participant'
-semantic.unresolved_name 'participant'
-semantic.unresolved_name 'source'
-semantic.unresolved_name 'target'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'participant'
-semantic.unresolved_name 'participant'
-semantic.unresolved_name 'source'
-semantic.unresolved_name 'target'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "causation_connections.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 16) (end 8 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 16) (end 9 47))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -194,6 +207,20 @@ CloseCurly,EndOfFile,
     (connection_usage 'Causation' :> 'multicausations' 'causations' multiplicity
       (documentation))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'participant'
+semantic.unresolved_name 'participant'
+semantic.unresolved_name 'source'
+semantic.unresolved_name 'target'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'participant'
+semantic.unresolved_name 'participant'
+semantic.unresolved_name 'source'
+semantic.unresolved_name 'target'
+~~~
 # FORMAT
 ~~~sysml
 standard library package CausationConnections {
@@ -283,129 +310,47 @@ standard library package CausationConnections {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "CausationConnections"))) (name "CausationConnections") (declared-name "CausationConnections")
-      (contains
-        (element (kind "connection def") (id (node (document "d0") (qualified-name "CausationConnections::Causation"))) (name "Causation") (declared-name "Causation")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "CausationConnections::Causation::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "CausationConnections::Causation")))))
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "CausationConnections::Causation::theCauses"))) (name "theCauses") (declared-name "theCauses") (declared (properties (end true)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "CausationConnections::Causation")))))
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "CausationConnections::Causation::theEffects"))) (name "theEffects") (declared-name "theEffects") (declared (properties (end true)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "CausationConnections::Causation")))))
-          )
-        )
-        (element (kind "connection def") (id (node (document "d0") (qualified-name "CausationConnections::Multicausation"))) (name "Multicausation") (declared-name "Multicausation")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "CausationConnections::Multicausation::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "CausationConnections::Multicausation")))))
-          )
-        )
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "CausationConnections::_documentation"))) (name ""))
-        (element (kind "connection def") (id (node (document "d0") (qualified-name "CausationConnections::causations"))) (name "causations") (declared-name "causations")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "CausationConnections::causations::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "CausationConnections::causations")))))
-          )
-        )
-        (element (kind "occurrence") (id (node (document "d0") (qualified-name "CausationConnections::causes"))) (name "causes") (declared-name "causes") (declared (properties (abstract true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "CausationConnections::causes::_documentation"))) (name ""))
-          )
-        )
-        (element (kind "occurrence") (id (node (document "d0") (qualified-name "CausationConnections::effects"))) (name "effects") (declared-name "effects") (declared (properties (abstract true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "CausationConnections::effects::_documentation"))) (name ""))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "CausationConnections::intersection"))) (name "intersection") (declared-name "intersection"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "CausationConnections::isEmpty"))) (name "isEmpty") (declared-name "isEmpty"))
-        (element (kind "connection def") (id (node (document "d0") (qualified-name "CausationConnections::multicausations"))) (name "multicausations") (declared-name "multicausations")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "CausationConnections::multicausations::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "CausationConnections::multicausations")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "CausationConnections::size"))) (name "size") (declared-name "size"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "8c2a169f386410cfd9bd30015968ca739cb4aa0320c8b579e2e8da3d05158aba") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "CausationConnections"))) (kind "package") (name "CausationConnections") (declared-name "CausationConnections") (range (start (line 0) (character 0)) (end (line 0) (character 2650))))
+    (element (id (node (document "d0") (qualified-name "CausationConnections::Causation"))) (kind "connection def") (name "Causation") (declared-name "Causation") (range (start (line 61) (character 1)) (end (line 61) (character 598))) (parent (node (document "d0") (qualified-name "CausationConnections"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Multicausation") (range (start (line 61) (character 29)) (end (line 61) (character 43)))))))
+    (element (id (node (document "d0") (qualified-name "CausationConnections::Causation::_documentation"))) (kind "documentation") (name "") (range (start (line 61) (character 1)) (end (line 61) (character 598))) (parent (node (document "d0") (qualified-name "CausationConnections::Causation"))))
+    (element (id (node (document "d0") (qualified-name "CausationConnections::Causation::theCauses"))) (kind "interface end") (name "theCauses") (declared-name "theCauses") (range (start (line 70) (character 2)) (end (line 70) (character 113))) (parent (node (document "d0") (qualified-name "CausationConnections::Causation"))) (authored (relationships (typing (reference "") (range none)))))
+    (element (id (node (document "d0") (qualified-name "CausationConnections::Causation::theEffects"))) (kind "interface end") (name "theEffects") (declared-name "theEffects") (range (start (line 74) (character 2)) (end (line 74) (character 137))) (parent (node (document "d0") (qualified-name "CausationConnections::Causation"))) (authored (relationships (typing (reference "") (range none)))))
+    (element (id (node (document "d0") (qualified-name "CausationConnections::Multicausation"))) (kind "connection def") (name "Multicausation") (declared-name "Multicausation") (range (start (line 19) (character 1)) (end (line 19) (character 1272))) (parent (node (document "d0") (qualified-name "CausationConnections"))))
+    (element (id (node (document "d0") (qualified-name "CausationConnections::Multicausation::_documentation"))) (kind "documentation") (name "") (range (start (line 19) (character 1)) (end (line 19) (character 1272))) (parent (node (document "d0") (qualified-name "CausationConnections::Multicausation"))))
+    (element (id (node (document "d0") (qualified-name "CausationConnections::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 2650))) (parent (node (document "d0") (qualified-name "CausationConnections"))))
+    (element (id (node (document "d0") (qualified-name "CausationConnections::causations"))) (kind "connection def") (name "causations") (declared-name "causations") (range (start (line 79) (character 1)) (end (line 79) (character 145))) (parent (node (document "d0") (qualified-name "CausationConnections"))) (authored (membership (kind Owning)) (relationships (specializes (reference "multicausations") (range (start (line 0) (character 0)) (end (line 0) (character 15)))))))
+    (element (id (node (document "d0") (qualified-name "CausationConnections::causations::_documentation"))) (kind "documentation") (name "") (range (start (line 79) (character 1)) (end (line 79) (character 145))) (parent (node (document "d0") (qualified-name "CausationConnections::causations"))))
+    (element (id (node (document "d0") (qualified-name "CausationConnections::causes"))) (kind "occurrence") (name "causes") (declared-name "causes") (range (start (line 11) (character 21)) (end (line 11) (character 76))) (parent (node (document "d0") (qualified-name "CausationConnections"))))
+    (element (id (node (document "d0") (qualified-name "CausationConnections::causes::_documentation"))) (kind "documentation") (name "") (range (start (line 11) (character 21)) (end (line 11) (character 76))) (parent (node (document "d0") (qualified-name "CausationConnections::causes"))))
+    (element (id (node (document "d0") (qualified-name "CausationConnections::effects"))) (kind "occurrence") (name "effects") (declared-name "effects") (range (start (line 15) (character 21)) (end (line 15) (character 79))) (parent (node (document "d0") (qualified-name "CausationConnections"))))
+    (element (id (node (document "d0") (qualified-name "CausationConnections::effects::_documentation"))) (kind "documentation") (name "") (range (start (line 15) (character 21)) (end (line 15) (character 79))) (parent (node (document "d0") (qualified-name "CausationConnections::effects"))))
+    (element (id (node (document "d0") (qualified-name "CausationConnections::intersection"))) (kind "import") (name "intersection") (declared-name "intersection") (range (start (line 9) (character 1)) (end (line 9) (character 48))) (parent (node (document "d0") (qualified-name "CausationConnections"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::intersection") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 9) (character 16)) (end (line 9) (character 47))))))
+    (element (id (node (document "d0") (qualified-name "CausationConnections::isEmpty"))) (kind "import") (name "isEmpty") (declared-name "isEmpty") (range (start (line 7) (character 1)) (end (line 7) (character 43))) (parent (node (document "d0") (qualified-name "CausationConnections"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::isEmpty") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 42))))))
+    (element (id (node (document "d0") (qualified-name "CausationConnections::multicausations"))) (kind "connection def") (name "multicausations") (declared-name "multicausations") (range (start (line 57) (character 1)) (end (line 57) (character 146))) (parent (node (document "d0") (qualified-name "CausationConnections"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Multicausation") (range (start (line 0) (character 0)) (end (line 0) (character 14)))))))
+    (element (id (node (document "d0") (qualified-name "CausationConnections::multicausations::_documentation"))) (kind "documentation") (name "") (range (start (line 57) (character 1)) (end (line 57) (character 146))) (parent (node (document "d0") (qualified-name "CausationConnections::multicausations"))))
+    (element (id (node (document "d0") (qualified-name "CausationConnections::size"))) (kind "import") (name "size") (declared-name "size") (range (start (line 8) (character 1)) (end (line 8) (character 40))) (parent (node (document "d0") (qualified-name "CausationConnections"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::size") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 39))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "CausationConnections::Causation"))) (kind specialization) (ordinal 0)) (authored-target "Multicausation") (range (start (line 61) (character 29)) (end (line 61) (character 43))) (outcome (status resolved) (target (node (document "d0") (qualified-name "CausationConnections::Multicausation")))))
+    (reference (id (source (node (document "d0") (qualified-name "CausationConnections::Causation::theCauses"))) (kind featureTyping) (ordinal 0)) (authored-target "") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "CausationConnections::Causation::_documentation")))))
+    (reference (id (source (node (document "d0") (qualified-name "CausationConnections::Causation::theEffects"))) (kind featureTyping) (ordinal 0)) (authored-target "") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "CausationConnections::Causation::_documentation")))))
+    (reference (id (source (node (document "d0") (qualified-name "CausationConnections::causations"))) (kind specialization) (ordinal 0)) (authored-target "multicausations") (range (start (line 0) (character 0)) (end (line 0) (character 15))) (outcome (status resolved) (target (node (document "d0") (qualified-name "CausationConnections::multicausations")))))
+    (reference (id (source (node (document "d0") (qualified-name "CausationConnections::intersection"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::intersection") (range (start (line 9) (character 16)) (end (line 9) (character 47))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "CausationConnections::isEmpty"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::isEmpty") (range (start (line 7) (character 16)) (end (line 7) (character 42))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "CausationConnections::multicausations"))) (kind specialization) (ordinal 0)) (authored-target "Multicausation") (range (start (line 0) (character 0)) (end (line 0) (character 14))) (outcome (status resolved) (target (node (document "d0") (qualified-name "CausationConnections::Multicausation")))))
+    (reference (id (source (node (document "d0") (qualified-name "CausationConnections::size"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::size") (range (start (line 8) (character 16)) (end (line 8) (character 39))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "CausationConnections::Causation::_documentation"))) (to (node (document "d0") (qualified-name "CausationConnections::Causation"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "CausationConnections::Multicausation::_documentation"))) (to (node (document "d0") (qualified-name "CausationConnections::Multicausation"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "CausationConnections::_documentation"))) (to (node (document "d0") (qualified-name "CausationConnections"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "CausationConnections::causations::_documentation"))) (to (node (document "d0") (qualified-name "CausationConnections::causations"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "CausationConnections::causes::_documentation"))) (to (node (document "d0") (qualified-name "CausationConnections::causes"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "CausationConnections::effects::_documentation"))) (to (node (document "d0") (qualified-name "CausationConnections::effects"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "CausationConnections::multicausations::_documentation"))) (to (node (document "d0") (qualified-name "CausationConnections::multicausations"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "CausationConnections::Causation"))) (to (node (document "d0") (qualified-name "CausationConnections::Multicausation"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "CausationConnections::causations"))) (to (node (document "d0") (qualified-name "CausationConnections::multicausations"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "CausationConnections::multicausations"))) (to (node (document "d0") (qualified-name "CausationConnections::Multicausation"))) (provenance authored))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "CausationConnections::Causation"))) (target (node (document "d0") (qualified-name "CausationConnections::Multicausation"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "CausationConnections::Causation"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "CausationConnections::Causation::theCauses"))) (target (node (document "d0") (qualified-name "CausationConnections::Causation::_documentation"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "CausationConnections::Causation::theCauses"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "CausationConnections::Causation::theEffects"))) (target (node (document "d0") (qualified-name "CausationConnections::Causation::_documentation"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "CausationConnections::Causation::theEffects"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "CausationConnections::causations"))) (target (node (document "d0") (qualified-name "CausationConnections::multicausations"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "CausationConnections::causations"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "CausationConnections::multicausations"))) (target (node (document "d0") (qualified-name "CausationConnections::Multicausation"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "CausationConnections::multicausations"))) (kind specialization) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CausationConnections::Causation"))) (status missing-prerequisite) (target "Connections::Connection"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CausationConnections::Multicausation"))) (status missing-prerequisite) (target "Connections::Connection"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CausationConnections::causations"))) (status missing-prerequisite) (target "Connections::Connection"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CausationConnections::causes"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CausationConnections::effects"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CausationConnections::multicausations"))) (status missing-prerequisite) (target "Connections::Connection"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/causation_connections.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 16) (end 7 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 16) (end 8 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 9 16) (end 9 47))
-      )
-      (diagnostic
-        (severity warning)
-        (code "incompatible_specializes_kind")
-        (source "semantic")
-        (range (start 57 1) (end 57 146))
-      )
-      (diagnostic
-        (severity warning)
-        (code "incompatible_specializes_kind")
-        (source "semantic")
-        (range (start 61 1) (end 61 598))
-      )
-      (diagnostic
-        (severity warning)
-        (code "interface_end_invalid")
-        (source "semantic")
-        (range (start 70 2) (end 70 113))
-      )
-      (diagnostic
-        (severity warning)
-        (code "interface_end_invalid")
-        (source "semantic")
-        (range (start 74 2) (end 74 137))
-      )
-      (diagnostic
-        (severity warning)
-        (code "incompatible_specializes_kind")
-        (source "semantic")
-        (range (start 79 1) (end 79 145))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

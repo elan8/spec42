@@ -26,6 +26,45 @@ package 'Part Definition Example' {
 	part def Person;
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "02_part_definition_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 4 2) (end 4 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 4 19) (end 4 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 13 2) (end 13 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 14 2) (end 14 39))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -60,6 +99,18 @@ CloseCurly,EndOfFile,
     (part_def 'Engine')
     (part_def 'Person')))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Real'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Real'
+~~~
 # FORMAT
 ~~~sysml
 package 'Part Definition Example' {
@@ -84,96 +135,42 @@ package 'Part Definition Example' {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Real'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Real'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Part Definition Example"))) (name "Part Definition Example") (declared-name "Part Definition Example")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Part Definition Example::*"))) (name "*") (declared-name "*"))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Part Definition Example::Engine"))) (name "Engine") (declared-name "Engine") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Part Definition Example::Person"))) (name "Person") (declared-name "Person") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Part Definition Example::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
-          (contains
-            (element (kind "ref") (id (node (document "d0") (qualified-name "Part Definition Example::Vehicle::driver"))) (name "driver") (declared-name "driver") (declared (properties (composite false) (reference true) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "Part Definition Example::Vehicle")))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "Part Definition Example::Vehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Part Definition Example::Vehicle")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Part Definition Example::Vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Part Definition Example::Vehicle")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Part Definition Example::Vehicle::status"))) (name "status") (declared-name "status") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Part Definition Example::Vehicle")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus"))) (name "VehicleStatus") (declared-name "VehicleStatus") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus::acceleratorPosition"))) (name "acceleratorPosition") (declared-name "acceleratorPosition") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus::gearSetting"))) (name "gearSetting") (declared-name "gearSetting") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus")))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6db77b6d2da2c81422e64d78866eefe692169c9125da88fb02d254bf1ad69219") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Part Definition Example"))) (kind "package") (name "Part Definition Example") (declared-name "Part Definition Example") (range (start (line 0) (character 0)) (end (line 0) (character 361))))
+    (element (id (node (document "d0") (qualified-name "Part Definition Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "Part Definition Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "Part Definition Example::Engine"))) (kind "part def") (name "Engine") (declared-name "Engine") (range (start (line 17) (character 1)) (end (line 17) (character 17))) (parent (node (document "d0") (qualified-name "Part Definition Example"))))
+    (element (id (node (document "d0") (qualified-name "Part Definition Example::Person"))) (kind "part def") (name "Person") (declared-name "Person") (range (start (line 18) (character 1)) (end (line 18) (character 17))) (parent (node (document "d0") (qualified-name "Part Definition Example"))))
+    (element (id (node (document "d0") (qualified-name "Part Definition Example::Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (range (start (line 3) (character 1)) (end (line 3) (character 138))) (parent (node (document "d0") (qualified-name "Part Definition Example"))))
+    (element (id (node (document "d0") (qualified-name "Part Definition Example::Vehicle::driver"))) (kind "ref") (name "driver") (declared-name "driver") (range (start (line 9) (character 2)) (end (line 9) (character 27))) (parent (node (document "d0") (qualified-name "Part Definition Example::Vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Person") (range (start (line 9) (character 20)) (end (line 9) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "Part Definition Example::Vehicle::eng"))) (kind "part") (name "eng") (declared-name "eng") (range (start (line 7) (character 2)) (end (line 7) (character 20))) (parent (node (document "d0") (qualified-name "Part Definition Example::Vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Engine") (range (start (line 7) (character 13)) (end (line 7) (character 19)))))))
+    (element (id (node (document "d0") (qualified-name "Part Definition Example::Vehicle::mass"))) (kind "attribute") (name "mass") (declared-name "mass") (range (start (line 4) (character 2)) (end (line 4) (character 24))) (parent (node (document "d0") (qualified-name "Part Definition Example::Vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (typing (reference "Real") (range (start (line 4) (character 19)) (end (line 4) (character 23)))))))
+    (element (id (node (document "d0") (qualified-name "Part Definition Example::Vehicle::status"))) (kind "attribute") (name "status") (declared-name "status") (range (start (line 5) (character 2)) (end (line 5) (character 35))) (parent (node (document "d0") (qualified-name "Part Definition Example::Vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "VehicleStatus") (range none)) (typing (reference "VehicleStatus") (range (start (line 5) (character 21)) (end (line 5) (character 34)))))))
+    (element (id (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus"))) (kind "attribute def") (name "VehicleStatus") (declared-name "VehicleStatus") (range (start (line 12) (character 1)) (end (line 12) (character 108))) (parent (node (document "d0") (qualified-name "Part Definition Example"))))
+    (element (id (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus::acceleratorPosition"))) (kind "attribute") (name "acceleratorPosition") (declared-name "acceleratorPosition") (range (start (line 14) (character 2)) (end (line 14) (character 39))) (parent (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus::gearSetting"))) (kind "attribute") (name "gearSetting") (declared-name "gearSetting") (range (start (line 13) (character 2)) (end (line 13) (character 34))) (parent (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus"))) (authored (membership (kind Feature)) (relationships (typing (reference "Integer") (range none)))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Part Definition Example::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (range (start (line 1) (character 16)) (end (line 1) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Part Definition Example::Vehicle::driver"))) (kind featureTyping) (ordinal 0)) (authored-target "Person") (range (start (line 9) (character 20)) (end (line 9) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Part Definition Example::Person")))))
+    (reference (id (source (node (document "d0") (qualified-name "Part Definition Example::Vehicle::eng"))) (kind featureTyping) (ordinal 0)) (authored-target "Engine") (range (start (line 7) (character 13)) (end (line 7) (character 19))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Part Definition Example::Engine")))))
+    (reference (id (source (node (document "d0") (qualified-name "Part Definition Example::Vehicle::mass"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Part Definition Example::Vehicle::mass"))) (kind featureTyping) (ordinal 1)) (authored-target "Real") (range (start (line 4) (character 19)) (end (line 4) (character 23))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Part Definition Example::Vehicle::status"))) (kind featureTyping) (ordinal 0)) (authored-target "VehicleStatus") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus")))))
+    (reference (id (source (node (document "d0") (qualified-name "Part Definition Example::Vehicle::status"))) (kind featureTyping) (ordinal 1)) (authored-target "VehicleStatus") (range (start (line 5) (character 21)) (end (line 5) (character 34))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus")))))
+    (reference (id (source (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus::acceleratorPosition"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus::gearSetting"))) (kind featureTyping) (ordinal 0)) (authored-target "Integer") (range none) (outcome (status unresolved)))
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Part Definition Example::Vehicle::driver"))) (to (node (document "d0") (qualified-name "Part Definition Example::Person"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Part Definition Example::Vehicle::eng"))) (to (node (document "d0") (qualified-name "Part Definition Example::Engine"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Part Definition Example::Vehicle::status"))) (to (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Part Definition Example::Vehicle::driver"))) (target (node (document "d0") (qualified-name "Part Definition Example::Person"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Part Definition Example::Vehicle::driver"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Part Definition Example::Vehicle::eng"))) (target (node (document "d0") (qualified-name "Part Definition Example::Engine"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Part Definition Example::Vehicle::eng"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Part Definition Example::Vehicle::status"))) (target (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Part Definition Example::Vehicle::status"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Part Definition Example::Vehicle::status"))) (target (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Part Definition Example::Vehicle::status"))) (kind featureTyping) (ordinal 1)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Part Definition Example::Engine"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Part Definition Example::Person"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Part Definition Example::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Part Definition Example::Vehicle::eng"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Part Definition Example::Vehicle::mass"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Part Definition Example::Vehicle::status"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus::acceleratorPosition"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus::gearSetting"))) (status missing-prerequisite) (target "Base::dataValues"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/02_part_definition_example.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 4 2) (end 4 24))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 13 2) (end 13 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 14 2) (end 14 39))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

@@ -31,6 +31,63 @@ package 'Requirement Usages' {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "32_requirement_usages.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 18))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 4 1) (end 4 252))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 4 1) (end 4 252))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 5 2) (end 5 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 14 1) (end 14 239))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 14 1) (end 14 239))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 15 2) (end 15 28))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -73,6 +130,24 @@ CloseCurly,EndOfFile,
         (documentation)
         (result_expr_member)))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'VehicleMassLimitationRequirement'
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'massReqd'
+semantic.unresolved_name 'VehicleMassLimitationRequirement'
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'massReqd'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'VehicleMassLimitationRequirement'
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'massReqd'
+semantic.unresolved_name 'VehicleMassLimitationRequirement'
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'massReqd'
+~~~
 # FORMAT
 ~~~sysml
 package 'Requirement Usages' {
@@ -102,155 +177,50 @@ package 'Requirement Usages' {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'VehicleMassLimitationRequirement'
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'massReqd'
-semantic.unresolved_name 'VehicleMassLimitationRequirement'
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'massReqd'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'VehicleMassLimitationRequirement'
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'massReqd'
-semantic.unresolved_name 'VehicleMassLimitationRequirement'
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'massReqd'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Requirement Usages"))) (name "Requirement Usages") (declared-name "Requirement Usages")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Requirement Usages::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Requirement Usages::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "requirement") (id (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit"))) (name "emptyVehicleMassLimit") (declared-name "emptyVehicleMassLimit") (evaluation (expression (status "unresolved") (error "expression has an unresolved reference")) (analysis (status "unresolved")))
-          (contains
-            (element (kind "require constraint") (id (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (declared (own-expression (expression (kind "binary") (operator "==") (children (expression (kind "memberAccess") (reference "fuelMass") (children (expression (kind "featureReference") (reference "vehicle")))) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal (integer 0))) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference")))
-              (contains
-                (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::_requireConstraint_0::_documentation"))) (name ""))
-              )
-            )
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::massReqd"))) (name "massReqd") (declared-name "massReqd") (declared (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal (integer 1500))) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::massReqd"))) (role feature-value))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
-            (element (kind "subject") (id (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::vehicle"))) (name "vehicle") (declared-name "vehicle"))
-          )
-        )
-        (element (kind "requirement") (id (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit"))) (name "fullVehicleMassLimit") (declared-name "fullVehicleMassLimit") (evaluation (expression (status "unresolved") (error "expression has an unresolved reference")) (analysis (status "unresolved")))
-          (contains
-            (element (kind "require constraint") (id (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (declared (own-expression (expression (kind "binary") (operator "==") (children (expression (kind "memberAccess") (reference "fuelMass") (children (expression (kind "featureReference") (reference "vehicle")))) (expression (kind "memberAccess") (reference "fuelFullMass") (children (expression (kind "featureReference") (reference "vehicle")))))))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference")))
-              (contains
-                (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::_requireConstraint_0::_documentation"))) (name ""))
-              )
-            )
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::massReqd"))) (name "massReqd") (declared-name "massReqd") (declared (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal (integer 2000))) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::massReqd"))) (role feature-value))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
-            (element (kind "subject") (id (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::vehicle"))) (name "vehicle") (declared-name "vehicle"))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "adfe67e1fcf229479d7bf9e84ac80c4afb7908a12d52e7ca74d1336540128ac4") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Requirement Usages"))) (kind "package") (name "Requirement Usages") (declared-name "Requirement Usages") (range (start (line 0) (character 0)) (end (line 0) (character 600))))
+    (element (id (node (document "d0") (qualified-name "Requirement Usages::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 22))) (parent (node (document "d0") (qualified-name "Requirement Usages"))) (authored (membership (kind Import) (visibility "private") (import (reference "SI::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 18))))))
+    (element (id (node (document "d0") (qualified-name "Requirement Usages::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 45))) (parent (node (document "d0") (qualified-name "Requirement Usages"))) (authored (membership (kind Import) (visibility "private") (import (reference "Requirement Definitions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 41))))))
+    (element (id (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit"))) (kind "requirement") (name "emptyVehicleMassLimit") (declared-name "emptyVehicleMassLimit") (range (start (line 14) (character 1)) (end (line 14) (character 239))) (parent (node (document "d0") (qualified-name "Requirement Usages"))) (authored (membership (kind Feature)) (relationships (typing (reference "VehicleMassLimitationRequirement") (range none)) (subject (reference "Requirement Usages::emptyVehicleMassLimit::vehicle") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::_requireConstraint_0"))) (kind "require constraint") (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (range (start (line 18) (character 2)) (end (line 18) (character 87))) (parent (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit"))))
+    (element (id (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::_requireConstraint_0::_documentation"))) (kind "documentation") (name "") (range (start (line 18) (character 2)) (end (line 18) (character 87))) (parent (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::_requireConstraint_0"))))
+    (element (id (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::massReqd"))) (kind "attribute") (name "massReqd") (declared-name "massReqd") (range (start (line 16) (character 2)) (end (line 16) (character 36))) (parent (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit"))) (authored (relationships (redefinition (reference "massReqd") (range (start (line 16) (character 16)) (end (line 16) (character 24)))))))
+    (element (id (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::vehicle"))) (kind "subject") (name "vehicle") (declared-name "vehicle") (range (start (line 15) (character 2)) (end (line 15) (character 28))) (parent (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit"))) (authored (relationships (typing (reference "Vehicle") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit"))) (kind "requirement") (name "fullVehicleMassLimit") (declared-name "fullVehicleMassLimit") (range (start (line 4) (character 1)) (end (line 4) (character 252))) (parent (node (document "d0") (qualified-name "Requirement Usages"))) (authored (membership (kind Feature)) (relationships (typing (reference "VehicleMassLimitationRequirement") (range none)) (subject (reference "Requirement Usages::fullVehicleMassLimit::vehicle") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::_requireConstraint_0"))) (kind "require constraint") (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (range (start (line 8) (character 2)) (end (line 8) (character 101))) (parent (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit"))))
+    (element (id (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::_requireConstraint_0::_documentation"))) (kind "documentation") (name "") (range (start (line 8) (character 2)) (end (line 8) (character 101))) (parent (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::_requireConstraint_0"))))
+    (element (id (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::massReqd"))) (kind "attribute") (name "massReqd") (declared-name "massReqd") (range (start (line 6) (character 2)) (end (line 6) (character 36))) (parent (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit"))) (authored (relationships (redefinition (reference "massReqd") (range (start (line 6) (character 16)) (end (line 6) (character 24)))))))
+    (element (id (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::vehicle"))) (kind "subject") (name "vehicle") (declared-name "vehicle") (range (start (line 5) (character 2)) (end (line 5) (character 28))) (parent (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit"))) (authored (relationships (typing (reference "Vehicle") (range none)))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Requirement Usages::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "SI::*") (range (start (line 1) (character 16)) (end (line 1) (character 18))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Requirement Usages::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "Requirement Definitions::*") (range (start (line 2) (character 16)) (end (line 2) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit"))) (kind featureTyping) (ordinal 0)) (authored-target "VehicleMassLimitationRequirement") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit"))) (kind referenceSubsetting) (ordinal 0)) (authored-target "Requirement Usages::emptyVehicleMassLimit::vehicle") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::vehicle")))))
+    (reference (id (source (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::massReqd"))) (kind redefinition) (ordinal 0)) (authored-target "massReqd") (range (start (line 16) (character 16)) (end (line 16) (character 24))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::massReqd")))))
+    (reference (id (source (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::vehicle"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit"))) (kind featureTyping) (ordinal 0)) (authored-target "VehicleMassLimitationRequirement") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit"))) (kind referenceSubsetting) (ordinal 0)) (authored-target "Requirement Usages::fullVehicleMassLimit::vehicle") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::vehicle")))))
+    (reference (id (source (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::massReqd"))) (kind redefinition) (ordinal 0)) (authored-target "massReqd") (range (start (line 6) (character 16)) (end (line 6) (character 24))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::massReqd")))))
+    (reference (id (source (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::vehicle"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (range none) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::_requireConstraint_0::_documentation"))) (to (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::_requireConstraint_0"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::_requireConstraint_0::_documentation"))) (to (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::_requireConstraint_0"))) (provenance authored))
-    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit"))) (to (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::vehicle"))) (provenance authored))
-    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit"))) (to (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::vehicle"))) (provenance authored))
+    (relationship (kind referenceSubsetting) (source (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit"))) (target (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::vehicle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit"))) (kind referenceSubsetting) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::massReqd"))) (target (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::massReqd"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::massReqd"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind referenceSubsetting) (source (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit"))) (target (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::vehicle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit"))) (kind referenceSubsetting) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::massReqd"))) (target (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::massReqd"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::massReqd"))) (kind redefinition) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::_requireConstraint_0"))) (status missing-prerequisite) (target "Constraints::constraintChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::massReqd"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::_requireConstraint_0"))) (status missing-prerequisite) (target "Constraints::constraintChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::massReqd"))) (status missing-prerequisite) (target "Base::dataValues"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/32_requirement_usages.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 18))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 16) (end 2 41))
-      )
-      (diagnostic
-        (severity warning)
-        (code "analysis_evaluation_unresolved")
-        (source "semantic")
-        (range (start 4 1) (end 4 252))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 4 1) (end 4 252))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 5 2) (end 5 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unknown_unit_symbol")
-        (source "semantic")
-        (range (start 6 2) (end 6 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 6 2) (end 6 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "analysis_evaluation_unresolved")
-        (source "semantic")
-        (range (start 14 1) (end 14 239))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 14 1) (end 14 239))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 15 2) (end 15 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unknown_unit_symbol")
-        (source "semantic")
-        (range (start 16 2) (end 16 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 16 2) (end 16 36))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit")) (expression (status "unresolved") (error "expression has an unresolved reference")) (analysis (status "unresolved")))
+    (node (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::_requireConstraint_0")) (expression (status "unresolved") (error "expression has an unresolved reference")))
+    (node (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::massReqd")) (expression (status "unsupported") (error "declared expression form is not supported")))
+    (node (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit")) (expression (status "unresolved") (error "expression has an unresolved reference")) (analysis (status "unresolved")))
+    (node (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::_requireConstraint_0")) (expression (status "unresolved") (error "expression has an unresolved reference")))
+    (node (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::massReqd")) (expression (status "unsupported") (error "declared expression form is not supported")))
   )
 )
 ~~~

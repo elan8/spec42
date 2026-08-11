@@ -17,29 +17,68 @@ package ExtendedExamples {
     variation #situation def V;
 }
 ~~~
-# EXPECTED
-~~~
-semantic.duplicate_name 'Failure'
-semantic.duplicate_name 'Failure'
-semantic.duplicate_name 'x'
-semantic.ambiguous_member 'Failure'
-semantic.ambiguous_member 'Failure'
-semantic.ambiguous_member 'x'
-semantic.unresolved_name 'Base'
-semantic.unresolved_name 'T'
-semantic.unresolved_name 'T'
-~~~
-# PROBLEMS
-~~~
-semantic.duplicate_name 'Failure'
-semantic.duplicate_name 'Failure'
-semantic.duplicate_name 'x'
-semantic.ambiguous_member 'Failure'
-semantic.ambiguous_member 'Failure'
-semantic.ambiguous_member 'x'
-semantic.unresolved_name 'Base'
-semantic.unresolved_name 'T'
-semantic.unresolved_name 'T'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "coverage_extended.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 1 15) (end 1 32))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 2 15) (end 2 40))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_package_body_element")
+        (source "sysml")
+        (range (start 3 4) (end 3 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_annotation_syntax")
+        (source "sysml")
+        (range (start 4 4) (end 4 55))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 5 15) (end 5 43))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 6 15) (end 6 31))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 7 15) (end 7 26))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 8 15) (end 8 29))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_package_body_element")
+        (source "sysml")
+        (range (start 9 4) (end 9 32))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -70,6 +109,30 @@ CloseCurly,EndOfFile,
     (extended_usage #'situation' 'x' : 'T')
     (extended_def variation #'situation' 'V')))
 ~~~
+# EXPECTED
+~~~
+semantic.duplicate_name 'Failure'
+semantic.duplicate_name 'Failure'
+semantic.duplicate_name 'x'
+semantic.ambiguous_member 'Failure'
+semantic.ambiguous_member 'Failure'
+semantic.ambiguous_member 'x'
+semantic.unresolved_name 'Base'
+semantic.unresolved_name 'T'
+semantic.unresolved_name 'T'
+~~~
+# PROBLEMS
+~~~
+semantic.duplicate_name 'Failure'
+semantic.duplicate_name 'Failure'
+semantic.duplicate_name 'x'
+semantic.ambiguous_member 'Failure'
+semantic.ambiguous_member 'Failure'
+semantic.ambiguous_member 'x'
+semantic.unresolved_name 'Base'
+semantic.unresolved_name 'T'
+semantic.unresolved_name 'T'
+~~~
 # FORMAT
 ~~~sysml
 package ExtendedExamples {
@@ -87,143 +150,22 @@ package ExtendedExamples {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ExtendedExamples"))) (name "ExtendedExamples") (declared-name "ExtendedExamples")
-      (contains
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ExtendedExamples::_situation"))) (name "situation") (declared-name "situation"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword"))) (name "situation") (declared-name "situation"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword2"))) (name "situation") (declared-name "situation"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword3"))) (name "situation") (declared-name "situation"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword4"))) (name "situation") (declared-name "situation"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword5"))) (name "situation") (declared-name "situation"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "195b70ac4690dcf66b928bac48890da04bb5ae444ebcad237ac9d0c949b0ee67") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ExtendedExamples"))) (kind "package") (name "ExtendedExamples") (declared-name "ExtendedExamples") (range (start (line 0) (character 0)) (end (line 0) (character 333))))
+    (element (id (node (document "d0") (qualified-name "ExtendedExamples::_situation"))) (kind "metadata keyword") (name "situation") (declared-name "situation") (range (start (line 1) (character 4)) (end (line 1) (character 15))) (parent (node (document "d0") (qualified-name "ExtendedExamples"))))
+    (element (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword"))) (kind "metadata keyword") (name "situation") (declared-name "situation") (range (start (line 2) (character 4)) (end (line 2) (character 15))) (parent (node (document "d0") (qualified-name "ExtendedExamples"))))
+    (element (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword2"))) (kind "metadata keyword") (name "situation") (declared-name "situation") (range (start (line 5) (character 4)) (end (line 5) (character 15))) (parent (node (document "d0") (qualified-name "ExtendedExamples"))))
+    (element (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword3"))) (kind "metadata keyword") (name "situation") (declared-name "situation") (range (start (line 6) (character 4)) (end (line 6) (character 15))) (parent (node (document "d0") (qualified-name "ExtendedExamples"))))
+    (element (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword4"))) (kind "metadata keyword") (name "situation") (declared-name "situation") (range (start (line 7) (character 4)) (end (line 7) (character 15))) (parent (node (document "d0") (qualified-name "ExtendedExamples"))))
+    (element (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword5"))) (kind "metadata keyword") (name "situation") (declared-name "situation") (range (start (line 8) (character 4)) (end (line 8) (character 15))) (parent (node (document "d0") (qualified-name "ExtendedExamples"))))
+  )
+  (references
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExtendedExamples::_situation"))) (to (node (document "d0") (qualified-name "ExtendedExamples"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword"))) (to (node (document "d0") (qualified-name "ExtendedExamples"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword2"))) (to (node (document "d0") (qualified-name "ExtendedExamples"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword3"))) (to (node (document "d0") (qualified-name "ExtendedExamples"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword4"))) (to (node (document "d0") (qualified-name "ExtendedExamples"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword5"))) (to (node (document "d0") (qualified-name "ExtendedExamples"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ExtendedExamples::_situation"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword2"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword3"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword4"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword5"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/coverage_extended.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 1 4) (end 1 15))
-      )
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 1 15) (end 1 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 2 4) (end 2 15))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 2 4) (end 2 15))
-      )
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 2 15) (end 2 40))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_package_body_element")
-        (source "sysml")
-        (range (start 3 4) (end 3 49))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_annotation_syntax")
-        (source "sysml")
-        (range (start 4 4) (end 4 55))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 5 4) (end 5 15))
-      )
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 5 15) (end 5 43))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 6 4) (end 6 15))
-      )
-      (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 6 15) (end 6 31))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 7 4) (end 7 15))
-      )
-      (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 7 15) (end 7 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 8 4) (end 8 15))
-      )
-      (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 8 15) (end 8 29))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_package_body_element")
-        (source "sysml")
-        (range (start 9 4) (end 9 32))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

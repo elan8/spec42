@@ -157,6 +157,213 @@ package ServerSequenceRealization_3 {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "server_sequence_realization_3.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 8 3) (end 8 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 12 3) (end 12 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 13 3) (end 13 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 31 4) (end 31 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 40 29) (end 40 61))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 40 65) (end 40 88))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 49 4) (end 49 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 52 4) (end 52 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 53 4) (end 53 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 56 31) (end 56 57))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 56 61) (end 56 95))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 57 29) (end 57 52))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 57 56) (end 57 89))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 58 30) (end 58 64))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 58 68) (end 58 92))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_part_usage_body_element")
+        (source "sysml")
+        (range (start 60 3) (end 60 722))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 97 4) (end 97 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 98 4) (end 98 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 101 31) (end 101 65))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 101 69) (end 101 95))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 102 30) (end 102 54))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 102 58) (end 102 92))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 116 22) (end 116 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 118 41) (end 118 61))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 122 43) (end 122 65))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 123 42) (end 123 62))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 124 42) (end 124 62))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 128 43) (end 128 65))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 129 42) (end 129 62))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_part_usage_body_element")
+        (source "sysml")
+        (range (start 132 2) (end 132 264))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 132 2) (end 132 264))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -418,6 +625,88 @@ CloseCurly,EndOfFile,
         (source_succession
           (malformed))))))
 ~~~
+# EXPECTED
+~~~
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+semantic.duplicate_name 'continuePublishing'
+semantic.duplicate_name 'delivering'
+semantic.duplicate_name 'continuePublishing'
+semantic.unresolved_name 'Publish'
+semantic.unresolved_name 'Subscribe'
+semantic.unresolved_name 'Deliver'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Publish'
+semantic.unresolved_name 'Subscribe'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Publish'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Deliver'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Subscribe'
+semantic.unresolved_name 'Deliver'
+semantic.unresolved_name 'PubSubSequence'
+semantic.unresolved_name 'producer'
+semantic.unresolved_name 'server'
+semantic.unresolved_name 'consumer'
+semantic.unresolved_name 'publish_message'
+semantic.unresolved_name 'subscribe_message'
+semantic.unresolved_name 'deliver_message'
+~~~
+# PROBLEMS
+~~~
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+semantic.duplicate_name 'continuePublishing'
+semantic.duplicate_name 'delivering'
+semantic.duplicate_name 'continuePublishing'
+semantic.unresolved_name 'Publish'
+semantic.unresolved_name 'Subscribe'
+semantic.unresolved_name 'Deliver'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Publish'
+semantic.unresolved_name 'Subscribe'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Publish'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Deliver'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Subscribe'
+semantic.unresolved_name 'Deliver'
+semantic.unresolved_name 'PubSubSequence'
+semantic.unresolved_name 'producer'
+semantic.unresolved_name 'server'
+semantic.unresolved_name 'consumer'
+semantic.unresolved_name 'publish_message'
+semantic.unresolved_name 'subscribe_message'
+semantic.unresolved_name 'deliver_message'
+~~~
 # FORMAT
 ~~~sysml
 package ServerSequenceRealization_3 {
@@ -572,410 +861,135 @@ package ServerSequenceRealization_3 {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-semantic.duplicate_name 'continuePublishing'
-semantic.duplicate_name 'delivering'
-semantic.duplicate_name 'continuePublishing'
-semantic.unresolved_name 'Publish'
-semantic.unresolved_name 'Subscribe'
-semantic.unresolved_name 'Deliver'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Publish'
-semantic.unresolved_name 'Subscribe'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Publish'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Deliver'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Subscribe'
-semantic.unresolved_name 'Deliver'
-semantic.unresolved_name 'PubSubSequence'
-semantic.unresolved_name 'producer'
-semantic.unresolved_name 'server'
-semantic.unresolved_name 'consumer'
-semantic.unresolved_name 'publish_message'
-semantic.unresolved_name 'subscribe_message'
-semantic.unresolved_name 'deliver_message'
-~~~
-# PROBLEMS
-~~~
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-semantic.duplicate_name 'continuePublishing'
-semantic.duplicate_name 'delivering'
-semantic.duplicate_name 'continuePublishing'
-semantic.unresolved_name 'Publish'
-semantic.unresolved_name 'Subscribe'
-semantic.unresolved_name 'Deliver'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Publish'
-semantic.unresolved_name 'Subscribe'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Publish'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Deliver'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Subscribe'
-semantic.unresolved_name 'Deliver'
-semantic.unresolved_name 'PubSubSequence'
-semantic.unresolved_name 'producer'
-semantic.unresolved_name 'server'
-semantic.unresolved_name 'consumer'
-semantic.unresolved_name 'publish_message'
-semantic.unresolved_name 'subscribe_message'
-semantic.unresolved_name 'deliver_message'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3"))) (name "ServerSequenceRealization_3") (declared-name "ServerSequenceRealization_3")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "package") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration"))) (name "Configuration") (declared-name "Configuration")
-          (contains
-            (element (kind "interface def") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationInterface"))) (name "PublicationInterface") (declared-name "PublicationInterface")
-              (contains
-                (element (kind "interface end") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationInterface::source"))) (name "source") (declared-name "source") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationInterface")))))
-                (element (kind "interface end") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationInterface::target"))) (name "target") (declared-name "target") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationInterface")))))
-              )
-            )
-            (element (kind "port def") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort"))) (name "PublicationPort") (declared-name "PublicationPort")
-              (contains
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort::ref"))) (name "ref") (declared-name "ref") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort")))))
-                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort::~PublicationPort"))) (name "~PublicationPort") (declared-name "~PublicationPort") (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort")))))
-              )
-            )
-            (element (kind "interface def") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionInterface"))) (name "SubscriptionInterface") (declared-name "SubscriptionInterface")
-              (contains
-                (element (kind "interface end") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionInterface::source"))) (name "source") (declared-name "source") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionInterface")))))
-                (element (kind "interface end") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionInterface::target"))) (name "target") (declared-name "target") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionInterface")))))
-              )
-            )
-            (element (kind "port def") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort"))) (name "SubscriptionPort") (declared-name "SubscriptionPort")
-              (contains
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort::ref"))) (name "ref") (declared-name "ref") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort")))))
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort::ref#in_out_parameter"))) (name "ref") (declared-name "ref") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort")))))
-                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort::~SubscriptionPort"))) (name "~SubscriptionPort") (declared-name "~SubscriptionPort") (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort")))))
-              )
-            )
-            (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3"))) (name "consumer_3") (declared-name "consumer_3") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored)))
-              (contains
-                (element (kind "action") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::consumerBehavior"))) (name "consumerBehavior") (declared-name "consumerBehavior"))
-                (element (kind "flow") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::deliver_response"))) (name "deliver_response") (declared-name "deliver_response"))
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::myTopic"))) (name "myTopic") (declared-name "myTopic") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-                (element (kind "flow") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::subscribe_request"))) (name "subscribe_request") (declared-name "subscribe_request"))
-                (element (kind "port") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::subscriptionPort"))) (name "subscriptionPort") (declared-name "subscriptionPort") (declared (properties (conjugated true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-                  (contains
-                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::subscriptionPort::ref"))) (name "ref") (declared-name "ref") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort::~SubscriptionPort")))))
-                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::subscriptionPort::ref#in_out_parameter"))) (name "ref") (declared-name "ref") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort::~SubscriptionPort")))))
-                  )
-                )
-              )
-            )
-            (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3"))) (name "producer_3") (declared-name "producer_3") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored)))
-              (contains
-                (element (kind "action") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::producerBehavior"))) (name "producerBehavior") (declared-name "producerBehavior"))
-                (element (kind "port") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::publicationPort"))) (name "publicationPort") (declared-name "publicationPort") (declared (properties (conjugated true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-                  (contains
-                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::publicationPort::ref"))) (name "ref") (declared-name "ref") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort::~PublicationPort")))))
-                  )
-                )
-                (element (kind "flow") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::publish_request"))) (name "publish_request") (declared-name "publish_request"))
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::someTopic"))) (name "someTopic") (declared-name "someTopic") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-              )
-            )
-            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::publication_interface"))) (name "publication_interface") (declared-name "publication_interface"))
-            (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3"))) (name "server_3") (declared-name "server_3") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored)))
-              (contains
-                (element (kind "flow") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::deliver_response"))) (name "deliver_response") (declared-name "deliver_response"))
-                (element (kind "port") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::publicationPort"))) (name "publicationPort") (declared-name "publicationPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-                  (contains
-                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::publicationPort::ref"))) (name "ref") (declared-name "ref") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort")))))
-                  )
-                )
-                (element (kind "flow") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::publish_request"))) (name "publish_request") (declared-name "publish_request"))
-                (element (kind "flow") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::subscribe_request"))) (name "subscribe_request") (declared-name "subscribe_request"))
-                (element (kind "port") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::subscriptionPort"))) (name "subscriptionPort") (declared-name "subscriptionPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-                  (contains
-                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::subscriptionPort::ref"))) (name "ref") (declared-name "ref") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort")))))
-                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::subscriptionPort::ref#in_out_parameter"))) (name "ref") (declared-name "ref") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort")))))
-                  )
-                )
-              )
-            )
-            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::subscription_interface"))) (name "subscription_interface") (declared-name "subscription_interface"))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::String"))) (name "String") (declared-name "String"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2"))) (name "realization_2") (declared-name "realization_2") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::consumer"))) (name "consumer") (declared-name "consumer") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::consumer::consumerBehavior.delivery"))) (name "consumerBehavior.delivery") (declared-name "consumerBehavior.delivery") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::consumer::consumerBehavior.subscribe"))) (name "consumerBehavior.subscribe") (declared-name "consumerBehavior.subscribe") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
-              )
-            )
-            (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::producer"))) (name "producer") (declared-name "producer") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::producer::producerBehavior.publish"))) (name "producerBehavior.publish") (declared-name "producerBehavior.publish") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
-              )
-            )
-            (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::server"))) (name "server") (declared-name "server") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::server::serverBehavior.delivering"))) (name "serverBehavior.delivering") (declared-name "serverBehavior.delivering") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::server::serverBehavior.publishing"))) (name "serverBehavior.publishing") (declared-name "serverBehavior.publishing") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::server::serverBehavior.subscribing"))) (name "serverBehavior.subscribing") (declared-name "serverBehavior.subscribing") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
-              )
-            )
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "6232161176d1c8f604d09bd2c630c3d61efe42720abd1677789fe70ca88c40f4") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3"))) (kind "package") (name "ServerSequenceRealization_3") (declared-name "ServerSequenceRealization_3") (range (start (line 0) (character 0)) (end (line 0) (character 4724))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 39))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3"))) (authored (membership (kind Import) (visibility "private") (import (reference "ServerSequenceModel::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 35))))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 3) (character 1)) (end (line 3) (character 33))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3"))) (authored (membership (kind Import) (visibility "private") (import (reference "Configuration::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 3) (character 16)) (end (line 3) (character 29))))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration"))) (kind "package") (name "Configuration") (declared-name "Configuration") (range (start (line 5) (character 1)) (end (line 5) (character 3212))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3"))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationInterface"))) (kind "interface def") (name "PublicationInterface") (declared-name "PublicationInterface") (range (start (line 16) (character 2)) (end (line 16) (character 109))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration"))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationInterface::source"))) (kind "interface end") (name "source") (declared-name "source") (range (start (line 17) (character 3)) (end (line 17) (character 33))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationInterface"))) (authored (relationships (typing (reference "~PublicationPort") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationInterface::target"))) (kind "interface end") (name "target") (declared-name "target") (range (start (line 18) (character 3)) (end (line 18) (character 32))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationInterface"))) (authored (relationships (typing (reference "PublicationPort") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort"))) (kind "port def") (name "PublicationPort") (declared-name "PublicationPort") (range (start (line 7) (character 2)) (end (line 7) (character 61))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration"))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort::ref"))) (kind "in out parameter") (name "ref") (declared-name "ref") (range (start (line 8) (character 3)) (end (line 8) (character 28))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort"))) (authored (relationships (typing (reference "ref publish : Publish") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort::~PublicationPort"))) (kind "conjugated port definition") (name "~PublicationPort") (declared-name "~PublicationPort") (range (start (line 7) (character 2)) (end (line 7) (character 61))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort"))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionInterface"))) (kind "interface def") (name "SubscriptionInterface") (declared-name "SubscriptionInterface") (range (start (line 21) (character 2)) (end (line 21) (character 112))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration"))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionInterface::source"))) (kind "interface end") (name "source") (declared-name "source") (range (start (line 22) (character 3)) (end (line 22) (character 34))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionInterface"))) (authored (relationships (typing (reference "~SubscriptionPort") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionInterface::target"))) (kind "interface end") (name "target") (declared-name "target") (range (start (line 23) (character 3)) (end (line 23) (character 33))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionInterface"))) (authored (relationships (typing (reference "SubscriptionPort") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort"))) (kind "port def") (name "SubscriptionPort") (declared-name "SubscriptionPort") (range (start (line 11) (character 2)) (end (line 11) (character 96))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration"))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort::ref"))) (kind "in out parameter") (name "ref") (declared-name "ref") (range (start (line 12) (character 3)) (end (line 12) (character 32))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort"))) (authored (relationships (typing (reference "ref subscribe : Subscribe") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort::ref#in_out_parameter"))) (kind "in out parameter") (name "ref") (declared-name "ref") (range (start (line 13) (character 3)) (end (line 13) (character 29))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort"))) (authored (relationships (typing (reference "ref deliver : Deliver") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort::~SubscriptionPort"))) (kind "conjugated port definition") (name "~SubscriptionPort") (declared-name "~SubscriptionPort") (range (start (line 11) (character 2)) (end (line 11) (character 96))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort"))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3"))) (kind "part") (name "consumer_3") (declared-name "consumer_3") (range (start (line 93) (character 2)) (end (line 93) (character 555))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration"))) (authored (membership (kind Feature)) (relationships (perform (reference "ServerSequenceRealization_3::Configuration::consumer_3::consumerBehavior") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::consumerBehavior"))) (kind "action") (name "consumerBehavior") (declared-name "consumerBehavior") (range (start (line 104) (character 3)) (end (line 104) (character 194))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3"))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::deliver_response"))) (kind "flow") (name "deliver_response") (declared-name "deliver_response") (range (start (line 102) (character 3)) (end (line 102) (character 93))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3"))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::myTopic"))) (kind "attribute") (name "myTopic") (declared-name "myTopic") (range (start (line 94) (character 3)) (end (line 94) (character 30))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3"))) (authored (membership (kind Feature)) (relationships (typing (reference "String") (range none)) (typing (reference "String") (range (start (line 94) (character 23)) (end (line 94) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::subscribe_request"))) (kind "flow") (name "subscribe_request") (declared-name "subscribe_request") (range (start (line 101) (character 3)) (end (line 101) (character 96))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3"))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::subscriptionPort"))) (kind "port") (name "subscriptionPort") (declared-name "subscriptionPort") (range (start (line 96) (character 3)) (end (line 96) (character 102))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3"))) (authored (membership (kind Feature)) (relationships (typing (reference "~SubscriptionPort") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::subscriptionPort::ref"))) (kind "in out parameter") (name "ref") (declared-name "ref") (range (start (line 97) (character 4)) (end (line 97) (character 26))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::subscriptionPort"))) (authored (relationships (typing (reference "ref :>> subscribe") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::subscriptionPort::ref#in_out_parameter"))) (kind "in out parameter") (name "ref") (declared-name "ref") (range (start (line 98) (character 4)) (end (line 98) (character 23))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::subscriptionPort"))) (authored (relationships (typing (reference "ref :>> deliver") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3"))) (kind "part") (name "producer_3") (declared-name "producer_3") (range (start (line 26) (character 2)) (end (line 26) (character 415))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration"))) (authored (membership (kind Feature)) (relationships (perform (reference "ServerSequenceRealization_3::Configuration::producer_3::producerBehavior") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::producerBehavior"))) (kind "action") (name "producerBehavior") (declared-name "producerBehavior") (range (start (line 34) (character 3)) (end (line 34) (character 145))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3"))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::publicationPort"))) (kind "port") (name "publicationPort") (declared-name "publicationPort") (range (start (line 30) (character 3)) (end (line 30) (character 74))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3"))) (authored (membership (kind Feature)) (relationships (typing (reference "~PublicationPort") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::publicationPort::ref"))) (kind "in out parameter") (name "ref") (declared-name "ref") (range (start (line 31) (character 4)) (end (line 31) (character 24))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::publicationPort"))) (authored (relationships (typing (reference "ref :>> publish") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::publish_request"))) (kind "flow") (name "publish_request") (declared-name "publish_request") (range (start (line 40) (character 3)) (end (line 40) (character 89))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3"))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::someTopic"))) (kind "attribute") (name "someTopic") (declared-name "someTopic") (range (start (line 27) (character 3)) (end (line 27) (character 32))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3"))) (authored (membership (kind Feature)) (relationships (typing (reference "String") (range none)) (typing (reference "String") (range (start (line 27) (character 25)) (end (line 27) (character 31)))))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::publication_interface"))) (kind "kermlDecl") (name "publication_interface") (declared-name "publication_interface") (range (start (line 43) (character 2)) (end (line 43) (character 232))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration"))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3"))) (kind "part") (name "server_3") (declared-name "server_3") (range (start (line 47) (character 2)) (end (line 47) (character 1212))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration"))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::deliver_response"))) (kind "flow") (name "deliver_response") (declared-name "deliver_response") (range (start (line 58) (character 3)) (end (line 58) (character 93))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3"))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::publicationPort"))) (kind "port") (name "publicationPort") (declared-name "publicationPort") (range (start (line 48) (character 3)) (end (line 48) (character 72))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3"))) (authored (membership (kind Feature)) (relationships (typing (reference "PublicationPort") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::publicationPort::ref"))) (kind "in out parameter") (name "ref") (declared-name "ref") (range (start (line 49) (character 4)) (end (line 49) (character 23))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::publicationPort"))) (authored (relationships (typing (reference "ref :>> publish") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::publish_request"))) (kind "flow") (name "publish_request") (declared-name "publish_request") (range (start (line 57) (character 3)) (end (line 57) (character 90))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3"))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::subscribe_request"))) (kind "flow") (name "subscribe_request") (declared-name "subscribe_request") (range (start (line 56) (character 3)) (end (line 56) (character 96))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3"))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::subscriptionPort"))) (kind "port") (name "subscriptionPort") (declared-name "subscriptionPort") (range (start (line 51) (character 3)) (end (line 51) (character 101))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3"))) (authored (membership (kind Feature)) (relationships (typing (reference "SubscriptionPort") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::subscriptionPort::ref"))) (kind "in out parameter") (name "ref") (declared-name "ref") (range (start (line 52) (character 4)) (end (line 52) (character 25))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::subscriptionPort"))) (authored (relationships (typing (reference "ref :>> subscribe") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::subscriptionPort::ref#in_out_parameter"))) (kind "in out parameter") (name "ref") (declared-name "ref") (range (start (line 53) (character 4)) (end (line 53) (character 24))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::subscriptionPort"))) (authored (relationships (typing (reference "ref :>> deliver") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::subscription_interface"))) (kind "kermlDecl") (name "subscription_interface") (declared-name "subscription_interface") (range (start (line 88) (character 2)) (end (line 88) (character 354))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration"))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::String"))) (kind "import") (name "String") (declared-name "String") (range (start (line 1) (character 1)) (end (line 1) (character 37))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::String") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 36))))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2"))) (kind "part") (name "realization_2") (declared-name "realization_2") (range (start (line 116) (character 1)) (end (line 116) (character 1355))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3"))) (authored (membership (kind Feature)) (relationships (typing (reference "PubSubSequence") (range (start (line 116) (character 22)) (end (line 116) (character 36)))))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::consumer"))) (kind "part") (name "consumer") (declared-name "consumer") (range (start (line 127) (character 2)) (end (line 127) (character 170))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "consumer_3") (range (start (line 127) (character 23)) (end (line 127) (character 33)))))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::consumer::consumerBehavior.delivery"))) (kind "occurrence") (name "consumerBehavior.delivery") (declared-name "consumerBehavior.delivery") (range (start (line 129) (character 9)) (end (line 129) (character 63))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::consumer"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "deliver_target_event") (range (start (line 129) (character 42)) (end (line 129) (character 62)))))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::consumer::consumerBehavior.subscribe"))) (kind "occurrence") (name "consumerBehavior.subscribe") (declared-name "consumerBehavior.subscribe") (range (start (line 128) (character 9)) (end (line 128) (character 66))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::consumer"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "subscribe_source_event") (range (start (line 128) (character 43)) (end (line 128) (character 65)))))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::producer"))) (kind "part") (name "producer") (declared-name "producer") (range (start (line 117) (character 2)) (end (line 117) (character 102))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "producer_3") (range (start (line 117) (character 23)) (end (line 117) (character 33)))))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::producer::producerBehavior.publish"))) (kind "occurrence") (name "producerBehavior.publish") (declared-name "producerBehavior.publish") (range (start (line 118) (character 9)) (end (line 118) (character 62))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::producer"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "publish_source_event") (range (start (line 118) (character 41)) (end (line 118) (character 61)))))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::server"))) (kind "part") (name "server") (declared-name "server") (range (start (line 121) (character 2)) (end (line 121) (character 230))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "server_3") (range (start (line 121) (character 21)) (end (line 121) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::server::serverBehavior.delivering"))) (kind "occurrence") (name "serverBehavior.delivering") (declared-name "serverBehavior.delivering") (range (start (line 124) (character 9)) (end (line 124) (character 63))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::server"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "deliver_source_event") (range (start (line 124) (character 42)) (end (line 124) (character 62)))))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::server::serverBehavior.publishing"))) (kind "occurrence") (name "serverBehavior.publishing") (declared-name "serverBehavior.publishing") (range (start (line 123) (character 9)) (end (line 123) (character 63))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::server"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "publish_target_event") (range (start (line 123) (character 42)) (end (line 123) (character 62)))))))
+    (element (id (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::server::serverBehavior.subscribing"))) (kind "occurrence") (name "serverBehavior.subscribing") (declared-name "serverBehavior.subscribing") (range (start (line 122) (character 9)) (end (line 122) (character 66))) (parent (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::server"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "subscribe_target_event") (range (start (line 122) (character 43)) (end (line 122) (character 65)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ServerSequenceModel::*") (range (start (line 2) (character 16)) (end (line 2) (character 35))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "Configuration::*") (range (start (line 3) (character 16)) (end (line 3) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration")))))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationInterface::source"))) (kind featureTyping) (ordinal 0)) (authored-target "~PublicationPort") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort")))))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationInterface::target"))) (kind featureTyping) (ordinal 0)) (authored-target "PublicationPort") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort")))))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort::ref"))) (kind featureTyping) (ordinal 0)) (authored-target "ref publish : Publish") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionInterface::source"))) (kind featureTyping) (ordinal 0)) (authored-target "~SubscriptionPort") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort")))))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionInterface::target"))) (kind featureTyping) (ordinal 0)) (authored-target "SubscriptionPort") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort")))))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort::ref"))) (kind featureTyping) (ordinal 0)) (authored-target "ref subscribe : Subscribe") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort::ref#in_out_parameter"))) (kind featureTyping) (ordinal 0)) (authored-target "ref deliver : Deliver") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3"))) (kind flowSource) (ordinal 0)) (authored-target "consumerBehavior::subscribe::request") (range (start (line 101) (character 31)) (end (line 101) (character 65))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3"))) (kind flowSource) (ordinal 1)) (authored-target "subscriptionPort::deliver") (range (start (line 102) (character 30)) (end (line 102) (character 54))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3"))) (kind flowTarget) (ordinal 0)) (authored-target "subscriptionPort::subscribe") (range (start (line 101) (character 69)) (end (line 101) (character 95))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3"))) (kind flowTarget) (ordinal 1)) (authored-target "consumerBehavior::delivery::response") (range (start (line 102) (character 58)) (end (line 102) (character 92))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3"))) (kind performSource) (ordinal 0)) (authored-target "ServerSequenceRealization_3::Configuration::consumer_3::consumerBehavior") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::consumerBehavior")))))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::myTopic"))) (kind featureTyping) (ordinal 0)) (authored-target "String") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::String")))))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::myTopic"))) (kind featureTyping) (ordinal 1)) (authored-target "String") (range (start (line 94) (character 23)) (end (line 94) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::String")))))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::subscriptionPort"))) (kind featureTyping) (ordinal 0)) (authored-target "~SubscriptionPort") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort")))))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::subscriptionPort::ref"))) (kind featureTyping) (ordinal 0)) (authored-target "ref :>> subscribe") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::subscriptionPort::ref#in_out_parameter"))) (kind featureTyping) (ordinal 0)) (authored-target "ref :>> deliver") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3"))) (kind flowSource) (ordinal 0)) (authored-target "producerBehavior::publish::request") (range (start (line 40) (character 29)) (end (line 40) (character 61))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3"))) (kind flowTarget) (ordinal 0)) (authored-target "publicationPort::publish") (range (start (line 40) (character 65)) (end (line 40) (character 88))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3"))) (kind performSource) (ordinal 0)) (authored-target "ServerSequenceRealization_3::Configuration::producer_3::producerBehavior") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::producerBehavior")))))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::publicationPort"))) (kind featureTyping) (ordinal 0)) (authored-target "~PublicationPort") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort")))))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::publicationPort::ref"))) (kind featureTyping) (ordinal 0)) (authored-target "ref :>> publish") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::someTopic"))) (kind featureTyping) (ordinal 0)) (authored-target "String") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::String")))))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::someTopic"))) (kind featureTyping) (ordinal 1)) (authored-target "String") (range (start (line 27) (character 25)) (end (line 27) (character 31))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::String")))))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3"))) (kind flowSource) (ordinal 0)) (authored-target "subscriptionPort::subscribe") (range (start (line 56) (character 31)) (end (line 56) (character 57))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3"))) (kind flowSource) (ordinal 1)) (authored-target "publicationPort::publish") (range (start (line 57) (character 29)) (end (line 57) (character 52))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3"))) (kind flowSource) (ordinal 2)) (authored-target "serverBehavior::delivering::response") (range (start (line 58) (character 30)) (end (line 58) (character 64))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3"))) (kind flowTarget) (ordinal 0)) (authored-target "serverBehavior::subscribing::request") (range (start (line 56) (character 61)) (end (line 56) (character 95))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3"))) (kind flowTarget) (ordinal 1)) (authored-target "serverBehavior::publishing::request") (range (start (line 57) (character 56)) (end (line 57) (character 89))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3"))) (kind flowTarget) (ordinal 2)) (authored-target "subscriptionPort::deliver") (range (start (line 58) (character 68)) (end (line 58) (character 92))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::publicationPort"))) (kind featureTyping) (ordinal 0)) (authored-target "PublicationPort") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort")))))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::publicationPort::ref"))) (kind featureTyping) (ordinal 0)) (authored-target "ref :>> publish") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::subscriptionPort"))) (kind featureTyping) (ordinal 0)) (authored-target "SubscriptionPort") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort")))))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::subscriptionPort::ref"))) (kind featureTyping) (ordinal 0)) (authored-target "ref :>> subscribe") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::subscriptionPort::ref#in_out_parameter"))) (kind featureTyping) (ordinal 0)) (authored-target "ref :>> deliver") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::String"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::String") (range (start (line 1) (character 16)) (end (line 1) (character 36))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2"))) (kind featureTyping) (ordinal 0)) (authored-target "PubSubSequence") (range (start (line 116) (character 22)) (end (line 116) (character 36))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::consumer"))) (kind subsetting) (ordinal 0)) (authored-target "consumer_3") (range (start (line 127) (character 23)) (end (line 127) (character 33))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3")))))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::consumer::consumerBehavior.delivery"))) (kind redefinition) (ordinal 0)) (authored-target "deliver_target_event") (range (start (line 129) (character 42)) (end (line 129) (character 62))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::consumer::consumerBehavior.subscribe"))) (kind redefinition) (ordinal 0)) (authored-target "subscribe_source_event") (range (start (line 128) (character 43)) (end (line 128) (character 65))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::producer"))) (kind subsetting) (ordinal 0)) (authored-target "producer_3") (range (start (line 117) (character 23)) (end (line 117) (character 33))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3")))))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::producer::producerBehavior.publish"))) (kind redefinition) (ordinal 0)) (authored-target "publish_source_event") (range (start (line 118) (character 41)) (end (line 118) (character 61))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::server"))) (kind subsetting) (ordinal 0)) (authored-target "server_3") (range (start (line 121) (character 21)) (end (line 121) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3")))))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::server::serverBehavior.delivering"))) (kind redefinition) (ordinal 0)) (authored-target "deliver_source_event") (range (start (line 124) (character 42)) (end (line 124) (character 62))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::server::serverBehavior.publishing"))) (kind redefinition) (ordinal 0)) (authored-target "publish_target_event") (range (start (line 123) (character 42)) (end (line 123) (character 62))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::server::serverBehavior.subscribing"))) (kind redefinition) (ordinal 0)) (authored-target "subscribe_target_event") (range (start (line 122) (character 43)) (end (line 122) (character 65))) (outcome (status unresolved)))
   )
   (relationships
-    (connection (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort::~PublicationPort"))) (to (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort"))) (provenance authored))
-    (connection (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort::~SubscriptionPort"))) (to (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort"))) (provenance authored))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3"))) (to (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::consumerBehavior"))) (provenance authored))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3"))) (to (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::producerBehavior"))) (provenance authored))
-    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort::~PublicationPort"))) (to (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort"))) (provenance authored))
-    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort::~SubscriptionPort"))) (to (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationInterface::source"))) (to (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort::~PublicationPort"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationInterface::target"))) (to (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionInterface::source"))) (to (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort::~SubscriptionPort"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionInterface::target"))) (to (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::subscriptionPort"))) (to (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort::~SubscriptionPort"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::publicationPort"))) (to (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort::~PublicationPort"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::publicationPort"))) (to (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::subscriptionPort"))) (to (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationInterface::source"))) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationInterface::source"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationInterface::target"))) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationInterface::target"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionInterface::source"))) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionInterface::source"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionInterface::target"))) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionInterface::target"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3"))) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::consumerBehavior"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3"))) (kind performSource) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::myTopic"))) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::String"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::myTopic"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::myTopic"))) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::String"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::myTopic"))) (kind featureTyping) (ordinal 1)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::subscriptionPort"))) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::subscriptionPort"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3"))) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::producerBehavior"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3"))) (kind performSource) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::publicationPort"))) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::publicationPort"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::someTopic"))) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::String"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::someTopic"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::someTopic"))) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::String"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::someTopic"))) (kind featureTyping) (ordinal 1)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::publicationPort"))) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::publicationPort"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::subscriptionPort"))) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::subscriptionPort"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::consumer"))) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::consumer"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::producer"))) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::producer"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::server"))) (target (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::server"))) (kind subsetting) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationInterface"))) (status missing-prerequisite) (target "Interfaces::Interface"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort"))) (status missing-prerequisite) (target "Ports::Port"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort::~PublicationPort"))) (status missing-prerequisite) (target "Ports::Port"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionInterface"))) (status missing-prerequisite) (target "Interfaces::Interface"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort"))) (status missing-prerequisite) (target "Ports::Port"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort::~SubscriptionPort"))) (status missing-prerequisite) (target "Ports::Port"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::consumerBehavior"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::deliver_response"))) (status missing-prerequisite) (target "Flows::messages"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::myTopic"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::subscribe_request"))) (status missing-prerequisite) (target "Flows::messages"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::subscriptionPort"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::producerBehavior"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::publicationPort"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::publish_request"))) (status missing-prerequisite) (target "Flows::messages"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::someTopic"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::deliver_response"))) (status missing-prerequisite) (target "Flows::messages"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::publicationPort"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::publish_request"))) (status missing-prerequisite) (target "Flows::messages"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::subscribe_request"))) (status missing-prerequisite) (target "Flows::messages"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::subscriptionPort"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::consumer"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::consumer::consumerBehavior.delivery"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::consumer::consumerBehavior.subscribe"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::producer"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::producer::producerBehavior.publish"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::server"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::server::serverBehavior.delivering"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::server::serverBehavior.publishing"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceRealization_3::realization_2::server::serverBehavior.subscribing"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/server_sequence_realization_3.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 16) (end 2 35))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 8 3) (end 8 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 12 3) (end 12 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 13 3) (end 13 29))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 30 3) (end 30 74))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 31 4) (end 31 24))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 48 3) (end 48 72))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 49 4) (end 49 23))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 51 3) (end 51 101))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 52 4) (end 52 25))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 53 4) (end 53 24))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_part_usage_body_element")
-        (source "sysml")
-        (range (start 60 3) (end 60 722))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 96 3) (end 96 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 97 4) (end 97 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 98 4) (end 98 23))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 116 22) (end 116 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 118 9) (end 118 62))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 122 9) (end 122 66))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 123 9) (end 123 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 124 9) (end 124 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 128 9) (end 128 66))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 129 9) (end 129 63))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_part_usage_body_element")
-        (source "sysml")
-        (range (start 132 2) (end 132 264))
-      )
-      (diagnostic
-        (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 132 2) (end 132 264))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

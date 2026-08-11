@@ -101,6 +101,225 @@ package AnalysisIndividualExample {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "analysis_individual_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 19) (end 1 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 19) (end 2 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 3 19) (end 3 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 4 19) (end 4 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 20) (end 7 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 9 5) (end 9 368))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 10 6) (end 10 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 11 9) (end 11 104))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 15 5) (end 15 141))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 16 9) (end 16 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 20 5) (end 20 55))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 22 5) (end 22 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 26 19) (end 26 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 29 25) (end 29 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 33 29) (end 33 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 34 6) (end 34 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 34 33) (end 34 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 44 20) (end 44 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 45 20) (end 45 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 46 20) (end 46 53))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 47 20) (end 47 48))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 48 20) (end 48 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 51 3) (end 51 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 52 3) (end 52 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 56 3) (end 56 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 59 7) (end 59 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 60 10) (end 60 51))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 63 3) (end 63 91))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 63 3) (end 63 91))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 69 17) (end 69 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 70 17) (end 70 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 72 35) (end 72 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 73 34) (end 73 40))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_package_body_element")
+        (source "sysml")
+        (range (start 75 2) (end 75 74))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 75 2) (end 75 74))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -239,6 +458,52 @@ CloseCurly,EndOfFile,
       (action_def individual 'FuelConsumption_1' :> 'FuelConsumption')
       (malformed))))
 ~~~
+# EXPECTED
+~~~
+parse.expected_semicolon_or_body
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'VolumeUnit'
+semantic.unresolved_name 'PowerUnit'
+semantic.unresolved_name 'ISQ::power'
+semantic.unresolved_name 'ISQ::power'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'PowerValue'
+~~~
+# PROBLEMS
+~~~
+parse.expected_semicolon_or_body
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'VolumeUnit'
+semantic.unresolved_name 'PowerUnit'
+semantic.unresolved_name 'ISQ::power'
+semantic.unresolved_name 'ISQ::power'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'PowerValue'
+~~~
 # FORMAT
 ~~~sysml
 package AnalysisIndividualExample {
@@ -338,351 +603,121 @@ package AnalysisIndividualExample {
 }
 
 ~~~
-# EXPECTED
-~~~
-parse.expected_semicolon_or_body
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'VolumeUnit'
-semantic.unresolved_name 'PowerUnit'
-semantic.unresolved_name 'ISQ::power'
-semantic.unresolved_name 'ISQ::power'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'PowerValue'
-~~~
-# PROBLEMS
-~~~
-parse.expected_semicolon_or_body
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'VolumeUnit'
-semantic.unresolved_name 'PowerUnit'
-semantic.unresolved_name 'ISQ::power'
-semantic.unresolved_name 'ISQ::power'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'PowerValue'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "AnalysisIndividualExample"))) (name "AnalysisIndividualExample") (declared-name "AnalysisIndividualExample")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::*#import2"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::*#import3"))) (name "*") (declared-name "*"))
-        (element (kind "package") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel"))) (name "FuelEconomyAnalysisModel") (declared-name "FuelEconomyAnalysisModel")
-          (contains
-            (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::*"))) (name "*") (declared-name "*"))
-            (element (kind "action def") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption"))) (name "FuelConsumption") (declared-name "FuelConsumption")
-              (contains
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption::fuelEconomy"))) (name "fuelEconomy") (declared-name "fuelEconomy") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption")))))
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption::power"))) (name "power") (declared-name "power") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption")))))
-              )
-            )
-            (element (kind "analysis def") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis"))) (name "FuelEconomyAnalysis") (declared-name "FuelEconomyAnalysis") (evaluation (expression (status "incomplete") (error "expression is incomplete")))
-              (contains
-                (element (kind "analysis result") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::calculatedFuelEconomy"))) (name "calculatedFuelEconomy") (declared-name "calculatedFuelEconomy") (declared (own-expression (expression (kind "memberAccess") (reference "fuelEconomy") (children (expression (kind "featureReference") (reference "fuelConsumption")))))) (effective (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis")))) (evaluation (expression (status "incomplete") (error "expression is incomplete"))))
-                (element (kind "action") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumption"))) (name "fuelConsumption") (declared-name "fuelConsumption") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis"))))
-                  (contains
-                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumption::fuelEconomy"))) (name "fuelEconomy") (declared-name "fuelEconomy") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption")))))
-                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumption::power"))) (name "power") (declared-name "power") (declared (properties (direction "in")) (own-expression (expression (kind "memberAccess") (reference "power") (children (expression (kind "featureReference") (reference "vehicle")))))) (effective (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption")))) (evaluation (expression (status "incomplete") (error "expression is incomplete"))))
-                  )
-                )
-                (element (kind "subject") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::vehicle"))) (name "vehicle") (declared-name "vehicle") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis")))))
-              )
-            )
-            (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::SamplePair"))) (name "SamplePair") (declared-name "SamplePair"))
-            (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::SampledFunction"))) (name "SampledFunction") (declared-name "SampledFunction"))
-            (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::forAll"))) (name "forAll") (declared-name "forAll"))
-            (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::size"))) (name "size") (declared-name "size"))
-          )
-        )
-        (element (kind "package") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel"))) (name "IndividualAnalysisModel") (declared-name "IndividualAnalysisModel")
-          (contains
-            (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel::*"))) (name "*") (declared-name "*"))
-            (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel::*#import"))) (name "*") (declared-name "*"))
-            (element (kind "part def") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel::Engine_1"))) (name "Engine_1") (declared-name "Engine_1") (declared (properties (individual true))))
-            (element (kind "part def") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel::Vehicle_1"))) (name "Vehicle_1") (declared-name "Vehicle_1") (declared (properties (individual true))))
-          )
-        )
-        (element (kind "package") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel"))) (name "VehicleModel") (declared-name "VehicleModel")
-          (contains
-            (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::*"))) (name "*") (declared-name "*"))
-            (element (kind "part def") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine"))) (name "Engine") (declared-name "Engine") (declared)
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine::fuelEfficiency"))) (name "fuelEfficiency") (declared-name "fuelEfficiency") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine")))))
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine::peakPower"))) (name "peakPower") (declared-name "peakPower") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine")))))
-              )
-            )
-            (element (kind "part def") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle::power"))) (name "power") (declared-name "power") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle")))))
-              )
-            )
-            (element (kind "part") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1"))) (name "vehicle_c1") (declared-name "vehicle_c1") (declared (properties (ordered false)))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1::engine"))) (name "engine") (declared-name "engine") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle")))))
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1::power"))) (name "power") (declared-name "power") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "peakPower") (children (expression (kind "featureReference") (reference "engine")))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1::power"))) (role feature-value))) (evaluation (expression (status "incomplete") (error "expression is incomplete"))))
-              )
-            )
-          )
-        )
-        (element (kind "package") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities"))) (name "VehicleQuantities") (declared-name "VehicleQuantities")
-          (contains
-            (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::*"))) (name "*") (declared-name "*"))
-            (element (kind "attribute def") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit"))) (name "DistancePerVolumeUnit") (declared-name "DistancePerVolumeUnit") (declared (properties (ordered false) (unique true)))
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::distancePF"))) (name "distancePF") (declared-name "distancePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit")))))
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit")))))
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::volumePF"))) (name "volumePF") (declared-name "volumePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit")))))
-              )
-            )
-            (element (kind "attribute def") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue"))) (name "DistancePerVolumeValue") (declared-name "DistancePerVolumeValue") (declared (properties (ordered false) (unique true)))
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue")))))
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue")))))
-              )
-            )
-            (element (kind "attribute def") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::gallon"))) (name "gallon") (declared-name "gallon") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "binary") (operator "**") (children (expression (kind "binary") (operator "*") (children (expression (kind "realLiteral") (literal (real "231.0"))) (expression (kind "featureReference") (reference "in")))) (expression (kind "integerLiteral") (literal (integer 3))))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::gallon"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-            (element (kind "attribute def") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::hp"))) (name "hp") (declared-name "hp") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "realLiteral") (literal (real "745.7"))) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "SI::W")))))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::hp"))) (role feature-value))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
-            (element (kind "attribute def") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::mpg"))) (name "mpg") (declared-name "mpg") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "binary") (operator "/") (children (expression (kind "featureReference") (reference "mi")) (expression (kind "featureReference") (reference "gallon")))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::mpg"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "29b114029c99dac8ccc5ed951e3c1cfc4881b7bb5a99cf569d03842dfb7b28e1") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample"))) (kind "package") (name "AnalysisIndividualExample") (declared-name "AnalysisIndividualExample") (range (start (line 0) (character 0)) (end (line 0) (character 2819))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 4)) (end (line 1) (character 35))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 19)) (end (line 1) (character 31))))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 4)) (end (line 2) (character 33))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "Quantities::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 19)) (end (line 2) (character 29))))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::*#import2"))) (kind "import") (name "*") (declared-name "*") (range (start (line 3) (character 4)) (end (line 3) (character 26))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 3) (character 19)) (end (line 3) (character 22))))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::*#import3"))) (kind "import") (name "*") (declared-name "*") (range (start (line 4) (character 4)) (end (line 4) (character 39))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "USCustomaryUnits::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 4) (character 19)) (end (line 4) (character 35))))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel"))) (kind "package") (name "FuelEconomyAnalysisModel") (declared-name "FuelEconomyAnalysisModel") (range (start (line 43) (character 1)) (end (line 43) (character 722))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample"))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 44) (character 5)) (end (line 44) (character 36))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel"))) (authored (membership (kind Import) (visibility "private") (import (reference "VehicleModel::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 44) (character 20)) (end (line 44) (character 32))))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption"))) (kind "action def") (name "FuelConsumption") (declared-name "FuelConsumption") (range (start (line 50) (character 5)) (end (line 50) (character 111))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel"))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption::fuelEconomy"))) (kind "in out parameter") (name "fuelEconomy") (declared-name "fuelEconomy") (range (start (line 52) (character 3)) (end (line 52) (character 44))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption"))) (authored (relationships (typing (reference "DistancePerVolumeValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption::power"))) (kind "in out parameter") (name "power") (declared-name "power") (range (start (line 51) (character 3)) (end (line 51) (character 28))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption"))) (authored (relationships (typing (reference "power : PowerValue[*]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis"))) (kind "analysis def") (name "FuelEconomyAnalysis") (declared-name "FuelEconomyAnalysis") (range (start (line 55) (character 2)) (end (line 55) (character 329))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel"))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::calculatedFuelEconomy"))) (kind "analysis result") (name "calculatedFuelEconomy") (declared-name "calculatedFuelEconomy") (range (start (line 63) (character 3)) (end (line 63) (character 91))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis"))) (authored (relationships (typing (reference "DistancePerVolumeValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumption"))) (kind "action") (name "fuelConsumption") (declared-name "fuelConsumption") (range (start (line 58) (character 6)) (end (line 58) (character 144))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis"))) (authored (membership (kind Feature)) (relationships (typing (reference "FuelConsumption") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumption::fuelEconomy"))) (kind "in out parameter") (name "fuelEconomy") (declared-name "fuelEconomy") (range (start (line 60) (character 10)) (end (line 60) (character 51))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumption"))) (authored (relationships (typing (reference "DistancePerVolumeValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumption::power"))) (kind "in out parameter") (name "power") (declared-name "power") (range (start (line 59) (character 7)) (end (line 59) (character 32))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumption"))) (authored (relationships (typing (reference "") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::vehicle"))) (kind "subject") (name "vehicle") (declared-name "vehicle") (range (start (line 56) (character 3)) (end (line 56) (character 28))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis"))) (authored (relationships (typing (reference "Vehicle") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::SamplePair"))) (kind "import") (name "SamplePair") (declared-name "SamplePair") (range (start (line 47) (character 5)) (end (line 47) (character 49))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel"))) (authored (membership (kind Import) (visibility "private") (import (reference "SampledFunctions::SamplePair") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 47) (character 20)) (end (line 47) (character 48))))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::SampledFunction"))) (kind "import") (name "SampledFunction") (declared-name "SampledFunction") (range (start (line 46) (character 5)) (end (line 46) (character 54))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel"))) (authored (membership (kind Import) (visibility "private") (import (reference "SampledFunctions::SampledFunction") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 46) (character 20)) (end (line 46) (character 53))))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::forAll"))) (kind "import") (name "forAll") (declared-name "forAll") (range (start (line 48) (character 5)) (end (line 48) (character 45))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel"))) (authored (membership (kind Import) (visibility "private") (import (reference "ControlFunctions::forAll") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 48) (character 20)) (end (line 48) (character 44))))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::size"))) (kind "import") (name "size") (declared-name "size") (range (start (line 45) (character 5)) (end (line 45) (character 44))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::size") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 45) (character 20)) (end (line 45) (character 43))))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel"))) (kind "package") (name "IndividualAnalysisModel") (declared-name "IndividualAnalysisModel") (range (start (line 68) (character 1)) (end (line 68) (character 763))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample"))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 69) (character 2)) (end (line 69) (character 33))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel"))) (authored (membership (kind Import) (visibility "private") (import (reference "VehicleModel::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 69) (character 17)) (end (line 69) (character 29))))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 70) (character 2)) (end (line 70) (character 45))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel"))) (authored (membership (kind Import) (visibility "private") (import (reference "FuelEconomyAnalysisModel::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 70) (character 17)) (end (line 70) (character 41))))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel::Engine_1"))) (kind "part def") (name "Engine_1") (declared-name "Engine_1") (range (start (line 73) (character 2)) (end (line 73) (character 41))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Engine") (range (start (line 73) (character 34)) (end (line 73) (character 40)))))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel::Vehicle_1"))) (kind "part def") (name "Vehicle_1") (declared-name "Vehicle_1") (range (start (line 72) (character 2)) (end (line 72) (character 43))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Vehicle") (range (start (line 72) (character 35)) (end (line 72) (character 42)))))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel"))) (kind "package") (name "VehicleModel") (declared-name "VehicleModel") (range (start (line 25) (character 1)) (end (line 25) (character 380))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample"))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 26) (character 5)) (end (line 26) (character 40))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel"))) (authored (membership (kind Import) (visibility "public") (import (reference "VehicleQuantities::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 26) (character 19)) (end (line 26) (character 36))))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine"))) (kind "part def") (name "Engine") (declared-name "Engine") (range (start (line 32) (character 5)) (end (line 32) (character 109))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel"))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine::fuelEfficiency"))) (kind "attribute") (name "fuelEfficiency") (declared-name "fuelEfficiency") (range (start (line 34) (character 6)) (end (line 34) (character 38))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (typing (reference "Real") (range (start (line 34) (character 33)) (end (line 34) (character 37)))))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine::peakPower"))) (kind "attribute") (name "peakPower") (declared-name "peakPower") (range (start (line 33) (character 6)) (end (line 33) (character 40))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "ISQ::power") (range (start (line 33) (character 29)) (end (line 33) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (range (start (line 28) (character 5)) (end (line 28) (character 67))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel"))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle::power"))) (kind "attribute") (name "power") (declared-name "power") (range (start (line 29) (character 6)) (end (line 29) (character 36))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "ISQ::power") (range (start (line 29) (character 25)) (end (line 29) (character 35)))))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1"))) (kind "part") (name "vehicle_c1") (declared-name "vehicle_c1") (range (start (line 37) (character 5)) (end (line 37) (character 116))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle") (range (start (line 37) (character 23)) (end (line 37) (character 30)))))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1::engine"))) (kind "part") (name "engine") (declared-name "engine") (range (start (line 39) (character 6)) (end (line 39) (character 30))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1"))) (authored (membership (kind Feature)) (relationships (typing (reference "Engine") (range (start (line 39) (character 20)) (end (line 39) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1::power"))) (kind "attribute") (name "power") (declared-name "power") (range (start (line 38) (character 6)) (end (line 38) (character 45))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "power") (range (start (line 38) (character 20)) (end (line 38) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities"))) (kind "package") (name "VehicleQuantities") (declared-name "VehicleQuantities") (range (start (line 6) (character 1)) (end (line 6) (character 763))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample"))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 7) (character 5)) (end (line 7) (character 45))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities"))) (authored (membership (kind Import) (visibility "private") (import (reference "MeasurementReferences::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 7) (character 20)) (end (line 7) (character 41))))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit"))) (kind "attribute def") (name "DistancePerVolumeUnit") (declared-name "DistancePerVolumeUnit") (range (start (line 9) (character 5)) (end (line 9) (character 368))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::distancePF"))) (kind "attribute") (name "distancePF") (declared-name "distancePF") (range (start (line 10) (character 6)) (end (line 10) (character 102))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 12) (character 9)) (end (line 12) (character 95))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 12) (character 23)) (end (line 12) (character 40)))))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::volumePF"))) (kind "attribute") (name "volumePF") (declared-name "volumePF") (range (start (line 11) (character 9)) (end (line 11) (character 104))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue"))) (kind "attribute def") (name "DistancePerVolumeValue") (declared-name "DistancePerVolumeValue") (range (start (line 15) (character 5)) (end (line 15) (character 141))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 17) (character 9)) (end (line 17) (character 42))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "DistancePerVolumeUnit") (range none)) (redefinition (reference "mRef") (range (start (line 17) (character 9)) (end (line 17) (character 17)))))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 16) (character 9)) (end (line 16) (character 24))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 16) (character 9)) (end (line 16) (character 16)))))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::gallon"))) (kind "attribute def") (name "gallon") (declared-name "gallon") (range (start (line 20) (character 5)) (end (line 20) (character 55))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities"))) (authored (membership (kind Owning)) (relationships (typing (reference "VolumeUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::hp"))) (kind "attribute def") (name "hp") (declared-name "hp") (range (start (line 22) (character 5)) (end (line 22) (character 45))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities"))) (authored (membership (kind Owning)) (relationships (typing (reference "PowerUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::mpg"))) (kind "attribute def") (name "mpg") (declared-name "mpg") (range (start (line 21) (character 5)) (end (line 21) (character 59))) (parent (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities"))) (authored (membership (kind Owning)) (relationships (typing (reference "DistancePerVolumeUnit") (range none)))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (range (start (line 1) (character 19)) (end (line 1) (character 31))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "Quantities::*") (range (start (line 2) (character 19)) (end (line 2) (character 29))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::*#import2"))) (kind namespaceImport) (ordinal 0)) (authored-target "ISQ::*") (range (start (line 3) (character 19)) (end (line 3) (character 22))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::*#import3"))) (kind namespaceImport) (ordinal 0)) (authored-target "USCustomaryUnits::*") (range (start (line 4) (character 19)) (end (line 4) (character 35))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "VehicleModel::*") (range (start (line 44) (character 20)) (end (line 44) (character 32))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption::fuelEconomy"))) (kind featureTyping) (ordinal 0)) (authored-target "DistancePerVolumeValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption::power"))) (kind featureTyping) (ordinal 0)) (authored-target "power : PowerValue[*]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::calculatedFuelEconomy"))) (kind featureTyping) (ordinal 0)) (authored-target "DistancePerVolumeValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumption"))) (kind featureTyping) (ordinal 0)) (authored-target "FuelConsumption") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption")))))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumption::fuelEconomy"))) (kind featureTyping) (ordinal 0)) (authored-target "DistancePerVolumeValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumption::power"))) (kind featureTyping) (ordinal 0)) (authored-target "") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::vehicle"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::SamplePair"))) (kind membershipImport) (ordinal 0)) (authored-target "SampledFunctions::SamplePair") (range (start (line 47) (character 20)) (end (line 47) (character 48))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::SampledFunction"))) (kind membershipImport) (ordinal 0)) (authored-target "SampledFunctions::SampledFunction") (range (start (line 46) (character 20)) (end (line 46) (character 53))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::forAll"))) (kind membershipImport) (ordinal 0)) (authored-target "ControlFunctions::forAll") (range (start (line 48) (character 20)) (end (line 48) (character 44))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::size"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::size") (range (start (line 45) (character 20)) (end (line 45) (character 43))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "VehicleModel::*") (range (start (line 69) (character 17)) (end (line 69) (character 29))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "FuelEconomyAnalysisModel::*") (range (start (line 70) (character 17)) (end (line 70) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel::Engine_1"))) (kind specialization) (ordinal 0)) (authored-target "Engine") (range (start (line 73) (character 34)) (end (line 73) (character 40))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel::Vehicle_1"))) (kind specialization) (ordinal 0)) (authored-target "Vehicle") (range (start (line 72) (character 35)) (end (line 72) (character 42))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "VehicleQuantities::*") (range (start (line 26) (character 19)) (end (line 26) (character 36))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine::fuelEfficiency"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine::fuelEfficiency"))) (kind featureTyping) (ordinal 1)) (authored-target "Real") (range (start (line 34) (character 33)) (end (line 34) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine::peakPower"))) (kind subsetting) (ordinal 0)) (authored-target "ISQ::power") (range (start (line 33) (character 29)) (end (line 33) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle::power"))) (kind subsetting) (ordinal 0)) (authored-target "ISQ::power") (range (start (line 29) (character 25)) (end (line 29) (character 35))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (range (start (line 37) (character 23)) (end (line 37) (character 30))) (outcome (status resolved) (target (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle")))))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1::engine"))) (kind featureTyping) (ordinal 0)) (authored-target "Engine") (range (start (line 39) (character 20)) (end (line 39) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine")))))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1::power"))) (kind redefinition) (ordinal 0)) (authored-target "power") (range (start (line 38) (character 20)) (end (line 38) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1::power")))))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "MeasurementReferences::*") (range (start (line 7) (character 20)) (end (line 7) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::distancePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 12) (character 23)) (end (line 12) (character 40))) (outcome (status resolved) (target (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::volumePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "DistancePerVolumeUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 17) (character 9)) (end (line 17) (character 17))) (outcome (status resolved) (target (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 16) (character 9)) (end (line 16) (character 16))) (outcome (status resolved) (target (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::gallon"))) (kind featureTyping) (ordinal 0)) (authored-target "VolumeUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::hp"))) (kind featureTyping) (ordinal 0)) (authored-target "PowerUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::mpg"))) (kind featureTyping) (ordinal 0)) (authored-target "DistancePerVolumeUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit")))))
   )
   (relationships
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1::power"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle::power"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel::Engine_1"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel::Vehicle_1"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle"))) (provenance authored))
-    (subject (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption::fuelEconomy"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::calculatedFuelEconomy"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumption"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumption::fuelEconomy"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::vehicle"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1::engine"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::mRef"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::mpg"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumption"))) (target (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumption"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1"))) (target (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1::engine"))) (target (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1::engine"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1::power"))) (target (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1::power"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1::power"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::mRef"))) (target (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::mRef"))) (target (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::num"))) (target (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::mpg"))) (target (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::mpg"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption"))) (status missing-prerequisite) (target "Actions::Action"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis"))) (status missing-prerequisite) (target "AnalysisCases::AnalysisCase"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumption"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel::Engine_1"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel::Vehicle_1"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine::fuelEfficiency"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine::peakPower"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle::power"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1::engine"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1::power"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::distancePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::volumePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::gallon"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::hp"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::mpg"))) (status missing-prerequisite) (target "Base::DataValue"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/analysis_individual_example.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 19) (end 1 31))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 19) (end 2 29))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 3 19) (end 3 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 4 19) (end 4 35))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 20) (end 7 41))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 9 5) (end 9 368))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 10 6) (end 10 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 11 9) (end 11 104))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 12 9) (end 12 95))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 15 5) (end 15 141))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 16 9) (end 16 24))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 16 9) (end 16 24))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 17 9) (end 17 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 20 5) (end 20 55))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 22 5) (end 22 45))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 26 19) (end 26 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 34 6) (end 34 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 44 20) (end 44 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 45 20) (end 45 43))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 46 20) (end 46 53))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 47 20) (end 47 48))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 48 20) (end 48 44))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 51 3) (end 51 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 70 17) (end 70 41))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_package_body_element")
-        (source "sysml")
-        (range (start 75 2) (end 75 74))
-      )
-      (diagnostic
-        (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 75 2) (end 75 74))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis")) (expression (status "incomplete") (error "expression is incomplete")))
+    (node (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::calculatedFuelEconomy")) (expression (status "incomplete") (error "expression is incomplete")))
+    (node (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumption::power")) (expression (status "unresolved") (error "expression has an unresolved reference")))
+    (node (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1::power")) (expression (status "incomplete") (error "expression is incomplete")))
+    (node (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::gallon")) (expression (status "unresolved") (error "expression has an unresolved reference")))
+    (node (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::hp")) (expression (status "unsupported") (error "declared expression form is not supported")))
+    (node (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::mpg")) (expression (status "unresolved") (error "expression has an unresolved reference")))
   )
 )
 ~~~

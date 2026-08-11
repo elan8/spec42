@@ -101,13 +101,14 @@ standard library package Base {
 	
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'ScalarValues::Natural'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'ScalarValues::Natural'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "base.md"
+    (diagnostics
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -189,6 +190,14 @@ CloseCurly,EndOfFile,
       (documentation))
     (multiplicity_def 'zeroToMany' multiplicity     (multiplicity_range)
       (documentation))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'ScalarValues::Natural'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'ScalarValues::Natural'
 ~~~
 # FORMAT
 ~~~sysml
@@ -290,38 +299,26 @@ standard library package Base {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Base"))) (name "Base") (declared-name "Base")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Base::Anything"))) (name "Anything") (declared-name "Anything"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Base::DataValue"))) (name "DataValue") (declared-name "DataValue"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "Base::_documentation"))) (name ""))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Base::dataValues"))) (name "dataValues") (declared-name "dataValues"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Base::exactlyOne"))) (name "exactlyOne") (declared-name "exactlyOne"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Base::naturals"))) (name "naturals") (declared-name "naturals"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Base::oneToMany"))) (name "oneToMany") (declared-name "oneToMany"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Base::things"))) (name "things") (declared-name "things"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Base::zeroOrOne"))) (name "zeroOrOne") (declared-name "zeroOrOne"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Base::zeroToMany"))) (name "zeroToMany") (declared-name "zeroToMany"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "dcb97c725b5bcbc5f0d8c52045421e6ba35271eac4a94bab7f82dea6f821692e") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Base"))) (kind "package") (name "Base") (declared-name "Base") (range (start (line 0) (character 0)) (end (line 0) (character 2338))))
+    (element (id (node (document "d0") (qualified-name "Base::Anything"))) (kind "classifier decl") (name "Anything") (declared-name "Anything") (range (start (line 7) (character 1)) (end (line 7) (character 434))) (parent (node (document "d0") (qualified-name "Base"))))
+    (element (id (node (document "d0") (qualified-name "Base::DataValue"))) (kind "kermlDecl") (name "DataValue") (declared-name "DataValue") (range (start (line 23) (character 1)) (end (line 23) (character 231))) (parent (node (document "d0") (qualified-name "Base"))))
+    (element (id (node (document "d0") (qualified-name "Base::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 2338))) (parent (node (document "d0") (qualified-name "Base"))))
+    (element (id (node (document "d0") (qualified-name "Base::dataValues"))) (kind "feature decl") (name "dataValues") (declared-name "dataValues") (range (start (line 49) (character 1)) (end (line 49) (character 168))) (parent (node (document "d0") (qualified-name "Base"))))
+    (element (id (node (document "d0") (qualified-name "Base::exactlyOne"))) (kind "kermlDecl") (name "exactlyOne") (declared-name "exactlyOne") (range (start (line 65) (character 1)) (end (line 65) (character 133))) (parent (node (document "d0") (qualified-name "Base"))))
+    (element (id (node (document "d0") (qualified-name "Base::naturals"))) (kind "feature decl") (name "naturals") (declared-name "naturals") (range (start (line 56) (character 1)) (end (line 56) (character 337))) (parent (node (document "d0") (qualified-name "Base"))))
+    (element (id (node (document "d0") (qualified-name "Base::oneToMany"))) (kind "kermlDecl") (name "oneToMany") (declared-name "oneToMany") (range (start (line 79) (character 1)) (end (line 79) (character 132))) (parent (node (document "d0") (qualified-name "Base"))))
+    (element (id (node (document "d0") (qualified-name "Base::things"))) (kind "feature decl") (name "things") (declared-name "things") (range (start (line 33) (character 1)) (end (line 33) (character 393))) (parent (node (document "d0") (qualified-name "Base"))))
+    (element (id (node (document "d0") (qualified-name "Base::zeroOrOne"))) (kind "kermlDecl") (name "zeroOrOne") (declared-name "zeroOrOne") (range (start (line 72) (character 1)) (end (line 72) (character 133))) (parent (node (document "d0") (qualified-name "Base"))))
+    (element (id (node (document "d0") (qualified-name "Base::zeroToMany"))) (kind "kermlDecl") (name "zeroToMany") (declared-name "zeroToMany") (range (start (line 86) (character 1)) (end (line 86) (character 166))) (parent (node (document "d0") (qualified-name "Base"))))
+  )
+  (references
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Base::_documentation"))) (to (node (document "d0") (qualified-name "Base"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/base.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

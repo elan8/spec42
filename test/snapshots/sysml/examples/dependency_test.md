@@ -26,6 +26,15 @@ package DependencyTest {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "dependency_test.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -59,6 +68,14 @@ CloseCurly,EndOfFile,
     (attribute_usage 'z')
     (dependency from 'z' to 'x', 'y')))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package DependencyTest {
@@ -83,66 +100,30 @@ package DependencyTest {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "DependencyTest"))) (name "DependencyTest") (declared-name "DependencyTest")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "DependencyTest::*"))) (name "*") (declared-name "*"))
-        (element (kind "package") (id (node (document "d0") (qualified-name "DependencyTest::System"))) (name "System") (declared-name "System")
-          (contains
-            (element (kind "package") (id (node (document "d0") (qualified-name "DependencyTest::System::Application Layer"))) (name "Application Layer") (declared-name "Application Layer"))
-            (element (kind "package") (id (node (document "d0") (qualified-name "DependencyTest::System::Data Layer"))) (name "Data Layer") (declared-name "Data Layer"))
-            (element (kind "package") (id (node (document "d0") (qualified-name "DependencyTest::System::Service Layer"))) (name "Service Layer") (declared-name "Service Layer"))
-          )
-        )
-        (element (kind "dependency") (id (node (document "d0") (qualified-name "DependencyTest::Use"))) (name "Use") (declared-name "Use"))
-        (element (kind "dependency") (id (node (document "d0") (qualified-name "DependencyTest::dependency"))) (name "dependency") (declared-name "dependency"))
-        (element (kind "dependency") (id (node (document "d0") (qualified-name "DependencyTest::dependency#dependency"))) (name "dependency") (declared-name "dependency"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "DependencyTest::x"))) (name "x") (declared-name "x") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "DependencyTest::y"))) (name "y") (declared-name "y") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "DependencyTest::z"))) (name "z") (declared-name "z") (declared (properties (ordered false) (unique true))))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "51fd2c3b2fc05a12009906529ec4842dc1a5239393cfed8b0ef67cdc01e601bc") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "DependencyTest"))) (kind "package") (name "DependencyTest") (declared-name "DependencyTest") (range (start (line 0) (character 0)) (end (line 0) (character 344))))
+    (element (id (node (document "d0") (qualified-name "DependencyTest::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 8) (character 1)) (end (line 8) (character 26))) (parent (node (document "d0") (qualified-name "DependencyTest"))) (authored (membership (kind Import) (visibility "private") (import (reference "System::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 22))))))
+    (element (id (node (document "d0") (qualified-name "DependencyTest::System"))) (kind "package") (name "System") (declared-name "System") (range (start (line 2) (character 1)) (end (line 2) (character 102))) (parent (node (document "d0") (qualified-name "DependencyTest"))))
+    (element (id (node (document "d0") (qualified-name "DependencyTest::System::Application Layer"))) (kind "package") (name "Application Layer") (declared-name "Application Layer") (range (start (line 3) (character 2)) (end (line 3) (character 30))) (parent (node (document "d0") (qualified-name "DependencyTest::System"))))
+    (element (id (node (document "d0") (qualified-name "DependencyTest::System::Data Layer"))) (kind "package") (name "Data Layer") (declared-name "Data Layer") (range (start (line 5) (character 2)) (end (line 5) (character 23))) (parent (node (document "d0") (qualified-name "DependencyTest::System"))))
+    (element (id (node (document "d0") (qualified-name "DependencyTest::System::Service Layer"))) (kind "package") (name "Service Layer") (declared-name "Service Layer") (range (start (line 4) (character 2)) (end (line 4) (character 26))) (parent (node (document "d0") (qualified-name "DependencyTest::System"))))
+    (element (id (node (document "d0") (qualified-name "DependencyTest::Use"))) (kind "dependency") (name "Use") (declared-name "Use") (range (start (line 10) (character 1)) (end (line 10) (character 60))) (parent (node (document "d0") (qualified-name "DependencyTest"))))
+    (element (id (node (document "d0") (qualified-name "DependencyTest::dependency"))) (kind "dependency") (name "dependency") (declared-name "dependency") (range (start (line 11) (character 1)) (end (line 11) (character 49))) (parent (node (document "d0") (qualified-name "DependencyTest"))))
+    (element (id (node (document "d0") (qualified-name "DependencyTest::dependency#dependency"))) (kind "dependency") (name "dependency") (declared-name "dependency") (range (start (line 17) (character 1)) (end (line 17) (character 22))) (parent (node (document "d0") (qualified-name "DependencyTest"))))
+    (element (id (node (document "d0") (qualified-name "DependencyTest::x"))) (kind "attribute def") (name "x") (declared-name "x") (range (start (line 13) (character 1)) (end (line 13) (character 13))) (parent (node (document "d0") (qualified-name "DependencyTest"))))
+    (element (id (node (document "d0") (qualified-name "DependencyTest::y"))) (kind "attribute def") (name "y") (declared-name "y") (range (start (line 14) (character 1)) (end (line 14) (character 13))) (parent (node (document "d0") (qualified-name "DependencyTest"))))
+    (element (id (node (document "d0") (qualified-name "DependencyTest::z"))) (kind "attribute def") (name "z") (declared-name "z") (range (start (line 15) (character 1)) (end (line 15) (character 13))) (parent (node (document "d0") (qualified-name "DependencyTest"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "DependencyTest::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "System::*") (range (start (line 8) (character 16)) (end (line 8) (character 22))) (outcome (status resolved) (target (node (document "d0") (qualified-name "DependencyTest::System")))))
   )
   (relationships
-    (dependency (status resolved) (from (node (document "d0") (qualified-name "DependencyTest::System::Application Layer"))) (to (node (document "d0") (qualified-name "DependencyTest::System::Service Layer"))) (provenance authored))
-    (dependency (status resolved) (from (node (document "d0") (qualified-name "DependencyTest::System::Service Layer"))) (to (node (document "d0") (qualified-name "DependencyTest::System::Data Layer"))) (provenance authored))
-    (dependency (status resolved) (from (node (document "d0") (qualified-name "DependencyTest::z"))) (to (node (document "d0") (qualified-name "DependencyTest::x"))) (provenance authored))
-    (dependency (status resolved) (from (node (document "d0") (qualified-name "DependencyTest::z"))) (to (node (document "d0") (qualified-name "DependencyTest::y"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DependencyTest::x"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DependencyTest::y"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DependencyTest::z"))) (status missing-prerequisite) (target "Base::DataValue"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/dependency_test.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 17 1) (end 17 22))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

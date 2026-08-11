@@ -28,6 +28,27 @@ package TextualRepresentationTest {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "textual_representation_test.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 34))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 15 5) (end 15 95))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -61,6 +82,16 @@ CloseCurly,EndOfFile,
       (default_ref_usage in 'newX' : 'Real')
       (textual_rep language '"alf"'))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+~~~
 # FORMAT
 ~~~sysml
 package TextualRepresentationTest {
@@ -87,81 +118,31 @@ package TextualRepresentationTest {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "TextualRepresentationTest"))) (name "TextualRepresentationTest") (declared-name "TextualRepresentationTest")
-      (contains
-        (element (kind "item def") (id (node (document "d0") (qualified-name "TextualRepresentationTest::C"))) (name "C") (declared-name "C")
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "TextualRepresentationTest::C::x"))) (name "x") (declared-name "x") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "TextualRepresentationTest::C")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "TextualRepresentationTest::Real"))) (name "Real") (declared-name "Real"))
-        (element (kind "action def") (id (node (document "d0") (qualified-name "TextualRepresentationTest::setX"))) (name "setX") (declared-name "setX")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TextualRepresentationTest::setX::c"))) (name "c") (declared-name "c") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "TextualRepresentationTest::setX")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TextualRepresentationTest::setX::newX"))) (name "newX") (declared-name "newX") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "TextualRepresentationTest::setX")))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "a0410c70f61383bc6d8308a8dd1dc8ddc2a2105cad2b6f217cb9d4e43baa491a") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "TextualRepresentationTest"))) (kind "package") (name "TextualRepresentationTest") (declared-name "TextualRepresentationTest") (range (start (line 0) (character 0)) (end (line 0) (character 375))))
+    (element (id (node (document "d0") (qualified-name "TextualRepresentationTest::C"))) (kind "item def") (name "C") (declared-name "C") (range (start (line 3) (character 1)) (end (line 3) (character 146))) (parent (node (document "d0") (qualified-name "TextualRepresentationTest"))))
+    (element (id (node (document "d0") (qualified-name "TextualRepresentationTest::C::x"))) (kind "attribute") (name "x") (declared-name "x") (range (start (line 4) (character 5)) (end (line 4) (character 23))) (parent (node (document "d0") (qualified-name "TextualRepresentationTest::C"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)))))
+    (element (id (node (document "d0") (qualified-name "TextualRepresentationTest::Real"))) (kind "import") (name "Real") (declared-name "Real") (range (start (line 1) (character 1)) (end (line 1) (character 35))) (parent (node (document "d0") (qualified-name "TextualRepresentationTest"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 34))))))
+    (element (id (node (document "d0") (qualified-name "TextualRepresentationTest::setX"))) (kind "action def") (name "setX") (declared-name "setX") (range (start (line 11) (character 1)) (end (line 11) (character 148))) (parent (node (document "d0") (qualified-name "TextualRepresentationTest"))))
+    (element (id (node (document "d0") (qualified-name "TextualRepresentationTest::setX::c"))) (kind "in out parameter") (name "c") (declared-name "c") (range (start (line 12) (character 2)) (end (line 12) (character 11))) (parent (node (document "d0") (qualified-name "TextualRepresentationTest::setX"))) (authored (relationships (typing (reference "C") (range none)))))
+    (element (id (node (document "d0") (qualified-name "TextualRepresentationTest::setX::newX"))) (kind "in out parameter") (name "newX") (declared-name "newX") (range (start (line 13) (character 2)) (end (line 13) (character 17))) (parent (node (document "d0") (qualified-name "TextualRepresentationTest::setX"))) (authored (relationships (typing (reference "Real") (range none)))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "TextualRepresentationTest::C::x"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "TextualRepresentationTest::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "TextualRepresentationTest::Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (range (start (line 1) (character 16)) (end (line 1) (character 34))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TextualRepresentationTest::setX::c"))) (kind featureTyping) (ordinal 0)) (authored-target "C") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "TextualRepresentationTest::C")))))
+    (reference (id (source (node (document "d0") (qualified-name "TextualRepresentationTest::setX::newX"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "TextualRepresentationTest::Real")))))
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "TextualRepresentationTest::setX::c"))) (to (node (document "d0") (qualified-name "TextualRepresentationTest::C"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "TextualRepresentationTest::C::x"))) (target (node (document "d0") (qualified-name "TextualRepresentationTest::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "TextualRepresentationTest::C::x"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "TextualRepresentationTest::setX::c"))) (target (node (document "d0") (qualified-name "TextualRepresentationTest::C"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "TextualRepresentationTest::setX::c"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "TextualRepresentationTest::setX::newX"))) (target (node (document "d0") (qualified-name "TextualRepresentationTest::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "TextualRepresentationTest::setX::newX"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TextualRepresentationTest::C"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TextualRepresentationTest::C::x"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TextualRepresentationTest::setX"))) (status missing-prerequisite) (target "Actions::Action"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/textual_representation_test.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 4 5) (end 4 23))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 13 2) (end 13 17))
-      )
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 15 5) (end 15 95))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

@@ -40,6 +40,21 @@ package WithoutConnectorsExecution {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "a_3_2_without_connectors.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 19 16) (end 19 21))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -88,6 +103,14 @@ CloseCurly,EndOfFile,
     (classifier_def #'atom' 'MyBike' :> 'Bicycle'
       (feature_def :>> 'rollsOn' : 'MyWheel'))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 
@@ -125,91 +148,33 @@ package WithoutConnectorsExecution {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "WithoutConnectorsExecution"))) (name "WithoutConnectorsExecution") (declared-name "WithoutConnectorsExecution")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::MyBike"))) (name "MyBike") (declared-name "MyBike"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::MyWheel"))) (name "MyWheel") (declared-name "MyWheel"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::MyWheel1"))) (name "MyWheel1") (declared-name "MyWheel1"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::MyWheel2"))) (name "MyWheel2") (declared-name "MyWheel2"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom#metadata_keyword"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom#metadata_keyword2"))) (name "atom") (declared-name "atom"))
-      )
-    )
-    (element (kind "package") (id (node (document "d0") (qualified-name "WithoutConnectorsModelToBeExecuted"))) (name "WithoutConnectorsModelToBeExecuted") (declared-name "WithoutConnectorsModelToBeExecuted")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "WithoutConnectorsModelToBeExecuted::Bicycle"))) (name "Bicycle") (declared-name "Bicycle"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "WithoutConnectorsModelToBeExecuted::BikeFork"))) (name "BikeFork") (declared-name "BikeFork"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "WithoutConnectorsModelToBeExecuted::Wheel"))) (name "Wheel") (declared-name "Wheel"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "cff4749503e32cb5d023104e113a9eaa3787d08bf9475fc460970d0a1e6afae6") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "WithoutConnectorsExecution"))) (kind "package") (name "WithoutConnectorsExecution") (declared-name "WithoutConnectorsExecution") (range (start (line 14) (character 0)) (end (line 14) (character 369))))
+    (element (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 19) (character 1)) (end (line 19) (character 25))) (parent (node (document "d0") (qualified-name "WithoutConnectorsExecution"))) (authored (membership (kind Import) (visibility "private") (import (reference "Atoms::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 19) (character 16)) (end (line 19) (character 21))))))
+    (element (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 20) (character 1)) (end (line 20) (character 54))) (parent (node (document "d0") (qualified-name "WithoutConnectorsExecution"))) (authored (membership (kind Import) (visibility "private") (import (reference "WithoutConnectorsModelToBeExecuted::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 20) (character 16)) (end (line 20) (character 50))))))
+    (element (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::MyBike"))) (kind "classifier decl") (name "MyBike") (declared-name "MyBike") (range (start (line 30) (character 1)) (end (line 30) (character 82))) (parent (node (document "d0") (qualified-name "WithoutConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::MyWheel"))) (kind "classifier decl") (name "MyWheel") (declared-name "MyWheel") (range (start (line 27) (character 1)) (end (line 27) (character 46))) (parent (node (document "d0") (qualified-name "WithoutConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::MyWheel1"))) (kind "classifier decl") (name "MyWheel1") (declared-name "MyWheel1") (range (start (line 23) (character 1)) (end (line 23) (character 39))) (parent (node (document "d0") (qualified-name "WithoutConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::MyWheel2"))) (kind "classifier decl") (name "MyWheel2") (declared-name "MyWheel2") (range (start (line 25) (character 1)) (end (line 25) (character 39))) (parent (node (document "d0") (qualified-name "WithoutConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 22) (character 1)) (end (line 22) (character 8))) (parent (node (document "d0") (qualified-name "WithoutConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom#metadata_keyword"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 24) (character 1)) (end (line 24) (character 8))) (parent (node (document "d0") (qualified-name "WithoutConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom#metadata_keyword2"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 29) (character 1)) (end (line 29) (character 8))) (parent (node (document "d0") (qualified-name "WithoutConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "WithoutConnectorsModelToBeExecuted"))) (kind "package") (name "WithoutConnectorsModelToBeExecuted") (declared-name "WithoutConnectorsModelToBeExecuted") (range (start (line 1) (character 0)) (end (line 1) (character 196))))
+    (element (id (node (document "d0") (qualified-name "WithoutConnectorsModelToBeExecuted::Bicycle"))) (kind "classifier decl") (name "Bicycle") (declared-name "Bicycle") (range (start (line 6) (character 1)) (end (line 6) (character 92))) (parent (node (document "d0") (qualified-name "WithoutConnectorsModelToBeExecuted"))))
+    (element (id (node (document "d0") (qualified-name "WithoutConnectorsModelToBeExecuted::BikeFork"))) (kind "classifier decl") (name "BikeFork") (declared-name "BikeFork") (range (start (line 11) (character 1)) (end (line 11) (character 21))) (parent (node (document "d0") (qualified-name "WithoutConnectorsModelToBeExecuted"))))
+    (element (id (node (document "d0") (qualified-name "WithoutConnectorsModelToBeExecuted::Wheel"))) (kind "classifier decl") (name "Wheel") (declared-name "Wheel") (range (start (line 10) (character 1)) (end (line 10) (character 18))) (parent (node (document "d0") (qualified-name "WithoutConnectorsModelToBeExecuted"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "WithoutConnectorsExecution::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Atoms::*") (range (start (line 19) (character 16)) (end (line 19) (character 21))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "WithoutConnectorsExecution::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "WithoutConnectorsModelToBeExecuted::*") (range (start (line 20) (character 16)) (end (line 20) (character 50))) (outcome (status resolved) (target (node (document "d0") (qualified-name "WithoutConnectorsModelToBeExecuted")))))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom"))) (to (node (document "d0") (qualified-name "WithoutConnectorsExecution"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom#metadata_keyword"))) (to (node (document "d0") (qualified-name "WithoutConnectorsExecution"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom#metadata_keyword2"))) (to (node (document "d0") (qualified-name "WithoutConnectorsExecution"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom#metadata_keyword"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom#metadata_keyword2"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/a_3_2_without_connectors.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 19 16) (end 19 21))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 22 1) (end 22 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 24 1) (end 24 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 24 1) (end 24 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 29 1) (end 29 8))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

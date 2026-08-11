@@ -39,6 +39,69 @@ package 'Analysis Case Usage Example' {
 
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "33_analysis_case_usage_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 50))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 9 2) (end 9 56))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 9 2) (end 9 56))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 9 27) (end 9 35))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 10 2) (end 10 59))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 10 2) (end 10 59))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 10 30) (end 10 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 22 20) (end 22 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 29 10) (end 29 40))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -90,6 +153,34 @@ CloseCurly,EndOfFile,
         (attribute_usage :>> 'fuelEconomy_highway' value))
       (sysml_decl 'vehicleFuelEconomyRequirements'))))
 ~~~
+# EXPECTED
+~~~
+parse.expected_expression
+parse.expected_expression
+semantic.duplicate_name 'vehicleFuelEconomyRequirements'
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'WayPoint'
+semantic.unresolved_name 'WayPoint'
+semantic.unresolved_name 'FuelEconomyAnalysis'
+semantic.unresolved_name 'FuelEconomyAnalysis'
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'fuelEconomy_city'
+semantic.unresolved_name 'fuelEconomy_highway'
+~~~
+# PROBLEMS
+~~~
+parse.expected_expression
+parse.expected_expression
+semantic.duplicate_name 'vehicleFuelEconomyRequirements'
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'WayPoint'
+semantic.unresolved_name 'WayPoint'
+semantic.unresolved_name 'FuelEconomyAnalysis'
+semantic.unresolved_name 'FuelEconomyAnalysis'
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'fuelEconomy_city'
+semantic.unresolved_name 'fuelEconomy_highway'
+~~~
 # FORMAT
 ~~~sysml
 package 'Analysis Case Usage Example' {
@@ -126,122 +217,41 @@ package 'Analysis Case Usage Example' {
 
 }
 ~~~
-# EXPECTED
-~~~
-parse.expected_expression
-parse.expected_expression
-semantic.duplicate_name 'vehicleFuelEconomyRequirements'
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'WayPoint'
-semantic.unresolved_name 'WayPoint'
-semantic.unresolved_name 'FuelEconomyAnalysis'
-semantic.unresolved_name 'FuelEconomyAnalysis'
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'fuelEconomy_city'
-semantic.unresolved_name 'fuelEconomy_highway'
-~~~
-# PROBLEMS
-~~~
-parse.expected_expression
-parse.expected_expression
-semantic.duplicate_name 'vehicleFuelEconomyRequirements'
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'WayPoint'
-semantic.unresolved_name 'WayPoint'
-semantic.unresolved_name 'FuelEconomyAnalysis'
-semantic.unresolved_name 'FuelEconomyAnalysis'
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'fuelEconomy_city'
-semantic.unresolved_name 'fuelEconomy_highway'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Analysis Case Usage Example"))) (name "Analysis Case Usage Example") (declared-name "Analysis Case Usage Example")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Analysis Case Usage Example::*"))) (name "*") (declared-name "*"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext"))) (name "vehicleFuelEconomyAnalysisContext") (declared-name "vehicleFuelEconomyAnalysisContext") (declared (properties (ordered false)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::cityScenario"))) (name "cityScenario") (declared-name "cityScenario") (declared (properties (ordered false) (unique true)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (provenance authored)) (feature-value (kind bound) (expression (kind "null")))) (effective (implied-feature-ownership (composite true) (reference false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::cityScenario"))) (role feature-value))) (evaluation (expression (status "incomplete") (error "expression is incomplete"))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::highwayScenario"))) (name "highwayScenario") (declared-name "highwayScenario") (declared (properties (ordered false) (unique true)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (provenance authored)) (feature-value (kind bound) (expression (kind "null")))) (effective (implied-feature-ownership (composite true) (reference false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::highwayScenario"))) (role feature-value))) (evaluation (expression (status "incomplete") (error "expression is incomplete"))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1"))) (name "vehicle_c1") (declared-name "vehicle_c1") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_city"))) (name "fuelEconomy_city") (declared-name "fuelEconomy_city") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "fuelEconomyResult") (children (expression (kind "featureReference") (reference "cityAnalysis")))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_city"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_highway"))) (name "fuelEconomy_highway") (declared-name "fuelEconomy_highway") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "fuelEconomyResult") (children (expression (kind "featureReference") (reference "highwayAnalysis")))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_highway"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-              )
-            )
-          )
-        )
-      )
-    )
-    (element (kind "diagnostic") (id (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::unresolved_satisfy_source"))) (name "unresolved_satisfy_source") (declared-name "unresolved_satisfy_source"))
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f4570f33be1e1e5f6daf4213ba66c839cd836f974169b348317c0efc903bf027") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Analysis Case Usage Example"))) (kind "package") (name "Analysis Case Usage Example") (declared-name "Analysis Case Usage Example") (range (start (line 0) (character 0)) (end (line 0) (character 851))))
+    (element (id (node (document "d0") (qualified-name "Analysis Case Usage Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 54))) (parent (node (document "d0") (qualified-name "Analysis Case Usage Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "Analysis Case Definition Example::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 50))))))
+    (element (id (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext"))) (kind "part") (name "vehicleFuelEconomyAnalysisContext") (declared-name "vehicleFuelEconomyAnalysisContext") (range (start (line 3) (character 1)) (end (line 3) (character 751))) (parent (node (document "d0") (qualified-name "Analysis Case Usage Example"))))
+    (element (id (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::cityScenario"))) (kind "attribute") (name "cityScenario") (declared-name "cityScenario") (range (start (line 9) (character 2)) (end (line 9) (character 56))) (parent (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext"))) (authored (membership (kind Feature)) (relationships (typing (reference "WayPoint") (range none)) (typing (reference "WayPoint") (range (start (line 9) (character 27)) (end (line 9) (character 35)))))))
+    (element (id (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::highwayScenario"))) (kind "attribute") (name "highwayScenario") (declared-name "highwayScenario") (range (start (line 10) (character 2)) (end (line 10) (character 59))) (parent (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext"))) (authored (membership (kind Feature)) (relationships (typing (reference "WayPoint") (range none)) (typing (reference "WayPoint") (range (start (line 10) (character 30)) (end (line 10) (character 38)))))))
+    (element (id (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1"))) (kind "part") (name "vehicle_c1") (declared-name "vehicle_c1") (range (start (line 22) (character 2)) (end (line 22) (character 189))) (parent (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle") (range (start (line 22) (character 20)) (end (line 22) (character 27)))))))
+    (element (id (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_city"))) (kind "attribute") (name "fuelEconomy_city") (declared-name "fuelEconomy_city") (range (start (line 25) (character 3)) (end (line 25) (character 67))) (parent (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "fuelEconomy_city") (range (start (line 25) (character 17)) (end (line 25) (character 33)))))))
+    (element (id (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_highway"))) (kind "attribute") (name "fuelEconomy_highway") (declared-name "fuelEconomy_highway") (range (start (line 26) (character 3)) (end (line 26) (character 73))) (parent (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "fuelEconomy_highway") (range (start (line 26) (character 17)) (end (line 26) (character 36)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Analysis Case Usage Example::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Analysis Case Definition Example::*") (range (start (line 1) (character 16)) (end (line 1) (character 50))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext"))) (kind satisfySource) (ordinal 0)) (authored-target "vehicleFuelEconomyRequirements") (range (start (line 29) (character 10)) (end (line 29) (character 40))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext"))) (kind satisfyTarget) (ordinal 0)) (authored-target "vehicle_c1") (range (start (line 29) (character 44)) (end (line 29) (character 54))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1")))))
+    (reference (id (source (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::cityScenario"))) (kind featureTyping) (ordinal 0)) (authored-target "WayPoint") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::cityScenario"))) (kind featureTyping) (ordinal 1)) (authored-target "WayPoint") (range (start (line 9) (character 27)) (end (line 9) (character 35))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::highwayScenario"))) (kind featureTyping) (ordinal 0)) (authored-target "WayPoint") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::highwayScenario"))) (kind featureTyping) (ordinal 1)) (authored-target "WayPoint") (range (start (line 10) (character 30)) (end (line 10) (character 38))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (range (start (line 22) (character 20)) (end (line 22) (character 27))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_city"))) (kind redefinition) (ordinal 0)) (authored-target "fuelEconomy_city") (range (start (line 25) (character 17)) (end (line 25) (character 33))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_city")))))
+    (reference (id (source (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_highway"))) (kind redefinition) (ordinal 0)) (authored-target "fuelEconomy_highway") (range (start (line 26) (character 17)) (end (line 26) (character 36))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_highway")))))
   )
   (relationships
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_city"))) (target (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_city"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_city"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_highway"))) (target (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_highway"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_highway"))) (kind redefinition) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-    (satisfy (status pending-expression) (document "d0") (source-expression "vehicleFuelEconomyRequirements") (target-expression "vehicle_c1") (container-prefix "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext"))
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::cityScenario"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::highwayScenario"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_city"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_highway"))) (status missing-prerequisite) (target "Base::dataValues"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/33_analysis_case_usage_example.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 50))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 9 2) (end 9 56))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 10 2) (end 10 59))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 22 20) (end 22 27))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 25 3) (end 25 67))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 26 3) (end 26 73))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_satisfy_source")
-        (source "semantic")
-        (range (start 29 10) (end 29 40))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::cityScenario")) (expression (status "incomplete") (error "expression is incomplete")))
+    (node (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::highwayScenario")) (expression (status "incomplete") (error "expression is incomplete")))
+    (node (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_city")) (expression (status "unresolved") (error "expression has an unresolved reference")))
+    (node (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_highway")) (expression (status "unresolved") (error "expression has an unresolved reference")))
   )
 )
 ~~~

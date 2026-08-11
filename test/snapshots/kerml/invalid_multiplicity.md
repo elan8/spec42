@@ -11,15 +11,14 @@ package InvalidMult {
     classifier Valid [1..3];
 }
 ~~~
-# EXPECTED
-~~~
-semantic.computed_multiplicity_invalid
-semantic.computed_multiplicity_invalid
-~~~
-# PROBLEMS
-~~~
-semantic.computed_multiplicity_invalid
-semantic.computed_multiplicity_invalid
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "invalid_multiplicity.md"
+    (diagnostics
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -37,6 +36,16 @@ CloseCurly,EndOfFile,
     (classifier_def 'AlsoBad' multiplicity     (multiplicity_range))
     (classifier_def 'Valid' multiplicity     (multiplicity_range))))
 ~~~
+# EXPECTED
+~~~
+semantic.computed_multiplicity_invalid
+semantic.computed_multiplicity_invalid
+~~~
+# PROBLEMS
+~~~
+semantic.computed_multiplicity_invalid
+semantic.computed_multiplicity_invalid
+~~~
 # FORMAT
 ~~~sysml
 package InvalidMult {
@@ -48,30 +57,19 @@ package InvalidMult {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "InvalidMult"))) (name "InvalidMult") (declared-name "InvalidMult")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "InvalidMult::AlsoBad"))) (name "AlsoBad") (declared-name "AlsoBad"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "InvalidMult::Bad"))) (name "Bad") (declared-name "Bad"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "InvalidMult::Valid"))) (name "Valid") (declared-name "Valid"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "fd8e2c79f01ffd4412c56c5ba8416632a9bd909d1b2aaf49856362872d0aec00") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "InvalidMult"))) (kind "package") (name "InvalidMult") (declared-name "InvalidMult") (range (start (line 0) (character 0)) (end (line 0) (character 110))))
+    (element (id (node (document "d0") (qualified-name "InvalidMult::AlsoBad"))) (kind "classifier decl") (name "AlsoBad") (declared-name "AlsoBad") (range (start (line 2) (character 4)) (end (line 2) (character 30))) (parent (node (document "d0") (qualified-name "InvalidMult"))))
+    (element (id (node (document "d0") (qualified-name "InvalidMult::Bad"))) (kind "classifier decl") (name "Bad") (declared-name "Bad") (range (start (line 1) (character 4)) (end (line 1) (character 26))) (parent (node (document "d0") (qualified-name "InvalidMult"))))
+    (element (id (node (document "d0") (qualified-name "InvalidMult::Valid"))) (kind "classifier decl") (name "Valid") (declared-name "Valid") (range (start (line 3) (character 4)) (end (line 3) (character 28))) (parent (node (document "d0") (qualified-name "InvalidMult"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/invalid_multiplicity.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

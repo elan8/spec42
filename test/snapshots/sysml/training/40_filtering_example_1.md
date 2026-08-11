@@ -43,6 +43,87 @@ package 'Filtering Example-1' {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "40_filtering_example_1.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 37))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 9 3) (end 9 14))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 10 29) (end 10 48))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 11 3) (end 11 21))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 12 30) (end 12 50))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 15 3) (end 15 13))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 16 24) (end 16 43))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 17 3) (end 17 21))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 20 3) (end 20 17))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 21 35) (end 21 55))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 27 16) (end 27 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 33 16) (end 33 23))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -118,6 +199,14 @@ CloseCurly,EndOfFile,
       (filter_member
         (binary_expr)))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Boolean'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Boolean'
+~~~
 # FORMAT
 ~~~sysml
 package 'Filtering Example-1' {
@@ -159,189 +248,55 @@ package 'Filtering Example-1' {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Boolean'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Boolean'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Filtering Example-1"))) (name "Filtering Example-1") (declared-name "Filtering Example-1")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Filtering Example-1::Boolean"))) (name "Boolean") (declared-name "Boolean"))
-        (element (kind "package") (id (node (document "d0") (qualified-name "Filtering Example-1::Mandatory Safety Features"))) (name "Mandatory Safety Features") (declared-name "Mandatory Safety Features")
-          (contains
-            (element (kind "filter") (id (node (document "d0") (qualified-name "Filtering Example-1::Mandatory Safety Features::_filter"))) (name "_filter") (declared-name "_filter") (declared (own-expression (expression (kind "binary") (operator "&&") (children (expression (kind "classification") (reference "Safety")) (expression (kind "featureReference") (reference "Safety::isMandatory")))))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
-            (element (kind "import") (id (node (document "d0") (qualified-name "Filtering Example-1::Mandatory Safety Features::vehicle"))) (name "vehicle") (declared-name "vehicle"))
-          )
-        )
-        (element (kind "metadata def") (id (node (document "d0") (qualified-name "Filtering Example-1::Safety"))) (name "Safety") (declared-name "Safety")
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Filtering Example-1::Safety::isMandatory"))) (name "isMandatory") (declared-name "isMandatory") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Filtering Example-1::Safety")))))
-          )
-        )
-        (element (kind "package") (id (node (document "d0") (qualified-name "Filtering Example-1::Safety Features"))) (name "Safety Features") (declared-name "Safety Features")
-          (contains
-            (element (kind "filter") (id (node (document "d0") (qualified-name "Filtering Example-1::Safety Features::_filter"))) (name "_filter") (declared-name "_filter") (declared (own-expression (expression (kind "classification") (reference "Safety")))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
-            (element (kind "import") (id (node (document "d0") (qualified-name "Filtering Example-1::Safety Features::vehicle"))) (name "vehicle") (declared-name "vehicle"))
-          )
-        )
-        (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy"))) (name "bodyAssy") (declared-name "bodyAssy") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::body"))) (name "body") (declared-name "body") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::bumper"))) (name "bumper") (declared-name "bumper") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-                  (contains
-                    (element (kind "metadata usage") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::bumper::Safety"))) (name "Safety") (declared-name "Safety")
-                      (contains
-                        (element (kind "attribute") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::bumper::Safety::isMandatory"))) (name "isMandatory") (declared-name "isMandatory") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
-                      )
-                    )
-                  )
-                )
-                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::keylessEntry"))) (name "keylessEntry") (declared-name "keylessEntry") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-              )
-            )
-            (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior"))) (name "interior") (declared-name "interior") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::alarm"))) (name "alarm") (declared-name "alarm") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::driverAirBag"))) (name "driverAirBag") (declared-name "driverAirBag") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-                  (contains
-                    (element (kind "metadata usage") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::driverAirBag::Safety"))) (name "Safety") (declared-name "Safety")
-                      (contains
-                        (element (kind "attribute") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::driverAirBag::Safety::isMandatory"))) (name "isMandatory") (declared-name "isMandatory") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
-                      )
-                    )
-                  )
-                )
-                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::frontSeat"))) (name "frontSeat") (declared-name "frontSeat") (declared (properties (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false))))
-                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::seatBelt"))) (name "seatBelt") (declared-name "seatBelt") (declared (properties (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)))
-                  (contains
-                    (element (kind "metadata usage") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::seatBelt::Safety"))) (name "Safety") (declared-name "Safety")
-                      (contains
-                        (element (kind "attribute") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::seatBelt::Safety::isMandatory"))) (name "isMandatory") (declared-name "isMandatory") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
-                      )
-                    )
-                  )
-                )
-              )
-            )
-            (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy"))) (name "wheelAssy") (declared-name "wheelAssy") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy::antilockBrakes"))) (name "antilockBrakes") (declared-name "antilockBrakes") (declared (properties (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)))
-                  (contains
-                    (element (kind "metadata usage") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy::antilockBrakes::Safety"))) (name "Safety") (declared-name "Safety")
-                      (contains
-                        (element (kind "attribute") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy::antilockBrakes::Safety::isMandatory"))) (name "isMandatory") (declared-name "isMandatory") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
-                      )
-                    )
-                  )
-                )
-                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy::wheel"))) (name "wheel") (declared-name "wheel") (declared (properties (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false))))
-              )
-            )
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e4eb756e6a8349062a50110b4900e749d582076d094e0ae3d4d940e5b430bb42") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1"))) (kind "package") (name "Filtering Example-1") (declared-name "Filtering Example-1") (range (start (line 0) (character 0)) (end (line 0) (character 820))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::Boolean"))) (kind "import") (name "Boolean") (declared-name "Boolean") (range (start (line 1) (character 1)) (end (line 1) (character 38))) (parent (node (document "d0") (qualified-name "Filtering Example-1"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Boolean") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::Mandatory Safety Features"))) (kind "package") (name "Mandatory Safety Features") (declared-name "Mandatory Safety Features") (range (start (line 31) (character 1)) (end (line 31) (character 171))) (parent (node (document "d0") (qualified-name "Filtering Example-1"))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::Mandatory Safety Features::_filter"))) (kind "filter") (name "_filter") (declared-name "_filter") (range (start (line 34) (character 2)) (end (line 34) (character 41))) (parent (node (document "d0") (qualified-name "Filtering Example-1::Mandatory Safety Features"))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::Mandatory Safety Features::vehicle"))) (kind "import") (name "vehicle") (declared-name "vehicle") (range (start (line 33) (character 2)) (end (line 33) (character 28))) (parent (node (document "d0") (qualified-name "Filtering Example-1::Mandatory Safety Features"))) (authored (membership (kind Import) (visibility "public") (import (reference "vehicle") (origin Import) (shape Membership) (recursive true)) (import-range (start (line 33) (character 16)) (end (line 33) (character 23))))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::Safety"))) (kind "metadata def") (name "Safety") (declared-name "Safety") (range (start (line 3) (character 1)) (end (line 3) (character 60))) (parent (node (document "d0") (qualified-name "Filtering Example-1"))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::Safety Features"))) (kind "package") (name "Safety Features") (declared-name "Safety Features") (range (start (line 25) (character 1)) (end (line 25) (character 121))) (parent (node (document "d0") (qualified-name "Filtering Example-1"))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::Safety Features::_filter"))) (kind "filter") (name "_filter") (declared-name "_filter") (range (start (line 28) (character 2)) (end (line 28) (character 17))) (parent (node (document "d0") (qualified-name "Filtering Example-1::Safety Features"))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::Safety Features::vehicle"))) (kind "import") (name "vehicle") (declared-name "vehicle") (range (start (line 27) (character 2)) (end (line 27) (character 28))) (parent (node (document "d0") (qualified-name "Filtering Example-1::Safety Features"))) (authored (membership (kind Import) (visibility "public") (import (reference "vehicle") (origin Import) (shape Membership) (recursive true)) (import-range (start (line 27) (character 16)) (end (line 27) (character 23))))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::Safety::isMandatory"))) (kind "attribute") (name "isMandatory") (declared-name "isMandatory") (range (start (line 4) (character 2)) (end (line 4) (character 34))) (parent (node (document "d0") (qualified-name "Filtering Example-1::Safety"))) (authored (membership (kind Feature)) (relationships (typing (reference "Boolean") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle"))) (kind "part") (name "vehicle") (declared-name "vehicle") (range (start (line 7) (character 1)) (end (line 7) (character 384))) (parent (node (document "d0") (qualified-name "Filtering Example-1"))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy"))) (kind "part") (name "bodyAssy") (declared-name "bodyAssy") (range (start (line 14) (character 2)) (end (line 14) (character 103))) (parent (node (document "d0") (qualified-name "Filtering Example-1::vehicle"))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::body"))) (kind "part") (name "body") (declared-name "body") (range (start (line 15) (character 3)) (end (line 15) (character 13))) (parent (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy"))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::bumper"))) (kind "part") (name "bumper") (declared-name "bumper") (range (start (line 16) (character 3)) (end (line 16) (character 45))) (parent (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy"))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::bumper::Safety"))) (kind "metadata usage") (name "Safety") (declared-name "Safety") (range (start (line 16) (character 16)) (end (line 16) (character 44))) (parent (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::bumper"))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::bumper::Safety::isMandatory"))) (kind "attribute") (name "isMandatory") (declared-name "isMandatory") (range (start (line 16) (character 24)) (end (line 16) (character 43))) (parent (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::bumper::Safety"))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::keylessEntry"))) (kind "part") (name "keylessEntry") (declared-name "keylessEntry") (range (start (line 17) (character 3)) (end (line 17) (character 21))) (parent (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy"))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior"))) (kind "part") (name "interior") (declared-name "interior") (range (start (line 8) (character 2)) (end (line 8) (character 162))) (parent (node (document "d0") (qualified-name "Filtering Example-1::vehicle"))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::alarm"))) (kind "part") (name "alarm") (declared-name "alarm") (range (start (line 9) (character 3)) (end (line 9) (character 14))) (parent (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior"))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::driverAirBag"))) (kind "part") (name "driverAirBag") (declared-name "driverAirBag") (range (start (line 12) (character 3)) (end (line 12) (character 52))) (parent (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior"))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::driverAirBag::Safety"))) (kind "metadata usage") (name "Safety") (declared-name "Safety") (range (start (line 12) (character 22)) (end (line 12) (character 51))) (parent (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::driverAirBag"))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::driverAirBag::Safety::isMandatory"))) (kind "attribute") (name "isMandatory") (declared-name "isMandatory") (range (start (line 12) (character 30)) (end (line 12) (character 50))) (parent (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::driverAirBag::Safety"))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::frontSeat"))) (kind "part") (name "frontSeat") (declared-name "frontSeat") (range (start (line 11) (character 3)) (end (line 11) (character 21))) (parent (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior"))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::seatBelt"))) (kind "part") (name "seatBelt") (declared-name "seatBelt") (range (start (line 10) (character 3)) (end (line 10) (character 50))) (parent (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior"))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::seatBelt::Safety"))) (kind "metadata usage") (name "Safety") (declared-name "Safety") (range (start (line 10) (character 21)) (end (line 10) (character 49))) (parent (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::seatBelt"))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::seatBelt::Safety::isMandatory"))) (kind "attribute") (name "isMandatory") (declared-name "isMandatory") (range (start (line 10) (character 29)) (end (line 10) (character 48))) (parent (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::seatBelt::Safety"))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy"))) (kind "part") (name "wheelAssy") (declared-name "wheelAssy") (range (start (line 19) (character 2)) (end (line 19) (character 98))) (parent (node (document "d0") (qualified-name "Filtering Example-1::vehicle"))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy::antilockBrakes"))) (kind "part") (name "antilockBrakes") (declared-name "antilockBrakes") (range (start (line 21) (character 3)) (end (line 21) (character 57))) (parent (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy"))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy::antilockBrakes::Safety"))) (kind "metadata usage") (name "Safety") (declared-name "Safety") (range (start (line 21) (character 27)) (end (line 21) (character 56))) (parent (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy::antilockBrakes"))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy::antilockBrakes::Safety::isMandatory"))) (kind "attribute") (name "isMandatory") (declared-name "isMandatory") (range (start (line 21) (character 35)) (end (line 21) (character 55))) (parent (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy::antilockBrakes::Safety"))))
+    (element (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy::wheel"))) (kind "part") (name "wheel") (declared-name "wheel") (range (start (line 20) (character 3)) (end (line 20) (character 17))) (parent (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Filtering Example-1::Boolean"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Boolean") (range (start (line 1) (character 16)) (end (line 1) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Filtering Example-1::Mandatory Safety Features::vehicle"))) (kind membershipImport) (ordinal 0)) (authored-target "vehicle") (range (start (line 33) (character 16)) (end (line 33) (character 23))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Filtering Example-1::Safety Features::vehicle"))) (kind membershipImport) (ordinal 0)) (authored-target "vehicle") (range (start (line 27) (character 16)) (end (line 27) (character 23))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Filtering Example-1::Safety::isMandatory"))) (kind featureTyping) (ordinal 0)) (authored-target "Boolean") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Filtering Example-1::Boolean")))))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::bumper::Safety"))) (to (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::bumper"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::driverAirBag::Safety"))) (to (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::driverAirBag"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::seatBelt::Safety"))) (to (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::seatBelt"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy::antilockBrakes::Safety"))) (to (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy::antilockBrakes"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Filtering Example-1::Safety::isMandatory"))) (target (node (document "d0") (qualified-name "Filtering Example-1::Boolean"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Filtering Example-1::Safety::isMandatory"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Filtering Example-1::Safety"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Filtering Example-1::Safety::isMandatory"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Filtering Example-1::vehicle"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::body"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::bumper"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::bumper::Safety"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::bumper::Safety::isMandatory"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::keylessEntry"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::alarm"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::driverAirBag"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::driverAirBag::Safety"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::driverAirBag::Safety::isMandatory"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::frontSeat"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::seatBelt"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::seatBelt::Safety"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::seatBelt::Safety::isMandatory"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy::antilockBrakes"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy::antilockBrakes::Safety"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy::antilockBrakes::Safety::isMandatory"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy::wheel"))) (status missing-prerequisite) (target "Parts::parts"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/40_filtering_example_1.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 4 2) (end 4 34))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 9 3) (end 9 14))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 11 3) (end 11 21))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 15 3) (end 15 13))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 17 3) (end 17 21))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 20 3) (end 20 17))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 27 16) (end 27 23))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "Filtering Example-1::Mandatory Safety Features::_filter")) (expression (status "unsupported") (error "declared expression form is not supported")))
+    (node (node (document "d0") (qualified-name "Filtering Example-1::Safety Features::_filter")) (expression (status "unsupported") (error "declared expression form is not supported")))
   )
 )
 ~~~

@@ -59,6 +59,111 @@ package ActionTest {
 	}	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "action_test.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1 15) (end 1 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 4 2) (end 4 14))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 6 13) (end 6 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 8 7) (end 8 8))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 14 2) (end 14 14))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 15 2) (end 15 15))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_action_body_element")
+        (source "sysml")
+        (range (start 16 2) (end 16 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 16 2) (end 16 19))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 24 3) (end 24 15))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 32 20) (end 32 32))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_action_body_element")
+        (source "sysml")
+        (range (start 33 13) (end 33 50))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 33 13) (end 33 50))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 37 11) (end 37 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 46 2) (end 46 14))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 47 2) (end 47 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 47 2) (end 47 39))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -164,6 +269,22 @@ CloseCurly,EndOfFile,
       (source_succession
         (terminate_node)))))
 ~~~
+# EXPECTED
+~~~
+semantic.duplicate_name 'm'
+semantic.duplicate_name 'aa'
+semantic.invalid_connection_end_count
+semantic.unresolved_name 'payload'
+semantic.unresolved_name 'ScalarValues::Boolean'
+~~~
+# PROBLEMS
+~~~
+semantic.duplicate_name 'm'
+semantic.duplicate_name 'aa'
+semantic.invalid_connection_end_count
+semantic.unresolved_name 'payload'
+semantic.unresolved_name 'ScalarValues::Boolean'
+~~~
 # FORMAT
 ~~~sysml
 package ActionTest {
@@ -221,192 +342,72 @@ package ActionTest {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.duplicate_name 'm'
-semantic.duplicate_name 'aa'
-semantic.invalid_connection_end_count
-semantic.unresolved_name 'payload'
-semantic.unresolved_name 'ScalarValues::Boolean'
-~~~
-# PROBLEMS
-~~~
-semantic.duplicate_name 'm'
-semantic.duplicate_name 'aa'
-semantic.invalid_connection_end_count
-semantic.unresolved_name 'payload'
-semantic.unresolved_name 'ScalarValues::Boolean'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ActionTest"))) (name "ActionTest") (declared-name "ActionTest")
-      (contains
-        (element (kind "action def") (id (node (document "d0") (qualified-name "ActionTest::A"))) (name "A") (declared-name "A")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ActionTest::A::x"))) (name "x") (declared-name "x") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "ActionTest::A")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ActionTest::S"))) (name "S") (declared-name "S") (declared (properties (ordered false) (unique true))))
-        (element (kind "action") (id (node (document "d0") (qualified-name "ActionTest::a"))) (name "a") (declared-name "a") (declared)
-          (contains
-            (element (kind "initial") (id (node (document "d0") (qualified-name "ActionTest::a::_initial"))) (name "_initial") (effective (featuring-type (node (document "d0") (qualified-name "ActionTest::A")))))
-            (element (kind "action") (id (node (document "d0") (qualified-name "ActionTest::a::b"))) (name "b") (declared-name "b") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ActionTest::A"))))
-              (contains
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ActionTest::a::b::y"))) (name "y") (declared-name "y") (declared (properties (direction "in")) (own-expression (expression (kind "featureReference") (reference "x")))) (effective (featuring-type (node (document "d0") (qualified-name "ActionTest::A")))) (evaluation (expression (status "incomplete") (error "expression is incomplete"))))
-              )
-            )
-          )
-        )
-        (element (kind "action") (id (node (document "d0") (qualified-name "ActionTest::a1"))) (name "a1") (declared-name "a1") (declared)
-          (contains
-            (element (kind "initial") (id (node (document "d0") (qualified-name "ActionTest::a1::_initial"))) (name "_initial"))
-            (element (kind "merge") (id (node (document "d0") (qualified-name "ActionTest::a1::m"))) (name "merge") (declared-name "merge"))
-          )
-        )
-        (element (kind "action") (id (node (document "d0") (qualified-name "ActionTest::a2"))) (name "a2") (declared-name "a2") (declared)
-          (contains
-            (element (kind "action") (id (node (document "d0") (qualified-name "ActionTest::a2::aa"))) (name "aa") (declared-name "aa") (declared) (effective (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "ActionTest::a2::aa::target"))) (name "target") (declared-name "target") (declared (properties (direction "out") (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
-              )
-            )
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ActionTest::a2::s"))) (name "s") (declared-name "s") (declared (properties (direction "in"))))
-            (element (kind "action") (id (node (document "d0") (qualified-name "ActionTest::a2::snd"))) (name "snd") (declared-name "snd") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
-            (element (kind "action") (id (node (document "d0") (qualified-name "ActionTest::a2::snd2"))) (name "snd2") (declared-name "snd2") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
-          )
-        )
-        (element (kind "action") (id (node (document "d0") (qualified-name "ActionTest::b"))) (name "b") (declared-name "b") (declared)
-          (contains
-            (element (kind "ref") (id (node (document "d0") (qualified-name "ActionTest::b::a"))) (name "a") (declared-name "a") (declared (properties (composite false) (reference true))))
-            (element (kind "action body decl") (id (node (document "d0") (qualified-name "ActionTest::b::f : ScalarValues::Boolean"))) (name "f : ScalarValues::Boolean") (declared-name "f : ScalarValues::Boolean"))
-          )
-        )
-        (element (kind "action def") (id (node (document "d0") (qualified-name "ActionTest::c"))) (name "c") (declared-name "c")
-          (contains
-            (element (kind "initial") (id (node (document "d0") (qualified-name "ActionTest::c::_initial"))) (name "_initial") (effective (featuring-type (node (document "d0") (qualified-name "ActionTest::c")))))
-            (element (kind "action") (id (node (document "d0") (qualified-name "ActionTest::c::c1"))) (name "c1") (declared-name "c1") (effective (featuring-type (node (document "d0") (qualified-name "ActionTest::c"))))
-              (contains
-                (element (kind "terminate") (id (node (document "d0") (qualified-name "ActionTest::c::c1::_terminate"))) (name "terminate") (declared-name "terminate") (effective (featuring-type (node (document "d0") (qualified-name "ActionTest::c")))))
-              )
-            )
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "19495e52d200b17946170d418fdf33f8ca80fd90be5b4f11b2a4f5d818455a7f") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ActionTest"))) (kind "package") (name "ActionTest") (declared-name "ActionTest") (range (start (line 0) (character 0)) (end (line 0) (character 809))))
+    (element (id (node (document "d0") (qualified-name "ActionTest::A"))) (kind "action def") (name "A") (declared-name "A") (range (start (line 1) (character 1)) (end (line 1) (character 22))) (parent (node (document "d0") (qualified-name "ActionTest"))))
+    (element (id (node (document "d0") (qualified-name "ActionTest::A::x"))) (kind "in out parameter") (name "x") (declared-name "x") (range (start (line 1) (character 15)) (end (line 1) (character 20))) (parent (node (document "d0") (qualified-name "ActionTest::A"))) (authored (relationships (typing (reference "") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ActionTest::S"))) (kind "attribute def") (name "S") (declared-name "S") (range (start (line 11) (character 1)) (end (line 11) (character 17))) (parent (node (document "d0") (qualified-name "ActionTest"))))
+    (element (id (node (document "d0") (qualified-name "ActionTest::a"))) (kind "action") (name "a") (declared-name "a") (range (start (line 3) (character 1)) (end (line 3) (character 80))) (parent (node (document "d0") (qualified-name "ActionTest"))) (authored (membership (kind Feature)) (relationships (typing (reference "A") (range none)) (perform (reference "ActionTest::a::b") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ActionTest::a1"))) (kind "action") (name "a1") (declared-name "a1") (range (start (line 13) (character 1)) (end (line 13) (character 270))) (parent (node (document "d0") (qualified-name "ActionTest"))))
+    (element (id (node (document "d0") (qualified-name "ActionTest::a1::_initial"))) (kind "initial") (name "_initial") (range (start (line 14) (character 2)) (end (line 14) (character 14))) (parent (node (document "d0") (qualified-name "ActionTest::a1"))) (authored (relationships (flow (reference "ActionTest::a1::start") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ActionTest::a1::m"))) (kind "merge") (name "merge") (declared-name "merge") (range (start (line 15) (character 2)) (end (line 15) (character 15))) (parent (node (document "d0") (qualified-name "ActionTest::a1"))) (authored (relationships (flow (reference "ActionTest::a1::decide") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ActionTest::a2"))) (kind "action") (name "a2") (declared-name "a2") (range (start (line 27) (character 1)) (end (line 27) (character 214))) (parent (node (document "d0") (qualified-name "ActionTest"))) (authored (membership (kind Feature)) (relationships (perform (reference "ActionTest::a2::aa") (range none)) (perform (reference "ActionTest::a2::snd") (range none)) (perform (reference "ActionTest::a2::snd2") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ActionTest::a2::aa"))) (kind "action") (name "aa") (declared-name "aa") (range (start (line 29) (character 2)) (end (line 29) (character 37))) (parent (node (document "d0") (qualified-name "ActionTest::a2"))))
+    (element (id (node (document "d0") (qualified-name "ActionTest::a2::aa::target"))) (kind "part") (name "target") (declared-name "target") (range (start (line 30) (character 3)) (end (line 30) (character 19))) (parent (node (document "d0") (qualified-name "ActionTest::a2::aa"))))
+    (element (id (node (document "d0") (qualified-name "ActionTest::a2::s"))) (kind "in out parameter") (name "s") (declared-name "s") (range (start (line 28) (character 2)) (end (line 28) (character 11))) (parent (node (document "d0") (qualified-name "ActionTest::a2"))) (authored (relationships (typing (reference "S") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ActionTest::a2::snd"))) (kind "action") (name "snd") (declared-name "snd") (range (start (line 33) (character 2)) (end (line 33) (character 13))) (parent (node (document "d0") (qualified-name "ActionTest::a2"))))
+    (element (id (node (document "d0") (qualified-name "ActionTest::a2::snd2"))) (kind "action") (name "snd2") (declared-name "snd2") (range (start (line 36) (character 2)) (end (line 36) (character 14))) (parent (node (document "d0") (qualified-name "ActionTest::a2"))))
+    (element (id (node (document "d0") (qualified-name "ActionTest::a::_initial"))) (kind "initial") (name "_initial") (range (start (line 4) (character 2)) (end (line 4) (character 14))) (parent (node (document "d0") (qualified-name "ActionTest::a"))) (authored (relationships (flow (reference "ActionTest::a::start") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ActionTest::a::b"))) (kind "action") (name "b") (declared-name "b") (range (start (line 6) (character 2)) (end (line 6) (character 24))) (parent (node (document "d0") (qualified-name "ActionTest::a"))))
+    (element (id (node (document "d0") (qualified-name "ActionTest::a::b::y"))) (kind "in out parameter") (name "y") (declared-name "y") (range (start (line 6) (character 13)) (end (line 6) (character 22))) (parent (node (document "d0") (qualified-name "ActionTest::a::b"))) (authored (relationships (typing (reference "") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ActionTest::b"))) (kind "action") (name "b") (declared-name "b") (range (start (line 40) (character 1)) (end (line 40) (character 73))) (parent (node (document "d0") (qualified-name "ActionTest"))))
+    (element (id (node (document "d0") (qualified-name "ActionTest::b::a"))) (kind "ref") (name "a") (declared-name "a") (range (start (line 42) (character 2)) (end (line 42) (character 19))) (parent (node (document "d0") (qualified-name "ActionTest::b"))) (authored (membership (kind Feature)) (relationships (typing (reference "A") (range (start (line 42) (character 17)) (end (line 42) (character 18)))))))
+    (element (id (node (document "d0") (qualified-name "ActionTest::b::f : ScalarValues::Boolean"))) (kind "action body decl") (name "f : ScalarValues::Boolean") (declared-name "f : ScalarValues::Boolean") (range (start (line 41) (character 2)) (end (line 41) (character 38))) (parent (node (document "d0") (qualified-name "ActionTest::b"))))
+    (element (id (node (document "d0") (qualified-name "ActionTest::c"))) (kind "action def") (name "c") (declared-name "c") (range (start (line 45) (character 1)) (end (line 45) (character 91))) (parent (node (document "d0") (qualified-name "ActionTest"))) (authored (membership (kind Owning)) (relationships (perform (reference "ActionTest::c::c1") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ActionTest::c::_initial"))) (kind "initial") (name "_initial") (range (start (line 46) (character 2)) (end (line 46) (character 14))) (parent (node (document "d0") (qualified-name "ActionTest::c"))) (authored (relationships (flow (reference "ActionTest::c::start") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ActionTest::c::c1"))) (kind "action") (name "c1") (declared-name "c1") (range (start (line 47) (character 2)) (end (line 47) (character 39))) (parent (node (document "d0") (qualified-name "ActionTest::c"))) (authored (relationships (typing (reference "") (range none)) (flow (reference "ActionTest::c::terminate") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ActionTest::c::c1::_terminate"))) (kind "terminate") (name "terminate") (declared-name "terminate") (range (start (line 48) (character 3)) (end (line 48) (character 16))) (parent (node (document "d0") (qualified-name "ActionTest::c::c1"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "ActionTest::A::x"))) (kind featureTyping) (ordinal 0)) (authored-target "") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ActionTest::a"))) (kind featureTyping) (ordinal 0)) (authored-target "A") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ActionTest::A")))))
+    (reference (id (source (node (document "d0") (qualified-name "ActionTest::a"))) (kind bindSource) (ordinal 0)) (authored-target "x") (range (start (line 8) (character 7)) (end (line 8) (character 8))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ActionTest::a"))) (kind bindTarget) (ordinal 0)) (authored-target "b::y") (range (start (line 8) (character 11)) (end (line 8) (character 14))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ActionTest::a::b::y")))))
+    (reference (id (source (node (document "d0") (qualified-name "ActionTest::a"))) (kind performSource) (ordinal 0)) (authored-target "ActionTest::a::b") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ActionTest::a::b")))))
+    (reference (id (source (node (document "d0") (qualified-name "ActionTest::a1::_initial"))) (kind flowSource) (ordinal 0)) (authored-target "ActionTest::a1::start") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ActionTest::a1::m"))) (kind flowSource) (ordinal 0)) (authored-target "ActionTest::a1::decide") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ActionTest::a2"))) (kind bindSource) (ordinal 1)) (authored-target "s") (range (start (line 37) (character 7)) (end (line 37) (character 8))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ActionTest::a2::s")))))
+    (reference (id (source (node (document "d0") (qualified-name "ActionTest::a2"))) (kind bindTarget) (ordinal 1)) (authored-target "snd2::payload") (range (start (line 37) (character 11)) (end (line 37) (character 23))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ActionTest::a2"))) (kind flowSource) (ordinal 0)) (authored-target "aa::target") (range (start (line 32) (character 7)) (end (line 32) (character 16))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ActionTest::a2::aa::target")))))
+    (reference (id (source (node (document "d0") (qualified-name "ActionTest::a2"))) (kind flowTarget) (ordinal 0)) (authored-target "snd::receiver") (range (start (line 32) (character 20)) (end (line 32) (character 32))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ActionTest::a2"))) (kind performSource) (ordinal 0)) (authored-target "ActionTest::a2::aa") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ActionTest::a2::aa")))))
+    (reference (id (source (node (document "d0") (qualified-name "ActionTest::a2"))) (kind performSource) (ordinal 1)) (authored-target "ActionTest::a2::snd") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ActionTest::a2::snd")))))
+    (reference (id (source (node (document "d0") (qualified-name "ActionTest::a2"))) (kind performSource) (ordinal 2)) (authored-target "ActionTest::a2::snd2") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ActionTest::a2::snd2")))))
+    (reference (id (source (node (document "d0") (qualified-name "ActionTest::a2::s"))) (kind featureTyping) (ordinal 0)) (authored-target "S") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ActionTest::S")))))
+    (reference (id (source (node (document "d0") (qualified-name "ActionTest::a::_initial"))) (kind flowSource) (ordinal 0)) (authored-target "ActionTest::a::start") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ActionTest::a::b::y"))) (kind featureTyping) (ordinal 0)) (authored-target "") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ActionTest::b::a"))) (kind featureTyping) (ordinal 0)) (authored-target "A") (range (start (line 42) (character 17)) (end (line 42) (character 18))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ActionTest::A")))))
+    (reference (id (source (node (document "d0") (qualified-name "ActionTest::c"))) (kind performSource) (ordinal 0)) (authored-target "ActionTest::c::c1") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ActionTest::c::c1")))))
+    (reference (id (source (node (document "d0") (qualified-name "ActionTest::c::_initial"))) (kind flowSource) (ordinal 0)) (authored-target "ActionTest::c::start") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ActionTest::c::c1"))) (kind featureTyping) (ordinal 0)) (authored-target "") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ActionTest::c::c1"))) (kind flowSource) (ordinal 0)) (authored-target "ActionTest::c::terminate") (range none) (outcome (status unresolved)))
   )
   (relationships
-    (bind (status resolved) (from (node (document "d0") (qualified-name "ActionTest::A::x"))) (to (node (document "d0") (qualified-name "ActionTest::a::b::y"))) (connect (source-expression "x") (target-expression "b::y") (container-prefix "ActionTest::a")) (provenance authored))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "ActionTest::a"))) (to (node (document "d0") (qualified-name "ActionTest::a::b"))) (provenance authored))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "ActionTest::a2"))) (to (node (document "d0") (qualified-name "ActionTest::a2::aa"))) (provenance authored))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "ActionTest::a2"))) (to (node (document "d0") (qualified-name "ActionTest::a2::snd"))) (provenance authored))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "ActionTest::a2"))) (to (node (document "d0") (qualified-name "ActionTest::a2::snd2"))) (provenance authored))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "ActionTest::c"))) (to (node (document "d0") (qualified-name "ActionTest::c::c1"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ActionTest::a"))) (to (node (document "d0") (qualified-name "ActionTest::A"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ActionTest::a2::s"))) (to (node (document "d0") (qualified-name "ActionTest::S"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ActionTest::b::a"))) (to (node (document "d0") (qualified-name "ActionTest::A"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ActionTest::a"))) (target (node (document "d0") (qualified-name "ActionTest::A"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ActionTest::a"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "ActionTest::a"))) (target (node (document "d0") (qualified-name "ActionTest::a::b"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ActionTest::a"))) (kind performSource) (ordinal 0)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "ActionTest::a2"))) (target (node (document "d0") (qualified-name "ActionTest::a2::aa"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ActionTest::a2"))) (kind performSource) (ordinal 0)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "ActionTest::a2"))) (target (node (document "d0") (qualified-name "ActionTest::a2::snd"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ActionTest::a2"))) (kind performSource) (ordinal 1)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "ActionTest::a2"))) (target (node (document "d0") (qualified-name "ActionTest::a2::snd2"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ActionTest::a2"))) (kind performSource) (ordinal 2)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ActionTest::a2::s"))) (target (node (document "d0") (qualified-name "ActionTest::S"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ActionTest::a2::s"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ActionTest::b::a"))) (target (node (document "d0") (qualified-name "ActionTest::A"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ActionTest::b::a"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "ActionTest::c"))) (target (node (document "d0") (qualified-name "ActionTest::c::c1"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ActionTest::c"))) (kind performSource) (ordinal 0)))
   )
-  (pending-relationships
-    (flow (status pending) (document "d0") (source-qualified "ActionTest::a1::_initial") (target-qualified "ActionTest::a1::start"))
-    (flow (status pending) (document "d0") (source-qualified "ActionTest::a1::m") (target-qualified "ActionTest::a1::decide"))
-    (flow (status pending) (document "d0") (source-qualified "ActionTest::a::_initial") (target-qualified "ActionTest::a::start"))
-    (flow (status pending) (document "d0") (source-qualified "ActionTest::c::_initial") (target-qualified "ActionTest::c::start"))
-    (flow (status pending) (document "d0") (source-qualified "ActionTest::c::c1") (target-qualified "ActionTest::c::terminate"))
-  )
-  (pending-expression-relationships
-    (bind (status pending-expression) (document "d0") (source-expression "s") (target-expression "snd2::payload") (container-prefix "ActionTest::a2"))
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ActionTest::A"))) (status missing-prerequisite) (target "Actions::Action"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ActionTest::S"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ActionTest::a"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ActionTest::a1"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ActionTest::a2"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ActionTest::a2::aa"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ActionTest::a2::aa::target"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ActionTest::a2::snd"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ActionTest::a2::snd2"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ActionTest::a::b"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ActionTest::b"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ActionTest::c"))) (status missing-prerequisite) (target "Actions::Action"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ActionTest::c::c1"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ActionTest::c::c1::_terminate"))) (status missing-prerequisite) (target "Actions::terminateActions"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/action_test.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_relationship")
-        (source "semantic")
-        (range (start 0 0) (end 0 0))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_relationship")
-        (source "semantic")
-        (range (start 0 0) (end 0 0))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_relationship")
-        (source "semantic")
-        (range (start 0 0) (end 0 0))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_relationship")
-        (source "semantic")
-        (range (start 0 0) (end 0 0))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_relationship")
-        (source "semantic")
-        (range (start 0 0) (end 0 0))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_action_body_element")
-        (source "sysml")
-        (range (start 16 2) (end 16 19))
-      )
-      (diagnostic
-        (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 16 2) (end 16 19))
-      )
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 24 3) (end 24 15))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_action_body_element")
-        (source "sysml")
-        (range (start 33 13) (end 33 50))
-      )
-      (diagnostic
-        (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 33 13) (end 33 50))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_expression_relationship")
-        (source "semantic")
-        (range (start 37 7) (end 37 8))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "ActionTest::a::b::y")) (expression (status "incomplete") (error "expression is incomplete")))
   )
 )
 ~~~

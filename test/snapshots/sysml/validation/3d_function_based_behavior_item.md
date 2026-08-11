@@ -89,6 +89,57 @@ package '3d-Function-based Behavior-item' {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "3d_function_based_behavior_item.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 45 9) (end 45 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 45 41) (end 45 61))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 59 9) (end 59 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 59 34) (end 59 57))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 62 9) (end 62 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 62 28) (end 62 41))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -199,6 +250,26 @@ CloseCurly,EndOfFile,
               (attribute_usage 'volume' : 'Real')
               (comment))))))))
 ~~~
+# EXPECTED
+~~~
+semantic.duplicate_name 'of'
+semantic.invalid_connection_end_count
+semantic.invalid_connection_end_count
+semantic.invalid_connection_end_count
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+~~~
+# PROBLEMS
+~~~
+semantic.duplicate_name 'of'
+semantic.invalid_connection_end_count
+semantic.invalid_connection_end_count
+semantic.invalid_connection_end_count
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+~~~
 # FORMAT
 ~~~sysml
 package '3d-Function-based Behavior-item' {
@@ -286,171 +357,93 @@ package '3d-Function-based Behavior-item' {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.duplicate_name 'of'
-semantic.invalid_connection_end_count
-semantic.invalid_connection_end_count
-semantic.invalid_connection_end_count
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-~~~
-# PROBLEMS
-~~~
-semantic.duplicate_name 'of'
-semantic.invalid_connection_end_count
-semantic.invalid_connection_end_count
-semantic.invalid_connection_end_count
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item"))) (name "3d-Function-based Behavior-item") (declared-name "3d-Function-based Behavior-item")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "package") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions"))) (name "Definitions") (declared-name "Definitions")
-          (contains
-            (element (kind "item def") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Fuel"))) (name "Fuel") (declared-name "Fuel"))
-            (element (kind "port def") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort"))) (name "FuelPort") (declared-name "FuelPort")
-              (contains
-                (element (kind "item") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort::fuel"))) (name "fuel") (declared-name "fuel") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort")))))
-                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort::~FuelPort"))) (name "~FuelPort") (declared-name "~FuelPort") (effective (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort")))))
-              )
-            )
-            (element (kind "part def") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelTank"))) (name "FuelTank") (declared-name "FuelTank") (declared)
-              (contains
-                (element (kind "port") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelTank::fuelInPort"))) (name "fuelInPort") (declared-name "fuelInPort") (declared (properties (conjugated true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelTank")))))
-              )
-            )
-            (element (kind "part def") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump"))) (name "Pump") (declared-name "Pump") (declared)
-              (contains
-                (element (kind "port") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump::fuelInPort"))) (name "fuelInPort") (declared-name "fuelInPort") (declared (properties (conjugated true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump")))))
-                (element (kind "port") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump::fuelOutPort"))) (name "fuelOutPort") (declared-name "fuelOutPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump")))))
-              )
-            )
-            (element (kind "action def") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel"))) (name "PumpFuel") (declared-name "PumpFuel")
-              (contains
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel::fuelIn"))) (name "fuelIn") (declared-name "fuelIn") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel")))))
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel::fuelOut"))) (name "fuelOut") (declared-name "fuelOut") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel")))))
-              )
-            )
-            (element (kind "part def") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::StorageTank"))) (name "StorageTank") (declared-name "StorageTank") (declared)
-              (contains
-                (element (kind "port") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::StorageTank::fuelOutPort"))) (name "fuelOutPort") (declared-name "fuelOutPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::StorageTank")))))
-              )
-            )
-            (element (kind "part def") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
-              (contains
-                (element (kind "port") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Vehicle::fuelInPort"))) (name "fuelInPort") (declared-name "fuelInPort") (declared (properties (conjugated true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Vehicle")))))
-              )
-            )
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Real"))) (name "Real") (declared-name "Real"))
-        (element (kind "package") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages"))) (name "Usages") (declared-name "Usages")
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context"))) (name "context") (declared-name "context") (declared (properties (ordered false)))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump"))) (name "pump") (declared-name "pump") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-                  (contains
-                    (element (kind "action") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump::pumpFuel"))) (name "pumpFuel") (declared-name "pumpFuel") (effective (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump")))))
-                  )
-                )
-                (element (kind "part") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::storageTank"))) (name "storageTank") (declared-name "storageTank") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-                (element (kind "part") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-                  (contains
-                    (element (kind "part") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank"))) (name "fuelTank") (declared-name "fuelTank") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Vehicle"))))
-                      (contains
-                        (element (kind "attribute") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank::fuelLevel"))) (name "fuelLevel") (declared-name "fuelLevel") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "binary") (operator "/") (children (expression (kind "memberAccess") (reference "volume") (children (expression (kind "featureReference") (reference "fuel")))) (expression (kind "featureReference") (reference "volumeMax")))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelTank"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank::fuelLevel"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-                        (element (kind "attribute") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank::volumeMax"))) (name "volumeMax") (declared-name "volumeMax") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelTank")))))
-                      )
-                    )
-                  )
-                )
-              )
-            )
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "46929156d2791030e4abadc26f3d2825a1185fff093ee5927a77e9b85fd6fd6d") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item"))) (kind "package") (name "3d-Function-based Behavior-item") (declared-name "3d-Function-based Behavior-item") (range (start (line 0) (character 0)) (end (line 0) (character 1601))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 30))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item"))) (authored (membership (kind Import) (visibility "public") (import (reference "Definitions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 15)) (end (line 2) (character 26))))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 3) (character 1)) (end (line 3) (character 25))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item"))) (authored (membership (kind Import) (visibility "public") (import (reference "Usages::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 3) (character 15)) (end (line 3) (character 21))))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions"))) (kind "package") (name "Definitions") (declared-name "Definitions") (range (start (line 5) (character 1)) (end (line 5) (character 452))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item"))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Fuel"))) (kind "item def") (name "Fuel") (declared-name "Fuel") (range (start (line 7) (character 2)) (end (line 7) (character 16))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions"))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort"))) (kind "port def") (name "FuelPort") (declared-name "FuelPort") (range (start (line 9) (character 2)) (end (line 9) (character 49))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions"))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort::fuel"))) (kind "item") (name "fuel") (declared-name "fuel") (range (start (line 10) (character 3)) (end (line 10) (character 23))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort"))) (authored (membership (kind Feature)) (relationships (typing (reference "Fuel") (range none)))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort::~FuelPort"))) (kind "conjugated port definition") (name "~FuelPort") (declared-name "~FuelPort") (range (start (line 9) (character 2)) (end (line 9) (character 49))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort"))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelTank"))) (kind "part def") (name "FuelTank") (declared-name "FuelTank") (range (start (line 22) (character 2)) (end (line 22) (character 57))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions"))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelTank::fuelInPort"))) (kind "port") (name "fuelInPort") (declared-name "fuelInPort") (range (start (line 23) (character 3)) (end (line 23) (character 31))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelTank"))) (authored (membership (kind Feature)) (relationships (typing (reference "~FuelPort") (range none)))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump"))) (kind "part def") (name "Pump") (declared-name "Pump") (range (start (line 13) (character 2)) (end (line 13) (character 85))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions"))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump::fuelInPort"))) (kind "port") (name "fuelInPort") (declared-name "fuelInPort") (range (start (line 14) (character 3)) (end (line 14) (character 31))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump"))) (authored (membership (kind Feature)) (relationships (typing (reference "~FuelPort") (range none)))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump::fuelOutPort"))) (kind "port") (name "fuelOutPort") (declared-name "fuelOutPort") (range (start (line 15) (character 3)) (end (line 15) (character 31))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump"))) (authored (membership (kind Feature)) (relationships (typing (reference "FuelPort") (range none)))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel"))) (kind "action def") (name "PumpFuel") (declared-name "PumpFuel") (range (start (line 30) (character 2)) (end (line 30) (character 71))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions"))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel::fuelIn"))) (kind "in out parameter") (name "fuelIn") (declared-name "fuelIn") (range (start (line 31) (character 3)) (end (line 31) (character 20))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel"))) (authored (relationships (typing (reference "Fuel") (range none)))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel::fuelOut"))) (kind "in out parameter") (name "fuelOut") (declared-name "fuelOut") (range (start (line 32) (character 3)) (end (line 32) (character 22))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel"))) (authored (relationships (typing (reference "Fuel") (range none)))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::StorageTank"))) (kind "part def") (name "StorageTank") (declared-name "StorageTank") (range (start (line 18) (character 2)) (end (line 18) (character 60))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions"))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::StorageTank::fuelOutPort"))) (kind "port") (name "fuelOutPort") (declared-name "fuelOutPort") (range (start (line 19) (character 3)) (end (line 19) (character 31))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::StorageTank"))) (authored (membership (kind Feature)) (relationships (typing (reference "FuelPort") (range none)))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (range (start (line 26) (character 2)) (end (line 26) (character 56))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions"))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Vehicle::fuelInPort"))) (kind "port") (name "fuelInPort") (declared-name "fuelInPort") (range (start (line 27) (character 3)) (end (line 27) (character 31))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "~FuelPort") (range none)))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Real"))) (kind "import") (name "Real") (declared-name "Real") (range (start (line 1) (character 1)) (end (line 1) (character 35))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 34))))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages"))) (kind "package") (name "Usages") (declared-name "Usages") (range (start (line 37) (character 1)) (end (line 37) (character 1005))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item"))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context"))) (kind "part") (name "context") (declared-name "context") (range (start (line 39) (character 2)) (end (line 39) (character 981))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages"))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump"))) (kind "part") (name "pump") (declared-name "pump") (range (start (line 51) (character 3)) (end (line 51) (character 144))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context"))) (authored (membership (kind Feature)) (relationships (typing (reference "Pump") (range (start (line 51) (character 15)) (end (line 51) (character 19)))) (perform (reference "3d-Function-based Behavior-item::Usages::context::pump::pumpFuel") (range none)))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump::pumpFuel"))) (kind "action") (name "pumpFuel") (declared-name "pumpFuel") (range (start (line 52) (character 4)) (end (line 52) (character 117))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump"))) (authored (relationships (typing (reference "PumpFuel") (range none)))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::storageTank"))) (kind "part") (name "storageTank") (declared-name "storageTank") (range (start (line 42) (character 3)) (end (line 42) (character 34))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context"))) (authored (membership (kind Feature)) (relationships (typing (reference "StorageTank") (range (start (line 42) (character 22)) (end (line 42) (character 33)))))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle"))) (kind "part") (name "vehicle") (declared-name "vehicle") (range (start (line 61) (character 3)) (end (line 61) (character 460))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle") (range (start (line 61) (character 18)) (end (line 61) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank"))) (kind "part") (name "fuelTank") (declared-name "fuelTank") (range (start (line 69) (character 4)) (end (line 69) (character 251))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "FuelTank") (range (start (line 69) (character 20)) (end (line 69) (character 28)))))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank::fuelLevel"))) (kind "attribute") (name "fuelLevel") (declared-name "fuelLevel") (range (start (line 71) (character 5)) (end (line 71) (character 58))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (typing (reference "Real") (range (start (line 71) (character 27)) (end (line 71) (character 31)))))))
+    (element (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank::volumeMax"))) (kind "attribute") (name "volumeMax") (declared-name "volumeMax") (range (start (line 70) (character 5)) (end (line 70) (character 32))) (parent (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (typing (reference "Real") (range (start (line 70) (character 27)) (end (line 70) (character 31)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Definitions::*") (range (start (line 2) (character 15)) (end (line 2) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions")))))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "Usages::*") (range (start (line 3) (character 15)) (end (line 3) (character 21))) (outcome (status resolved) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages")))))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort::fuel"))) (kind featureTyping) (ordinal 0)) (authored-target "Fuel") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Fuel")))))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelTank::fuelInPort"))) (kind featureTyping) (ordinal 0)) (authored-target "~FuelPort") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort")))))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump::fuelInPort"))) (kind featureTyping) (ordinal 0)) (authored-target "~FuelPort") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort")))))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump::fuelOutPort"))) (kind featureTyping) (ordinal 0)) (authored-target "FuelPort") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort")))))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel::fuelIn"))) (kind featureTyping) (ordinal 0)) (authored-target "Fuel") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Fuel")))))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel::fuelOut"))) (kind featureTyping) (ordinal 0)) (authored-target "Fuel") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Fuel")))))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::StorageTank::fuelOutPort"))) (kind featureTyping) (ordinal 0)) (authored-target "FuelPort") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort")))))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Vehicle::fuelInPort"))) (kind featureTyping) (ordinal 0)) (authored-target "~FuelPort") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort")))))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (range (start (line 1) (character 16)) (end (line 1) (character 34))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context"))) (kind flowSource) (ordinal 0)) (authored-target "storageTank::fuelOutPort::fuel") (range (start (line 45) (character 9)) (end (line 45) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context"))) (kind flowSource) (ordinal 1)) (authored-target "pump::fuelOutPort::fuel") (range (start (line 59) (character 9)) (end (line 59) (character 30))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context"))) (kind flowTarget) (ordinal 0)) (authored-target "pump::fuelInPort::fuel") (range (start (line 45) (character 41)) (end (line 45) (character 61))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context"))) (kind flowTarget) (ordinal 1)) (authored-target "vehicle::fuelInPort::fuel") (range (start (line 59) (character 34)) (end (line 59) (character 57))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump"))) (kind featureTyping) (ordinal 0)) (authored-target "Pump") (range (start (line 51) (character 15)) (end (line 51) (character 19))) (outcome (status resolved) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump")))))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump"))) (kind performSource) (ordinal 0)) (authored-target "3d-Function-based Behavior-item::Usages::context::pump::pumpFuel") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump::pumpFuel")))))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump::pumpFuel"))) (kind featureTyping) (ordinal 0)) (authored-target "PumpFuel") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel")))))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::storageTank"))) (kind featureTyping) (ordinal 0)) (authored-target "StorageTank") (range (start (line 42) (character 22)) (end (line 42) (character 33))) (outcome (status resolved) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::StorageTank")))))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (range (start (line 61) (character 18)) (end (line 61) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Vehicle")))))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle"))) (kind flowSource) (ordinal 0)) (authored-target "fuelInPort::fuel") (range (start (line 62) (character 9)) (end (line 62) (character 24))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle"))) (kind flowTarget) (ordinal 0)) (authored-target "fuelTank::fuel") (range (start (line 62) (character 28)) (end (line 62) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank"))) (kind featureTyping) (ordinal 0)) (authored-target "FuelTank") (range (start (line 69) (character 20)) (end (line 69) (character 28))) (outcome (status resolved) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelTank")))))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank::fuelLevel"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank::fuelLevel"))) (kind featureTyping) (ordinal 1)) (authored-target "Real") (range (start (line 71) (character 27)) (end (line 71) (character 31))) (outcome (status resolved) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank::volumeMax"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank::volumeMax"))) (kind featureTyping) (ordinal 1)) (authored-target "Real") (range (start (line 70) (character 27)) (end (line 70) (character 31))) (outcome (status resolved) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Real")))))
   )
   (relationships
-    (perform (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump::pumpFuel"))) (provenance authored))
-    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort::~FuelPort"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort::fuel"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Fuel"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelTank::fuelInPort"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort::~FuelPort"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump::fuelInPort"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort::~FuelPort"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump::fuelOutPort"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel::fuelIn"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Fuel"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel::fuelOut"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Fuel"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::StorageTank::fuelOutPort"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Vehicle::fuelInPort"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort::~FuelPort"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump::pumpFuel"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::storageTank"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::StorageTank"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Vehicle"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelTank"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort::fuel"))) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Fuel"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort::fuel"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelTank::fuelInPort"))) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelTank::fuelInPort"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump::fuelInPort"))) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump::fuelInPort"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump::fuelOutPort"))) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump::fuelOutPort"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel::fuelIn"))) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Fuel"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel::fuelIn"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel::fuelOut"))) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Fuel"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel::fuelOut"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::StorageTank::fuelOutPort"))) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::StorageTank::fuelOutPort"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Vehicle::fuelInPort"))) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Vehicle::fuelInPort"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump"))) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump"))) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump::pumpFuel"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump"))) (kind performSource) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump::pumpFuel"))) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump::pumpFuel"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::storageTank"))) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::StorageTank"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::storageTank"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle"))) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Vehicle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank"))) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelTank"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank::fuelLevel"))) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank::fuelLevel"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank::fuelLevel"))) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank::fuelLevel"))) (kind featureTyping) (ordinal 1)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank::volumeMax"))) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank::volumeMax"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank::volumeMax"))) (target (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank::volumeMax"))) (kind featureTyping) (ordinal 1)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Fuel"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort"))) (status missing-prerequisite) (target "Ports::Port"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort::fuel"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort::~FuelPort"))) (status missing-prerequisite) (target "Ports::Port"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelTank"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelTank::fuelInPort"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump::fuelInPort"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump::fuelOutPort"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel"))) (status missing-prerequisite) (target "Actions::Action"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::StorageTank"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::StorageTank::fuelOutPort"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Vehicle::fuelInPort"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump::pumpFuel"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::storageTank"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank::fuelLevel"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank::volumeMax"))) (status missing-prerequisite) (target "Base::dataValues"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/validation/3d_function_based_behavior_item.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 70 5) (end 70 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 71 5) (end 71 58))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank::fuelLevel")) (expression (status "unresolved") (error "expression has an unresolved reference")))
   )
 )
 ~~~

@@ -41,6 +41,27 @@ package Packets {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "packets.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 30))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -98,6 +119,26 @@ CloseCurly,EndOfFile,
           (attribute_usage 'timestamp' : 'DateTime')
           (attribute_usage 'temperature' : 'Real'))))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'DateTime'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'DateTime'
+semantic.unresolved_name 'Real'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'DateTime'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'DateTime'
+semantic.unresolved_name 'Real'
+~~~
 # FORMAT
 ~~~sysml
 package Packets {
@@ -137,118 +178,41 @@ package Packets {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'DateTime'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'DateTime'
-semantic.unresolved_name 'Real'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'DateTime'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'DateTime'
-semantic.unresolved_name 'Real'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Packets"))) (name "Packets") (declared-name "Packets")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Packets::*"))) (name "*") (declared-name "*"))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Packets::Data Packet"))) (name "Data Packet") (declared-name "Data Packet") (declared)
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Packets::Data Packet::packet data field"))) (name "packet data field") (declared-name "packet data field") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Packets::Data Packet")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Packets::Data Packet::packet primary header"))) (name "packet primary header") (declared-name "packet primary header") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Packets::Data Packet")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "Packets::DateTime"))) (name "DateTime") (declared-name "DateTime"))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Packets::Thermal Data Packet"))) (name "Thermal Data Packet") (declared-name "Thermal Data Packet") (declared)
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Packets::Thermal Data Packet::packet data field"))) (name "packet data field") (declared-name "packet data field") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Packets::Thermal Data Packet")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Packets::packet data field"))) (name "packet data field") (declared-name "packet data field") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Packets::packet data field::packet secondary header"))) (name "packet secondary header") (declared-name "packet secondary header") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Packets::packet data field")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Packets::packet data field::user data field"))) (name "user data field") (declared-name "user data field") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Packets::packet data field")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Packets::packet header"))) (name "packet header") (declared-name "packet header") (declared (properties (ordered false) (unique true))))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "467f879e5a17fe59946d61a8624334a0dec762b6b6f1249f6ab6212da538971d") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Packets"))) (kind "package") (name "Packets") (declared-name "Packets") (range (start (line 0) (character 0)) (end (line 0) (character 996))))
+    (element (id (node (document "d0") (qualified-name "Packets::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "Packets"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "Packets::Data Packet"))) (kind "part def") (name "Data Packet") (declared-name "Data Packet") (range (start (line 11) (character 1)) (end (line 11) (character 276))) (parent (node (document "d0") (qualified-name "Packets"))))
+    (element (id (node (document "d0") (qualified-name "Packets::Data Packet::packet data field"))) (kind "attribute") (name "packet data field") (declared-name "packet data field") (range (start (line 17) (character 2)) (end (line 17) (character 42))) (parent (node (document "d0") (qualified-name "Packets::Data Packet"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "packet data field") (range (start (line 17) (character 22)) (end (line 17) (character 41)))))))
+    (element (id (node (document "d0") (qualified-name "Packets::Data Packet::packet primary header"))) (kind "attribute") (name "packet primary header") (declared-name "packet primary header") (range (start (line 12) (character 2)) (end (line 12) (character 204))) (parent (node (document "d0") (qualified-name "Packets::Data Packet"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "packet header") (range (start (line 12) (character 46)) (end (line 12) (character 61)))))))
+    (element (id (node (document "d0") (qualified-name "Packets::DateTime"))) (kind "import") (name "DateTime") (declared-name "DateTime") (range (start (line 2) (character 1)) (end (line 2) (character 31))) (parent (node (document "d0") (qualified-name "Packets"))) (authored (membership (kind Import) (visibility "private") (import (reference "Time::DateTime") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 30))))))
+    (element (id (node (document "d0") (qualified-name "Packets::Thermal Data Packet"))) (kind "part def") (name "Thermal Data Packet") (declared-name "Thermal Data Packet") (range (start (line 20) (character 1)) (end (line 20) (character 460))) (parent (node (document "d0") (qualified-name "Packets"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Data Packet") (range (start (line 20) (character 35)) (end (line 20) (character 48)))))))
+    (element (id (node (document "d0") (qualified-name "Packets::Thermal Data Packet::packet data field"))) (kind "attribute") (name "packet data field") (declared-name "packet data field") (range (start (line 21) (character 2)) (end (line 21) (character 406))) (parent (node (document "d0") (qualified-name "Packets::Thermal Data Packet"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "Packets::packet data field") (range (start (line 21) (character 42)) (end (line 21) (character 70)))))))
+    (element (id (node (document "d0") (qualified-name "Packets::packet data field"))) (kind "attribute def") (name "packet data field") (declared-name "packet data field") (range (start (line 6) (character 1)) (end (line 6) (character 132))) (parent (node (document "d0") (qualified-name "Packets"))))
+    (element (id (node (document "d0") (qualified-name "Packets::packet data field::packet secondary header"))) (kind "attribute") (name "packet secondary header") (declared-name "packet secondary header") (range (start (line 7) (character 2)) (end (line 7) (character 64))) (parent (node (document "d0") (qualified-name "Packets::packet data field"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "packet header") (range (start (line 7) (character 48)) (end (line 7) (character 63)))))))
+    (element (id (node (document "d0") (qualified-name "Packets::packet data field::user data field"))) (kind "attribute") (name "user data field") (declared-name "user data field") (range (start (line 8) (character 2)) (end (line 8) (character 30))) (parent (node (document "d0") (qualified-name "Packets::packet data field"))))
+    (element (id (node (document "d0") (qualified-name "Packets::packet header"))) (kind "attribute def") (name "packet header") (declared-name "packet header") (range (start (line 4) (character 1)) (end (line 4) (character 30))) (parent (node (document "d0") (qualified-name "Packets"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Packets::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (range (start (line 1) (character 16)) (end (line 1) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Packets::Data Packet::packet data field"))) (kind redefinition) (ordinal 0)) (authored-target "packet data field") (range (start (line 17) (character 22)) (end (line 17) (character 41))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Packets::Data Packet::packet data field")))))
+    (reference (id (source (node (document "d0") (qualified-name "Packets::Data Packet::packet primary header"))) (kind redefinition) (ordinal 0)) (authored-target "packet header") (range (start (line 12) (character 46)) (end (line 12) (character 61))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Packets::packet header")))))
+    (reference (id (source (node (document "d0") (qualified-name "Packets::DateTime"))) (kind membershipImport) (ordinal 0)) (authored-target "Time::DateTime") (range (start (line 2) (character 16)) (end (line 2) (character 30))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Packets::Thermal Data Packet"))) (kind specialization) (ordinal 0)) (authored-target "Data Packet") (range (start (line 20) (character 35)) (end (line 20) (character 48))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Packets::Data Packet")))))
+    (reference (id (source (node (document "d0") (qualified-name "Packets::Thermal Data Packet::packet data field"))) (kind redefinition) (ordinal 0)) (authored-target "Packets::packet data field") (range (start (line 21) (character 42)) (end (line 21) (character 70))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Packets::packet data field")))))
+    (reference (id (source (node (document "d0") (qualified-name "Packets::packet data field::packet secondary header"))) (kind redefinition) (ordinal 0)) (authored-target "packet header") (range (start (line 7) (character 48)) (end (line 7) (character 63))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Packets::packet header")))))
   )
   (relationships
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Packets::Thermal Data Packet::packet data field"))) (to (node (document "d0") (qualified-name "Packets::packet data field"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "Packets::Thermal Data Packet"))) (to (node (document "d0") (qualified-name "Packets::Data Packet"))) (provenance authored))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Packets::Data Packet::packet data field"))) (target (node (document "d0") (qualified-name "Packets::Data Packet::packet data field"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Packets::Data Packet::packet data field"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Packets::Data Packet::packet primary header"))) (target (node (document "d0") (qualified-name "Packets::packet header"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Packets::Data Packet::packet primary header"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Packets::Thermal Data Packet"))) (target (node (document "d0") (qualified-name "Packets::Data Packet"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Packets::Thermal Data Packet"))) (kind specialization) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Packets::Thermal Data Packet::packet data field"))) (target (node (document "d0") (qualified-name "Packets::packet data field"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Packets::Thermal Data Packet::packet data field"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Packets::packet data field::packet secondary header"))) (target (node (document "d0") (qualified-name "Packets::packet header"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Packets::packet data field::packet secondary header"))) (kind redefinition) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Packets::Data Packet"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Packets::Data Packet::packet data field"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Packets::Data Packet::packet primary header"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Packets::Thermal Data Packet"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Packets::Thermal Data Packet::packet data field"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Packets::packet data field"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Packets::packet data field::packet secondary header"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Packets::packet data field::user data field"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Packets::packet header"))) (status missing-prerequisite) (target "Base::DataValue"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/packets.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 16) (end 2 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 7 2) (end 7 64))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 12 2) (end 12 204))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 17 2) (end 17 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 21 2) (end 21 406))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

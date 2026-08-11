@@ -40,6 +40,21 @@ package FeatureChains {
 	feature b_f_a chains b chains f.a;
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "feature_chains.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 22 1) (end 22 265))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -96,6 +111,14 @@ CloseCurly,EndOfFile,
     (feature_def 'h2' differences 'b.f', 'b.a' intersects 'f.a', 'g' disjoint from 'h1')
     (feature_def 'b_f_a' chains 'b' chains 'f.a')))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package FeatureChains {
@@ -133,49 +156,24 @@ package FeatureChains {
 	feature b_f_a chains b chains f.a;
 }
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "FeatureChains"))) (name "FeatureChains") (declared-name "FeatureChains")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "FeatureChains::A"))) (name "A") (declared-name "A"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "FeatureChains::B"))) (name "B") (declared-name "B"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "FeatureChains::F"))) (name "F") (declared-name "F"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureChains::b"))) (name "b") (declared-name "b"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureChains::f"))) (name "f") (declared-name "f"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureChains::g"))) (name "g") (declared-name "g"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "2a2b51430747d4ad4da80bd3d98b41ca93a09dc41bcc39aeee2f3a9f3b6865ee") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "FeatureChains"))) (kind "package") (name "FeatureChains") (declared-name "FeatureChains") (range (start (line 0) (character 0)) (end (line 0) (character 550))))
+    (element (id (node (document "d0") (qualified-name "FeatureChains::A"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 7) (character 1)) (end (line 7) (character 37))) (parent (node (document "d0") (qualified-name "FeatureChains"))))
+    (element (id (node (document "d0") (qualified-name "FeatureChains::B"))) (kind "classifier decl") (name "B") (declared-name "B") (range (start (line 11) (character 1)) (end (line 11) (character 56))) (parent (node (document "d0") (qualified-name "FeatureChains"))))
+    (element (id (node (document "d0") (qualified-name "FeatureChains::F"))) (kind "classifier decl") (name "F") (declared-name "F") (range (start (line 1) (character 1)) (end (line 1) (character 35))) (parent (node (document "d0") (qualified-name "FeatureChains"))))
+    (element (id (node (document "d0") (qualified-name "FeatureChains::b"))) (kind "feature decl") (name "b") (declared-name "b") (range (start (line 16) (character 1)) (end (line 16) (character 68))) (parent (node (document "d0") (qualified-name "FeatureChains"))))
+    (element (id (node (document "d0") (qualified-name "FeatureChains::f"))) (kind "feature decl") (name "f") (declared-name "f") (range (start (line 5) (character 1)) (end (line 5) (character 15))) (parent (node (document "d0") (qualified-name "FeatureChains"))))
+    (element (id (node (document "d0") (qualified-name "FeatureChains::g"))) (kind "feature decl") (name "g") (declared-name "g") (range (start (line 21) (character 1)) (end (line 21) (character 23))) (parent (node (document "d0") (qualified-name "FeatureChains"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/feature_chains.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 22 1) (end 22 265))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

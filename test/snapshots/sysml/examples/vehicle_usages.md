@@ -102,6 +102,195 @@ package VehicleUsages {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "vehicle_usages.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 16) (end 6 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 16) (end 8 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 15) (end 10 33))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 13 1) (end 13 57))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 17 22) (end 17 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 20 16) (end 20 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 23 20) (end 23 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 26 16) (end 26 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 29 18) (end 29 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 32 26) (end 32 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 38 19) (end 38 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 40 25) (end 40 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 46 18) (end 46 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 54 31) (end 54 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 55 32) (end 55 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 58 4) (end 58 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 58 35) (end 58 53))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 61 4) (end 61 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 61 36) (end 61 55))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 65 30) (end 65 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 66 31) (end 66 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 69 4) (end 69 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 69 34) (end 69 51))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 72 4) (end 72 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 72 35) (end 72 53))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 80 21) (end 80 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 81 3) (end 81 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 86 4) (end 86 24))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_part_usage_body_element")
+        (source "sysml")
+        (range (start 90 2) (end 90 184))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -241,6 +430,54 @@ CloseCurly,EndOfFile,
         (connector_end)
         (flow_usage 'transDrive')))))
 ~~~
+# EXPECTED
+~~~
+semantic.redefinition_featuring_type_overlap
+semantic.invalid_connection_end_count
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'Lugbolt'
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'Lugbolt'
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'AxleAssembly'
+semantic.unresolved_name 'tighteningTorque'
+semantic.unresolved_name 'Axle'
+semantic.unresolved_name 'AxleAssembly'
+semantic.unresolved_name 'tighteningTorque'
+semantic.unresolved_name 'Axle'
+semantic.unresolved_name 'Mounting'
+semantic.unresolved_name 'Mounting'
+semantic.unresolved_name 'Mounting'
+semantic.unresolved_name 'Mounting'
+semantic.unresolved_name 'Transmission'
+semantic.unresolved_name 'DriveIF'
+semantic.unresolved_name 'DriveIF'
+semantic.unresolved_name 'DriveIF'
+~~~
+# PROBLEMS
+~~~
+semantic.redefinition_featuring_type_overlap
+semantic.invalid_connection_end_count
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'Lugbolt'
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'Lugbolt'
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'AxleAssembly'
+semantic.unresolved_name 'tighteningTorque'
+semantic.unresolved_name 'Axle'
+semantic.unresolved_name 'AxleAssembly'
+semantic.unresolved_name 'tighteningTorque'
+semantic.unresolved_name 'Axle'
+semantic.unresolved_name 'Mounting'
+semantic.unresolved_name 'Mounting'
+semantic.unresolved_name 'Mounting'
+semantic.unresolved_name 'Mounting'
+semantic.unresolved_name 'Transmission'
+semantic.unresolved_name 'DriveIF'
+semantic.unresolved_name 'DriveIF'
+semantic.unresolved_name 'DriveIF'
+~~~
 # FORMAT
 ~~~sysml
 package VehicleUsages {
@@ -340,433 +577,110 @@ package VehicleUsages {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.redefinition_featuring_type_overlap
-semantic.invalid_connection_end_count
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'Lugbolt'
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'Lugbolt'
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'AxleAssembly'
-semantic.unresolved_name 'tighteningTorque'
-semantic.unresolved_name 'Axle'
-semantic.unresolved_name 'AxleAssembly'
-semantic.unresolved_name 'tighteningTorque'
-semantic.unresolved_name 'Axle'
-semantic.unresolved_name 'Mounting'
-semantic.unresolved_name 'Mounting'
-semantic.unresolved_name 'Mounting'
-semantic.unresolved_name 'Mounting'
-semantic.unresolved_name 'Transmission'
-semantic.unresolved_name 'DriveIF'
-semantic.unresolved_name 'DriveIF'
-semantic.unresolved_name 'DriveIF'
-~~~
-# PROBLEMS
-~~~
-semantic.redefinition_featuring_type_overlap
-semantic.invalid_connection_end_count
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'Lugbolt'
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'Lugbolt'
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'AxleAssembly'
-semantic.unresolved_name 'tighteningTorque'
-semantic.unresolved_name 'Axle'
-semantic.unresolved_name 'AxleAssembly'
-semantic.unresolved_name 'tighteningTorque'
-semantic.unresolved_name 'Axle'
-semantic.unresolved_name 'Mounting'
-semantic.unresolved_name 'Mounting'
-semantic.unresolved_name 'Mounting'
-semantic.unresolved_name 'Mounting'
-semantic.unresolved_name 'Transmission'
-semantic.unresolved_name 'DriveIF'
-semantic.unresolved_name 'DriveIF'
-semantic.unresolved_name 'DriveIF'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "VehicleUsages"))) (name "VehicleUsages") (declared-name "VehicleUsages")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleUsages::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleUsages::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleUsages::N"))) (name "N") (declared-name "N"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleUsages::_documentation"))) (name ""))
-        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleUsages::m"))) (name "m") (declared-name "m"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::narrowRimWheel"))) (name "narrowRimWheel") (declared-name "narrowRimWheel") (declared (properties (ordered false)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleUsages::narrowRimWheel::_documentation"))) (name ""))
-            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::narrowRimWheel::lugbolt"))) (name "lugbolt") (declared-name "lugbolt") (declared (properties (ordered false)) (multiplicity (lower 4) (upper 5) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false))))
-          )
-        )
-        (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1"))) (name "vehicle_C1") (declared-name "vehicle_C1") (declared (properties (ordered false)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::_documentation"))) (name ""))
-            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly"))) (name "frontAxleAssembly") (declared-name "frontAxleAssembly") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontAxle"))) (name "frontAxle") (declared-name "frontAxle") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel"))) (name "frontWheel") (declared-name "frontWheel") (declared (properties (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)))
-                  (contains
-                    (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel::lugbolt"))) (name "lugbolt") (declared (properties (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)))
-                      (contains
-                        (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel::lugbolt::tighteningTorque"))) (name "tighteningTorque") (declared-name "tighteningTorque") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "featureReference") (reference "T1")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel::lugbolt::tighteningTorque"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-                      )
-                    )
-                  )
-                )
-              )
-            )
-            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly"))) (name "rearAxleAssembly") (declared-name "rearAxleAssembly") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearAxle"))) (name "rearAxle") (declared-name "rearAxle") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel"))) (name "rearWheel") (declared-name "rearWheel") (declared (properties (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)))
-                  (contains
-                    (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel::lugbolt"))) (name "lugbolt") (declared (properties (ordered false)) (multiplicity (lower 6) (upper 6) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)))
-                      (contains
-                        (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel::lugbolt::tighteningTorque"))) (name "tighteningTorque") (declared-name "tighteningTorque") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "featureReference") (reference "T2")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel::lugbolt::tighteningTorque"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-                      )
-                    )
-                  )
-                )
-              )
-            )
-          )
-        )
-        (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2"))) (name "vehicle_C2") (declared-name "vehicle_C2") (declared (properties (ordered false)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::_documentation"))) (name ""))
-            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::frontAxleAssembly"))) (name "frontAxleAssembly") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::frontAxleAssembly::leftFrontWheel"))) (name "leftFrontWheel") (declared-name "leftFrontWheel") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::frontAxleAssembly::rightFrontWheel"))) (name "rightFrontWheel") (declared-name "rightFrontWheel") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-              )
-            )
-            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly"))) (name "rearAxleAssembly") (declared-name "rearAxleAssembly") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly::leftRearWheel"))) (name "leftRearWheel") (declared-name "leftRearWheel") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly::rightRearWheel"))) (name "rightRearWheel") (declared-name "rightRearWheel") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-              )
-            )
-          )
-        )
-        (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3"))) (name "vehicle_C3") (declared-name "vehicle_C3") (declared (properties (ordered false)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::_documentation"))) (name ""))
-            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly"))) (name "rearAxleAssembly") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly::rearAxle"))) (name "rearAxle") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-                  (contains
-                    (element (kind "port") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly::rearAxle::drive"))) (name "drive") (declared-name "drive") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-                  )
-                )
-              )
-            )
-            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::transmission"))) (name "transmission") (declared-name "transmission") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "port") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::transmission::drive"))) (name "drive") (declared-name "drive") (declared (properties (conjugated true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-              )
-            )
-          )
-        )
-        (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::wideRimWheel"))) (name "wideRimWheel") (declared-name "wideRimWheel") (declared (properties (ordered false)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleUsages::wideRimWheel::_documentation"))) (name ""))
-            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::wideRimWheel::lugbolt"))) (name "lugbolt") (declared-name "lugbolt") (declared (properties (ordered false)) (multiplicity (lower 4) (upper 6) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "8de3cff6b794cb2c273e30c785950439c6084d3abea7b44e933026285f3a6e1a") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "VehicleUsages"))) (kind "package") (name "VehicleUsages") (declared-name "VehicleUsages") (range (start (line 0) (character 0)) (end (line 0) (character 2446))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 8) (character 1)) (end (line 8) (character 35))) (parent (node (document "d0") (qualified-name "VehicleUsages"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarFunctions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 31))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 10) (character 1)) (end (line 10) (character 37))) (parent (node (document "d0") (qualified-name "VehicleUsages"))) (authored (membership (kind Import) (visibility "public") (import (reference "VehicleDefinitions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 10) (character 15)) (end (line 10) (character 33))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::N"))) (kind "import") (name "N") (declared-name "N") (range (start (line 6) (character 1)) (end (line 6) (character 22))) (parent (node (document "d0") (qualified-name "VehicleUsages"))) (authored (membership (kind Import) (visibility "private") (import (reference "SI::N") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 21))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 2446))) (parent (node (document "d0") (qualified-name "VehicleUsages"))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::m"))) (kind "import") (name "m") (declared-name "m") (range (start (line 7) (character 1)) (end (line 7) (character 22))) (parent (node (document "d0") (qualified-name "VehicleUsages"))) (authored (membership (kind Import) (visibility "private") (import (reference "SI::m") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 21))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::narrowRimWheel"))) (kind "part") (name "narrowRimWheel") (declared-name "narrowRimWheel") (range (start (line 17) (character 1)) (end (line 17) (character 129))) (parent (node (document "d0") (qualified-name "VehicleUsages"))) (authored (membership (kind Feature)) (relationships (typing (reference "Wheel") (range (start (line 17) (character 22)) (end (line 17) (character 27)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::narrowRimWheel::_documentation"))) (kind "documentation") (name "") (range (start (line 17) (character 1)) (end (line 17) (character 129))) (parent (node (document "d0") (qualified-name "VehicleUsages::narrowRimWheel"))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::narrowRimWheel::lugbolt"))) (kind "part") (name "lugbolt") (declared-name "lugbolt") (range (start (line 20) (character 2)) (end (line 20) (character 30))) (parent (node (document "d0") (qualified-name "VehicleUsages::narrowRimWheel"))) (authored (membership (kind Feature)) (relationships (typing (reference "Lugbolt") (range (start (line 20) (character 16)) (end (line 20) (character 23)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1"))) (kind "part") (name "vehicle_C1") (declared-name "vehicle_C1") (range (start (line 29) (character 1)) (end (line 29) (character 513))) (parent (node (document "d0") (qualified-name "VehicleUsages"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle") (range (start (line 29) (character 18)) (end (line 29) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::_documentation"))) (kind "documentation") (name "") (range (start (line 29) (character 1)) (end (line 29) (character 513))) (parent (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1"))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly"))) (kind "part") (name "frontAxleAssembly") (declared-name "frontAxleAssembly") (range (start (line 32) (character 2)) (end (line 32) (character 207))) (parent (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1"))) (authored (membership (kind Feature)) (relationships (typing (reference "AxleAssembly") (range (start (line 32) (character 26)) (end (line 32) (character 38)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontAxle"))) (kind "part") (name "frontAxle") (declared-name "frontAxle") (range (start (line 38) (character 3)) (end (line 38) (character 24))) (parent (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly"))) (authored (membership (kind Feature)) (relationships (typing (reference "Axle") (range (start (line 38) (character 19)) (end (line 38) (character 23)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel"))) (kind "part") (name "frontWheel") (declared-name "frontWheel") (range (start (line 33) (character 3)) (end (line 33) (character 137))) (parent (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "narrowRimWheel") (range (start (line 33) (character 30)) (end (line 33) (character 44)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel::lugbolt"))) (kind "part") (name "lugbolt") (range (start (line 34) (character 4)) (end (line 34) (character 85))) (parent (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "lugbolt") (range (start (line 34) (character 19)) (end (line 34) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel::lugbolt::tighteningTorque"))) (kind "attribute") (name "tighteningTorque") (declared-name "tighteningTorque") (range (start (line 35) (character 5)) (end (line 35) (character 47))) (parent (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel::lugbolt"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "tighteningTorque") (range (start (line 35) (character 25)) (end (line 35) (character 41)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly"))) (kind "part") (name "rearAxleAssembly") (declared-name "rearAxleAssembly") (range (start (line 40) (character 2)) (end (line 40) (character 205))) (parent (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1"))) (authored (membership (kind Feature)) (relationships (typing (reference "AxleAssembly") (range (start (line 40) (character 25)) (end (line 40) (character 37)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearAxle"))) (kind "part") (name "rearAxle") (declared-name "rearAxle") (range (start (line 46) (character 3)) (end (line 46) (character 23))) (parent (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly"))) (authored (membership (kind Feature)) (relationships (typing (reference "Axle") (range (start (line 46) (character 18)) (end (line 46) (character 22)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel"))) (kind "part") (name "rearWheel") (declared-name "rearWheel") (range (start (line 41) (character 3)) (end (line 41) (character 134))) (parent (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "wideRimWheel") (range (start (line 41) (character 29)) (end (line 41) (character 41)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel::lugbolt"))) (kind "part") (name "lugbolt") (range (start (line 42) (character 4)) (end (line 42) (character 85))) (parent (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "lugbolt") (range (start (line 42) (character 19)) (end (line 42) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel::lugbolt::tighteningTorque"))) (kind "attribute") (name "tighteningTorque") (declared-name "tighteningTorque") (range (start (line 43) (character 5)) (end (line 43) (character 47))) (parent (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel::lugbolt"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "tighteningTorque") (range (start (line 43) (character 25)) (end (line 43) (character 41)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2"))) (kind "part") (name "vehicle_C2") (declared-name "vehicle_C2") (range (start (line 50) (character 1)) (end (line 50) (character 879))) (parent (node (document "d0") (qualified-name "VehicleUsages"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "vehicle_C1") (range (start (line 50) (character 25)) (end (line 50) (character 35)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::_documentation"))) (kind "documentation") (name "") (range (start (line 50) (character 1)) (end (line 50) (character 879))) (parent (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2"))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::frontAxleAssembly"))) (kind "part") (name "frontAxleAssembly") (range (start (line 53) (character 2)) (end (line 53) (character 377))) (parent (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "frontAxleAssembly") (range (start (line 53) (character 17)) (end (line 53) (character 34)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::frontAxleAssembly::leftFrontWheel"))) (kind "part") (name "leftFrontWheel") (declared-name "leftFrontWheel") (range (start (line 54) (character 3)) (end (line 54) (character 59))) (parent (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::frontAxleAssembly"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "frontWheel") (range (start (line 54) (character 31)) (end (line 54) (character 41)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::frontAxleAssembly::rightFrontWheel"))) (kind "part") (name "rightFrontWheel") (declared-name "rightFrontWheel") (range (start (line 55) (character 3)) (end (line 55) (character 60))) (parent (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::frontAxleAssembly"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "frontWheel") (range (start (line 55) (character 32)) (end (line 55) (character 42)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly"))) (kind "part") (name "rearAxleAssembly") (declared-name "rearAxleAssembly") (range (start (line 64) (character 2)) (end (line 64) (character 390))) (parent (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "vehicle_C1::rearAxleAssembly") (range (start (line 64) (character 34)) (end (line 64) (character 62)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly::leftRearWheel"))) (kind "part") (name "leftRearWheel") (declared-name "leftRearWheel") (range (start (line 65) (character 3)) (end (line 65) (character 56))) (parent (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "rearWheel") (range (start (line 65) (character 30)) (end (line 65) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly::rightRearWheel"))) (kind "part") (name "rightRearWheel") (declared-name "rightRearWheel") (range (start (line 66) (character 3)) (end (line 66) (character 57))) (parent (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "rearWheel") (range (start (line 66) (character 31)) (end (line 66) (character 40)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3"))) (kind "part") (name "vehicle_C3") (declared-name "vehicle_C3") (range (start (line 76) (character 1)) (end (line 76) (character 486))) (parent (node (document "d0") (qualified-name "VehicleUsages"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "vehicle_C2") (range (start (line 76) (character 25)) (end (line 76) (character 35)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::_documentation"))) (kind "documentation") (name "") (range (start (line 76) (character 1)) (end (line 76) (character 486))) (parent (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3"))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly"))) (kind "part") (name "rearAxleAssembly") (range (start (line 84) (character 2)) (end (line 84) (character 98))) (parent (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "rearAxleAssembly") (range (start (line 84) (character 17)) (end (line 84) (character 33)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly::rearAxle"))) (kind "part") (name "rearAxle") (range (start (line 85) (character 3)) (end (line 85) (character 58))) (parent (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "rearAxle") (range (start (line 85) (character 18)) (end (line 85) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly::rearAxle::drive"))) (kind "port") (name "drive") (declared-name "drive") (range (start (line 86) (character 4)) (end (line 86) (character 24))) (parent (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly::rearAxle"))) (authored (membership (kind Feature)) (relationships (typing (reference "DriveIF") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::transmission"))) (kind "part") (name "transmission") (declared-name "transmission") (range (start (line 80) (character 2)) (end (line 80) (character 64))) (parent (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3"))) (authored (membership (kind Feature)) (relationships (typing (reference "Transmission") (range (start (line 80) (character 21)) (end (line 80) (character 33)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::transmission::drive"))) (kind "port") (name "drive") (declared-name "drive") (range (start (line 81) (character 3)) (end (line 81) (character 24))) (parent (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::transmission"))) (authored (membership (kind Feature)) (relationships (typing (reference "~DriveIF") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::wideRimWheel"))) (kind "part") (name "wideRimWheel") (declared-name "wideRimWheel") (range (start (line 23) (character 1)) (end (line 23) (character 126))) (parent (node (document "d0") (qualified-name "VehicleUsages"))) (authored (membership (kind Feature)) (relationships (typing (reference "Wheel") (range (start (line 23) (character 20)) (end (line 23) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::wideRimWheel::_documentation"))) (kind "documentation") (name "") (range (start (line 23) (character 1)) (end (line 23) (character 126))) (parent (node (document "d0") (qualified-name "VehicleUsages::wideRimWheel"))))
+    (element (id (node (document "d0") (qualified-name "VehicleUsages::wideRimWheel::lugbolt"))) (kind "part") (name "lugbolt") (declared-name "lugbolt") (range (start (line 26) (character 2)) (end (line 26) (character 30))) (parent (node (document "d0") (qualified-name "VehicleUsages::wideRimWheel"))) (authored (membership (kind Feature)) (relationships (typing (reference "Lugbolt") (range (start (line 26) (character 16)) (end (line 26) (character 23)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarFunctions::*") (range (start (line 8) (character 16)) (end (line 8) (character 31))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "VehicleDefinitions::*") (range (start (line 10) (character 15)) (end (line 10) (character 33))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::N"))) (kind membershipImport) (ordinal 0)) (authored-target "SI::N") (range (start (line 6) (character 16)) (end (line 6) (character 21))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::m"))) (kind membershipImport) (ordinal 0)) (authored-target "SI::m") (range (start (line 7) (character 16)) (end (line 7) (character 21))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::narrowRimWheel"))) (kind featureTyping) (ordinal 0)) (authored-target "Wheel") (range (start (line 17) (character 22)) (end (line 17) (character 27))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::narrowRimWheel::lugbolt"))) (kind featureTyping) (ordinal 0)) (authored-target "Lugbolt") (range (start (line 20) (character 16)) (end (line 20) (character 23))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (range (start (line 29) (character 18)) (end (line 29) (character 25))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly"))) (kind featureTyping) (ordinal 0)) (authored-target "AxleAssembly") (range (start (line 32) (character 26)) (end (line 32) (character 38))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontAxle"))) (kind featureTyping) (ordinal 0)) (authored-target "Axle") (range (start (line 38) (character 19)) (end (line 38) (character 23))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel"))) (kind subsetting) (ordinal 0)) (authored-target "narrowRimWheel") (range (start (line 33) (character 30)) (end (line 33) (character 44))) (outcome (status resolved) (target (node (document "d0") (qualified-name "VehicleUsages::narrowRimWheel")))))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel::lugbolt"))) (kind redefinition) (ordinal 0)) (authored-target "lugbolt") (range (start (line 34) (character 19)) (end (line 34) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel::lugbolt")))))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel::lugbolt::tighteningTorque"))) (kind redefinition) (ordinal 0)) (authored-target "tighteningTorque") (range (start (line 35) (character 25)) (end (line 35) (character 41))) (outcome (status resolved) (target (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel::lugbolt::tighteningTorque")))))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly"))) (kind featureTyping) (ordinal 0)) (authored-target "AxleAssembly") (range (start (line 40) (character 25)) (end (line 40) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearAxle"))) (kind featureTyping) (ordinal 0)) (authored-target "Axle") (range (start (line 46) (character 18)) (end (line 46) (character 22))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel"))) (kind subsetting) (ordinal 0)) (authored-target "wideRimWheel") (range (start (line 41) (character 29)) (end (line 41) (character 41))) (outcome (status resolved) (target (node (document "d0") (qualified-name "VehicleUsages::wideRimWheel")))))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel::lugbolt"))) (kind redefinition) (ordinal 0)) (authored-target "lugbolt") (range (start (line 42) (character 19)) (end (line 42) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel::lugbolt")))))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel::lugbolt::tighteningTorque"))) (kind redefinition) (ordinal 0)) (authored-target "tighteningTorque") (range (start (line 43) (character 25)) (end (line 43) (character 41))) (outcome (status resolved) (target (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel::lugbolt::tighteningTorque")))))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2"))) (kind subsetting) (ordinal 0)) (authored-target "vehicle_C1") (range (start (line 50) (character 25)) (end (line 50) (character 35))) (outcome (status resolved) (target (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1")))))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::frontAxleAssembly"))) (kind redefinition) (ordinal 0)) (authored-target "frontAxleAssembly") (range (start (line 53) (character 17)) (end (line 53) (character 34))) (outcome (status resolved) (target (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::frontAxleAssembly")))))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::frontAxleAssembly"))) (kind connectionSource) (ordinal 0)) (authored-target "frontAxle::leftMountingPoint") (range (start (line 58) (character 4)) (end (line 58) (character 31))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::frontAxleAssembly"))) (kind connectionSource) (ordinal 1)) (authored-target "frontAxle::rightMountingPoint") (range (start (line 61) (character 4)) (end (line 61) (character 32))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::frontAxleAssembly"))) (kind connectionTarget) (ordinal 0)) (authored-target "leftFrontWheel::hub") (range (start (line 58) (character 35)) (end (line 58) (character 53))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::frontAxleAssembly"))) (kind connectionTarget) (ordinal 1)) (authored-target "rightFrontWheel::hub") (range (start (line 61) (character 36)) (end (line 61) (character 55))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::frontAxleAssembly::leftFrontWheel"))) (kind subsetting) (ordinal 0)) (authored-target "frontWheel") (range (start (line 54) (character 31)) (end (line 54) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::frontAxleAssembly::rightFrontWheel"))) (kind subsetting) (ordinal 0)) (authored-target "frontWheel") (range (start (line 55) (character 32)) (end (line 55) (character 42))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly"))) (kind redefinition) (ordinal 0)) (authored-target "vehicle_C1::rearAxleAssembly") (range (start (line 64) (character 34)) (end (line 64) (character 62))) (outcome (status resolved) (target (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly")))))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly"))) (kind connectionSource) (ordinal 0)) (authored-target "rearAxle::leftMountingPoint") (range (start (line 69) (character 4)) (end (line 69) (character 30))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly"))) (kind connectionSource) (ordinal 1)) (authored-target "rearAxle::rightMountingPoint") (range (start (line 72) (character 4)) (end (line 72) (character 31))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly"))) (kind connectionTarget) (ordinal 0)) (authored-target "leftRearWheel::hub") (range (start (line 69) (character 34)) (end (line 69) (character 51))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly"))) (kind connectionTarget) (ordinal 1)) (authored-target "rightRearWheel::hub") (range (start (line 72) (character 35)) (end (line 72) (character 53))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly::leftRearWheel"))) (kind subsetting) (ordinal 0)) (authored-target "rearWheel") (range (start (line 65) (character 30)) (end (line 65) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly::rightRearWheel"))) (kind subsetting) (ordinal 0)) (authored-target "rearWheel") (range (start (line 66) (character 31)) (end (line 66) (character 40))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3"))) (kind subsetting) (ordinal 0)) (authored-target "vehicle_C2") (range (start (line 76) (character 25)) (end (line 76) (character 35))) (outcome (status resolved) (target (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2")))))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly"))) (kind redefinition) (ordinal 0)) (authored-target "rearAxleAssembly") (range (start (line 84) (character 17)) (end (line 84) (character 33))) (outcome (status resolved) (target (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly")))))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly::rearAxle"))) (kind redefinition) (ordinal 0)) (authored-target "rearAxle") (range (start (line 85) (character 18)) (end (line 85) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly::rearAxle")))))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly::rearAxle::drive"))) (kind featureTyping) (ordinal 0)) (authored-target "DriveIF") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::transmission"))) (kind featureTyping) (ordinal 0)) (authored-target "Transmission") (range (start (line 80) (character 21)) (end (line 80) (character 33))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::transmission::drive"))) (kind featureTyping) (ordinal 0)) (authored-target "~DriveIF") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::wideRimWheel"))) (kind featureTyping) (ordinal 0)) (authored-target "Wheel") (range (start (line 23) (character 20)) (end (line 23) (character 25))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::wideRimWheel::lugbolt"))) (kind featureTyping) (ordinal 0)) (authored-target "Lugbolt") (range (start (line 26) (character 16)) (end (line 26) (character 23))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleUsages::_documentation"))) (to (node (document "d0") (qualified-name "VehicleUsages"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleUsages::narrowRimWheel::_documentation"))) (to (node (document "d0") (qualified-name "VehicleUsages::narrowRimWheel"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::_documentation"))) (to (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::_documentation"))) (to (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::_documentation"))) (to (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleUsages::wideRimWheel::_documentation"))) (to (node (document "d0") (qualified-name "VehicleUsages::wideRimWheel"))) (provenance authored))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2"))) (to (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1"))) (provenance authored))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3"))) (to (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2"))) (provenance authored))
+    (relationship (kind subsetting) (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel"))) (target (node (document "d0") (qualified-name "VehicleUsages::narrowRimWheel"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel::lugbolt"))) (target (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel::lugbolt"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel::lugbolt"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel::lugbolt::tighteningTorque"))) (target (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel::lugbolt::tighteningTorque"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel::lugbolt::tighteningTorque"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel"))) (target (node (document "d0") (qualified-name "VehicleUsages::wideRimWheel"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel::lugbolt"))) (target (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel::lugbolt"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel::lugbolt"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel::lugbolt::tighteningTorque"))) (target (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel::lugbolt::tighteningTorque"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel::lugbolt::tighteningTorque"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2"))) (target (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::frontAxleAssembly"))) (target (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::frontAxleAssembly"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::frontAxleAssembly"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly"))) (target (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3"))) (target (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly"))) (target (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly::rearAxle"))) (target (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly::rearAxle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly::rearAxle"))) (kind redefinition) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-    (connection (status pending-expression) (document "d0") (source-expression "frontAxle::leftMountingPoint") (target-expression "leftFrontWheel::hub") (container-prefix "VehicleUsages::vehicle_C2::frontAxleAssembly") (interface-usage true) (interface-type "Mounting"))
-    (connection (status pending-expression) (document "d0") (source-expression "frontAxle::rightMountingPoint") (target-expression "rightFrontWheel::hub") (container-prefix "VehicleUsages::vehicle_C2::frontAxleAssembly") (interface-usage true) (interface-type "Mounting"))
-    (connection (status pending-expression) (document "d0") (source-expression "rearAxle::leftMountingPoint") (target-expression "leftRearWheel::hub") (container-prefix "VehicleUsages::vehicle_C2::rearAxleAssembly") (interface-usage true) (interface-type "Mounting"))
-    (connection (status pending-expression) (document "d0") (source-expression "rearAxle::rightMountingPoint") (target-expression "rightRearWheel::hub") (container-prefix "VehicleUsages::vehicle_C2::rearAxleAssembly") (interface-usage true) (interface-type "Mounting"))
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::narrowRimWheel"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::narrowRimWheel::lugbolt"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontAxle"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel::lugbolt"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel::lugbolt::tighteningTorque"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearAxle"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel::lugbolt"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel::lugbolt::tighteningTorque"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::frontAxleAssembly"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::frontAxleAssembly::leftFrontWheel"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::frontAxleAssembly::rightFrontWheel"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly::leftRearWheel"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly::rightRearWheel"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly::rearAxle"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly::rearAxle::drive"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::transmission"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::transmission::drive"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::wideRimWheel"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleUsages::wideRimWheel::lugbolt"))) (status missing-prerequisite) (target "Parts::parts"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/vehicle_usages.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 6 16) (end 6 21))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 16) (end 7 21))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 16) (end 8 31))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 10 15) (end 10 33))
-      )
-      (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 13 1) (end 13 57))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 17 22) (end 17 27))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 20 16) (end 20 23))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 23 20) (end 23 25))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 26 16) (end 26 23))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 29 18) (end 29 25))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 32 26) (end 32 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 34 4) (end 34 85))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 35 5) (end 35 47))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 38 19) (end 38 23))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 40 25) (end 40 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 42 4) (end 42 85))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 43 5) (end 43 47))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 46 18) (end 46 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 53 2) (end 53 377))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_expression_relationship")
-        (source "semantic")
-        (range (start 58 4) (end 58 31))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_connection_segment")
-        (source "semantic")
-        (range (start 58 4) (end 58 31))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_connection_segment")
-        (source "semantic")
-        (range (start 58 4) (end 58 31))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_expression_relationship")
-        (source "semantic")
-        (range (start 61 4) (end 61 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_connection_segment")
-        (source "semantic")
-        (range (start 61 4) (end 61 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_connection_segment")
-        (source "semantic")
-        (range (start 61 4) (end 61 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 64 2) (end 64 390))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_expression_relationship")
-        (source "semantic")
-        (range (start 69 4) (end 69 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_connection_segment")
-        (source "semantic")
-        (range (start 69 4) (end 69 30))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_expression_relationship")
-        (source "semantic")
-        (range (start 72 4) (end 72 31))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_connection_segment")
-        (source "semantic")
-        (range (start 72 4) (end 72 31))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 80 21) (end 80 33))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 81 3) (end 81 24))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 81 3) (end 81 24))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 84 2) (end 84 98))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 85 3) (end 85 58))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 86 4) (end 86 24))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 86 4) (end 86 24))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_part_usage_body_element")
-        (source "sysml")
-        (range (start 90 2) (end 90 184))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel::lugbolt::tighteningTorque")) (expression (status "unresolved") (error "expression has an unresolved reference")))
+    (node (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel::lugbolt::tighteningTorque")) (expression (status "unresolved") (error "expression has an unresolved reference")))
   )
 )
 ~~~

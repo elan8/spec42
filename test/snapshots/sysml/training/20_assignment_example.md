@@ -47,6 +47,99 @@ package 'For Loop Example' {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "20_assignment_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 4 8) (end 4 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 5 8) (end 5 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 6 8) (end 6 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 7 8) (end 7 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 8 8) (end 8 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 9 8) (end 9 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 10 8) (end 10 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 14 2) (end 14 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 15 2) (end 15 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 16 2) (end 16 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 17 2) (end 17 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 18 2) (end 18 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 19 2) (end 19 51))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -110,6 +203,38 @@ CloseCurly,EndOfFile,
       (attribute_usage private 'speed' value)
       (for_loop_node))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'ISQ::PowerValue'
+semantic.unresolved_name 'ISQ::MassValue'
+semantic.unresolved_name 'ISQ::TimeValue'
+semantic.unresolved_name 'ISQ::LengthValue'
+semantic.unresolved_name 'ISQ::SpeedValue'
+semantic.unresolved_name 'ISQ::LengthValue'
+semantic.unresolved_name 'ISQ::SpeedValue'
+semantic.unresolved_name 'ISQ::power'
+semantic.unresolved_name 'ISQ::mass'
+semantic.unresolved_name 'ISQ::length'
+semantic.unresolved_name 'ISQ::speed'
+semantic.unresolved_name 'ISQ::time'
+semantic.unresolved_name 'ISQ::length'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'ISQ::PowerValue'
+semantic.unresolved_name 'ISQ::MassValue'
+semantic.unresolved_name 'ISQ::TimeValue'
+semantic.unresolved_name 'ISQ::LengthValue'
+semantic.unresolved_name 'ISQ::SpeedValue'
+semantic.unresolved_name 'ISQ::LengthValue'
+semantic.unresolved_name 'ISQ::SpeedValue'
+semantic.unresolved_name 'ISQ::power'
+semantic.unresolved_name 'ISQ::mass'
+semantic.unresolved_name 'ISQ::length'
+semantic.unresolved_name 'ISQ::speed'
+semantic.unresolved_name 'ISQ::time'
+semantic.unresolved_name 'ISQ::length'
+~~~
 # FORMAT
 ~~~sysml
 package 'For Loop Example' {
@@ -155,187 +280,57 @@ package 'For Loop Example' {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'ISQ::PowerValue'
-semantic.unresolved_name 'ISQ::MassValue'
-semantic.unresolved_name 'ISQ::TimeValue'
-semantic.unresolved_name 'ISQ::LengthValue'
-semantic.unresolved_name 'ISQ::SpeedValue'
-semantic.unresolved_name 'ISQ::LengthValue'
-semantic.unresolved_name 'ISQ::SpeedValue'
-semantic.unresolved_name 'ISQ::power'
-semantic.unresolved_name 'ISQ::mass'
-semantic.unresolved_name 'ISQ::length'
-semantic.unresolved_name 'ISQ::speed'
-semantic.unresolved_name 'ISQ::time'
-semantic.unresolved_name 'ISQ::length'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'ISQ::PowerValue'
-semantic.unresolved_name 'ISQ::MassValue'
-semantic.unresolved_name 'ISQ::TimeValue'
-semantic.unresolved_name 'ISQ::LengthValue'
-semantic.unresolved_name 'ISQ::SpeedValue'
-semantic.unresolved_name 'ISQ::LengthValue'
-semantic.unresolved_name 'ISQ::SpeedValue'
-semantic.unresolved_name 'ISQ::power'
-semantic.unresolved_name 'ISQ::mass'
-semantic.unresolved_name 'ISQ::length'
-semantic.unresolved_name 'ISQ::speed'
-semantic.unresolved_name 'ISQ::time'
-semantic.unresolved_name 'ISQ::length'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "For Loop Example"))) (name "For Loop Example") (declared-name "For Loop Example")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "For Loop Example::*"))) (name "*") (declared-name "*"))
-        (element (kind "action def") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion"))) (name "ComputeMotion") (declared-name "ComputeMotion")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::deltaT"))) (name "deltaT") (declared-name "deltaT") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion")))))
-            (element (kind "for loop") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower"))) (name "vehiclePower") (declared-name "vehiclePower") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion"))))
-              (contains
-                (element (kind "assign") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::_assign"))) (name "assign") (declared-name "assign") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion")))))
-                (element (kind "assign") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::_assign#assign"))) (name "assign") (declared-name "assign") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion")))))
-                (element (kind "assign") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::_assign#assign2"))) (name "assign") (declared-name "assign") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion")))))
-                (element (kind "perform") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::dynamics"))) (name "dynamics") (declared-name "dynamics") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion")))))
-              )
-            )
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::initialPosition"))) (name "initialPosition") (declared-name "initialPosition") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::initialSpeed"))) (name "initialSpeed") (declared-name "initialSpeed") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion")))))
-            (element (kind "action body decl") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::position := initialPosition"))) (name "position := initialPosition") (declared-name "position := initialPosition") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::positions"))) (name "positions") (declared-name "positions") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::powerProfile"))) (name "powerProfile") (declared-name "powerProfile") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion")))))
-            (element (kind "action body decl") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::speed := initialSpeed"))) (name "speed := initialSpeed") (declared-name "speed := initialSpeed") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::vehicleMass"))) (name "vehicleMass") (declared-name "vehicleMass") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion")))))
-          )
-        )
-        (element (kind "action def") (id (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics"))) (name "StraightLineDynamics") (declared-name "StraightLineDynamics")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::delta_t"))) (name "delta_t") (declared-name "delta_t") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::mass"))) (name "mass") (declared-name "mass") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::power"))) (name "power") (declared-name "power") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::v_in"))) (name "v_in") (declared-name "v_in") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::v_out"))) (name "v_out") (declared-name "v_out") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::x_in"))) (name "x_in") (declared-name "x_in") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::x_out"))) (name "x_out") (declared-name "x_out") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics")))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e17482f38ebb8dc484b1237202b79cf327903f4f504e7a511ac78a4054a36a23") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "For Loop Example"))) (kind "package") (name "For Loop Example") (declared-name "For Loop Example") (range (start (line 0) (character 0)) (end (line 0) (character 1166))))
+    (element (id (node (document "d0") (qualified-name "For Loop Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 37))) (parent (node (document "d0") (qualified-name "For Loop Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 33))))))
+    (element (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion"))) (kind "action def") (name "ComputeMotion") (declared-name "ComputeMotion") (range (start (line 13) (character 1)) (end (line 13) (character 790))) (parent (node (document "d0") (qualified-name "For Loop Example"))))
+    (element (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::deltaT"))) (kind "in out parameter") (name "deltaT") (declared-name "deltaT") (range (start (line 18) (character 2)) (end (line 18) (character 35))) (parent (node (document "d0") (qualified-name "For Loop Example::ComputeMotion"))) (authored (relationships (typing (reference "ISQ::time") (range none)))))
+    (element (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower"))) (kind "for loop") (name "vehiclePower") (declared-name "vehiclePower") (range (start (line 24) (character 2)) (end (line 24) (character 396))) (parent (node (document "d0") (qualified-name "For Loop Example::ComputeMotion"))))
+    (element (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::_assign"))) (kind "assign") (name "assign") (declared-name "assign") (range (start (line 34) (character 3)) (end (line 34) (character 42))) (parent (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower"))))
+    (element (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::_assign#assign"))) (kind "assign") (name "assign") (declared-name "assign") (range (start (line 35) (character 3)) (end (line 35) (character 39))) (parent (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower"))))
+    (element (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::_assign#assign2"))) (kind "assign") (name "assign") (declared-name "assign") (range (start (line 36) (character 3)) (end (line 36) (character 59))) (parent (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower"))))
+    (element (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::dynamics"))) (kind "perform") (name "dynamics") (declared-name "dynamics") (range (start (line 25) (character 3)) (end (line 25) (character 212))) (parent (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower"))) (authored (relationships (typing (reference "StraightLineDynamics") (range none)))))
+    (element (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::initialPosition"))) (kind "in out parameter") (name "initialPosition") (declared-name "initialPosition") (range (start (line 16) (character 2)) (end (line 16) (character 46))) (parent (node (document "d0") (qualified-name "For Loop Example::ComputeMotion"))) (authored (relationships (typing (reference "ISQ::length") (range none)))))
+    (element (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::initialSpeed"))) (kind "in out parameter") (name "initialSpeed") (declared-name "initialSpeed") (range (start (line 17) (character 2)) (end (line 17) (character 42))) (parent (node (document "d0") (qualified-name "For Loop Example::ComputeMotion"))) (authored (relationships (typing (reference "ISQ::speed") (range none)))))
+    (element (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::position := initialPosition"))) (kind "action body decl") (name "position := initialPosition") (declared-name "position := initialPosition") (range (start (line 21) (character 2)) (end (line 21) (character 48))) (parent (node (document "d0") (qualified-name "For Loop Example::ComputeMotion"))))
+    (element (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::positions"))) (kind "in out parameter") (name "positions") (declared-name "positions") (range (start (line 19) (character 2)) (end (line 19) (character 51))) (parent (node (document "d0") (qualified-name "For Loop Example::ComputeMotion"))) (authored (relationships (typing (reference "positions :> ISQ::length[*] := ( )") (range none)))))
+    (element (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::powerProfile"))) (kind "in out parameter") (name "powerProfile") (declared-name "powerProfile") (range (start (line 14) (character 2)) (end (line 14) (character 45))) (parent (node (document "d0") (qualified-name "For Loop Example::ComputeMotion"))) (authored (relationships (typing (reference "powerProfile :> ISQ::power[*]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::speed := initialSpeed"))) (kind "action body decl") (name "speed := initialSpeed") (declared-name "speed := initialSpeed") (range (start (line 22) (character 2)) (end (line 22) (character 42))) (parent (node (document "d0") (qualified-name "For Loop Example::ComputeMotion"))))
+    (element (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::vehicleMass"))) (kind "in out parameter") (name "vehicleMass") (declared-name "vehicleMass") (range (start (line 15) (character 2)) (end (line 15) (character 40))) (parent (node (document "d0") (qualified-name "For Loop Example::ComputeMotion"))) (authored (relationships (typing (reference "ISQ::mass") (range none)))))
+    (element (id (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics"))) (kind "action def") (name "StraightLineDynamics") (declared-name "StraightLineDynamics") (range (start (line 3) (character 4)) (end (line 3) (character 296))) (parent (node (document "d0") (qualified-name "For Loop Example"))))
+    (element (id (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::delta_t"))) (kind "in out parameter") (name "delta_t") (declared-name "delta_t") (range (start (line 6) (character 8)) (end (line 6) (character 36))) (parent (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics"))) (authored (relationships (typing (reference "ISQ::TimeValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::mass"))) (kind "in out parameter") (name "mass") (declared-name "mass") (range (start (line 5) (character 8)) (end (line 5) (character 33))) (parent (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics"))) (authored (relationships (typing (reference "ISQ::MassValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::power"))) (kind "in out parameter") (name "power") (declared-name "power") (range (start (line 4) (character 8)) (end (line 4) (character 35))) (parent (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics"))) (authored (relationships (typing (reference "ISQ::PowerValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::v_in"))) (kind "in out parameter") (name "v_in") (declared-name "v_in") (range (start (line 8) (character 8)) (end (line 8) (character 34))) (parent (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics"))) (authored (relationships (typing (reference "ISQ::SpeedValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::v_out"))) (kind "in out parameter") (name "v_out") (declared-name "v_out") (range (start (line 10) (character 8)) (end (line 10) (character 36))) (parent (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics"))) (authored (relationships (typing (reference "ISQ::SpeedValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::x_in"))) (kind "in out parameter") (name "x_in") (declared-name "x_in") (range (start (line 7) (character 8)) (end (line 7) (character 35))) (parent (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics"))) (authored (relationships (typing (reference "ISQ::LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::x_out"))) (kind "in out parameter") (name "x_out") (declared-name "x_out") (range (start (line 9) (character 8)) (end (line 9) (character 37))) (parent (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics"))) (authored (relationships (typing (reference "ISQ::LengthValue") (range none)))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "For Loop Example::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "SequenceFunctions::*") (range (start (line 1) (character 16)) (end (line 1) (character 33))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::deltaT"))) (kind featureTyping) (ordinal 0)) (authored-target "ISQ::time") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::dynamics"))) (kind featureTyping) (ordinal 0)) (authored-target "StraightLineDynamics") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics")))))
+    (reference (id (source (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::initialPosition"))) (kind featureTyping) (ordinal 0)) (authored-target "ISQ::length") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::initialSpeed"))) (kind featureTyping) (ordinal 0)) (authored-target "ISQ::speed") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::positions"))) (kind featureTyping) (ordinal 0)) (authored-target "positions :> ISQ::length[*] := ( )") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::powerProfile"))) (kind featureTyping) (ordinal 0)) (authored-target "powerProfile :> ISQ::power[*]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::vehicleMass"))) (kind featureTyping) (ordinal 0)) (authored-target "ISQ::mass") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::delta_t"))) (kind featureTyping) (ordinal 0)) (authored-target "ISQ::TimeValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::mass"))) (kind featureTyping) (ordinal 0)) (authored-target "ISQ::MassValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::power"))) (kind featureTyping) (ordinal 0)) (authored-target "ISQ::PowerValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::v_in"))) (kind featureTyping) (ordinal 0)) (authored-target "ISQ::SpeedValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::v_out"))) (kind featureTyping) (ordinal 0)) (authored-target "ISQ::SpeedValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::x_in"))) (kind featureTyping) (ordinal 0)) (authored-target "ISQ::LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::x_out"))) (kind featureTyping) (ordinal 0)) (authored-target "ISQ::LengthValue") (range none) (outcome (status unresolved)))
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::dynamics"))) (to (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::dynamics"))) (target (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::dynamics"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "For Loop Example::ComputeMotion"))) (status missing-prerequisite) (target "Actions::Action"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower"))) (status missing-prerequisite) (target "Actions::forLoopActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::_assign"))) (status missing-prerequisite) (target "Actions::assignmentActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::_assign#assign"))) (status missing-prerequisite) (target "Actions::assignmentActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::_assign#assign2"))) (status missing-prerequisite) (target "Actions::assignmentActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::dynamics"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics"))) (status missing-prerequisite) (target "Actions::Action"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/20_assignment_example.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 33))
-      )
-      (diagnostic
-        (severity warning)
-        (code "invalid_qualified_name_segment")
-        (source "semantic")
-        (range (start 4 8) (end 4 35))
-      )
-      (diagnostic
-        (severity warning)
-        (code "invalid_qualified_name_segment")
-        (source "semantic")
-        (range (start 5 8) (end 5 33))
-      )
-      (diagnostic
-        (severity warning)
-        (code "invalid_qualified_name_segment")
-        (source "semantic")
-        (range (start 6 8) (end 6 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "invalid_qualified_name_segment")
-        (source "semantic")
-        (range (start 7 8) (end 7 35))
-      )
-      (diagnostic
-        (severity warning)
-        (code "invalid_qualified_name_segment")
-        (source "semantic")
-        (range (start 8 8) (end 8 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "invalid_qualified_name_segment")
-        (source "semantic")
-        (range (start 9 8) (end 9 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "invalid_qualified_name_segment")
-        (source "semantic")
-        (range (start 10 8) (end 10 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "invalid_qualified_name_segment")
-        (source "semantic")
-        (range (start 14 2) (end 14 45))
-      )
-      (diagnostic
-        (severity warning)
-        (code "invalid_qualified_name_segment")
-        (source "semantic")
-        (range (start 15 2) (end 15 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "invalid_qualified_name_segment")
-        (source "semantic")
-        (range (start 16 2) (end 16 46))
-      )
-      (diagnostic
-        (severity warning)
-        (code "invalid_qualified_name_segment")
-        (source "semantic")
-        (range (start 17 2) (end 17 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "invalid_qualified_name_segment")
-        (source "semantic")
-        (range (start 18 2) (end 18 35))
-      )
-      (diagnostic
-        (severity warning)
-        (code "invalid_qualified_name_segment")
-        (source "semantic")
-        (range (start 19 2) (end 19 51))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

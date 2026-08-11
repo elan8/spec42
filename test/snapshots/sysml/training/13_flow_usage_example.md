@@ -24,6 +24,57 @@ package 'Flow Usage Example' {
 	} 
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "13_flow_usage_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 6 18) (end 6 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 7 13) (end 7 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 10 9) (end 10 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 11 6) (end 11 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 14 9) (end 14 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 15 6) (end 15 38))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -53,6 +104,22 @@ CloseCurly,EndOfFile,
       (flow_usage 'of')
       (flow_usage 'of'))))
 ~~~
+# EXPECTED
+~~~
+semantic.duplicate_name 'of'
+semantic.invalid_connection_end_count
+semantic.invalid_connection_end_count
+semantic.unresolved_name 'FuelTankAssembly'
+semantic.unresolved_name 'Engine'
+~~~
+# PROBLEMS
+~~~
+semantic.duplicate_name 'of'
+semantic.invalid_connection_end_count
+semantic.invalid_connection_end_count
+semantic.unresolved_name 'FuelTankAssembly'
+semantic.unresolved_name 'Engine'
+~~~
 # FORMAT
 ~~~sysml
 package 'Flow Usage Example' {
@@ -75,78 +142,32 @@ package 'Flow Usage Example' {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.duplicate_name 'of'
-semantic.invalid_connection_end_count
-semantic.invalid_connection_end_count
-semantic.unresolved_name 'FuelTankAssembly'
-semantic.unresolved_name 'Engine'
-~~~
-# PROBLEMS
-~~~
-semantic.duplicate_name 'of'
-semantic.invalid_connection_end_count
-semantic.invalid_connection_end_count
-semantic.unresolved_name 'FuelTankAssembly'
-semantic.unresolved_name 'Engine'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Flow Usage Example"))) (name "Flow Usage Example") (declared-name "Flow Usage Example")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Flow Usage Example::*"))) (name "*") (declared-name "*"))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Flow Usage Example::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Flow Usage Example::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Flow Usage Example::vehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Flow Usage Example::Vehicle")))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "Flow Usage Example::vehicle::tankAssy"))) (name "tankAssy") (declared-name "tankAssy") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Flow Usage Example::Vehicle")))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e1c21fc60f630af35f595658aa20a15ee602a19bb14861d7d41a6b72ac46f8a4") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Flow Usage Example"))) (kind "package") (name "Flow Usage Example") (declared-name "Flow Usage Example") (range (start (line 0) (character 0)) (end (line 0) (character 372))))
+    (element (id (node (document "d0") (qualified-name "Flow Usage Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 34))) (parent (node (document "d0") (qualified-name "Flow Usage Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "Port Example::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 30))))))
+    (element (id (node (document "d0") (qualified-name "Flow Usage Example::Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (range (start (line 3) (character 1)) (end (line 3) (character 18))) (parent (node (document "d0") (qualified-name "Flow Usage Example"))))
+    (element (id (node (document "d0") (qualified-name "Flow Usage Example::vehicle"))) (kind "part") (name "vehicle") (declared-name "vehicle") (range (start (line 5) (character 1)) (end (line 5) (character 280))) (parent (node (document "d0") (qualified-name "Flow Usage Example"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle") (range (start (line 5) (character 16)) (end (line 5) (character 23)))))))
+    (element (id (node (document "d0") (qualified-name "Flow Usage Example::vehicle::eng"))) (kind "part") (name "eng") (declared-name "eng") (range (start (line 7) (character 2)) (end (line 7) (character 20))) (parent (node (document "d0") (qualified-name "Flow Usage Example::vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Engine") (range (start (line 7) (character 13)) (end (line 7) (character 19)))))))
+    (element (id (node (document "d0") (qualified-name "Flow Usage Example::vehicle::tankAssy"))) (kind "part") (name "tankAssy") (declared-name "tankAssy") (range (start (line 6) (character 2)) (end (line 6) (character 35))) (parent (node (document "d0") (qualified-name "Flow Usage Example::vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "FuelTankAssembly") (range (start (line 6) (character 18)) (end (line 6) (character 34)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Flow Usage Example::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Port Example::*") (range (start (line 1) (character 16)) (end (line 1) (character 30))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Flow Usage Example::vehicle"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (range (start (line 5) (character 16)) (end (line 5) (character 23))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Flow Usage Example::Vehicle")))))
+    (reference (id (source (node (document "d0") (qualified-name "Flow Usage Example::vehicle"))) (kind flowSource) (ordinal 0)) (authored-target "tankAssy::fuelTankPort::fuelSupply") (range (start (line 10) (character 9)) (end (line 10) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Flow Usage Example::vehicle"))) (kind flowSource) (ordinal 1)) (authored-target "eng::engineFuelPort::fuelReturn") (range (start (line 14) (character 9)) (end (line 14) (character 38))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Flow Usage Example::vehicle"))) (kind flowTarget) (ordinal 0)) (authored-target "eng::engineFuelPort::fuelSupply") (range (start (line 11) (character 6)) (end (line 11) (character 35))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Flow Usage Example::vehicle"))) (kind flowTarget) (ordinal 1)) (authored-target "tankAssy::fuelTankPort::fuelReturn") (range (start (line 15) (character 6)) (end (line 15) (character 38))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Flow Usage Example::vehicle::eng"))) (kind featureTyping) (ordinal 0)) (authored-target "Engine") (range (start (line 7) (character 13)) (end (line 7) (character 19))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Flow Usage Example::vehicle::tankAssy"))) (kind featureTyping) (ordinal 0)) (authored-target "FuelTankAssembly") (range (start (line 6) (character 18)) (end (line 6) (character 34))) (outcome (status unresolved)))
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Flow Usage Example::vehicle"))) (to (node (document "d0") (qualified-name "Flow Usage Example::Vehicle"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Flow Usage Example::vehicle"))) (target (node (document "d0") (qualified-name "Flow Usage Example::Vehicle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Flow Usage Example::vehicle"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Flow Usage Example::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Flow Usage Example::vehicle"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Flow Usage Example::vehicle::eng"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Flow Usage Example::vehicle::tankAssy"))) (status missing-prerequisite) (target "Parts::parts"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/13_flow_usage_example.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 6 18) (end 6 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 7 13) (end 7 19))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

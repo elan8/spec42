@@ -33,13 +33,26 @@ package CoverageIndividual {
 	individual state s1;
 }
 ~~~
-# EXPECTED
-~~~
-semantic.invalid_connection_end_count
-~~~
-# PROBLEMS
-~~~
-semantic.invalid_connection_end_count
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "coverage_individual.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_package_body_element")
+        (source "sysml")
+        (range (start 2 1) (end 2 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 2 1) (end 2 32))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -99,6 +112,14 @@ CloseCurly,EndOfFile,
     (action_usage individual 'a1')
     (state_usage individual 's1')))
 ~~~
+# EXPECTED
+~~~
+semantic.invalid_connection_end_count
+~~~
+# PROBLEMS
+~~~
+semantic.invalid_connection_end_count
+~~~
 # FORMAT
 ~~~sysml
 package CoverageIndividual {
@@ -132,51 +153,21 @@ package CoverageIndividual {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "CoverageIndividual"))) (name "CoverageIndividual") (declared-name "CoverageIndividual")
-      (contains
-        (element (kind "individual def") (id (node (document "d0") (qualified-name "CoverageIndividual::D1"))) (name "D1") (declared-name "D1"))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "CoverageIndividual::D4"))) (name "D4") (declared-name "D4") (declared (properties (individual true))))
-        (element (kind "occurrence") (id (node (document "d0") (qualified-name "CoverageIndividual::p1"))) (name "p1") (declared-name "p1") (declared (properties (individual true))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "CoverageIndividual::p2"))) (name "p2") (declared-name "p2") (declared (properties (individual true) (ordered false))))
-        (element (kind "state") (id (node (document "d0") (qualified-name "CoverageIndividual::s1"))) (name "s1") (declared-name "s1") (declared))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "a4ab8954b93d875131cf769715c915b1a59efe22ba01d9e61c06e5c5c8ce2f26") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "CoverageIndividual"))) (kind "package") (name "CoverageIndividual") (declared-name "CoverageIndividual") (range (start (line 0) (character 0)) (end (line 0) (character 664))))
+    (element (id (node (document "d0") (qualified-name "CoverageIndividual::D1"))) (kind "individual def") (name "D1") (declared-name "D1") (range (start (line 1) (character 1)) (end (line 1) (character 19))) (parent (node (document "d0") (qualified-name "CoverageIndividual"))))
+    (element (id (node (document "d0") (qualified-name "CoverageIndividual::D4"))) (kind "part def") (name "D4") (declared-name "D4") (range (start (line 4) (character 1)) (end (line 4) (character 24))) (parent (node (document "d0") (qualified-name "CoverageIndividual"))))
+    (element (id (node (document "d0") (qualified-name "CoverageIndividual::p1"))) (kind "occurrence") (name "p1") (declared-name "p1") (range (start (line 19) (character 12)) (end (line 19) (character 15))) (parent (node (document "d0") (qualified-name "CoverageIndividual"))))
+    (element (id (node (document "d0") (qualified-name "CoverageIndividual::p2"))) (kind "part") (name "p2") (declared-name "p2") (range (start (line 22) (character 1)) (end (line 22) (character 20))) (parent (node (document "d0") (qualified-name "CoverageIndividual"))))
+    (element (id (node (document "d0") (qualified-name "CoverageIndividual::s1"))) (kind "state") (name "s1") (declared-name "s1") (range (start (line 25) (character 1)) (end (line 25) (character 21))) (parent (node (document "d0") (qualified-name "CoverageIndividual"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CoverageIndividual::D1"))) (status missing-prerequisite) (target "Occurrences::Life"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CoverageIndividual::D4"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CoverageIndividual::p1"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CoverageIndividual::p2"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CoverageIndividual::s1"))) (status missing-prerequisite) (target "States::stateActions"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/coverage_individual.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "recovered_package_body_element")
-        (source "sysml")
-        (range (start 2 1) (end 2 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 2 1) (end 2 32))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

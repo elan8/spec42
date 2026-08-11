@@ -52,6 +52,27 @@ package '15_07-System of Units and Scales' {
 	  */
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "15_07_system_of_units_and_scales.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 19) (end 1 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 19) (end 2 35))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -69,6 +90,14 @@ CloseCurly,EndOfFile,
     (import_decl private 'USCustomaryUnits::*')
     (comment)
     (comment)))
+~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
 ~~~
 # FORMAT
 ~~~sysml
@@ -120,51 +149,22 @@ package '15_07-System of Units and Scales' {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "15_07-System of Units and Scales"))) (name "15_07-System of Units and Scales") (declared-name "15_07-System of Units and Scales")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "15_07-System of Units and Scales::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "15_07-System of Units and Scales::*#import"))) (name "*") (declared-name "*"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "44a6fbcd597ba7dca13c30bd4195ef065484ed824840db86206f793f6e4c3f53") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "15_07-System of Units and Scales"))) (kind "package") (name "15_07-System of Units and Scales") (declared-name "15_07-System of Units and Scales") (range (start (line 0) (character 0)) (end (line 0) (character 3588))))
+    (element (id (node (document "d0") (qualified-name "15_07-System of Units and Scales::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 4)) (end (line 1) (character 26))) (parent (node (document "d0") (qualified-name "15_07-System of Units and Scales"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 19)) (end (line 1) (character 22))))))
+    (element (id (node (document "d0") (qualified-name "15_07-System of Units and Scales::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 4)) (end (line 2) (character 39))) (parent (node (document "d0") (qualified-name "15_07-System of Units and Scales"))) (authored (membership (kind Import) (visibility "private") (import (reference "USCustomaryUnits::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 19)) (end (line 2) (character 35))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "15_07-System of Units and Scales::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ISQ::*") (range (start (line 1) (character 19)) (end (line 1) (character 22))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_07-System of Units and Scales::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "USCustomaryUnits::*") (range (start (line 2) (character 19)) (end (line 2) (character 35))) (outcome (status unresolved)))
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/validation/15_07_system_of_units_and_scales.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 19) (end 1 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 19) (end 2 35))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

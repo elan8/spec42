@@ -9,41 +9,6 @@ semantic_graph_skip_reason=parser recovery for non-empty source produced no type
 ~~~sysml
 : :: :> ::> :>> :=
 ~~~
-# TOKENS
-~~~zig
-Colon,ColonColon,ColonGt,ColonColonGt,ColonGtGt,ColonEq,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (malformed))
-~~~
-# FORMAT
-~~~sysml
-: :: :> ::> :>> :=
-
-~~~
-# EXPECTED
-~~~
-parse.unexpected_token
-~~~
-# PROBLEMS
-~~~
-parse.unexpected_token
-~~~
-# SMG
-~~~
-(semantic-graph
-  (containment
-  )
-  (relationships
-  )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
@@ -56,6 +21,42 @@ parse.unexpected_token
         (range (start 0 0) (end 0 18))
       )
     )
+  )
+)
+~~~
+# TOKENS
+~~~zig
+Colon,ColonColon,ColonGt,ColonColonGt,ColonGtGt,ColonEq,EndOfFile,
+~~~
+# AST
+~~~
+(root
+  (malformed))
+~~~
+# EXPECTED
+~~~
+parse.unexpected_token
+~~~
+# PROBLEMS
+~~~
+parse.unexpected_token
+~~~
+# FORMAT
+~~~sysml
+: :: :> ::> :>> :=
+
+~~~
+# SMG
+~~~
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "68797422f77b0cb8a22f939e61771c3f8455dbc8fb7e3963f924b6ab3941f0f2") (contract-version "canonical-resolution-v1"))
+  (structure
+  )
+  (references
+  )
+  (relationships
+  )
+  (evaluation
   )
 )
 ~~~

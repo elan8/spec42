@@ -28,6 +28,45 @@ package 'Individuals and Roles' {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "28_individuals_and_roles_1.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 5 34) (end 5 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 6 24) (end 6 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 7 25) (end 7 30))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_part_usage_body_element")
+        (source "sysml")
+        (range (start 13 2) (end 13 201))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -67,6 +106,18 @@ CloseCurly,EndOfFile,
       (part_usage 'vehicle_1_t1'
         (portion_usage snapshot 'rightFrontWheel_t1' : 'Wheel_1' :>> 'rightFrontWheel')))))
 ~~~
+# EXPECTED
+~~~
+parse.expected_usage_declaration
+parse.expected_usage_declaration
+semantic.unresolved_name 'Vehicle'
+~~~
+# PROBLEMS
+~~~
+parse.expected_usage_declaration
+parse.expected_usage_declaration
+semantic.unresolved_name 'Vehicle'
+~~~
 # FORMAT
 ~~~sysml
 package 'Individuals and Roles' {
@@ -93,81 +144,33 @@ package 'Individuals and Roles' {
 }
 
 ~~~
-# EXPECTED
-~~~
-parse.expected_usage_declaration
-parse.expected_usage_declaration
-semantic.unresolved_name 'Vehicle'
-~~~
-# PROBLEMS
-~~~
-parse.expected_usage_declaration
-parse.expected_usage_declaration
-semantic.unresolved_name 'Vehicle'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Individuals and Roles"))) (name "Individuals and Roles") (declared-name "Individuals and Roles")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Individuals and Roles::*"))) (name "*") (declared-name "*"))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1"))) (name "Vehicle_1") (declared-name "Vehicle_1") (declared (properties (individual true)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1::leftFrontWheel"))) (name "leftFrontWheel") (declared-name "leftFrontWheel") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1")))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1::rightFrontWheel"))) (name "rightFrontWheel") (declared-name "rightFrontWheel") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Individuals and Roles::Wheel"))) (name "Wheel") (declared-name "Wheel") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Individuals and Roles::Wheel_1"))) (name "Wheel_1") (declared-name "Wheel_1") (declared (properties (individual true))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Individuals and Roles::vehicle_1"))) (name "vehicle_1") (declared-name "vehicle_1") (declared (properties (individual true) (ordered false))))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "d713814b9b6b44b5fbdd0136311da3e5d8c2ff5ac4c02fb1c800b386305c13b4") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Individuals and Roles"))) (kind "package") (name "Individuals and Roles") (declared-name "Individuals and Roles") (range (start (line 0) (character 0)) (end (line 0) (character 499))))
+    (element (id (node (document "d0") (qualified-name "Individuals and Roles::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 45))) (parent (node (document "d0") (qualified-name "Individuals and Roles"))) (authored (membership (kind Import) (visibility "private") (import (reference "Part Definition Example::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 41))))))
+    (element (id (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1"))) (kind "part def") (name "Vehicle_1") (declared-name "Vehicle_1") (range (start (line 5) (character 1)) (end (line 5) (character 109))) (parent (node (document "d0") (qualified-name "Individuals and Roles"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Vehicle") (range (start (line 5) (character 34)) (end (line 5) (character 41)))))))
+    (element (id (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1::leftFrontWheel"))) (kind "part") (name "leftFrontWheel") (declared-name "leftFrontWheel") (range (start (line 6) (character 2)) (end (line 6) (character 30))) (parent (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1"))) (authored (membership (kind Feature)) (relationships (typing (reference "Wheel") (range (start (line 6) (character 24)) (end (line 6) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1::rightFrontWheel"))) (kind "part") (name "rightFrontWheel") (declared-name "rightFrontWheel") (range (start (line 7) (character 2)) (end (line 7) (character 31))) (parent (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1"))) (authored (membership (kind Feature)) (relationships (typing (reference "Wheel") (range (start (line 7) (character 25)) (end (line 7) (character 30)))))))
+    (element (id (node (document "d0") (qualified-name "Individuals and Roles::Wheel"))) (kind "part def") (name "Wheel") (declared-name "Wheel") (range (start (line 3) (character 1)) (end (line 3) (character 16))) (parent (node (document "d0") (qualified-name "Individuals and Roles"))))
+    (element (id (node (document "d0") (qualified-name "Individuals and Roles::Wheel_1"))) (kind "part def") (name "Wheel_1") (declared-name "Wheel_1") (range (start (line 10) (character 1)) (end (line 10) (character 38))) (parent (node (document "d0") (qualified-name "Individuals and Roles"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Wheel") (range (start (line 10) (character 32)) (end (line 10) (character 37)))))))
+    (element (id (node (document "d0") (qualified-name "Individuals and Roles::vehicle_1"))) (kind "part") (name "vehicle_1") (declared-name "vehicle_1") (range (start (line 12) (character 1)) (end (line 12) (character 243))) (parent (node (document "d0") (qualified-name "Individuals and Roles"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle_1") (range (start (line 12) (character 29)) (end (line 12) (character 38)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Individuals and Roles::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Part Definition Example::*") (range (start (line 1) (character 16)) (end (line 1) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1"))) (kind specialization) (ordinal 0)) (authored-target "Vehicle") (range (start (line 5) (character 34)) (end (line 5) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1::leftFrontWheel"))) (kind featureTyping) (ordinal 0)) (authored-target "Wheel") (range (start (line 6) (character 24)) (end (line 6) (character 29))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1::rightFrontWheel"))) (kind featureTyping) (ordinal 0)) (authored-target "Wheel") (range (start (line 7) (character 25)) (end (line 7) (character 30))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Individuals and Roles::Wheel_1"))) (kind specialization) (ordinal 0)) (authored-target "Wheel") (range (start (line 10) (character 32)) (end (line 10) (character 37))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Individuals and Roles::Wheel")))))
+    (reference (id (source (node (document "d0") (qualified-name "Individuals and Roles::vehicle_1"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle_1") (range (start (line 12) (character 29)) (end (line 12) (character 38))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1")))))
   )
   (relationships
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "Individuals and Roles::Wheel_1"))) (to (node (document "d0") (qualified-name "Individuals and Roles::Wheel"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1::leftFrontWheel"))) (to (node (document "d0") (qualified-name "Individuals and Roles::Wheel"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1::rightFrontWheel"))) (to (node (document "d0") (qualified-name "Individuals and Roles::Wheel"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Individuals and Roles::vehicle_1"))) (to (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1"))) (provenance authored))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Individuals and Roles::Wheel_1"))) (target (node (document "d0") (qualified-name "Individuals and Roles::Wheel"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Individuals and Roles::Wheel_1"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Individuals and Roles::vehicle_1"))) (target (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Individuals and Roles::vehicle_1"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1::leftFrontWheel"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1::rightFrontWheel"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Individuals and Roles::Wheel"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Individuals and Roles::Wheel_1"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Individuals and Roles::vehicle_1"))) (status missing-prerequisite) (target "Parts::parts"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/28_individuals_and_roles_1.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 41))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 5 1) (end 5 109))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_part_usage_body_element")
-        (source "sysml")
-        (range (start 13 2) (end 13 201))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

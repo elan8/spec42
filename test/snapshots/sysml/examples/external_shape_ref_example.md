@@ -37,6 +37,39 @@ package ExternalShapeRefExample {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "external_shape_ref_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 3 16) (end 3 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 4 16) (end 4 22))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -87,6 +120,30 @@ CloseCurly,EndOfFile,
         (default_ref_usage :>> 'width' value)
         (default_ref_usage :>> 'height' value)))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'shape'
+semantic.unresolved_name 'Shell'
+semantic.unresolved_name 'Box'
+semantic.unresolved_name 'envelopingShapes'
+semantic.unresolved_name 'length'
+semantic.unresolved_name 'width'
+semantic.unresolved_name 'height'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'shape'
+semantic.unresolved_name 'Shell'
+semantic.unresolved_name 'Box'
+semantic.unresolved_name 'envelopingShapes'
+semantic.unresolved_name 'length'
+semantic.unresolved_name 'width'
+semantic.unresolved_name 'height'
+~~~
 # FORMAT
 ~~~sysml
 package ExternalShapeRefExample {
@@ -122,96 +179,35 @@ package ExternalShapeRefExample {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'shape'
-semantic.unresolved_name 'Shell'
-semantic.unresolved_name 'Box'
-semantic.unresolved_name 'envelopingShapes'
-semantic.unresolved_name 'length'
-semantic.unresolved_name 'width'
-semantic.unresolved_name 'height'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'shape'
-semantic.unresolved_name 'Shell'
-semantic.unresolved_name 'Box'
-semantic.unresolved_name 'envelopingShapes'
-semantic.unresolved_name 'length'
-semantic.unresolved_name 'width'
-semantic.unresolved_name 'height'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ExternalShapeRefExample"))) (name "ExternalShapeRefExample") (declared-name "ExternalShapeRefExample")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "ExternalShapeRefExample::*"))) (name "*") (declared-name "*"))
-        (element (kind "metadata def") (id (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef"))) (name "ExternalShapeRef") (declared-name "ExternalShapeRef")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::purpose"))) (name "purpose") (declared-name "purpose") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::shapeIri"))) (name "shapeIri") (declared-name "shapeIri") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "ExternalShapeRefExample::String"))) (name "String") (declared-name "String"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ExternalShapeRefExample::mass"))) (name "mass") (declared-name "mass"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ExternalShapeRefExample::mm"))) (name "mm") (declared-name "mm"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "ExternalShapeRefExample::myBatteryUnit"))) (name "myBatteryUnit") (declared-name "myBatteryUnit") (declared (properties (ordered false))))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "7099a129835bd99aec51c536cf682193d9f6911604d8b5ec5dadfa99eed58cf7") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ExternalShapeRefExample"))) (kind "package") (name "ExternalShapeRefExample") (declared-name "ExternalShapeRefExample") (range (start (line 0) (character 0)) (end (line 0) (character 684))))
+    (element (id (node (document "d0") (qualified-name "ExternalShapeRefExample::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 30))) (parent (node (document "d0") (qualified-name "ExternalShapeRefExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "ShapeItems::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 26))))))
+    (element (id (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef"))) (kind "metadata def") (name "ExternalShapeRef") (declared-name "ExternalShapeRef") (range (start (line 6) (character 1)) (end (line 6) (character 177))) (parent (node (document "d0") (qualified-name "ExternalShapeRefExample"))))
+    (element (id (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::_documentation"))) (kind "documentation") (name "") (range (start (line 6) (character 1)) (end (line 6) (character 177))) (parent (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef"))))
+    (element (id (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::purpose"))) (kind "attribute") (name "purpose") (declared-name "purpose") (range (start (line 12) (character 2)) (end (line 12) (character 32))) (parent (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef"))) (authored (membership (kind Feature)) (relationships (typing (reference "String") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::shapeIri"))) (kind "attribute") (name "shapeIri") (declared-name "shapeIri") (range (start (line 13) (character 2)) (end (line 13) (character 33))) (parent (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef"))) (authored (membership (kind Feature)) (relationships (typing (reference "String") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ExternalShapeRefExample::String"))) (kind "import") (name "String") (declared-name "String") (range (start (line 1) (character 1)) (end (line 1) (character 37))) (parent (node (document "d0") (qualified-name "ExternalShapeRefExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::String") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 36))))))
+    (element (id (node (document "d0") (qualified-name "ExternalShapeRefExample::mass"))) (kind "import") (name "mass") (declared-name "mass") (range (start (line 3) (character 1)) (end (line 3) (character 26))) (parent (node (document "d0") (qualified-name "ExternalShapeRefExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::mass") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 3) (character 16)) (end (line 3) (character 25))))))
+    (element (id (node (document "d0") (qualified-name "ExternalShapeRefExample::mm"))) (kind "import") (name "mm") (declared-name "mm") (range (start (line 4) (character 1)) (end (line 4) (character 23))) (parent (node (document "d0") (qualified-name "ExternalShapeRefExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "SI::mm") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 4) (character 16)) (end (line 4) (character 22))))))
+    (element (id (node (document "d0") (qualified-name "ExternalShapeRefExample::myBatteryUnit"))) (kind "part") (name "myBatteryUnit") (declared-name "myBatteryUnit") (range (start (line 16) (character 1)) (end (line 16) (character 347))) (parent (node (document "d0") (qualified-name "ExternalShapeRefExample"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "ExternalShapeRefExample::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ShapeItems::*") (range (start (line 2) (character 16)) (end (line 2) (character 26))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::purpose"))) (kind featureTyping) (ordinal 0)) (authored-target "String") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ExternalShapeRefExample::String")))))
+    (reference (id (source (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::shapeIri"))) (kind featureTyping) (ordinal 0)) (authored-target "String") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ExternalShapeRefExample::String")))))
+    (reference (id (source (node (document "d0") (qualified-name "ExternalShapeRefExample::String"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::String") (range (start (line 1) (character 16)) (end (line 1) (character 36))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ExternalShapeRefExample::mass"))) (kind membershipImport) (ordinal 0)) (authored-target "ISQ::mass") (range (start (line 3) (character 16)) (end (line 3) (character 25))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ExternalShapeRefExample::mm"))) (kind membershipImport) (ordinal 0)) (authored-target "SI::mm") (range (start (line 4) (character 16)) (end (line 4) (character 22))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::_documentation"))) (to (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::purpose"))) (target (node (document "d0") (qualified-name "ExternalShapeRefExample::String"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::purpose"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::shapeIri"))) (target (node (document "d0") (qualified-name "ExternalShapeRefExample::String"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::shapeIri"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::purpose"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::shapeIri"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ExternalShapeRefExample::myBatteryUnit"))) (status missing-prerequisite) (target "Parts::parts"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/external_shape_ref_example.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 16) (end 2 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 3 16) (end 3 25))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 4 16) (end 4 22))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

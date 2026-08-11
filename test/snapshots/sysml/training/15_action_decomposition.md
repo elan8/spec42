@@ -33,6 +33,39 @@ package 'Action Decomposition' {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "15_action_decomposition.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 14 3) (end 14 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 18 27) (end 18 38))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_action_body_element")
+        (source "sysml")
+        (range (start 21 3) (end 21 16))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 22 3) (end 22 43))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -86,6 +119,14 @@ CloseCurly,EndOfFile,
         (item_usage in)
         (item_usage out 'picture' value)))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package 'Action Decomposition' {
@@ -117,122 +158,65 @@ package 'Action Decomposition' {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Action Decomposition"))) (name "Action Decomposition") (declared-name "Action Decomposition")
-      (contains
-        (element (kind "action def") (id (node (document "d0") (qualified-name "Action Decomposition::Focus"))) (name "Focus") (declared-name "Focus")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Decomposition::Focus::image"))) (name "image") (declared-name "image") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Focus")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Decomposition::Focus::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Focus")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Action Decomposition::Image"))) (name "Image") (declared-name "Image") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Action Decomposition::Picture"))) (name "Picture") (declared-name "Picture") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Action Decomposition::Scene"))) (name "Scene") (declared-name "Scene") (declared))
-        (element (kind "action def") (id (node (document "d0") (qualified-name "Action Decomposition::Shoot"))) (name "Shoot") (declared-name "Shoot")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Decomposition::Shoot::image"))) (name "image") (declared-name "image") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Shoot")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Decomposition::Shoot::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Shoot")))))
-          )
-        )
-        (element (kind "action def") (id (node (document "d0") (qualified-name "Action Decomposition::TakePicture"))) (name "TakePicture") (declared-name "TakePicture")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Decomposition::TakePicture::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::TakePicture")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Decomposition::TakePicture::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::TakePicture")))))
-          )
-        )
-        (element (kind "action") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture"))) (name "takePicture") (declared-name "takePicture") (declared)
-          (contains
-            (element (kind "action") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus"))) (name "focus") (declared-name "focus") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Action Decomposition::TakePicture"))))
-              (contains
-                (element (kind "item") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus::image"))) (name "image") (declared-name "image") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Focus")))))
-                (element (kind "item") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in")) (feature-value (kind bound) (expression (kind "featureReference") (reference "takePicture::scene")))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Focus"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus::scene"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-              )
-            )
-            (element (kind "flow") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::from"))) (name "from") (declared-name "from") (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::TakePicture")))))
-            (element (kind "item") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::TakePicture")))))
-            (element (kind "item") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::TakePicture")))))
-            (element (kind "action") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot"))) (name "shoot") (declared-name "shoot") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Action Decomposition::TakePicture"))))
-              (contains
-                (element (kind "item") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out")) (feature-value (kind bound) (expression (kind "featureReference") (reference "takePicture::picture")))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Shoot"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot::picture"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-              )
-            )
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "c2c4ee1926c3f7f12308cb1d8037cc60c699c2871f097b81eeddf4b24772419e") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Action Decomposition"))) (kind "package") (name "Action Decomposition") (declared-name "Action Decomposition") (range (start (line 0) (character 0)) (end (line 0) (character 582))))
+    (element (id (node (document "d0") (qualified-name "Action Decomposition::Focus"))) (kind "action def") (name "Focus") (declared-name "Focus") (range (start (line 5) (character 1)) (end (line 5) (character 58))) (parent (node (document "d0") (qualified-name "Action Decomposition"))))
+    (element (id (node (document "d0") (qualified-name "Action Decomposition::Focus::image"))) (kind "in out parameter") (name "image") (declared-name "image") (range (start (line 5) (character 38)) (end (line 5) (character 56))) (parent (node (document "d0") (qualified-name "Action Decomposition::Focus"))) (authored (relationships (typing (reference "Image") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Action Decomposition::Focus::scene"))) (kind "in out parameter") (name "scene") (declared-name "scene") (range (start (line 5) (character 20)) (end (line 5) (character 37))) (parent (node (document "d0") (qualified-name "Action Decomposition::Focus"))) (authored (relationships (typing (reference "Scene") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Action Decomposition::Image"))) (kind "part def") (name "Image") (declared-name "Image") (range (start (line 2) (character 1)) (end (line 2) (character 16))) (parent (node (document "d0") (qualified-name "Action Decomposition"))))
+    (element (id (node (document "d0") (qualified-name "Action Decomposition::Picture"))) (kind "part def") (name "Picture") (declared-name "Picture") (range (start (line 3) (character 1)) (end (line 3) (character 18))) (parent (node (document "d0") (qualified-name "Action Decomposition"))))
+    (element (id (node (document "d0") (qualified-name "Action Decomposition::Scene"))) (kind "part def") (name "Scene") (declared-name "Scene") (range (start (line 1) (character 1)) (end (line 1) (character 16))) (parent (node (document "d0") (qualified-name "Action Decomposition"))))
+    (element (id (node (document "d0") (qualified-name "Action Decomposition::Shoot"))) (kind "action def") (name "Shoot") (declared-name "Shoot") (range (start (line 6) (character 1)) (end (line 6) (character 61))) (parent (node (document "d0") (qualified-name "Action Decomposition"))))
+    (element (id (node (document "d0") (qualified-name "Action Decomposition::Shoot::image"))) (kind "in out parameter") (name "image") (declared-name "image") (range (start (line 6) (character 20)) (end (line 6) (character 36))) (parent (node (document "d0") (qualified-name "Action Decomposition::Shoot"))) (authored (relationships (typing (reference "Image") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Action Decomposition::Shoot::picture"))) (kind "in out parameter") (name "picture") (declared-name "picture") (range (start (line 6) (character 37)) (end (line 6) (character 59))) (parent (node (document "d0") (qualified-name "Action Decomposition::Shoot"))) (authored (relationships (typing (reference "Picture") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Action Decomposition::TakePicture"))) (kind "action def") (name "TakePicture") (declared-name "TakePicture") (range (start (line 7) (character 1)) (end (line 7) (character 68))) (parent (node (document "d0") (qualified-name "Action Decomposition"))))
+    (element (id (node (document "d0") (qualified-name "Action Decomposition::TakePicture::picture"))) (kind "in out parameter") (name "picture") (declared-name "picture") (range (start (line 7) (character 44)) (end (line 7) (character 66))) (parent (node (document "d0") (qualified-name "Action Decomposition::TakePicture"))) (authored (relationships (typing (reference "Picture") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Action Decomposition::TakePicture::scene"))) (kind "in out parameter") (name "scene") (declared-name "scene") (range (start (line 7) (character 26)) (end (line 7) (character 43))) (parent (node (document "d0") (qualified-name "Action Decomposition::TakePicture"))) (authored (relationships (typing (reference "Scene") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Action Decomposition::takePicture"))) (kind "action") (name "takePicture") (declared-name "takePicture") (range (start (line 9) (character 1)) (end (line 9) (character 296))) (parent (node (document "d0") (qualified-name "Action Decomposition"))) (authored (membership (kind Feature)) (relationships (typing (reference "TakePicture") (range none)) (perform (reference "Action Decomposition::takePicture::focus") (range none)) (perform (reference "Action Decomposition::takePicture::shoot") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus"))) (kind "action") (name "focus") (declared-name "focus") (range (start (line 13) (character 2)) (end (line 13) (character 87))) (parent (node (document "d0") (qualified-name "Action Decomposition::takePicture"))) (authored (membership (kind Feature)) (relationships (typing (reference "Focus") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus::image"))) (kind "item") (name "image") (declared-name "image") (range (start (line 15) (character 3)) (end (line 15) (character 18))) (parent (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus"))))
+    (element (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus::scene"))) (kind "item") (name "scene") (declared-name "scene") (range (start (line 14) (character 3)) (end (line 14) (character 38))) (parent (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus"))))
+    (element (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::from"))) (kind "flow") (name "from") (declared-name "from") (range (start (line 18) (character 2)) (end (line 18) (character 39))) (parent (node (document "d0") (qualified-name "Action Decomposition::takePicture"))))
+    (element (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::picture"))) (kind "item") (name "picture") (declared-name "picture") (range (start (line 11) (character 2)) (end (line 11) (character 19))) (parent (node (document "d0") (qualified-name "Action Decomposition::takePicture"))))
+    (element (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::scene"))) (kind "item") (name "scene") (declared-name "scene") (range (start (line 10) (character 2)) (end (line 10) (character 16))) (parent (node (document "d0") (qualified-name "Action Decomposition::takePicture"))))
+    (element (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot"))) (kind "action") (name "shoot") (declared-name "shoot") (range (start (line 20) (character 2)) (end (line 20) (character 85))) (parent (node (document "d0") (qualified-name "Action Decomposition::takePicture"))) (authored (membership (kind Feature)) (relationships (typing (reference "Shoot") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot::picture"))) (kind "item") (name "picture") (declared-name "picture") (range (start (line 22) (character 3)) (end (line 22) (character 43))) (parent (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Action Decomposition::Focus::image"))) (kind featureTyping) (ordinal 0)) (authored-target "Image") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Decomposition::Image")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Decomposition::Focus::scene"))) (kind featureTyping) (ordinal 0)) (authored-target "Scene") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Decomposition::Scene")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Decomposition::Shoot::image"))) (kind featureTyping) (ordinal 0)) (authored-target "Image") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Decomposition::Image")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Decomposition::Shoot::picture"))) (kind featureTyping) (ordinal 0)) (authored-target "Picture") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Decomposition::Picture")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Decomposition::TakePicture::picture"))) (kind featureTyping) (ordinal 0)) (authored-target "Picture") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Decomposition::Picture")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Decomposition::TakePicture::scene"))) (kind featureTyping) (ordinal 0)) (authored-target "Scene") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Decomposition::Scene")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Decomposition::takePicture"))) (kind featureTyping) (ordinal 0)) (authored-target "TakePicture") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Decomposition::TakePicture")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Decomposition::takePicture"))) (kind flowSource) (ordinal 0)) (authored-target "focus::image") (range (start (line 18) (character 12)) (end (line 18) (character 23))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus::image")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Decomposition::takePicture"))) (kind flowTarget) (ordinal 0)) (authored-target "shoot::image") (range (start (line 18) (character 27)) (end (line 18) (character 38))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Action Decomposition::takePicture"))) (kind performSource) (ordinal 0)) (authored-target "Action Decomposition::takePicture::focus") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Decomposition::takePicture"))) (kind performSource) (ordinal 1)) (authored-target "Action Decomposition::takePicture::shoot") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus"))) (kind featureTyping) (ordinal 0)) (authored-target "Focus") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Decomposition::Focus")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot"))) (kind featureTyping) (ordinal 0)) (authored-target "Shoot") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Decomposition::Shoot")))))
   )
   (relationships
-    (perform (status resolved) (from (node (document "d0") (qualified-name "Action Decomposition::takePicture"))) (to (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus"))) (provenance authored))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "Action Decomposition::takePicture"))) (to (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Decomposition::Focus::image"))) (to (node (document "d0") (qualified-name "Action Decomposition::Image"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Decomposition::Focus::scene"))) (to (node (document "d0") (qualified-name "Action Decomposition::Scene"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Decomposition::Shoot::image"))) (to (node (document "d0") (qualified-name "Action Decomposition::Image"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Decomposition::Shoot::picture"))) (to (node (document "d0") (qualified-name "Action Decomposition::Picture"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Decomposition::TakePicture::picture"))) (to (node (document "d0") (qualified-name "Action Decomposition::Picture"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Decomposition::TakePicture::scene"))) (to (node (document "d0") (qualified-name "Action Decomposition::Scene"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Decomposition::takePicture"))) (to (node (document "d0") (qualified-name "Action Decomposition::TakePicture"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus"))) (to (node (document "d0") (qualified-name "Action Decomposition::Focus"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot"))) (to (node (document "d0") (qualified-name "Action Decomposition::Shoot"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Action Decomposition::Focus::image"))) (target (node (document "d0") (qualified-name "Action Decomposition::Image"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Decomposition::Focus::image"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Action Decomposition::Focus::scene"))) (target (node (document "d0") (qualified-name "Action Decomposition::Scene"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Decomposition::Focus::scene"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Action Decomposition::Shoot::image"))) (target (node (document "d0") (qualified-name "Action Decomposition::Image"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Decomposition::Shoot::image"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Action Decomposition::Shoot::picture"))) (target (node (document "d0") (qualified-name "Action Decomposition::Picture"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Decomposition::Shoot::picture"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Action Decomposition::TakePicture::picture"))) (target (node (document "d0") (qualified-name "Action Decomposition::Picture"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Decomposition::TakePicture::picture"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Action Decomposition::TakePicture::scene"))) (target (node (document "d0") (qualified-name "Action Decomposition::Scene"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Decomposition::TakePicture::scene"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Action Decomposition::takePicture"))) (target (node (document "d0") (qualified-name "Action Decomposition::TakePicture"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Decomposition::takePicture"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "Action Decomposition::takePicture"))) (target (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Decomposition::takePicture"))) (kind performSource) (ordinal 0)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "Action Decomposition::takePicture"))) (target (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Decomposition::takePicture"))) (kind performSource) (ordinal 1)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus"))) (target (node (document "d0") (qualified-name "Action Decomposition::Focus"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot"))) (target (node (document "d0") (qualified-name "Action Decomposition::Shoot"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Decomposition::Focus"))) (status missing-prerequisite) (target "Actions::Action"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Decomposition::Image"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Decomposition::Picture"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Decomposition::Scene"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Decomposition::Shoot"))) (status missing-prerequisite) (target "Actions::Action"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Decomposition::TakePicture"))) (status missing-prerequisite) (target "Actions::Action"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Decomposition::takePicture"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus::image"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus::scene"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Decomposition::takePicture::from"))) (status missing-prerequisite) (target "Flows::messages"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Decomposition::takePicture::picture"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Decomposition::takePicture::scene"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot::picture"))) (status missing-prerequisite) (target "Items::items"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/15_action_decomposition.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 14 3) (end 14 38))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_action_body_element")
-        (source "sysml")
-        (range (start 21 3) (end 21 16))
-      )
-      (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 22 3) (end 22 43))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus::scene")) (expression (status "unresolved") (error "expression has an unresolved reference")))
+    (node (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot::picture")) (expression (status "unresolved") (error "expression has an unresolved reference")))
   )
 )
 ~~~

@@ -70,6 +70,117 @@ package ConnectionTest {
 	metadata def M;
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "connection_test.md"
+    (diagnostics
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 4 3) (end 4 11))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 9 2) (end 9 9))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 15 10) (end 15 14))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 16 10) (end 16 17))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 20 2) (end 20 9))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 20 2) (end 20 12))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_connection_def_body_element")
+        (source "sysml")
+        (range (start 21 2) (end 21 14))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 21 2) (end 21 14))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 26 1) (end 26 9))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 27 1) (end 27 9))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 28 1) (end 28 9))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 29 1) (end 29 9))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 40 2) (end 40 9))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 40 2) (end 40 12))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_connection_def_body_element")
+        (source "sysml")
+        (range (start 41 2) (end 41 30))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 47 1) (end 47 29))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_connection_def_body_element")
+        (source "sysml")
+        (range (start 56 5) (end 56 48))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -168,6 +279,14 @@ CloseCurly,EndOfFile,
       (interface_end end 'b' : 'B'))
     (metadata_def 'M')))
 ~~~
+# EXPECTED
+~~~
+parse.expected_usage_declaration
+~~~
+# PROBLEMS
+~~~
+parse.expected_usage_declaration
+~~~
 # FORMAT
 ~~~sysml
 package ConnectionTest {
@@ -236,240 +355,74 @@ package ConnectionTest {
 }
 
 ~~~
-# EXPECTED
-~~~
-parse.expected_usage_declaration
-~~~
-# PROBLEMS
-~~~
-parse.expected_usage_declaration
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ConnectionTest"))) (name "ConnectionTest") (declared-name "ConnectionTest")
-      (contains
-        (element (kind "part def") (id (node (document "d0") (qualified-name "ConnectionTest::A"))) (name "A") (declared-name "A") (declared)
-          (contains
-            (element (kind "ref") (id (node (document "d0") (qualified-name "ConnectionTest::A::b"))) (name "b") (declared-name "b") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "ConnectionTest::A")))))
-          )
-        )
-        (element (kind "connection def") (id (node (document "d0") (qualified-name "ConnectionTest::AB"))) (name "AB") (declared-name "AB")
-          (contains
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "ConnectionTest::AB::b"))) (name "b") (declared-name "b") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "ConnectionTest::AB")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "ConnectionTest::B"))) (name "B") (declared-name "B") (declared))
-        (element (kind "connection def") (id (node (document "d0") (qualified-name "ConnectionTest::C"))) (name "C") (declared-name "C"))
-        (element (kind "flow def") (id (node (document "d0") (qualified-name "ConnectionTest::F"))) (name "F") (declared-name "F"))
-        (element (kind "metadata def") (id (node (document "d0") (qualified-name "ConnectionTest::M"))) (name "M") (declared-name "M"))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "ConnectionTest::P"))) (name "P") (declared-name "P") (declared)
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "ConnectionTest::P::p1"))) (name "p1") (declared-name "p1") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ConnectionTest::P")))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "ConnectionTest::P::y"))) (name "y") (declared-name "y") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ConnectionTest::P")))))
-          )
-        )
-        (element (kind "connection") (id (node (document "d0") (qualified-name "ConnectionTest::_connection"))) (name "_connection") (declared-name "_connection")
-          (contains
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "ConnectionTest::_connection::end2"))) (name "end2") (declared-name "end2") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "ConnectionTest::C")))))
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "ConnectionTest::_connection::end3"))) (name "end3") (declared-name "end3") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "ConnectionTest::C")))))
-          )
-        )
-        (element (kind "connection def") (id (node (document "d0") (qualified-name "ConnectionTest::_connectionDef"))) (name "_connectionDef")
-          (contains
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "ConnectionTest::_connectionDef::end2"))) (name "end2") (declared-name "end2") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "ConnectionTest::_connectionDef")))))
-          )
-        )
-        (element (kind "connection") (id (node (document "d0") (qualified-name "ConnectionTest::bus"))) (name "bus") (declared-name "bus"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "ConnectionTest::d1"))) (name "d1") (declared-name "d1") (declared (properties (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "ConnectionTest::d2"))) (name "d2") (declared-name "d2") (declared (properties (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "ConnectionTest::d3"))) (name "d3") (declared-name "d3") (declared (properties (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "ConnectionTest::d4"))) (name "d4") (declared-name "d4") (declared (properties (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "ConnectionTest::p"))) (name "p") (declared-name "p") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "ConnectionTest::p::x"))) (name "x") (declared-name "x") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "ConnectionTest::p::x::x1"))) (name "x1") (declared-name "x1") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-              )
-            )
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "1d994b09fbbe27d181c7a2cc1f9c35772f027ec42f3672ba10ed45082d173e0c") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ConnectionTest"))) (kind "package") (name "ConnectionTest") (declared-name "ConnectionTest") (range (start (line 0) (character 0)) (end (line 0) (character 726))))
+    (element (id (node (document "d0") (qualified-name "ConnectionTest::A"))) (kind "part def") (name "A") (declared-name "A") (range (start (line 49) (character 1)) (end (line 49) (character 32))) (parent (node (document "d0") (qualified-name "ConnectionTest"))))
+    (element (id (node (document "d0") (qualified-name "ConnectionTest::A::b"))) (kind "ref") (name "b") (declared-name "b") (range (start (line 50) (character 5)) (end (line 50) (character 15))) (parent (node (document "d0") (qualified-name "ConnectionTest::A"))) (authored (membership (kind Feature)) (relationships (typing (reference "B") (range (start (line 50) (character 13)) (end (line 50) (character 14)))))))
+    (element (id (node (document "d0") (qualified-name "ConnectionTest::AB"))) (kind "connection def") (name "AB") (declared-name "AB") (range (start (line 55) (character 1)) (end (line 55) (character 82))) (parent (node (document "d0") (qualified-name "ConnectionTest"))))
+    (element (id (node (document "d0") (qualified-name "ConnectionTest::AB::b"))) (kind "interface end") (name "b") (declared-name "b") (range (start (line 59) (character 5)) (end (line 59) (character 15))) (parent (node (document "d0") (qualified-name "ConnectionTest::AB"))) (authored (relationships (typing (reference "B") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ConnectionTest::B"))) (kind "part def") (name "B") (declared-name "B") (range (start (line 53) (character 1)) (end (line 53) (character 12))) (parent (node (document "d0") (qualified-name "ConnectionTest"))))
+    (element (id (node (document "d0") (qualified-name "ConnectionTest::C"))) (kind "connection def") (name "C") (declared-name "C") (range (start (line 19) (character 1)) (end (line 19) (character 77))) (parent (node (document "d0") (qualified-name "ConnectionTest"))))
+    (element (id (node (document "d0") (qualified-name "ConnectionTest::F"))) (kind "flow def") (name "F") (declared-name "F") (range (start (line 45) (character 1)) (end (line 45) (character 21))) (parent (node (document "d0") (qualified-name "ConnectionTest"))))
+    (element (id (node (document "d0") (qualified-name "ConnectionTest::M"))) (kind "metadata def") (name "M") (declared-name "M") (range (start (line 62) (character 1)) (end (line 62) (character 16))) (parent (node (document "d0") (qualified-name "ConnectionTest"))))
+    (element (id (node (document "d0") (qualified-name "ConnectionTest::P"))) (kind "part def") (name "P") (declared-name "P") (range (start (line 8) (character 1)) (end (line 8) (character 111))) (parent (node (document "d0") (qualified-name "ConnectionTest"))))
+    (element (id (node (document "d0") (qualified-name "ConnectionTest::P::p1"))) (kind "part") (name "p1") (declared-name "p1") (range (start (line 13) (character 2)) (end (line 13) (character 15))) (parent (node (document "d0") (qualified-name "ConnectionTest::P"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "p") (range (start (line 13) (character 13)) (end (line 13) (character 14)))))))
+    (element (id (node (document "d0") (qualified-name "ConnectionTest::P::y"))) (kind "part") (name "y") (declared-name "y") (range (start (line 9) (character 2)) (end (line 9) (character 9))) (parent (node (document "d0") (qualified-name "ConnectionTest::P"))))
+    (element (id (node (document "d0") (qualified-name "ConnectionTest::_connection"))) (kind "connection") (name "_connection") (declared-name "_connection") (range (start (line 33) (character 1)) (end (line 33) (character 90))) (parent (node (document "d0") (qualified-name "ConnectionTest"))) (authored (membership (kind Feature)) (relationships (typing (reference "C") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ConnectionTest::_connection::end2"))) (kind "interface end") (name "end2") (declared-name "end2") (range (start (line 35) (character 5)) (end (line 35) (character 21))) (parent (node (document "d0") (qualified-name "ConnectionTest::_connection"))) (authored (relationships (reference-subsetting (reference "d2") (range (start (line 35) (character 18)) (end (line 35) (character 20)))))))
+    (element (id (node (document "d0") (qualified-name "ConnectionTest::_connection::end3"))) (kind "interface end") (name "end3") (declared-name "end3") (range (start (line 36) (character 5)) (end (line 36) (character 21))) (parent (node (document "d0") (qualified-name "ConnectionTest::_connection"))) (authored (relationships (reference-subsetting (reference "d3") (range (start (line 36) (character 18)) (end (line 36) (character 20)))))))
+    (element (id (node (document "d0") (qualified-name "ConnectionTest::_connectionDef"))) (kind "connection def") (name "_connectionDef") (range (start (line 39) (character 1)) (end (line 39) (character 73))) (parent (node (document "d0") (qualified-name "ConnectionTest"))))
+    (element (id (node (document "d0") (qualified-name "ConnectionTest::_connectionDef::end2"))) (kind "interface end") (name "end2") (declared-name "end2") (range (start (line 42) (character 2)) (end (line 42) (character 18))) (parent (node (document "d0") (qualified-name "ConnectionTest::_connectionDef"))) (authored (relationships (reference-subsetting (reference "d2") (range (start (line 42) (character 15)) (end (line 42) (character 17)))))))
+    (element (id (node (document "d0") (qualified-name "ConnectionTest::bus"))) (kind "connection") (name "bus") (declared-name "bus") (range (start (line 31) (character 1)) (end (line 31) (character 45))) (parent (node (document "d0") (qualified-name "ConnectionTest"))) (authored (membership (kind Feature)) (relationships (typing (reference "C") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ConnectionTest::d1"))) (kind "part") (name "d1") (declared-name "d1") (range (start (line 26) (character 1)) (end (line 26) (character 9))) (parent (node (document "d0") (qualified-name "ConnectionTest"))))
+    (element (id (node (document "d0") (qualified-name "ConnectionTest::d2"))) (kind "part") (name "d2") (declared-name "d2") (range (start (line 27) (character 1)) (end (line 27) (character 9))) (parent (node (document "d0") (qualified-name "ConnectionTest"))))
+    (element (id (node (document "d0") (qualified-name "ConnectionTest::d3"))) (kind "part") (name "d3") (declared-name "d3") (range (start (line 28) (character 1)) (end (line 28) (character 9))) (parent (node (document "d0") (qualified-name "ConnectionTest"))))
+    (element (id (node (document "d0") (qualified-name "ConnectionTest::d4"))) (kind "part") (name "d4") (declared-name "d4") (range (start (line 29) (character 1)) (end (line 29) (character 9))) (parent (node (document "d0") (qualified-name "ConnectionTest"))))
+    (element (id (node (document "d0") (qualified-name "ConnectionTest::p"))) (kind "part") (name "p") (declared-name "p") (range (start (line 2) (character 1)) (end (line 2) (character 39))) (parent (node (document "d0") (qualified-name "ConnectionTest"))))
+    (element (id (node (document "d0") (qualified-name "ConnectionTest::p::x"))) (kind "part") (name "x") (declared-name "x") (range (start (line 3) (character 2)) (end (line 3) (character 26))) (parent (node (document "d0") (qualified-name "ConnectionTest::p"))))
+    (element (id (node (document "d0") (qualified-name "ConnectionTest::p::x::x1"))) (kind "part") (name "x1") (declared-name "x1") (range (start (line 4) (character 3)) (end (line 4) (character 11))) (parent (node (document "d0") (qualified-name "ConnectionTest::p::x"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "ConnectionTest"))) (kind connectionSource) (ordinal 0)) (authored-target "d1") (range (start (line 31) (character 29)) (end (line 31) (character 31))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConnectionTest::d1")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConnectionTest"))) (kind connectionSource) (ordinal 1)) (authored-target "d1") (range (start (line 31) (character 29)) (end (line 31) (character 31))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConnectionTest::d1")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConnectionTest"))) (kind connectionSource) (ordinal 2)) (authored-target "d1") (range (start (line 31) (character 29)) (end (line 31) (character 31))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConnectionTest::d1")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConnectionTest"))) (kind connectionTarget) (ordinal 0)) (authored-target "d2") (range (start (line 31) (character 33)) (end (line 31) (character 35))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConnectionTest::d2")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConnectionTest"))) (kind connectionTarget) (ordinal 1)) (authored-target "d3") (range (start (line 31) (character 37)) (end (line 31) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConnectionTest::d3")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConnectionTest"))) (kind connectionTarget) (ordinal 2)) (authored-target "d4") (range (start (line 31) (character 41)) (end (line 31) (character 43))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConnectionTest::d4")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConnectionTest::A::b"))) (kind featureTyping) (ordinal 0)) (authored-target "B") (range (start (line 50) (character 13)) (end (line 50) (character 14))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConnectionTest::B")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConnectionTest::AB::b"))) (kind featureTyping) (ordinal 0)) (authored-target "B") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConnectionTest::B")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConnectionTest::P"))) (kind connectionSource) (ordinal 0)) (authored-target "p") (range (start (line 11) (character 10)) (end (line 11) (character 11))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConnectionTest::p")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConnectionTest::P"))) (kind connectionSource) (ordinal 1)) (authored-target "p1::x") (range (start (line 15) (character 10)) (end (line 15) (character 14))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ConnectionTest::P"))) (kind connectionSource) (ordinal 2)) (authored-target "p1::x::x1") (range (start (line 16) (character 10)) (end (line 16) (character 17))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ConnectionTest::P"))) (kind connectionTarget) (ordinal 0)) (authored-target "y") (range (start (line 11) (character 15)) (end (line 11) (character 16))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConnectionTest::P::y")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConnectionTest::P"))) (kind connectionTarget) (ordinal 1)) (authored-target "y") (range (start (line 15) (character 18)) (end (line 15) (character 19))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConnectionTest::P::y")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConnectionTest::P"))) (kind connectionTarget) (ordinal 2)) (authored-target "y") (range (start (line 16) (character 21)) (end (line 16) (character 22))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConnectionTest::P::y")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConnectionTest::P::p1"))) (kind subsetting) (ordinal 0)) (authored-target "p") (range (start (line 13) (character 13)) (end (line 13) (character 14))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConnectionTest::p")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConnectionTest::_connection"))) (kind featureTyping) (ordinal 0)) (authored-target "C") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConnectionTest::C")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConnectionTest::_connection::end2"))) (kind referenceSubsetting) (ordinal 0)) (authored-target "d2") (range (start (line 35) (character 18)) (end (line 35) (character 20))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConnectionTest::d2")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConnectionTest::_connection::end3"))) (kind referenceSubsetting) (ordinal 0)) (authored-target "d3") (range (start (line 36) (character 18)) (end (line 36) (character 20))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConnectionTest::d3")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConnectionTest::_connectionDef::end2"))) (kind referenceSubsetting) (ordinal 0)) (authored-target "d2") (range (start (line 42) (character 15)) (end (line 42) (character 17))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConnectionTest::d2")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConnectionTest::bus"))) (kind featureTyping) (ordinal 0)) (authored-target "C") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConnectionTest::C")))))
   )
   (relationships
-    (connection (status resolved) (from (node (document "d0") (qualified-name "ConnectionTest::d1"))) (to (node (document "d0") (qualified-name "ConnectionTest::d2"))) (connect (source-expression "d1") (target-expression "d2") (container-prefix "ConnectionTest")) (provenance authored))
-    (connection (status resolved) (from (node (document "d0") (qualified-name "ConnectionTest::d1"))) (to (node (document "d0") (qualified-name "ConnectionTest::d3"))) (connect (source-expression "d1") (target-expression "d3") (container-prefix "ConnectionTest")) (provenance authored))
-    (connection (status resolved) (from (node (document "d0") (qualified-name "ConnectionTest::d1"))) (to (node (document "d0") (qualified-name "ConnectionTest::d4"))) (connect (source-expression "d1") (target-expression "d4") (container-prefix "ConnectionTest")) (provenance authored))
-    (connection (status resolved) (from (node (document "d0") (qualified-name "ConnectionTest::d2"))) (to (node (document "d0") (qualified-name "ConnectionTest::d3"))) (provenance authored))
-    (connection (status resolved) (from (node (document "d0") (qualified-name "ConnectionTest::p"))) (to (node (document "d0") (qualified-name "ConnectionTest::P::y"))) (connect (source-expression "p") (target-expression "y") (container-prefix "ConnectionTest::P")) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ConnectionTest::A::b"))) (to (node (document "d0") (qualified-name "ConnectionTest::B"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ConnectionTest::AB::b"))) (to (node (document "d0") (qualified-name "ConnectionTest::B"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ConnectionTest::_connection"))) (to (node (document "d0") (qualified-name "ConnectionTest::C"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ConnectionTest::bus"))) (to (node (document "d0") (qualified-name "ConnectionTest::C"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ConnectionTest::A::b"))) (target (node (document "d0") (qualified-name "ConnectionTest::B"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConnectionTest::A::b"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ConnectionTest::AB::b"))) (target (node (document "d0") (qualified-name "ConnectionTest::B"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConnectionTest::AB::b"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "d0") (qualified-name "ConnectionTest::P::p1"))) (target (node (document "d0") (qualified-name "ConnectionTest::p"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConnectionTest::P::p1"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ConnectionTest::_connection"))) (target (node (document "d0") (qualified-name "ConnectionTest::C"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConnectionTest::_connection"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind referenceSubsetting) (source (node (document "d0") (qualified-name "ConnectionTest::_connection::end2"))) (target (node (document "d0") (qualified-name "ConnectionTest::d2"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConnectionTest::_connection::end2"))) (kind referenceSubsetting) (ordinal 0)))
+    (relationship (kind referenceSubsetting) (source (node (document "d0") (qualified-name "ConnectionTest::_connection::end3"))) (target (node (document "d0") (qualified-name "ConnectionTest::d3"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConnectionTest::_connection::end3"))) (kind referenceSubsetting) (ordinal 0)))
+    (relationship (kind referenceSubsetting) (source (node (document "d0") (qualified-name "ConnectionTest::_connectionDef::end2"))) (target (node (document "d0") (qualified-name "ConnectionTest::d2"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConnectionTest::_connectionDef::end2"))) (kind referenceSubsetting) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ConnectionTest::bus"))) (target (node (document "d0") (qualified-name "ConnectionTest::C"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConnectionTest::bus"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind connection) (source (node (document "d0") (qualified-name "ConnectionTest::d1"))) (target (node (document "d0") (qualified-name "ConnectionTest::d2"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConnectionTest"))) (kind connectionSource) (ordinal 0)) (expression (kind connection) (source "d1") (target "d2") (source-range (start (line 31) (character 29)) (end (line 31) (character 31))) (target-range (start (line 31) (character 33)) (end (line 31) (character 35)))))
+    (relationship (kind connection) (source (node (document "d0") (qualified-name "ConnectionTest::d1"))) (target (node (document "d0") (qualified-name "ConnectionTest::d3"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConnectionTest"))) (kind connectionSource) (ordinal 1)) (expression (kind connection) (source "d1") (target "d3") (source-range (start (line 31) (character 29)) (end (line 31) (character 31))) (target-range (start (line 31) (character 37)) (end (line 31) (character 39)))))
+    (relationship (kind connection) (source (node (document "d0") (qualified-name "ConnectionTest::d1"))) (target (node (document "d0") (qualified-name "ConnectionTest::d4"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConnectionTest"))) (kind connectionSource) (ordinal 2)) (expression (kind connection) (source "d1") (target "d4") (source-range (start (line 31) (character 29)) (end (line 31) (character 31))) (target-range (start (line 31) (character 41)) (end (line 31) (character 43)))))
+    (relationship (kind connection) (source (node (document "d0") (qualified-name "ConnectionTest::p"))) (target (node (document "d0") (qualified-name "ConnectionTest::P::y"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConnectionTest::P"))) (kind connectionSource) (ordinal 0)) (expression (kind connection) (source "p") (target "y") (source-range (start (line 11) (character 10)) (end (line 11) (character 11))) (target-range (start (line 11) (character 15)) (end (line 11) (character 16)))))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-    (connection (status pending-expression) (document "d0") (source-expression "p1::x") (target-expression "y") (container-prefix "ConnectionTest::P"))
-    (connection (status pending-expression) (document "d0") (source-expression "p1::x::x1") (target-expression "y") (container-prefix "ConnectionTest::P"))
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConnectionTest::A"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConnectionTest::AB"))) (status missing-prerequisite) (target "Connections::Connection"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConnectionTest::B"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConnectionTest::C"))) (status missing-prerequisite) (target "Connections::Connection"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConnectionTest::F"))) (status missing-prerequisite) (target "Flows::MessageAction"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConnectionTest::M"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConnectionTest::P"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConnectionTest::P::p1"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConnectionTest::P::y"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConnectionTest::_connection"))) (status missing-prerequisite) (target "Connections::connections"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConnectionTest::_connectionDef"))) (status missing-prerequisite) (target "Connections::Connection"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConnectionTest::bus"))) (status missing-prerequisite) (target "Connections::connections"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConnectionTest::d1"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConnectionTest::d2"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConnectionTest::d3"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConnectionTest::d4"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConnectionTest::p"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConnectionTest::p::x"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConnectionTest::p::x::x1"))) (status missing-prerequisite) (target "Parts::parts"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/connection_test.md"
-    (diagnostics
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 4 3) (end 4 11))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 9 2) (end 9 9))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_expression_relationship")
-        (source "semantic")
-        (range (start 15 10) (end 15 14))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_connection_segment")
-        (source "semantic")
-        (range (start 15 10) (end 15 14))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_expression_relationship")
-        (source "semantic")
-        (range (start 16 10) (end 16 17))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_connection_segment")
-        (source "semantic")
-        (range (start 16 10) (end 16 17))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 20 2) (end 20 9))
-      )
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 20 2) (end 20 12))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_connection_def_body_element")
-        (source "sysml")
-        (range (start 21 2) (end 21 14))
-      )
-      (diagnostic
-        (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 21 2) (end 21 14))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 26 1) (end 26 9))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 27 1) (end 27 9))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 28 1) (end 28 9))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 29 1) (end 29 9))
-      )
-      (diagnostic
-        (severity warning)
-        (code "incomplete_connection_like_end_pair")
-        (source "semantic")
-        (range (start 39 1) (end 39 73))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 40 2) (end 40 9))
-      )
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 40 2) (end 40 12))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_connection_def_body_element")
-        (source "sysml")
-        (range (start 41 2) (end 41 30))
-      )
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 47 1) (end 47 29))
-      )
-      (diagnostic
-        (severity warning)
-        (code "incomplete_connection_like_end_pair")
-        (source "semantic")
-        (range (start 55 1) (end 55 82))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_connection_def_body_element")
-        (source "sysml")
-        (range (start 56 5) (end 56 48))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

@@ -26,6 +26,15 @@ behavior TakePicture {
 	succession step2 then camera.shotState;
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "take_picture.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwBehavior,Ident,OpenCurly,
@@ -64,6 +73,18 @@ CloseCurly,EndOfFile,
       (connector_end)
       (connector_end))))
 ~~~
+# EXPECTED
+~~~
+semantic.feature_typing_kind_mismatch
+semantic.unresolved_name 'Camera'
+semantic.unresolved_name 'involvedObjects'
+~~~
+# PROBLEMS
+~~~
+semantic.feature_typing_kind_mismatch
+semantic.unresolved_name 'Camera'
+semantic.unresolved_name 'involvedObjects'
+~~~
 # FORMAT
 ~~~sysml
 behavior TakePicture {
@@ -85,37 +106,17 @@ behavior TakePicture {
 	succession step2 then camera.shotState;
 }
 ~~~
-# EXPECTED
-~~~
-semantic.feature_typing_kind_mismatch
-semantic.unresolved_name 'Camera'
-semantic.unresolved_name 'involvedObjects'
-~~~
-# PROBLEMS
-~~~
-semantic.feature_typing_kind_mismatch
-semantic.unresolved_name 'Camera'
-semantic.unresolved_name 'involvedObjects'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "96b4898e9e6c30fd8d665720eba18731492a8ebdb58154272a6c06589e701540") (contract-version "canonical-resolution-v1"))
+  (structure
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/take_picture.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

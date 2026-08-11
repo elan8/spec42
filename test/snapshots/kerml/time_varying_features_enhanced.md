@@ -151,6 +151,33 @@ package TimeVaryingFeaturesEnhanced {
     
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "time_varying_features_enhanced.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 19) (end 1 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 47 19) (end 47 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 48 19) (end 48 37))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -402,6 +429,46 @@ CloseCurly,EndOfFile,
         (line_comment)
         (line_comment)))))
 ~~~
+# EXPECTED
+~~~
+parse.expected_usage_declaration
+semantic.unresolved_name 'ExtendedOccurrence'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'ExtendedOccurrence'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'ExtendedOccurrence'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'ExtendedObject'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'timeSlices'
+~~~
+# PROBLEMS
+~~~
+parse.expected_usage_declaration
+semantic.unresolved_name 'ExtendedOccurrence'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'ExtendedOccurrence'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'ExtendedOccurrence'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'ExtendedObject'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'timeSlices'
+~~~
 # FORMAT
 ~~~sysml
 package TimeVaryingFeaturesEnhanced {
@@ -550,94 +617,28 @@ package TimeVaryingFeaturesEnhanced {
     
 }
 ~~~
-# EXPECTED
-~~~
-parse.expected_usage_declaration
-semantic.unresolved_name 'ExtendedOccurrence'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'ExtendedOccurrence'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'ExtendedOccurrence'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'ExtendedObject'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'timeSlices'
-~~~
-# PROBLEMS
-~~~
-parse.expected_usage_declaration
-semantic.unresolved_name 'ExtendedOccurrence'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'ExtendedOccurrence'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'ExtendedOccurrence'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'ExtendedObject'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'timeSlices'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced"))) (name "TimeVaryingFeaturesEnhanced") (declared-name "TimeVaryingFeaturesEnhanced")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Boolean"))) (name "Boolean") (declared-name "Boolean"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::CC1"))) (name "CC1") (declared-name "CC1"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Car"))) (name "Car") (declared-name "Car"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Car1"))) (name "Car1") (declared-name "Car1"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Person"))) (name "Person") (declared-name "Person"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Real"))) (name "Real") (declared-name "Real"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "533007fdb3aeedf51fe1c81e4a52aa56fd09c812eee0bb32d5defc229849a356") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced"))) (kind "package") (name "TimeVaryingFeaturesEnhanced") (declared-name "TimeVaryingFeaturesEnhanced") (range (start (line 0) (character 0)) (end (line 0) (character 6820))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 4)) (end (line 1) (character 42))) (parent (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced"))) (authored (membership (kind Import) (visibility "private") (import (reference "ExtendedOccurrences::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 19)) (end (line 1) (character 38))))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Boolean"))) (kind "import") (name "Boolean") (declared-name "Boolean") (range (start (line 47) (character 4)) (end (line 47) (character 41))) (parent (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Boolean") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 47) (character 19)) (end (line 47) (character 40))))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::CC1"))) (kind "classifier decl") (name "CC1") (declared-name "CC1") (range (start (line 3) (character 4)) (end (line 3) (character 2112))) (parent (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced"))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Car"))) (kind "classifier decl") (name "Car") (declared-name "Car") (range (start (line 50) (character 4)) (end (line 50) (character 2897))) (parent (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced"))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Car1"))) (kind "classifier decl") (name "Car1") (declared-name "Car1") (range (start (line 118) (character 4)) (end (line 118) (character 1062))) (parent (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced"))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Person"))) (kind "classifier decl") (name "Person") (declared-name "Person") (range (start (line 107) (character 4)) (end (line 107) (character 552))) (parent (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced"))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Real"))) (kind "import") (name "Real") (declared-name "Real") (range (start (line 48) (character 4)) (end (line 48) (character 38))) (parent (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 48) (character 19)) (end (line 48) (character 37))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ExtendedOccurrences::*") (range (start (line 1) (character 19)) (end (line 1) (character 38))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Boolean"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Boolean") (range (start (line 47) (character 19)) (end (line 47) (character 40))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (range (start (line 48) (character 19)) (end (line 48) (character 37))) (outcome (status unresolved)))
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/time_varying_features_enhanced.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 19) (end 1 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 47 19) (end 47 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 48 19) (end 48 37))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

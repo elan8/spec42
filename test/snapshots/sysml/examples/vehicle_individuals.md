@@ -121,6 +121,189 @@ package VehicleIndividuals {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "vehicle_individuals.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 3 16) (end 3 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 7 34) (end 7 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 16 34) (end 16 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 25 39) (end 25 51))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 27 32) (end 27 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 28 32) (end 28 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 32 16) (end 32 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 33 17) (end 33 47))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 38 29) (end 38 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 45 21) (end 45 43))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_part_usage_body_element")
+        (source "sysml")
+        (range (start 48 6) (end 48 89))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 57 20) (end 57 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 58 22) (end 58 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 65 16) (end 65 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 67 31) (end 67 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 67 43) (end 67 53))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 67 55) (end 67 63))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 74 33) (end 74 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 80 18) (end 80 449))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 80 54) (end 80 71))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 86 19) (end 86 265))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 86 49) (end 86 63))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 96 33) (end 96 52))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 102 18) (end 102 276))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 102 54) (end 102 71))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 103 19) (end 103 193))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 103 50) (end 103 65))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -243,6 +426,50 @@ CloseCurly,EndOfFile,
             (individual_usage individual 'rightFrontWheel_t1' : 'Wheel1' :>> 'rightFrontWheel'
               (documentation))))))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'mass'
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'mass'
+semantic.unresolved_name 'AxleAssembly'
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'DateTime'
+semantic.unresolved_name 'DateTime'
+semantic.unresolved_name 'localClock::currentTime'
+semantic.unresolved_name 'HappensJustBefore'
+semantic.unresolved_name 'done'
+semantic.unresolved_name 'localClock::currentTime'
+semantic.unresolved_name 'vehicle_C2'
+semantic.unresolved_name 'frontAxleAssembly'
+semantic.unresolved_name 'leftFrontWheel'
+semantic.unresolved_name 'vehicle1_t0_t1::done'
+semantic.unresolved_name 'frontAxleAssembly'
+semantic.unresolved_name 'rightFrontWheel'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'mass'
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'mass'
+semantic.unresolved_name 'AxleAssembly'
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'DateTime'
+semantic.unresolved_name 'DateTime'
+semantic.unresolved_name 'localClock::currentTime'
+semantic.unresolved_name 'HappensJustBefore'
+semantic.unresolved_name 'done'
+semantic.unresolved_name 'localClock::currentTime'
+semantic.unresolved_name 'vehicle_C2'
+semantic.unresolved_name 'frontAxleAssembly'
+semantic.unresolved_name 'leftFrontWheel'
+semantic.unresolved_name 'vehicle1_t0_t1::done'
+semantic.unresolved_name 'frontAxleAssembly'
+semantic.unresolved_name 'rightFrontWheel'
+~~~
 # FORMAT
 ~~~sysml
 package VehicleIndividuals {
@@ -362,352 +589,99 @@ package VehicleIndividuals {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'mass'
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'mass'
-semantic.unresolved_name 'AxleAssembly'
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'DateTime'
-semantic.unresolved_name 'DateTime'
-semantic.unresolved_name 'localClock::currentTime'
-semantic.unresolved_name 'HappensJustBefore'
-semantic.unresolved_name 'done'
-semantic.unresolved_name 'localClock::currentTime'
-semantic.unresolved_name 'vehicle_C2'
-semantic.unresolved_name 'frontAxleAssembly'
-semantic.unresolved_name 'leftFrontWheel'
-semantic.unresolved_name 'vehicle1_t0_t1::done'
-semantic.unresolved_name 'frontAxleAssembly'
-semantic.unresolved_name 'rightFrontWheel'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'mass'
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'mass'
-semantic.unresolved_name 'AxleAssembly'
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'DateTime'
-semantic.unresolved_name 'DateTime'
-semantic.unresolved_name 'localClock::currentTime'
-semantic.unresolved_name 'HappensJustBefore'
-semantic.unresolved_name 'done'
-semantic.unresolved_name 'localClock::currentTime'
-semantic.unresolved_name 'vehicle_C2'
-semantic.unresolved_name 'frontAxleAssembly'
-semantic.unresolved_name 'leftFrontWheel'
-semantic.unresolved_name 'vehicle1_t0_t1::done'
-semantic.unresolved_name 'frontAxleAssembly'
-semantic.unresolved_name 'rightFrontWheel'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "VehicleIndividuals"))) (name "VehicleIndividuals") (declared-name "VehicleIndividuals")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleIndividuals::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleIndividuals::DateTime"))) (name "DateTime") (declared-name "DateTime"))
-        (element (kind "package") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations"))) (name "IndividualConfigurations") (declared-name "IndividualConfigurations")
-          (contains
-            (element (kind "import") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::*"))) (name "*") (declared-name "*"))
-            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2"))) (name "vehicle1_C2") (declared-name "vehicle1_C2") (declared (properties (individual true) (ordered false)))
-              (contains
-                (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1")))))
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0"))) (name "vehicle1_C2_t0") (declared-name "vehicle1_C2_t0") (declared (properties (portion true) (portion-kind "snapshot"))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))))
-                  (contains
-                    (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1")))))
-                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0"))) (name "axleAssembly1_t0") (declared-name "axleAssembly1_t0") (declared (properties (individual true))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))))
-                      (contains
-                        (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::AxleAssembly1")))))
-                        (element (kind "occurrence") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0::leftFrontWheel_t0"))) (name "leftFrontWheel_t0") (declared-name "leftFrontWheel_t0") (declared (properties (individual true))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::AxleAssembly1"))))
-                          (contains
-                            (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0::leftFrontWheel_t0::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Wheel1")))))
-                          )
-                        )
-                      )
-                    )
-                  )
-                )
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1"))) (name "vehicle1_C2_t1") (declared-name "vehicle1_C2_t1") (declared (properties (portion true) (portion-kind "snapshot"))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))))
-                  (contains
-                    (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1")))))
-                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1"))) (name "axleAssembly1_t1") (declared-name "axleAssembly1_t1") (declared (properties (individual true))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))))
-                      (contains
-                        (element (kind "occurrence") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1::rightFrontWheel_t1"))) (name "rightFrontWheel_t1") (declared-name "rightFrontWheel_t1") (declared (properties (individual true))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::AxleAssembly1"))))
-                          (contains
-                            (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1::rightFrontWheel_t1::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Wheel1")))))
-                          )
-                        )
-                      )
-                    )
-                  )
-                )
-              )
-            )
-          )
-        )
-        (element (kind "package") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions"))) (name "IndividualDefinitions") (declared-name "IndividualDefinitions")
-          (contains
-            (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::AxleAssembly1"))) (name "AxleAssembly1") (declared-name "AxleAssembly1") (declared (properties (individual true))))
-            (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))) (name "Vehicle1") (declared-name "Vehicle1") (declared (properties (individual true)))
-              (contains
-                (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1")))))
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1::mass"))) (name "mass") (declared-name "mass") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal (integer 1800))) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1::mass"))) (role feature-value))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
-              )
-            )
-            (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2"))) (name "Vehicle2") (declared-name "Vehicle2") (declared (properties (individual true)))
-              (contains
-                (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2")))))
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2::mass"))) (name "mass") (declared-name "mass") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal (integer 1700))) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2::mass"))) (role feature-value))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
-              )
-            )
-            (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Wheel1"))) (name "Wheel1") (declared-name "Wheel1") (declared (properties (individual true))))
-            (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Wheel2"))) (name "Wheel2") (declared-name "Wheel2") (declared (properties (individual true))))
-          )
-        )
-        (element (kind "package") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots"))) (name "IndividualSnapshots") (declared-name "IndividualSnapshots")
-          (contains
-            (element (kind "import") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::*"))) (name "*") (declared-name "*"))
-            (element (kind "import") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::HappensJustBefore"))) (name "HappensJustBefore") (declared-name "HappensJustBefore"))
-            (element (kind "attribute def") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::t0"))) (name "t0") (declared-name "t0") (declared (properties (ordered false) (unique true))))
-            (element (kind "attribute def") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::t1"))) (name "t1") (declared-name "t1") (declared (properties (ordered false) (unique true))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1"))) (name "vehicle1") (declared-name "vehicle1") (declared (properties (individual true) (ordered false)))
-              (contains
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0"))) (name "vehicle1_t0") (declared-name "vehicle1_t0") (declared (properties (portion true) (portion-kind "snapshot"))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))))
-                  (contains
-                    (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1")))))
-                    (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0::currentTime"))) (name "currentTime") (declared-name "currentTime") (declared (feature-value (kind bound) (expression (kind "featureReference") (reference "t0")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0::currentTime"))) (role feature-value))) (evaluation (expression (status "incomplete") (error "expression is incomplete"))))
-                  )
-                )
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1"))) (name "vehicle1_t0_t1") (declared-name "vehicle1_t0_t1") (declared (properties (portion true) (portion-kind "timeslice"))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))))
-                  (contains
-                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1::"))) (name "") (declared (properties (portion true) (portion-kind "snapshot"))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))))
-                      (contains
-                        (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1::::currentTime"))) (name "currentTime") (declared-name "currentTime") (declared (feature-value (kind bound) (expression (kind "featureReference") (reference "t1")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1::::currentTime"))) (role feature-value))) (evaluation (expression (status "incomplete") (error "expression is incomplete"))))
-                      )
-                    )
-                    (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1")))))
-                  )
-                )
-              )
-            )
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleIndividuals::kg"))) (name "kg") (declared-name "kg"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "fc61d143a335c46d7102c87d3e5b6e1b4b1ab509de8637d55cc3232829a55291") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals"))) (kind "package") (name "VehicleIndividuals") (declared-name "VehicleIndividuals") (range (start (line 0) (character 0)) (end (line 0) (character 2826))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 33))) (parent (node (document "d0") (qualified-name "VehicleIndividuals"))) (authored (membership (kind Import) (visibility "private") (import (reference "VehicleUsages::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 29))))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::DateTime"))) (kind "import") (name "DateTime") (declared-name "DateTime") (range (start (line 2) (character 1)) (end (line 2) (character 31))) (parent (node (document "d0") (qualified-name "VehicleIndividuals"))) (authored (membership (kind Import) (visibility "private") (import (reference "Time::DateTime") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 30))))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations"))) (kind "package") (name "IndividualConfigurations") (declared-name "IndividualConfigurations") (range (start (line 64) (character 1)) (end (line 64) (character 1394))) (parent (node (document "d0") (qualified-name "VehicleIndividuals"))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 65) (character 2)) (end (line 65) (character 39))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations"))) (authored (membership (kind Import) (visibility "public") (import (reference "IndividualSnapshots::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 65) (character 16)) (end (line 65) (character 35))))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2"))) (kind "part") (name "vehicle1_C2") (declared-name "vehicle1_C2") (range (start (line 67) (character 2)) (end (line 67) (character 1313))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle1") (range (start (line 67) (character 31)) (end (line 67) (character 39)))) (subsetting (reference "vehicle_C2") (range (start (line 67) (character 43)) (end (line 67) (character 53)))) (subsetting (reference "vehicle1") (range (start (line 67) (character 55)) (end (line 67) (character 63)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::_documentation"))) (kind "documentation") (name "") (range (start (line 67) (character 2)) (end (line 67) (character 1313))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2"))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0"))) (kind "occurrence") (name "vehicle1_C2_t0") (declared-name "vehicle1_C2_t0") (range (start (line 74) (character 15)) (end (line 74) (character 625))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "vehicle1_t0") (range (start (line 74) (character 33)) (end (line 74) (character 44)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::_documentation"))) (kind "documentation") (name "") (range (start (line 74) (character 15)) (end (line 74) (character 625))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0"))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0"))) (kind "occurrence") (name "axleAssembly1_t0") (declared-name "axleAssembly1_t0") (range (start (line 80) (character 18)) (end (line 80) (character 449))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0"))) (authored (membership (kind Feature)) (relationships (typing (reference "AxleAssembly1") (range none)) (redefinition (reference "frontAxleAssembly") (range (start (line 80) (character 54)) (end (line 80) (character 71)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0::_documentation"))) (kind "documentation") (name "") (range (start (line 80) (character 18)) (end (line 80) (character 449))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0"))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0::leftFrontWheel_t0"))) (kind "occurrence") (name "leftFrontWheel_t0") (declared-name "leftFrontWheel_t0") (range (start (line 86) (character 19)) (end (line 86) (character 265))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0"))) (authored (membership (kind Feature)) (relationships (typing (reference "Wheel1") (range none)) (redefinition (reference "leftFrontWheel") (range (start (line 86) (character 49)) (end (line 86) (character 63)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0::leftFrontWheel_t0::_documentation"))) (kind "documentation") (name "") (range (start (line 86) (character 19)) (end (line 86) (character 265))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0::leftFrontWheel_t0"))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1"))) (kind "occurrence") (name "vehicle1_C2_t1") (declared-name "vehicle1_C2_t1") (range (start (line 96) (character 15)) (end (line 96) (character 459))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "vehicle1_t0_t1.done") (range (start (line 96) (character 33)) (end (line 96) (character 52)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::_documentation"))) (kind "documentation") (name "") (range (start (line 96) (character 15)) (end (line 96) (character 459))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1"))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1"))) (kind "occurrence") (name "axleAssembly1_t1") (declared-name "axleAssembly1_t1") (range (start (line 102) (character 18)) (end (line 102) (character 276))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1"))) (authored (membership (kind Feature)) (relationships (typing (reference "AxleAssembly1") (range none)) (redefinition (reference "frontAxleAssembly") (range (start (line 102) (character 54)) (end (line 102) (character 71)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1::rightFrontWheel_t1"))) (kind "occurrence") (name "rightFrontWheel_t1") (declared-name "rightFrontWheel_t1") (range (start (line 103) (character 19)) (end (line 103) (character 193))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1"))) (authored (membership (kind Feature)) (relationships (typing (reference "Wheel1") (range none)) (redefinition (reference "rightFrontWheel") (range (start (line 103) (character 50)) (end (line 103) (character 65)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1::rightFrontWheel_t1::_documentation"))) (kind "documentation") (name "") (range (start (line 103) (character 19)) (end (line 103) (character 193))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1::rightFrontWheel_t1"))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions"))) (kind "package") (name "IndividualDefinitions") (declared-name "IndividualDefinitions") (range (start (line 5) (character 1)) (end (line 5) (character 521))) (parent (node (document "d0") (qualified-name "VehicleIndividuals"))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::AxleAssembly1"))) (kind "part def") (name "AxleAssembly1") (declared-name "AxleAssembly1") (range (start (line 25) (character 2)) (end (line 25) (character 52))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions"))) (authored (membership (kind Owning)) (relationships (specializes (reference "AxleAssembly") (range (start (line 25) (character 39)) (end (line 25) (character 51)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))) (kind "part def") (name "Vehicle1") (declared-name "Vehicle1") (range (start (line 7) (character 2)) (end (line 7) (character 172))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Vehicle") (range (start (line 7) (character 34)) (end (line 7) (character 41)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1::_documentation"))) (kind "documentation") (name "") (range (start (line 7) (character 2)) (end (line 7) (character 172))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1::mass"))) (kind "attribute") (name "mass") (declared-name "mass") (range (start (line 13) (character 3)) (end (line 13) (character 40))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "mass") (range (start (line 13) (character 23)) (end (line 13) (character 27)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2"))) (kind "part def") (name "Vehicle2") (declared-name "Vehicle2") (range (start (line 16) (character 2)) (end (line 16) (character 171))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Vehicle") (range (start (line 16) (character 34)) (end (line 16) (character 41)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2::_documentation"))) (kind "documentation") (name "") (range (start (line 16) (character 2)) (end (line 16) (character 171))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2"))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2::mass"))) (kind "attribute") (name "mass") (declared-name "mass") (range (start (line 22) (character 3)) (end (line 22) (character 40))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "mass") (range (start (line 22) (character 23)) (end (line 22) (character 27)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Wheel1"))) (kind "part def") (name "Wheel1") (declared-name "Wheel1") (range (start (line 27) (character 2)) (end (line 27) (character 38))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Wheel") (range (start (line 27) (character 32)) (end (line 27) (character 37)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Wheel2"))) (kind "part def") (name "Wheel2") (declared-name "Wheel2") (range (start (line 28) (character 2)) (end (line 28) (character 38))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Wheel") (range (start (line 28) (character 32)) (end (line 28) (character 37)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots"))) (kind "package") (name "IndividualSnapshots") (declared-name "IndividualSnapshots") (range (start (line 31) (character 1)) (end (line 31) (character 782))) (parent (node (document "d0") (qualified-name "VehicleIndividuals"))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 32) (character 2)) (end (line 32) (character 41))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots"))) (authored (membership (kind Import) (visibility "public") (import (reference "IndividualDefinitions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 32) (character 16)) (end (line 32) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::HappensJustBefore"))) (kind "import") (name "HappensJustBefore") (declared-name "HappensJustBefore") (range (start (line 33) (character 2)) (end (line 33) (character 48))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::HappensJustBefore") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 33) (character 17)) (end (line 33) (character 47))))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::t0"))) (kind "attribute def") (name "t0") (declared-name "t0") (range (start (line 35) (character 2)) (end (line 35) (character 25))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots"))) (authored (membership (kind Owning)) (relationships (typing (reference "DateTime") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::t1"))) (kind "attribute def") (name "t1") (declared-name "t1") (range (start (line 36) (character 2)) (end (line 36) (character 25))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots"))) (authored (membership (kind Owning)) (relationships (typing (reference "DateTime") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1"))) (kind "part") (name "vehicle1") (declared-name "vehicle1") (range (start (line 38) (character 2)) (end (line 38) (character 599))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle1") (range (start (line 38) (character 29)) (end (line 38) (character 37)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0"))) (kind "occurrence") (name "vehicle1_t0") (declared-name "vehicle1_t0") (range (start (line 39) (character 15)) (end (line 39) (character 178))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1"))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0::_documentation"))) (kind "documentation") (name "") (range (start (line 39) (character 15)) (end (line 39) (character 178))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0"))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0::currentTime"))) (kind "attribute") (name "currentTime") (declared-name "currentTime") (range (start (line 45) (character 7)) (end (line 45) (character 49))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "localClock.currentTime") (range (start (line 45) (character 21)) (end (line 45) (character 43)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1"))) (kind "occurrence") (name "vehicle1_t0_t1") (declared-name "vehicle1_t0_t1") (range (start (line 50) (character 16)) (end (line 50) (character 286))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1"))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1::"))) (kind "occurrence") (name "") (range (start (line 57) (character 16)) (end (line 57) (character 86))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "done") (range (start (line 57) (character 20)) (end (line 57) (character 24)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1::::currentTime"))) (kind "attribute") (name "currentTime") (declared-name "currentTime") (range (start (line 58) (character 8)) (end (line 58) (character 50))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1::"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "localClock.currentTime") (range (start (line 58) (character 22)) (end (line 58) (character 44)))))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1::_documentation"))) (kind "documentation") (name "") (range (start (line 50) (character 16)) (end (line 50) (character 286))) (parent (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1"))))
+    (element (id (node (document "d0") (qualified-name "VehicleIndividuals::kg"))) (kind "import") (name "kg") (declared-name "kg") (range (start (line 3) (character 1)) (end (line 3) (character 23))) (parent (node (document "d0") (qualified-name "VehicleIndividuals"))) (authored (membership (kind Import) (visibility "private") (import (reference "SI::kg") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 3) (character 16)) (end (line 3) (character 22))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "VehicleUsages::*") (range (start (line 1) (character 16)) (end (line 1) (character 29))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::DateTime"))) (kind membershipImport) (ordinal 0)) (authored-target "Time::DateTime") (range (start (line 2) (character 16)) (end (line 2) (character 30))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "IndividualSnapshots::*") (range (start (line 65) (character 16)) (end (line 65) (character 35))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle1") (range (start (line 67) (character 31)) (end (line 67) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2"))) (kind subsetting) (ordinal 0)) (authored-target "vehicle_C2") (range (start (line 67) (character 43)) (end (line 67) (character 53))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2"))) (kind subsetting) (ordinal 1)) (authored-target "vehicle1") (range (start (line 67) (character 55)) (end (line 67) (character 63))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0"))) (kind subsetting) (ordinal 0)) (authored-target "vehicle1_t0") (range (start (line 74) (character 33)) (end (line 74) (character 44))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0"))) (kind featureTyping) (ordinal 0)) (authored-target "AxleAssembly1") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0"))) (kind redefinition) (ordinal 0)) (authored-target "frontAxleAssembly") (range (start (line 80) (character 54)) (end (line 80) (character 71))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0::leftFrontWheel_t0"))) (kind featureTyping) (ordinal 0)) (authored-target "Wheel1") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0::leftFrontWheel_t0"))) (kind redefinition) (ordinal 0)) (authored-target "leftFrontWheel") (range (start (line 86) (character 49)) (end (line 86) (character 63))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1"))) (kind subsetting) (ordinal 0)) (authored-target "vehicle1_t0_t1.done") (range (start (line 96) (character 33)) (end (line 96) (character 52))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1"))) (kind featureTyping) (ordinal 0)) (authored-target "AxleAssembly1") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1"))) (kind redefinition) (ordinal 0)) (authored-target "frontAxleAssembly") (range (start (line 102) (character 54)) (end (line 102) (character 71))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1::rightFrontWheel_t1"))) (kind featureTyping) (ordinal 0)) (authored-target "Wheel1") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1::rightFrontWheel_t1"))) (kind redefinition) (ordinal 0)) (authored-target "rightFrontWheel") (range (start (line 103) (character 50)) (end (line 103) (character 65))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::AxleAssembly1"))) (kind specialization) (ordinal 0)) (authored-target "AxleAssembly") (range (start (line 25) (character 39)) (end (line 25) (character 51))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))) (kind specialization) (ordinal 0)) (authored-target "Vehicle") (range (start (line 7) (character 34)) (end (line 7) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1::mass"))) (kind redefinition) (ordinal 0)) (authored-target "mass") (range (start (line 13) (character 23)) (end (line 13) (character 27))) (outcome (status resolved) (target (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1::mass")))))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2"))) (kind specialization) (ordinal 0)) (authored-target "Vehicle") (range (start (line 16) (character 34)) (end (line 16) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2::mass"))) (kind redefinition) (ordinal 0)) (authored-target "mass") (range (start (line 22) (character 23)) (end (line 22) (character 27))) (outcome (status resolved) (target (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2::mass")))))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Wheel1"))) (kind specialization) (ordinal 0)) (authored-target "Wheel") (range (start (line 27) (character 32)) (end (line 27) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Wheel2"))) (kind specialization) (ordinal 0)) (authored-target "Wheel") (range (start (line 28) (character 32)) (end (line 28) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "IndividualDefinitions::*") (range (start (line 32) (character 16)) (end (line 32) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::HappensJustBefore"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::HappensJustBefore") (range (start (line 33) (character 17)) (end (line 33) (character 47))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::t0"))) (kind featureTyping) (ordinal 0)) (authored-target "DateTime") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "VehicleIndividuals::DateTime")))))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::t1"))) (kind featureTyping) (ordinal 0)) (authored-target "DateTime") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "VehicleIndividuals::DateTime")))))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle1") (range (start (line 38) (character 29)) (end (line 38) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0::currentTime"))) (kind redefinition) (ordinal 0)) (authored-target "localClock.currentTime") (range (start (line 45) (character 21)) (end (line 45) (character 43))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1::"))) (kind redefinition) (ordinal 0)) (authored-target "done") (range (start (line 57) (character 20)) (end (line 57) (character 24))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1::::currentTime"))) (kind redefinition) (ordinal 0)) (authored-target "localClock.currentTime") (range (start (line 58) (character 22)) (end (line 58) (character 44))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleIndividuals::kg"))) (kind membershipImport) (ordinal 0)) (authored-target "SI::kg") (range (start (line 3) (character 16)) (end (line 3) (character 22))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::_documentation"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::_documentation"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0::_documentation"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0::leftFrontWheel_t0::_documentation"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0::leftFrontWheel_t0"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::_documentation"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1::rightFrontWheel_t1::_documentation"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1::rightFrontWheel_t1"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1::_documentation"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2::_documentation"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0::_documentation"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1::_documentation"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::AxleAssembly1"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0::leftFrontWheel_t0"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Wheel1"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::AxleAssembly1"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1::rightFrontWheel_t1"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Wheel1"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))) (provenance authored))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1::mass"))) (target (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1::mass"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1::mass"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2::mass"))) (target (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2::mass"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2::mass"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::t0"))) (target (node (document "d0") (qualified-name "VehicleIndividuals::DateTime"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::t0"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::t1"))) (target (node (document "d0") (qualified-name "VehicleIndividuals::DateTime"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::t1"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0::leftFrontWheel_t0"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1::rightFrontWheel_t1"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::AxleAssembly1"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1::mass"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2::mass"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Wheel1"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Wheel2"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::t0"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::t1"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0::currentTime"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1::"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1::::currentTime"))) (status missing-prerequisite) (target "Base::dataValues"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/vehicle_individuals.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 29))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 16) (end 2 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 3 16) (end 3 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 7 2) (end 7 172))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unknown_unit_symbol")
-        (source "semantic")
-        (range (start 13 3) (end 13 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 13 3) (end 13 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 16 2) (end 16 171))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unknown_unit_symbol")
-        (source "semantic")
-        (range (start 22 3) (end 22 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 22 3) (end 22 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 25 2) (end 25 52))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 27 2) (end 27 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 28 2) (end 28 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 32 16) (end 32 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 33 17) (end 33 47))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 35 2) (end 35 25))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 36 2) (end 36 25))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 45 7) (end 45 49))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_part_usage_body_element")
-        (source "sysml")
-        (range (start 48 6) (end 48 89))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 57 16) (end 57 86))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 58 8) (end 58 50))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 65 16) (end 65 35))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 80 18) (end 80 449))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 86 19) (end 86 265))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 102 18) (end 102 276))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 103 19) (end 103 193))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1::mass")) (expression (status "unsupported") (error "declared expression form is not supported")))
+    (node (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2::mass")) (expression (status "unsupported") (error "declared expression form is not supported")))
+    (node (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0::currentTime")) (expression (status "incomplete") (error "expression is incomplete")))
+    (node (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1::::currentTime")) (expression (status "incomplete") (error "expression is incomplete")))
   )
 )
 ~~~

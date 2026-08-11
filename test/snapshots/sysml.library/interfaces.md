@@ -95,43 +95,116 @@ standard library package Interfaces {
     }
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Natural'
-semantic.unresolved_name 'Connection'
-semantic.unresolved_name 'participant'
-semantic.unresolved_name 'Port'
-semantic.unresolved_name 'self'
-semantic.unresolved_name 'Port'
-semantic.unresolved_name 'interfacingPorts'
-semantic.unresolved_name 'BinaryConnection'
-semantic.unresolved_name 'Interface::participant'
-semantic.unresolved_name 'BinaryConnection::participant'
-semantic.unresolved_name 'Port'
-semantic.unresolved_name 'BinaryConnection::source'
-semantic.unresolved_name 'Port'
-semantic.unresolved_name 'BinaryConnection::target'
-semantic.unresolved_name 'connections'
-semantic.unresolved_name 'binaryConnections'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Natural'
-semantic.unresolved_name 'Connection'
-semantic.unresolved_name 'participant'
-semantic.unresolved_name 'Port'
-semantic.unresolved_name 'self'
-semantic.unresolved_name 'Port'
-semantic.unresolved_name 'interfacingPorts'
-semantic.unresolved_name 'BinaryConnection'
-semantic.unresolved_name 'Interface::participant'
-semantic.unresolved_name 'BinaryConnection::participant'
-semantic.unresolved_name 'Port'
-semantic.unresolved_name 'BinaryConnection::source'
-semantic.unresolved_name 'Port'
-semantic.unresolved_name 'BinaryConnection::target'
-semantic.unresolved_name 'connections'
-semantic.unresolved_name 'binaryConnections'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "interfaces.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 19) (end 6 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 19) (end 7 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 19) (end 8 48))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 19) (end 9 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 19) (end 10 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 12 19) (end 12 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 13 19) (end 13 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 14 19) (end 14 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 15 19) (end 15 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 17 19) (end 17 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 25 8) (end 25 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 26 8) (end 26 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 44 21) (end 44 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 69 21) (end 69 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 69 45) (end 69 74))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 71 34) (end 71 58))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 72 34) (end 72 58))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -220,6 +293,44 @@ CloseCurly,EndOfFile,
       (documentation))
     (interface_usage 'BinaryInterface' :> 'interfaces', 'binaryConnections' 'binaryInterfaces' multiplicity
       (documentation))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'Connection'
+semantic.unresolved_name 'participant'
+semantic.unresolved_name 'Port'
+semantic.unresolved_name 'self'
+semantic.unresolved_name 'Port'
+semantic.unresolved_name 'interfacingPorts'
+semantic.unresolved_name 'BinaryConnection'
+semantic.unresolved_name 'Interface::participant'
+semantic.unresolved_name 'BinaryConnection::participant'
+semantic.unresolved_name 'Port'
+semantic.unresolved_name 'BinaryConnection::source'
+semantic.unresolved_name 'Port'
+semantic.unresolved_name 'BinaryConnection::target'
+semantic.unresolved_name 'connections'
+semantic.unresolved_name 'binaryConnections'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'Connection'
+semantic.unresolved_name 'participant'
+semantic.unresolved_name 'Port'
+semantic.unresolved_name 'self'
+semantic.unresolved_name 'Port'
+semantic.unresolved_name 'interfacingPorts'
+semantic.unresolved_name 'BinaryConnection'
+semantic.unresolved_name 'Interface::participant'
+semantic.unresolved_name 'BinaryConnection::participant'
+semantic.unresolved_name 'Port'
+semantic.unresolved_name 'BinaryConnection::source'
+semantic.unresolved_name 'Port'
+semantic.unresolved_name 'BinaryConnection::target'
+semantic.unresolved_name 'connections'
+semantic.unresolved_name 'binaryConnections'
 ~~~
 # FORMAT
 ~~~sysml
@@ -315,222 +426,79 @@ standard library package Interfaces {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Interfaces"))) (name "Interfaces") (declared-name "Interfaces")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Interfaces::BinaryConnection"))) (name "BinaryConnection") (declared-name "BinaryConnection"))
-        (element (kind "interface def") (id (node (document "d0") (qualified-name "Interfaces::BinaryInterface"))) (name "BinaryInterface") (declared-name "BinaryInterface")
-          (contains
-            (element (kind "ref") (id (node (document "d0") (qualified-name "Interfaces::BinaryInterface::"))) (name "") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Interfaces::BinaryInterface")))))
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Interfaces::BinaryInterface::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Interfaces::BinaryInterface")))))
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "Interfaces::BinaryInterface::source"))) (name "source") (declared-name "source") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "Interfaces::BinaryInterface")))))
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "Interfaces::BinaryInterface::target"))) (name "target") (declared-name "target") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "Interfaces::BinaryInterface")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "Interfaces::Connection"))) (name "Connection") (declared-name "Connection"))
-        (element (kind "interface def") (id (node (document "d0") (qualified-name "Interfaces::Interface"))) (name "Interface") (declared-name "Interface")
-          (contains
-            (element (kind "ref") (id (node (document "d0") (qualified-name "Interfaces::Interface::"))) (name "") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Interfaces::Interface")))))
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Interfaces::Interface::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Interfaces::Interface")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "Interfaces::Natural"))) (name "Natural") (declared-name "Natural"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Interfaces::Port"))) (name "Port") (declared-name "Port"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "Interfaces::_documentation"))) (name ""))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Interfaces::binaryConnections"))) (name "binaryConnections") (declared-name "binaryConnections"))
-        (element (kind "interface def") (id (node (document "d0") (qualified-name "Interfaces::binaryInterfaces"))) (name "binaryInterfaces") (declared-name "binaryInterfaces")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Interfaces::binaryInterfaces::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Interfaces::binaryInterfaces")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "Interfaces::connections"))) (name "connections") (declared-name "connections"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Interfaces::excludingAt"))) (name "excludingAt") (declared-name "excludingAt"))
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "Interfaces::excludingOnce"))) (name "excludingOnce") (declared-name "excludingOnce") (declared (own-expression (expression (kind "featureReference") (reference "private")))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference")))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Interfaces::excludingOnce::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Interfaces::excludingOnce")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Interfaces::excludingOnce::seq"))) (name "seq") (declared-name "seq") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Interfaces::excludingOnce")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Interfaces::excludingOnce::value"))) (name "value") (declared-name "value") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Interfaces::excludingOnce")))))
-          )
-        )
-        (element (kind "interface def") (id (node (document "d0") (qualified-name "Interfaces::interfaces"))) (name "interfaces") (declared-name "interfaces")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Interfaces::interfaces::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Interfaces::interfaces")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "Interfaces::notEmpty"))) (name "notEmpty") (declared-name "notEmpty"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Interfaces::selectOne"))) (name "selectOne") (declared-name "selectOne"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Interfaces::size"))) (name "size") (declared-name "size"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "01dd968209b57cb7865e774606b079ee26abdbfd87d882d5a79cf28a15a9e75a") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Interfaces"))) (kind "package") (name "Interfaces") (declared-name "Interfaces") (range (start (line 0) (character 0)) (end (line 0) (character 3467))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::BinaryConnection"))) (kind "import") (name "BinaryConnection") (declared-name "BinaryConnection") (range (start (line 8) (character 4)) (end (line 8) (character 49))) (parent (node (document "d0") (qualified-name "Interfaces"))) (authored (membership (kind Import) (visibility "private") (import (reference "Connections::BinaryConnection") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 8) (character 19)) (end (line 8) (character 48))))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::BinaryInterface"))) (kind "interface def") (name "BinaryInterface") (declared-name "BinaryInterface") (range (start (line 57) (character 4)) (end (line 57) (character 831))) (parent (node (document "d0") (qualified-name "Interfaces"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Interface") (range (start (line 57) (character 46)) (end (line 57) (character 55)))) (specializes (reference "BinaryConnection") (range (start (line 57) (character 57)) (end (line 57) (character 73)))))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::BinaryInterface::"))) (kind "ref") (name "") (range (start (line 69) (character 8)) (end (line 69) (character 96))) (parent (node (document "d0") (qualified-name "Interfaces::BinaryInterface"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "Interface::participant") (range (start (line 69) (character 21)) (end (line 69) (character 43)))) (redefinition (reference "BinaryConnection::participant") (range (start (line 69) (character 45)) (end (line 69) (character 74)))))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::BinaryInterface::_documentation"))) (kind "documentation") (name "") (range (start (line 57) (character 4)) (end (line 57) (character 831))) (parent (node (document "d0") (qualified-name "Interfaces::BinaryInterface"))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::BinaryInterface::source"))) (kind "interface end") (name "source") (declared-name "source") (range (start (line 71) (character 8)) (end (line 71) (character 59))) (parent (node (document "d0") (qualified-name "Interfaces::BinaryInterface"))) (authored (relationships (typing (reference "Port") (range none)) (redefinition (reference "BinaryConnection::source") (range (start (line 71) (character 34)) (end (line 71) (character 58)))))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::BinaryInterface::target"))) (kind "interface end") (name "target") (declared-name "target") (range (start (line 72) (character 8)) (end (line 72) (character 59))) (parent (node (document "d0") (qualified-name "Interfaces::BinaryInterface"))) (authored (relationships (typing (reference "Port") (range none)) (redefinition (reference "BinaryConnection::target") (range (start (line 72) (character 34)) (end (line 72) (character 58)))))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::Connection"))) (kind "import") (name "Connection") (declared-name "Connection") (range (start (line 6) (character 4)) (end (line 6) (character 43))) (parent (node (document "d0") (qualified-name "Interfaces"))) (authored (membership (kind Import) (visibility "private") (import (reference "Connections::Connection") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 6) (character 19)) (end (line 6) (character 42))))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::Interface"))) (kind "interface def") (name "Interface") (declared-name "Interface") (range (start (line 32) (character 4)) (end (line 32) (character 1084))) (parent (node (document "d0") (qualified-name "Interfaces"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Connection") (range (start (line 32) (character 40)) (end (line 32) (character 50)))))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::Interface::"))) (kind "ref") (name "") (range (start (line 44) (character 8)) (end (line 44) (character 536))) (parent (node (document "d0") (qualified-name "Interfaces::Interface"))) (authored (membership (kind Feature)) (relationships (typing (reference "Port") (range (start (line 44) (character 34)) (end (line 44) (character 39)))) (redefinition (reference "participant") (range (start (line 44) (character 21)) (end (line 44) (character 32)))))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::Interface::_documentation"))) (kind "documentation") (name "") (range (start (line 32) (character 4)) (end (line 32) (character 1084))) (parent (node (document "d0") (qualified-name "Interfaces::Interface"))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::Natural"))) (kind "import") (name "Natural") (declared-name "Natural") (range (start (line 12) (character 4)) (end (line 12) (character 41))) (parent (node (document "d0") (qualified-name "Interfaces"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Natural") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 12) (character 19)) (end (line 12) (character 40))))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::Port"))) (kind "import") (name "Port") (declared-name "Port") (range (start (line 10) (character 4)) (end (line 10) (character 31))) (parent (node (document "d0") (qualified-name "Interfaces"))) (authored (membership (kind Import) (visibility "private") (import (reference "Ports::Port") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 10) (character 19)) (end (line 10) (character 30))))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 3467))) (parent (node (document "d0") (qualified-name "Interfaces"))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::binaryConnections"))) (kind "import") (name "binaryConnections") (declared-name "binaryConnections") (range (start (line 9) (character 4)) (end (line 9) (character 50))) (parent (node (document "d0") (qualified-name "Interfaces"))) (authored (membership (kind Import) (visibility "private") (import (reference "Connections::binaryConnections") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 9) (character 19)) (end (line 9) (character 49))))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::binaryInterfaces"))) (kind "interface def") (name "binaryInterfaces") (declared-name "binaryInterfaces") (range (start (line 82) (character 4)) (end (line 82) (character 221))) (parent (node (document "d0") (qualified-name "Interfaces"))) (authored (membership (kind Owning)) (relationships (specializes (reference "interfaces") (range (start (line 0) (character 0)) (end (line 0) (character 10)))) (specializes (reference "binaryConnections") (range (start (line 0) (character 12)) (end (line 0) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::binaryInterfaces::_documentation"))) (kind "documentation") (name "") (range (start (line 82) (character 4)) (end (line 82) (character 221))) (parent (node (document "d0") (qualified-name "Interfaces::binaryInterfaces"))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::connections"))) (kind "import") (name "connections") (declared-name "connections") (range (start (line 7) (character 4)) (end (line 7) (character 44))) (parent (node (document "d0") (qualified-name "Interfaces"))) (authored (membership (kind Import) (visibility "private") (import (reference "Connections::connections") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 19)) (end (line 7) (character 43))))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::excludingAt"))) (kind "import") (name "excludingAt") (declared-name "excludingAt") (range (start (line 14) (character 4)) (end (line 14) (character 50))) (parent (node (document "d0") (qualified-name "Interfaces"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::excludingAt") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 14) (character 19)) (end (line 14) (character 49))))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::excludingOnce"))) (kind "calc def") (name "excludingOnce") (declared-name "excludingOnce") (range (start (line 19) (character 4)) (end (line 19) (character 471))) (parent (node (document "d0") (qualified-name "Interfaces"))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::excludingOnce::_documentation"))) (kind "documentation") (name "") (range (start (line 19) (character 4)) (end (line 19) (character 471))) (parent (node (document "d0") (qualified-name "Interfaces::excludingOnce"))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::excludingOnce::seq"))) (kind "in out parameter") (name "seq") (declared-name "seq") (range (start (line 25) (character 8)) (end (line 25) (character 39))) (parent (node (document "d0") (qualified-name "Interfaces::excludingOnce"))) (authored (relationships (typing (reference "seq[1..*] nonunique ordered") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::excludingOnce::value"))) (kind "in out parameter") (name "value") (declared-name "value") (range (start (line 26) (character 8)) (end (line 26) (character 27))) (parent (node (document "d0") (qualified-name "Interfaces::excludingOnce"))) (authored (relationships (typing (reference "value[1] :> seq") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::interfaces"))) (kind "interface def") (name "interfaces") (declared-name "interfaces") (range (start (line 75) (character 4)) (end (line 75) (character 184))) (parent (node (document "d0") (qualified-name "Interfaces"))) (authored (membership (kind Owning)) (relationships (specializes (reference "connections") (range (start (line 0) (character 0)) (end (line 0) (character 11)))))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::interfaces::_documentation"))) (kind "documentation") (name "") (range (start (line 75) (character 4)) (end (line 75) (character 184))) (parent (node (document "d0") (qualified-name "Interfaces::interfaces"))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::notEmpty"))) (kind "import") (name "notEmpty") (declared-name "notEmpty") (range (start (line 17) (character 4)) (end (line 17) (character 47))) (parent (node (document "d0") (qualified-name "Interfaces"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::notEmpty") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 17) (character 19)) (end (line 17) (character 46))))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::selectOne"))) (kind "import") (name "selectOne") (declared-name "selectOne") (range (start (line 15) (character 4)) (end (line 15) (character 47))) (parent (node (document "d0") (qualified-name "Interfaces"))) (authored (membership (kind Import) (visibility "private") (import (reference "ControlFunctions::selectOne") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 15) (character 19)) (end (line 15) (character 46))))))
+    (element (id (node (document "d0") (qualified-name "Interfaces::size"))) (kind "import") (name "size") (declared-name "size") (range (start (line 13) (character 4)) (end (line 13) (character 43))) (parent (node (document "d0") (qualified-name "Interfaces"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::size") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 13) (character 19)) (end (line 13) (character 42))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::BinaryConnection"))) (kind membershipImport) (ordinal 0)) (authored-target "Connections::BinaryConnection") (range (start (line 8) (character 19)) (end (line 8) (character 48))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::BinaryInterface"))) (kind specialization) (ordinal 0)) (authored-target "Interface") (range (start (line 57) (character 46)) (end (line 57) (character 55))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Interfaces::Interface")))))
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::BinaryInterface"))) (kind specialization) (ordinal 1)) (authored-target "BinaryConnection") (range (start (line 57) (character 57)) (end (line 57) (character 73))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Interfaces::BinaryConnection")))))
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::BinaryInterface::"))) (kind redefinition) (ordinal 0)) (authored-target "Interface::participant") (range (start (line 69) (character 21)) (end (line 69) (character 43))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::BinaryInterface::"))) (kind redefinition) (ordinal 1)) (authored-target "BinaryConnection::participant") (range (start (line 69) (character 45)) (end (line 69) (character 74))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::BinaryInterface::source"))) (kind featureTyping) (ordinal 0)) (authored-target "Port") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Interfaces::Port")))))
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::BinaryInterface::source"))) (kind redefinition) (ordinal 0)) (authored-target "BinaryConnection::source") (range (start (line 71) (character 34)) (end (line 71) (character 58))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::BinaryInterface::target"))) (kind featureTyping) (ordinal 0)) (authored-target "Port") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Interfaces::Port")))))
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::BinaryInterface::target"))) (kind redefinition) (ordinal 0)) (authored-target "BinaryConnection::target") (range (start (line 72) (character 34)) (end (line 72) (character 58))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::Connection"))) (kind membershipImport) (ordinal 0)) (authored-target "Connections::Connection") (range (start (line 6) (character 19)) (end (line 6) (character 42))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::Interface"))) (kind specialization) (ordinal 0)) (authored-target "Connection") (range (start (line 32) (character 40)) (end (line 32) (character 50))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Interfaces::Connection")))))
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::Interface::"))) (kind featureTyping) (ordinal 0)) (authored-target "Port") (range (start (line 44) (character 34)) (end (line 44) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Interfaces::Port")))))
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::Interface::"))) (kind redefinition) (ordinal 0)) (authored-target "participant") (range (start (line 44) (character 21)) (end (line 44) (character 32))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::Natural"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Natural") (range (start (line 12) (character 19)) (end (line 12) (character 40))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::Port"))) (kind membershipImport) (ordinal 0)) (authored-target "Ports::Port") (range (start (line 10) (character 19)) (end (line 10) (character 30))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::binaryConnections"))) (kind membershipImport) (ordinal 0)) (authored-target "Connections::binaryConnections") (range (start (line 9) (character 19)) (end (line 9) (character 49))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::binaryInterfaces"))) (kind specialization) (ordinal 0)) (authored-target "interfaces") (range (start (line 0) (character 0)) (end (line 0) (character 10))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Interfaces::interfaces")))))
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::binaryInterfaces"))) (kind specialization) (ordinal 1)) (authored-target "binaryConnections") (range (start (line 0) (character 12)) (end (line 0) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Interfaces::binaryConnections")))))
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::connections"))) (kind membershipImport) (ordinal 0)) (authored-target "Connections::connections") (range (start (line 7) (character 19)) (end (line 7) (character 43))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::excludingAt"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::excludingAt") (range (start (line 14) (character 19)) (end (line 14) (character 49))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::excludingOnce::seq"))) (kind featureTyping) (ordinal 0)) (authored-target "seq[1..*] nonunique ordered") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::excludingOnce::value"))) (kind featureTyping) (ordinal 0)) (authored-target "value[1] :> seq") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::interfaces"))) (kind specialization) (ordinal 0)) (authored-target "connections") (range (start (line 0) (character 0)) (end (line 0) (character 11))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Interfaces::connections")))))
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::notEmpty"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::notEmpty") (range (start (line 17) (character 19)) (end (line 17) (character 46))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::selectOne"))) (kind membershipImport) (ordinal 0)) (authored-target "ControlFunctions::selectOne") (range (start (line 15) (character 19)) (end (line 15) (character 46))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Interfaces::size"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::size") (range (start (line 13) (character 19)) (end (line 13) (character 42))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Interfaces::BinaryInterface::_documentation"))) (to (node (document "d0") (qualified-name "Interfaces::BinaryInterface"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Interfaces::Interface::_documentation"))) (to (node (document "d0") (qualified-name "Interfaces::Interface"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Interfaces::_documentation"))) (to (node (document "d0") (qualified-name "Interfaces"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Interfaces::binaryInterfaces::_documentation"))) (to (node (document "d0") (qualified-name "Interfaces::binaryInterfaces"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Interfaces::excludingOnce::_documentation"))) (to (node (document "d0") (qualified-name "Interfaces::excludingOnce"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Interfaces::interfaces::_documentation"))) (to (node (document "d0") (qualified-name "Interfaces::interfaces"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "Interfaces::BinaryInterface"))) (to (node (document "d0") (qualified-name "Interfaces::Interface"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "Interfaces::binaryInterfaces"))) (to (node (document "d0") (qualified-name "Interfaces::interfaces"))) (provenance authored))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Interfaces::BinaryInterface"))) (target (node (document "d0") (qualified-name "Interfaces::BinaryConnection"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Interfaces::BinaryInterface"))) (kind specialization) (ordinal 1)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Interfaces::BinaryInterface"))) (target (node (document "d0") (qualified-name "Interfaces::Interface"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Interfaces::BinaryInterface"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Interfaces::BinaryInterface::source"))) (target (node (document "d0") (qualified-name "Interfaces::Port"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Interfaces::BinaryInterface::source"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Interfaces::BinaryInterface::target"))) (target (node (document "d0") (qualified-name "Interfaces::Port"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Interfaces::BinaryInterface::target"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Interfaces::Interface"))) (target (node (document "d0") (qualified-name "Interfaces::Connection"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Interfaces::Interface"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Interfaces::Interface::"))) (target (node (document "d0") (qualified-name "Interfaces::Port"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Interfaces::Interface::"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Interfaces::binaryInterfaces"))) (target (node (document "d0") (qualified-name "Interfaces::binaryConnections"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Interfaces::binaryInterfaces"))) (kind specialization) (ordinal 1)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Interfaces::binaryInterfaces"))) (target (node (document "d0") (qualified-name "Interfaces::interfaces"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Interfaces::binaryInterfaces"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Interfaces::interfaces"))) (target (node (document "d0") (qualified-name "Interfaces::connections"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Interfaces::interfaces"))) (kind specialization) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Interfaces::BinaryInterface"))) (status missing-prerequisite) (target "Interfaces::Interface"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Interfaces::Interface"))) (status missing-prerequisite) (target "Interfaces::Interface"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Interfaces::binaryInterfaces"))) (status missing-prerequisite) (target "Interfaces::Interface"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Interfaces::excludingOnce"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Interfaces::interfaces"))) (status missing-prerequisite) (target "Interfaces::Interface"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/interfaces.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 6 19) (end 6 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 19) (end 7 43))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 19) (end 8 48))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 9 19) (end 9 49))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 10 19) (end 10 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 12 19) (end 12 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 13 19) (end 13 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 14 19) (end 14 49))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 15 19) (end 15 46))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 17 19) (end 17 46))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 25 8) (end 25 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 26 8) (end 26 27))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 32 4) (end 32 1084))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 44 8) (end 44 536))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_ref_type_reference")
-        (source "semantic")
-        (range (start 44 34) (end 44 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 57 4) (end 57 831))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 69 8) (end 69 96))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 71 8) (end 71 59))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 71 8) (end 71 59))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 72 8) (end 72 59))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 72 8) (end 72 59))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 75 4) (end 75 184))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 82 4) (end 82 221))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "Interfaces::excludingOnce")) (expression (status "unresolved") (error "expression has an unresolved reference")))
   )
 )
 ~~~

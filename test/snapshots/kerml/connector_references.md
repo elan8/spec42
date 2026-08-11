@@ -18,19 +18,14 @@ class A {
 		to [1] largerOccurrence references union;
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'HappensDuring'
-semantic.unresolved_name 'InsideOf'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'union'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'HappensDuring'
-semantic.unresolved_name 'InsideOf'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'union'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "connector_references.md"
+    (diagnostics
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -58,6 +53,20 @@ CloseCurly,EndOfFile,
       (connector_end)
       (connector_end))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'HappensDuring'
+semantic.unresolved_name 'InsideOf'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'union'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'HappensDuring'
+semantic.unresolved_name 'InsideOf'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'union'
+~~~
 # FORMAT
 ~~~sysml
 class A {
@@ -73,23 +82,15 @@ class A {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "63c3aec65001028ae150ef179956f32fb18390883babeb9963a7ec3ed8a46c89") (contract-version "canonical-resolution-v1"))
+  (structure
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/connector_references.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

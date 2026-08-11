@@ -12,15 +12,20 @@ package ConnectorAll {
     connector all from a to b;
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'HappensDuring'
-semantic.unresolved_name 'TPCGuardConstraint'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'HappensDuring'
-semantic.unresolved_name 'TPCGuardConstraint'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "connector_all.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 1 4) (end 1 209))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -48,6 +53,16 @@ CloseCurly,EndOfFile,
       (connector_end)
       (connector_end))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'HappensDuring'
+semantic.unresolved_name 'TPCGuardConstraint'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'HappensDuring'
+semantic.unresolved_name 'TPCGuardConstraint'
+~~~
 # FORMAT
 ~~~sysml
 package ConnectorAll {
@@ -60,30 +75,16 @@ package ConnectorAll {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ConnectorAll"))) (name "ConnectorAll") (declared-name "ConnectorAll"))
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "55b7a82dfc14b92d5872fb3316392d758474245e1b0c14cb1abdcf5b74003572") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ConnectorAll"))) (kind "package") (name "ConnectorAll") (declared-name "ConnectorAll") (range (start (line 0) (character 0)) (end (line 0) (character 233))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/connector_all.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 1 4) (end 1 209))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

@@ -95,6 +95,57 @@ package '15.10-Primitive Data Types' {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "15_10_primitive_data_types.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 14 16) (end 14 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 19 16) (end 19 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 31 24) (end 31 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 35 16) (end 35 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 42 16) (end 42 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 49 16) (end 49 30))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -199,6 +250,22 @@ CloseCurly,EndOfFile,
       (enum_value 'large' value))
     (attribute_usage 'aperatureDiameter' : 'DiameterChoice' value)))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'self'
+semantic.unresolved_name 'ISQ::LengthValue'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'self'
+semantic.unresolved_name 'ISQ::LengthValue'
+~~~
 # FORMAT
 ~~~sysml
 package '15.10-Primitive Data Types' {
@@ -292,169 +359,57 @@ package '15.10-Primitive Data Types' {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Natural'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'self'
-semantic.unresolved_name 'ISQ::LengthValue'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Natural'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'self'
-semantic.unresolved_name 'ISQ::LengthValue'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types"))) (name "15.10-Primitive Data Types") (declared-name "15.10-Primitive Data Types")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::Boolean"))) (name "Boolean") (declared-name "Boolean"))
-        (element (kind "enum def") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionColor"))) (name "ConditionColor") (declared-name "ConditionColor")
-          (contains
-            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionColor::green"))) (name "green") (declared-name "green") (effective (featuring-type (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionColor")))))
-            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionColor::red"))) (name "red") (declared-name "red") (effective (featuring-type (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionColor")))))
-            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionColor::yellow"))) (name "yellow") (declared-name "yellow") (effective (featuring-type (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionColor")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionLevel"))) (name "ConditionLevel") (declared-name "ConditionLevel") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionLevel::associatedColor"))) (name "associatedColor") (declared-name "associatedColor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionLevel")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::DateTime"))) (name "DateTime") (declared-name "DateTime"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::Diameter"))) (name "Diameter") (declared-name "Diameter") (declared (properties (ordered false) (unique true))))
-        (element (kind "enum def") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::DiameterChoice"))) (name "DiameterChoice") (declared-name "DiameterChoice")
-          (contains
-            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::DiameterChoice::large"))) (name "large") (declared-name "large") (effective (featuring-type (node (document "d0") (qualified-name "15.10-Primitive Data Types::DiameterChoice")))))
-            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::DiameterChoice::medium"))) (name "medium") (declared-name "medium") (effective (featuring-type (node (document "d0") (qualified-name "15.10-Primitive Data Types::DiameterChoice")))))
-            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::DiameterChoice::small"))) (name "small") (declared-name "small") (effective (featuring-type (node (document "d0") (qualified-name "15.10-Primitive Data Types::DiameterChoice")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::Integer"))) (name "Integer") (declared-name "Integer"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::Natural"))) (name "Natural") (declared-name "Natural"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::Real"))) (name "Real") (declared-name "Real"))
-        (element (kind "enum def") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::SeverityEnum"))) (name "SeverityEnum") (declared-name "SeverityEnum")
-          (contains
-            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::SeverityEnum::danger"))) (name "danger") (declared-name "danger") (effective (featuring-type (node (document "d0") (qualified-name "15.10-Primitive Data Types::SeverityEnum")))))
-            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::SeverityEnum::normal"))) (name "normal") (declared-name "normal") (effective (featuring-type (node (document "d0") (qualified-name "15.10-Primitive Data Types::SeverityEnum")))))
-            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::SeverityEnum::warning"))) (name "warning") (declared-name "warning") (effective (featuring-type (node (document "d0") (qualified-name "15.10-Primitive Data Types::SeverityEnum")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::String"))) (name "String") (declared-name "String"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedInteger"))) (name "UnsignedInteger") (declared-name "UnsignedInteger") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedInteger::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedInteger")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedReal"))) (name "UnsignedReal") (declared-name "UnsignedReal") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedReal::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedReal")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedReal::x"))) (name "x") (declared-name "x") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedReal")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::aperatureDiameter"))) (name "aperatureDiameter") (declared-name "aperatureDiameter") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "featureReference") (reference "DiameterChoice::small")))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15.10-Primitive Data Types::aperatureDiameter"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "67a06d8c249aac685239a65ac1f39142318db2fa4a64e04f0a61a17a1ed4dd97") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types"))) (kind "package") (name "15.10-Primitive Data Types") (declared-name "15.10-Primitive Data Types") (range (start (line 0) (character 0)) (end (line 0) (character 1977))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::Boolean"))) (kind "import") (name "Boolean") (declared-name "Boolean") (range (start (line 42) (character 1)) (end (line 42) (character 116))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Boolean") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 42) (character 16)) (end (line 42) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionColor"))) (kind "enum def") (name "ConditionColor") (declared-name "ConditionColor") (range (start (line 51) (character 1)) (end (line 51) (character 284))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types"))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionColor::green"))) (kind "enumerated value") (name "green") (declared-name "green") (range (start (line 61) (character 7)) (end (line 61) (character 12))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionColor"))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionColor::red"))) (kind "enumerated value") (name "red") (declared-name "red") (range (start (line 59) (character 7)) (end (line 59) (character 10))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionColor"))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionColor::yellow"))) (kind "enumerated value") (name "yellow") (declared-name "yellow") (range (start (line 60) (character 7)) (end (line 60) (character 13))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionColor"))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionLevel"))) (kind "attribute def") (name "ConditionLevel") (declared-name "ConditionLevel") (range (start (line 64) (character 1)) (end (line 64) (character 80))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types"))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionLevel::associatedColor"))) (kind "attribute") (name "associatedColor") (declared-name "associatedColor") (range (start (line 65) (character 2)) (end (line 65) (character 45))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionLevel"))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::DateTime"))) (kind "import") (name "DateTime") (declared-name "DateTime") (range (start (line 49) (character 1)) (end (line 49) (character 31))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types"))) (authored (membership (kind Import) (visibility "private") (import (reference "Time::DateTime") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 49) (character 16)) (end (line 49) (character 30))))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::Diameter"))) (kind "attribute def") (name "Diameter") (declared-name "Diameter") (range (start (line 80) (character 1)) (end (line 80) (character 44))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types"))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::DiameterChoice"))) (kind "enum def") (name "DiameterChoice") (declared-name "DiameterChoice") (range (start (line 81) (character 1)) (end (line 81) (character 111))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Diameter") (range (start (line 81) (character 28)) (end (line 81) (character 36)))))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::DiameterChoice::large"))) (kind "enumerated value") (name "large") (declared-name "large") (range (start (line 84) (character 2)) (end (line 84) (character 7))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types::DiameterChoice"))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::DiameterChoice::medium"))) (kind "enumerated value") (name "medium") (declared-name "medium") (range (start (line 83) (character 2)) (end (line 83) (character 8))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types::DiameterChoice"))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::DiameterChoice::small"))) (kind "enumerated value") (name "small") (declared-name "small") (range (start (line 82) (character 2)) (end (line 82) (character 7))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types::DiameterChoice"))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::Integer"))) (kind "import") (name "Integer") (declared-name "Integer") (range (start (line 7) (character 1)) (end (line 7) (character 140))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Integer") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::Natural"))) (kind "import") (name "Natural") (declared-name "Natural") (range (start (line 14) (character 1)) (end (line 14) (character 38))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Natural") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 14) (character 16)) (end (line 14) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::Real"))) (kind "import") (name "Real") (declared-name "Real") (range (start (line 19) (character 1)) (end (line 19) (character 131))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 19) (character 16)) (end (line 19) (character 34))))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::SeverityEnum"))) (kind "enum def") (name "SeverityEnum") (declared-name "SeverityEnum") (range (start (line 68) (character 1)) (end (line 68) (character 237))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ConditionLevel") (range (start (line 68) (character 26)) (end (line 68) (character 40)))))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::SeverityEnum::danger"))) (kind "enumerated value") (name "danger") (declared-name "danger") (range (start (line 69) (character 2)) (end (line 69) (character 8))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types::SeverityEnum"))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::SeverityEnum::normal"))) (kind "enumerated value") (name "normal") (declared-name "normal") (range (start (line 75) (character 2)) (end (line 75) (character 8))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types::SeverityEnum"))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::SeverityEnum::warning"))) (kind "enumerated value") (name "warning") (declared-name "warning") (range (start (line 72) (character 2)) (end (line 72) (character 9))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types::SeverityEnum"))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::String"))) (kind "import") (name "String") (declared-name "String") (range (start (line 35) (character 1)) (end (line 35) (character 110))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::String") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 35) (character 16)) (end (line 35) (character 36))))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedInteger"))) (kind "attribute def") (name "UnsignedInteger") (declared-name "UnsignedInteger") (range (start (line 15) (character 1)) (end (line 15) (character 144))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types"))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedInteger::_documentation"))) (kind "documentation") (name "") (range (start (line 15) (character 1)) (end (line 15) (character 144))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedInteger"))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedReal"))) (kind "attribute def") (name "UnsignedReal") (declared-name "UnsignedReal") (range (start (line 26) (character 1)) (end (line 26) (character 175))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types"))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedReal::_documentation"))) (kind "documentation") (name "") (range (start (line 26) (character 1)) (end (line 26) (character 175))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedReal"))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedReal::x"))) (kind "attribute") (name "x") (declared-name "x") (range (start (line 31) (character 2)) (end (line 31) (character 29))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedReal"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "self") (range (start (line 31) (character 24)) (end (line 31) (character 28)))))))
+    (element (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::aperatureDiameter"))) (kind "attribute def") (name "aperatureDiameter") (declared-name "aperatureDiameter") (range (start (line 86) (character 1)) (end (line 86) (character 69))) (parent (node (document "d0") (qualified-name "15.10-Primitive Data Types"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "15.10-Primitive Data Types::Boolean"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Boolean") (range (start (line 42) (character 16)) (end (line 42) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15.10-Primitive Data Types::DateTime"))) (kind membershipImport) (ordinal 0)) (authored-target "Time::DateTime") (range (start (line 49) (character 16)) (end (line 49) (character 30))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15.10-Primitive Data Types::DiameterChoice"))) (kind specialization) (ordinal 0)) (authored-target "Diameter") (range (start (line 81) (character 28)) (end (line 81) (character 36))) (outcome (status resolved) (target (node (document "d0") (qualified-name "15.10-Primitive Data Types::Diameter")))))
+    (reference (id (source (node (document "d0") (qualified-name "15.10-Primitive Data Types::Integer"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Integer") (range (start (line 7) (character 16)) (end (line 7) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15.10-Primitive Data Types::Natural"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Natural") (range (start (line 14) (character 16)) (end (line 14) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15.10-Primitive Data Types::Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (range (start (line 19) (character 16)) (end (line 19) (character 34))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15.10-Primitive Data Types::SeverityEnum"))) (kind specialization) (ordinal 0)) (authored-target "ConditionLevel") (range (start (line 68) (character 26)) (end (line 68) (character 40))) (outcome (status resolved) (target (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionLevel")))))
+    (reference (id (source (node (document "d0") (qualified-name "15.10-Primitive Data Types::String"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::String") (range (start (line 35) (character 16)) (end (line 35) (character 36))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedReal::x"))) (kind redefinition) (ordinal 0)) (authored-target "self") (range (start (line 31) (character 24)) (end (line 31) (character 28))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedInteger::_documentation"))) (to (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedInteger"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedReal::_documentation"))) (to (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedReal"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::DiameterChoice"))) (to (node (document "d0") (qualified-name "15.10-Primitive Data Types::Diameter"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::SeverityEnum"))) (to (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionLevel"))) (provenance authored))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "15.10-Primitive Data Types::DiameterChoice"))) (target (node (document "d0") (qualified-name "15.10-Primitive Data Types::Diameter"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "15.10-Primitive Data Types::DiameterChoice"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "15.10-Primitive Data Types::SeverityEnum"))) (target (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionLevel"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "15.10-Primitive Data Types::SeverityEnum"))) (kind specialization) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionColor"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionColor::green"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionColor::red"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionColor::yellow"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionLevel"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionLevel::associatedColor"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::Diameter"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::DiameterChoice"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::DiameterChoice::large"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::DiameterChoice::medium"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::DiameterChoice::small"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::SeverityEnum"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::SeverityEnum::danger"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::SeverityEnum::normal"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::SeverityEnum::warning"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedInteger"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedReal"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedReal::x"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::aperatureDiameter"))) (status missing-prerequisite) (target "Base::DataValue"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/validation/15_10_primitive_data_types.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 16) (end 7 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 14 16) (end 14 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 19 16) (end 19 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 31 2) (end 31 29))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 35 16) (end 35 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 42 16) (end 42 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 49 16) (end 49 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "incompatible_specializes_kind")
-        (source "semantic")
-        (range (start 68 1) (end 68 237))
-      )
-      (diagnostic
-        (severity warning)
-        (code "incompatible_specializes_kind")
-        (source "semantic")
-        (range (start 81 1) (end 81 111))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "15.10-Primitive Data Types::aperatureDiameter")) (expression (status "unresolved") (error "expression has an unresolved reference")))
   )
 )
 ~~~

@@ -21,13 +21,20 @@ package FeatureSubDeclCoverage {
     featuring myFeat of f by T;
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'T'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'T'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "coverage_feature_subdecls.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 10 4) (end 10 110))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -63,6 +70,14 @@ CloseCurly,EndOfFile,
     (type_featuring_decl)
     (type_featuring_decl)))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'T'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'T'
+~~~
 # FORMAT
 ~~~sysml
 package FeatureSubDeclCoverage {
@@ -84,41 +99,24 @@ package FeatureSubDeclCoverage {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage"))) (name "FeatureSubDeclCoverage") (declared-name "FeatureSubDeclCoverage")
-      (contains
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::a"))) (name "a") (declared-name "a"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::b"))) (name "b") (declared-name "b"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::c"))) (name "c") (declared-name "c"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::d"))) (name "d") (declared-name "d"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::e"))) (name "e") (declared-name "e"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::f"))) (name "f") (declared-name "f"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::g"))) (name "g") (declared-name "g"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::h"))) (name "h") (declared-name "h"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "5c74ebec619b1dac2c52bfeb2c12c9abc4bcd14cff480b5e71aca857aa9efa2c") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage"))) (kind "package") (name "FeatureSubDeclCoverage") (declared-name "FeatureSubDeclCoverage") (range (start (line 0) (character 0)) (end (line 0) (character 339))))
+    (element (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::a"))) (kind "feature decl") (name "a") (declared-name "a") (range (start (line 1) (character 4)) (end (line 1) (character 18))) (parent (node (document "d0") (qualified-name "FeatureSubDeclCoverage"))))
+    (element (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::b"))) (kind "feature decl") (name "b") (declared-name "b") (range (start (line 2) (character 4)) (end (line 2) (character 21))) (parent (node (document "d0") (qualified-name "FeatureSubDeclCoverage"))))
+    (element (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::c"))) (kind "feature decl") (name "c") (declared-name "c") (range (start (line 3) (character 4)) (end (line 3) (character 19))) (parent (node (document "d0") (qualified-name "FeatureSubDeclCoverage"))))
+    (element (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::d"))) (kind "feature decl") (name "d") (declared-name "d") (range (start (line 4) (character 4)) (end (line 4) (character 20))) (parent (node (document "d0") (qualified-name "FeatureSubDeclCoverage"))))
+    (element (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::e"))) (kind "feature decl") (name "e") (declared-name "e") (range (start (line 5) (character 4)) (end (line 5) (character 26))) (parent (node (document "d0") (qualified-name "FeatureSubDeclCoverage"))))
+    (element (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::f"))) (kind "feature decl") (name "f") (declared-name "f") (range (start (line 6) (character 4)) (end (line 6) (character 27))) (parent (node (document "d0") (qualified-name "FeatureSubDeclCoverage"))))
+    (element (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::g"))) (kind "feature decl") (name "g") (declared-name "g") (range (start (line 7) (character 4)) (end (line 7) (character 28))) (parent (node (document "d0") (qualified-name "FeatureSubDeclCoverage"))))
+    (element (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::h"))) (kind "feature decl") (name "h") (declared-name "h") (range (start (line 8) (character 4)) (end (line 8) (character 27))) (parent (node (document "d0") (qualified-name "FeatureSubDeclCoverage"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/coverage_feature_subdecls.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 10 4) (end 10 110))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

@@ -39,6 +39,27 @@ package VehicleTanks {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "vehicle_tanks.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 29))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -99,6 +120,16 @@ CloseCurly,EndOfFile,
         (connector_end)
         (connector_end)))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+~~~
 # FORMAT
 ~~~sysml
 package VehicleTanks {
@@ -135,57 +166,26 @@ package VehicleTanks {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "VehicleTanks"))) (name "VehicleTanks") (declared-name "VehicleTanks")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleTanks::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleTanks::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "VehicleTanks::Tank"))) (name "Tank") (declared-name "Tank"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "VehicleTanks::V6Engine"))) (name "V6Engine") (declared-name "V6Engine"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "VehicleTanks::Vehicle"))) (name "Vehicle") (declared-name "Vehicle"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "VehicleTanks::Vehicle1"))) (name "Vehicle1") (declared-name "Vehicle1"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e6b7b465e3ab01df0c82c3212eeee37d0583f7399c646114a3d18252033eda47") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "VehicleTanks"))) (kind "package") (name "VehicleTanks") (declared-name "VehicleTanks") (range (start (line 0) (character 0)) (end (line 0) (character 744))))
+    (element (id (node (document "d0") (qualified-name "VehicleTanks::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "VehicleTanks"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "VehicleTanks::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 33))) (parent (node (document "d0") (qualified-name "VehicleTanks"))) (authored (membership (kind Import) (visibility "private") (import (reference "RealFunctions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 29))))))
+    (element (id (node (document "d0") (qualified-name "VehicleTanks::Tank"))) (kind "classifier decl") (name "Tank") (declared-name "Tank") (range (start (line 6) (character 1)) (end (line 6) (character 42))) (parent (node (document "d0") (qualified-name "VehicleTanks"))))
+    (element (id (node (document "d0") (qualified-name "VehicleTanks::V6Engine"))) (kind "classifier decl") (name "V6Engine") (declared-name "V6Engine") (range (start (line 4) (character 1)) (end (line 4) (character 16))) (parent (node (document "d0") (qualified-name "VehicleTanks"))))
+    (element (id (node (document "d0") (qualified-name "VehicleTanks::Vehicle"))) (kind "classifier decl") (name "Vehicle") (declared-name "Vehicle") (range (start (line 10) (character 1)) (end (line 10) (character 113))) (parent (node (document "d0") (qualified-name "VehicleTanks"))))
+    (element (id (node (document "d0") (qualified-name "VehicleTanks::Vehicle1"))) (kind "classifier decl") (name "Vehicle1") (declared-name "Vehicle1") (range (start (line 16) (character 1)) (end (line 16) (character 470))) (parent (node (document "d0") (qualified-name "VehicleTanks"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "VehicleTanks::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (range (start (line 1) (character 16)) (end (line 1) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VehicleTanks::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "RealFunctions::*") (range (start (line 2) (character 16)) (end (line 2) (character 29))) (outcome (status unresolved)))
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/vehicle_tanks.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 16) (end 2 29))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

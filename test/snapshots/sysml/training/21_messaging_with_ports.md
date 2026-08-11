@@ -46,6 +46,21 @@ package 'Messaging Example' {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "21_messaging_with_ports.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 25 4) (end 25 34))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -118,6 +133,14 @@ CloseCurly,EndOfFile,
         (source_succession
           (send_node))))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package 'Messaging Example' {
@@ -162,142 +185,66 @@ package 'Messaging Example' {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Messaging Example"))) (name "Messaging Example") (declared-name "Messaging Example")
-      (contains
-        (element (kind "action def") (id (node (document "d0") (qualified-name "Messaging Example::Focus"))) (name "Focus") (declared-name "Focus")
-          (contains
-            (element (kind "item") (id (node (document "d0") (qualified-name "Messaging Example::Focus::image"))) (name "image") (declared-name "image") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::Focus")))))
-            (element (kind "item") (id (node (document "d0") (qualified-name "Messaging Example::Focus::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::Focus")))))
-          )
-        )
-        (element (kind "item def") (id (node (document "d0") (qualified-name "Messaging Example::Image"))) (name "Image") (declared-name "Image"))
-        (element (kind "item def") (id (node (document "d0") (qualified-name "Messaging Example::Picture"))) (name "Picture") (declared-name "Picture"))
-        (element (kind "item def") (id (node (document "d0") (qualified-name "Messaging Example::Scene"))) (name "Scene") (declared-name "Scene"))
-        (element (kind "action def") (id (node (document "d0") (qualified-name "Messaging Example::Shoot"))) (name "Shoot") (declared-name "Shoot")
-          (contains
-            (element (kind "item") (id (node (document "d0") (qualified-name "Messaging Example::Shoot::image"))) (name "image") (declared-name "image") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::Shoot")))))
-            (element (kind "item") (id (node (document "d0") (qualified-name "Messaging Example::Shoot::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::Shoot")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Messaging Example::Show"))) (name "Show") (declared-name "Show") (declared (properties (ordered false) (unique true))))
-        (element (kind "action def") (id (node (document "d0") (qualified-name "Messaging Example::TakePicture"))) (name "TakePicture") (declared-name "TakePicture"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Messaging Example::camera"))) (name "camera") (declared-name "camera") (declared (properties (ordered false)))
-          (contains
-            (element (kind "port") (id (node (document "d0") (qualified-name "Messaging Example::camera::displayPort"))) (name "displayPort") (declared-name "displayPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-            (element (kind "action") (id (node (document "d0") (qualified-name "Messaging Example::camera::takePicture"))) (name "takePicture") (declared-name "takePicture") (declared) (effective (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "action") (id (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus"))) (name "focus") (declared-name "focus") (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::TakePicture"))))
-                  (contains
-                    (element (kind "item") (id (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus::image"))) (name "image") (declared-name "image") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::Focus")))))
-                    (element (kind "item") (id (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in")) (feature-value (kind bound) (expression (kind "memberAccess") (reference "scene") (children (expression (kind "featureReference") (reference "trigger")))))) (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::Focus"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus::scene"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-                  )
-                )
-                (element (kind "flow") (id (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::from"))) (name "from") (declared-name "from") (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::TakePicture")))))
-                (element (kind "action") (id (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::shoot"))) (name "shoot") (declared-name "shoot") (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::TakePicture"))))
-                  (contains
-                    (element (kind "item") (id (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::shoot::image"))) (name "image") (declared-name "image") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::Shoot")))))
-                    (element (kind "item") (id (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::shoot::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::Shoot")))))
-                  )
-                )
-              )
-            )
-            (element (kind "port") (id (node (document "d0") (qualified-name "Messaging Example::camera::viewPort"))) (name "viewPort") (declared-name "viewPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-          )
-        )
-        (element (kind "part") (id (node (document "d0") (qualified-name "Messaging Example::screen"))) (name "screen") (declared-name "screen") (declared (properties (ordered false)))
-          (contains
-            (element (kind "port") (id (node (document "d0") (qualified-name "Messaging Example::screen::displayPort"))) (name "displayPort") (declared-name "displayPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "2965dda92b4f4c707495bbc4af9eeb75409c2f11be35d03049a442cdb7a76829") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Messaging Example"))) (kind "package") (name "Messaging Example") (declared-name "Messaging Example") (range (start (line 0) (character 0)) (end (line 0) (character 779))))
+    (element (id (node (document "d0") (qualified-name "Messaging Example::Focus"))) (kind "action def") (name "Focus") (declared-name "Focus") (range (start (line 9) (character 1)) (end (line 9) (character 68))) (parent (node (document "d0") (qualified-name "Messaging Example"))))
+    (element (id (node (document "d0") (qualified-name "Messaging Example::Focus::image"))) (kind "item") (name "image") (declared-name "image") (range (start (line 9) (character 43)) (end (line 9) (character 66))) (parent (node (document "d0") (qualified-name "Messaging Example::Focus"))) (authored (membership (kind Feature)) (relationships (typing (reference "Image") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Messaging Example::Focus::scene"))) (kind "item") (name "scene") (declared-name "scene") (range (start (line 9) (character 20)) (end (line 9) (character 42))) (parent (node (document "d0") (qualified-name "Messaging Example::Focus"))) (authored (membership (kind Feature)) (relationships (typing (reference "Scene") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Messaging Example::Image"))) (kind "item def") (name "Image") (declared-name "Image") (range (start (line 2) (character 1)) (end (line 2) (character 16))) (parent (node (document "d0") (qualified-name "Messaging Example"))))
+    (element (id (node (document "d0") (qualified-name "Messaging Example::Picture"))) (kind "item def") (name "Picture") (declared-name "Picture") (range (start (line 3) (character 1)) (end (line 3) (character 18))) (parent (node (document "d0") (qualified-name "Messaging Example"))))
+    (element (id (node (document "d0") (qualified-name "Messaging Example::Scene"))) (kind "item def") (name "Scene") (declared-name "Scene") (range (start (line 1) (character 1)) (end (line 1) (character 16))) (parent (node (document "d0") (qualified-name "Messaging Example"))))
+    (element (id (node (document "d0") (qualified-name "Messaging Example::Shoot"))) (kind "action def") (name "Shoot") (declared-name "Shoot") (range (start (line 10) (character 1)) (end (line 10) (character 72))) (parent (node (document "d0") (qualified-name "Messaging Example"))))
+    (element (id (node (document "d0") (qualified-name "Messaging Example::Shoot::image"))) (kind "item") (name "image") (declared-name "image") (range (start (line 10) (character 20)) (end (line 10) (character 42))) (parent (node (document "d0") (qualified-name "Messaging Example::Shoot"))) (authored (membership (kind Feature)) (relationships (typing (reference "Image") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Messaging Example::Shoot::picture"))) (kind "item") (name "picture") (declared-name "picture") (range (start (line 10) (character 43)) (end (line 10) (character 70))) (parent (node (document "d0") (qualified-name "Messaging Example::Shoot"))) (authored (membership (kind Feature)) (relationships (typing (reference "Picture") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Messaging Example::Show"))) (kind "attribute def") (name "Show") (declared-name "Show") (range (start (line 5) (character 1)) (end (line 5) (character 50))) (parent (node (document "d0") (qualified-name "Messaging Example"))))
+    (element (id (node (document "d0") (qualified-name "Messaging Example::TakePicture"))) (kind "action def") (name "TakePicture") (declared-name "TakePicture") (range (start (line 11) (character 1)) (end (line 11) (character 24))) (parent (node (document "d0") (qualified-name "Messaging Example"))))
+    (element (id (node (document "d0") (qualified-name "Messaging Example::camera"))) (kind "part") (name "camera") (declared-name "camera") (range (start (line 17) (character 1)) (end (line 17) (character 430))) (parent (node (document "d0") (qualified-name "Messaging Example"))))
+    (element (id (node (document "d0") (qualified-name "Messaging Example::camera::displayPort"))) (kind "port") (name "displayPort") (declared-name "displayPort") (range (start (line 19) (character 2)) (end (line 19) (character 19))) (parent (node (document "d0") (qualified-name "Messaging Example::camera"))))
+    (element (id (node (document "d0") (qualified-name "Messaging Example::camera::takePicture"))) (kind "action") (name "takePicture") (declared-name "takePicture") (range (start (line 21) (character 2)) (end (line 21) (character 372))) (parent (node (document "d0") (qualified-name "Messaging Example::camera"))) (authored (membership (kind Feature)) (relationships (typing (reference "TakePicture") (range none)) (perform (reference "Messaging Example::camera::takePicture::focus") (range none)) (perform (reference "Messaging Example::camera::takePicture::shoot") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus"))) (kind "action") (name "focus") (declared-name "focus") (range (start (line 24) (character 3)) (end (line 24) (character 90))) (parent (node (document "d0") (qualified-name "Messaging Example::camera::takePicture"))) (authored (relationships (typing (reference "Focus") (range none)) (flow (reference "Messaging Example::camera::takePicture::shoot") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus::image"))) (kind "item") (name "image") (declared-name "image") (range (start (line 26) (character 4)) (end (line 26) (character 19))) (parent (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus"))))
+    (element (id (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus::scene"))) (kind "item") (name "scene") (declared-name "scene") (range (start (line 25) (character 4)) (end (line 25) (character 34))) (parent (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus"))))
+    (element (id (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::from"))) (kind "flow") (name "from") (declared-name "from") (range (start (line 29) (character 3)) (end (line 29) (character 40))) (parent (node (document "d0") (qualified-name "Messaging Example::camera::takePicture"))))
+    (element (id (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::shoot"))) (kind "action") (name "shoot") (declared-name "shoot") (range (start (line 31) (character 3)) (end (line 31) (character 77))) (parent (node (document "d0") (qualified-name "Messaging Example::camera::takePicture"))) (authored (relationships (typing (reference "Shoot") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::shoot::image"))) (kind "item") (name "image") (declared-name "image") (range (start (line 32) (character 4)) (end (line 32) (character 18))) (parent (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::shoot"))))
+    (element (id (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::shoot::picture"))) (kind "item") (name "picture") (declared-name "picture") (range (start (line 33) (character 4)) (end (line 33) (character 21))) (parent (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::shoot"))))
+    (element (id (node (document "d0") (qualified-name "Messaging Example::camera::viewPort"))) (kind "port") (name "viewPort") (declared-name "viewPort") (range (start (line 18) (character 2)) (end (line 18) (character 16))) (parent (node (document "d0") (qualified-name "Messaging Example::camera"))))
+    (element (id (node (document "d0") (qualified-name "Messaging Example::screen"))) (kind "part") (name "screen") (declared-name "screen") (range (start (line 13) (character 1)) (end (line 13) (character 37))) (parent (node (document "d0") (qualified-name "Messaging Example"))))
+    (element (id (node (document "d0") (qualified-name "Messaging Example::screen::displayPort"))) (kind "port") (name "displayPort") (declared-name "displayPort") (range (start (line 14) (character 2)) (end (line 14) (character 19))) (parent (node (document "d0") (qualified-name "Messaging Example::screen"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Messaging Example::Focus::image"))) (kind featureTyping) (ordinal 0)) (authored-target "Image") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Messaging Example::Image")))))
+    (reference (id (source (node (document "d0") (qualified-name "Messaging Example::Focus::scene"))) (kind featureTyping) (ordinal 0)) (authored-target "Scene") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Messaging Example::Scene")))))
+    (reference (id (source (node (document "d0") (qualified-name "Messaging Example::Shoot::image"))) (kind featureTyping) (ordinal 0)) (authored-target "Image") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Messaging Example::Image")))))
+    (reference (id (source (node (document "d0") (qualified-name "Messaging Example::Shoot::picture"))) (kind featureTyping) (ordinal 0)) (authored-target "Picture") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Messaging Example::Picture")))))
+    (reference (id (source (node (document "d0") (qualified-name "Messaging Example::camera::takePicture"))) (kind featureTyping) (ordinal 0)) (authored-target "TakePicture") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Messaging Example::TakePicture")))))
+    (reference (id (source (node (document "d0") (qualified-name "Messaging Example::camera::takePicture"))) (kind flowSource) (ordinal 0)) (authored-target "focus::image") (range (start (line 29) (character 13)) (end (line 29) (character 24))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus::image")))))
+    (reference (id (source (node (document "d0") (qualified-name "Messaging Example::camera::takePicture"))) (kind flowTarget) (ordinal 0)) (authored-target "shoot::image") (range (start (line 29) (character 28)) (end (line 29) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::shoot::image")))))
+    (reference (id (source (node (document "d0") (qualified-name "Messaging Example::camera::takePicture"))) (kind performSource) (ordinal 0)) (authored-target "Messaging Example::camera::takePicture::focus") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus")))))
+    (reference (id (source (node (document "d0") (qualified-name "Messaging Example::camera::takePicture"))) (kind performSource) (ordinal 1)) (authored-target "Messaging Example::camera::takePicture::shoot") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::shoot")))))
+    (reference (id (source (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus"))) (kind featureTyping) (ordinal 0)) (authored-target "Focus") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Messaging Example::Focus")))))
+    (reference (id (source (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus"))) (kind flowSource) (ordinal 0)) (authored-target "Messaging Example::camera::takePicture::shoot") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::shoot")))))
+    (reference (id (source (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::shoot"))) (kind featureTyping) (ordinal 0)) (authored-target "Shoot") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Messaging Example::Shoot")))))
   )
   (relationships
-    (flow (status resolved) (from (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus"))) (to (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::shoot"))) (provenance authored))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "Messaging Example::camera::takePicture"))) (to (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus"))) (provenance authored))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "Messaging Example::camera::takePicture"))) (to (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::shoot"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Messaging Example::Focus::image"))) (to (node (document "d0") (qualified-name "Messaging Example::Image"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Messaging Example::Focus::scene"))) (to (node (document "d0") (qualified-name "Messaging Example::Scene"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Messaging Example::Shoot::image"))) (to (node (document "d0") (qualified-name "Messaging Example::Image"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Messaging Example::Shoot::picture"))) (to (node (document "d0") (qualified-name "Messaging Example::Picture"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Messaging Example::camera::takePicture"))) (to (node (document "d0") (qualified-name "Messaging Example::TakePicture"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus"))) (to (node (document "d0") (qualified-name "Messaging Example::Focus"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::shoot"))) (to (node (document "d0") (qualified-name "Messaging Example::Shoot"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Messaging Example::Focus::image"))) (target (node (document "d0") (qualified-name "Messaging Example::Image"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Messaging Example::Focus::image"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Messaging Example::Focus::scene"))) (target (node (document "d0") (qualified-name "Messaging Example::Scene"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Messaging Example::Focus::scene"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Messaging Example::Shoot::image"))) (target (node (document "d0") (qualified-name "Messaging Example::Image"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Messaging Example::Shoot::image"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Messaging Example::Shoot::picture"))) (target (node (document "d0") (qualified-name "Messaging Example::Picture"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Messaging Example::Shoot::picture"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Messaging Example::camera::takePicture"))) (target (node (document "d0") (qualified-name "Messaging Example::TakePicture"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Messaging Example::camera::takePicture"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "Messaging Example::camera::takePicture"))) (target (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Messaging Example::camera::takePicture"))) (kind performSource) (ordinal 0)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "Messaging Example::camera::takePicture"))) (target (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::shoot"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Messaging Example::camera::takePicture"))) (kind performSource) (ordinal 1)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus"))) (target (node (document "d0") (qualified-name "Messaging Example::Focus"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind flow) (source (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus"))) (target (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::shoot"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus"))) (kind flowSource) (ordinal 0)))
+    (relationship (kind flow) (source (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus::image"))) (target (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::shoot::image"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Messaging Example::camera::takePicture"))) (kind flowSource) (ordinal 0)) (expression (kind flow) (source "focus::image") (target "shoot::image") (source-range (start (line 29) (character 13)) (end (line 29) (character 24))) (target-range (start (line 29) (character 28)) (end (line 29) (character 39)))))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::shoot"))) (target (node (document "d0") (qualified-name "Messaging Example::Shoot"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::shoot"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Messaging Example::Focus"))) (status missing-prerequisite) (target "Actions::Action"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Messaging Example::Focus::image"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Messaging Example::Focus::scene"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Messaging Example::Image"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Messaging Example::Picture"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Messaging Example::Scene"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Messaging Example::Shoot"))) (status missing-prerequisite) (target "Actions::Action"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Messaging Example::Shoot::image"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Messaging Example::Shoot::picture"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Messaging Example::Show"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Messaging Example::TakePicture"))) (status missing-prerequisite) (target "Actions::Action"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Messaging Example::camera"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Messaging Example::camera::displayPort"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Messaging Example::camera::takePicture"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus::image"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus::scene"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::from"))) (status missing-prerequisite) (target "Flows::messages"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::shoot"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::shoot::image"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::shoot::picture"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Messaging Example::camera::viewPort"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Messaging Example::screen"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Messaging Example::screen::displayPort"))) (status missing-prerequisite) (target "Ports::ports"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/21_messaging_with_ports.md"
-    (diagnostics
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 14 2) (end 14 19))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 18 2) (end 18 16))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 19 2) (end 19 19))
-      )
-      (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 25 4) (end 25 34))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus::scene")) (expression (status "unresolved") (error "expression has an unresolved reference")))
   )
 )
 ~~~

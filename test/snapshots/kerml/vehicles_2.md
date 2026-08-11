@@ -44,6 +44,33 @@ package Vehicles_2 {
 	// v.totalMass evaluates to 1150.0
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "vehicles_2.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 25 16) (end 25 18))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -103,6 +130,24 @@ CloseCurly,EndOfFile,
         (feature_def 'm' :>> 'CarPart::m' value)))
     (line_comment)))
 ~~~
+# EXPECTED
+~~~
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.unresolved_name 'MassedThing'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'mass'
+semantic.unresolved_name 'subcomponents'
+~~~
+# PROBLEMS
+~~~
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.unresolved_name 'MassedThing'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'mass'
+semantic.unresolved_name 'subcomponents'
+~~~
 # FORMAT
 ~~~sysml
 package Vehicles_2 {
@@ -144,71 +189,27 @@ package Vehicles_2 {
 	// v.totalMass evaluates to 1150.0
 }
 ~~~
-# EXPECTED
-~~~
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.unresolved_name 'MassedThing'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'mass'
-semantic.unresolved_name 'subcomponents'
-~~~
-# PROBLEMS
-~~~
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.unresolved_name 'MassedThing'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'mass'
-semantic.unresolved_name 'subcomponents'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Vehicles_2"))) (name "Vehicles_2") (declared-name "Vehicles_2")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Vehicles_2::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Vehicles_2::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Vehicles_2::CarPart"))) (name "CarPart") (declared-name "CarPart"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Vehicles_2::String"))) (name "String") (declared-name "String"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Vehicles_2::v"))) (name "v") (declared-name "v"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Vehicles_2::vehicle"))) (name "vehicle") (declared-name "vehicle"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "8f0accd27db7302c5d3c82874569b8d7b1df82be6defe03946167f660550b129") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Vehicles_2"))) (kind "package") (name "Vehicles_2") (declared-name "Vehicles_2") (range (start (line 0) (character 0)) (end (line 0) (character 813))))
+    (element (id (node (document "d0") (qualified-name "Vehicles_2::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 32))) (parent (node (document "d0") (qualified-name "Vehicles_2"))) (authored (membership (kind Import) (visibility "private") (import (reference "MassRollup_1::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "Vehicles_2::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 25) (character 1)) (end (line 25) (character 22))) (parent (node (document "d0") (qualified-name "Vehicles_2"))) (authored (membership (kind Import) (visibility "private") (import (reference "SI::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 25) (character 16)) (end (line 25) (character 18))))))
+    (element (id (node (document "d0") (qualified-name "Vehicles_2::CarPart"))) (kind "classifier decl") (name "CarPart") (declared-name "CarPart") (range (start (line 4) (character 1)) (end (line 4) (character 169))) (parent (node (document "d0") (qualified-name "Vehicles_2"))))
+    (element (id (node (document "d0") (qualified-name "Vehicles_2::String"))) (kind "import") (name "String") (declared-name "String") (range (start (line 1) (character 1)) (end (line 1) (character 37))) (parent (node (document "d0") (qualified-name "Vehicles_2"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::String") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 36))))))
+    (element (id (node (document "d0") (qualified-name "Vehicles_2::v"))) (kind "feature decl") (name "v") (declared-name "v") (range (start (line 26) (character 1)) (end (line 26) (character 260))) (parent (node (document "d0") (qualified-name "Vehicles_2"))))
+    (element (id (node (document "d0") (qualified-name "Vehicles_2::vehicle"))) (kind "feature decl") (name "vehicle") (declared-name "vehicle") (range (start (line 11) (character 1)) (end (line 11) (character 201))) (parent (node (document "d0") (qualified-name "Vehicles_2"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Vehicles_2::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "MassRollup_1::*") (range (start (line 2) (character 16)) (end (line 2) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicles_2::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "SI::*") (range (start (line 25) (character 16)) (end (line 25) (character 18))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicles_2::String"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::String") (range (start (line 1) (character 16)) (end (line 1) (character 36))) (outcome (status unresolved)))
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/vehicles_2.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 16) (end 2 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 25 16) (end 25 18))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

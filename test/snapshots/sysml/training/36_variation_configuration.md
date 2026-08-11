@@ -20,6 +20,33 @@ package 'Variation Configuration' {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "36_variation_configuration.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 3 21) (end 3 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 8 21) (end 8 34))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -46,24 +73,6 @@ CloseCurly,EndOfFile,
       (part_usage :>> 'engine' value)
       (part_usage :>> 'transmission' value))))
 ~~~
-# FORMAT
-~~~sysml
-package 'Variation Configuration' {
-    private import 'Variation Usages'::*;
-
-    part vehicle4Cyl :> vehicleFamily {
-        part redefines engine = engine::'4cylEngine';
-        part redefines transmission = transmission::manualTransmission;
-    }
-
-    part vehicle6Cyl :> vehicleFamily {
-        part redefines engine = engine::'6cylEngine';
-        part redefines transmission = transmission::manualTransmission;
-    }
-
-}
-
-~~~
 # EXPECTED
 ~~~
 semantic.unresolved_name 'vehicleFamily'
@@ -82,80 +91,58 @@ semantic.unresolved_name 'vehicleFamily'
 semantic.unresolved_name 'engine'
 semantic.unresolved_name 'transmission'
 ~~~
+# FORMAT
+~~~sysml
+package 'Variation Configuration' {
+    private import 'Variation Usages'::*;
+
+    part vehicle4Cyl :> vehicleFamily {
+        part redefines engine = engine::'4cylEngine';
+        part redefines transmission = transmission::manualTransmission;
+    }
+
+    part vehicle6Cyl :> vehicleFamily {
+        part redefines engine = engine::'6cylEngine';
+        part redefines transmission = transmission::manualTransmission;
+    }
+
+}
+
+~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Variation Configuration"))) (name "Variation Configuration") (declared-name "Variation Configuration")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Variation Configuration::*"))) (name "*") (declared-name "*"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl"))) (name "vehicle4Cyl") (declared-name "vehicle4Cyl") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::engine"))) (name "engine") (declared (properties (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "engine::4cylEngine")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::engine"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::transmission"))) (name "transmission") (declared (properties (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "transmission::manualTransmission")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::transmission"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-          )
-        )
-        (element (kind "part") (id (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl"))) (name "vehicle6Cyl") (declared-name "vehicle6Cyl") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::engine"))) (name "engine") (declared (properties (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "engine::6cylEngine")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::engine"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::transmission"))) (name "transmission") (declared (properties (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "transmission::manualTransmission")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::transmission"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "941b4c90d188f05f3d9d74ccceb52039e9b20eb19fc8665aea7d03461dc4755a") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Variation Configuration"))) (kind "package") (name "Variation Configuration") (declared-name "Variation Configuration") (range (start (line 0) (character 0)) (end (line 0) (character 390))))
+    (element (id (node (document "d0") (qualified-name "Variation Configuration::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 38))) (parent (node (document "d0") (qualified-name "Variation Configuration"))) (authored (membership (kind Import) (visibility "private") (import (reference "Variation Usages::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 34))))))
+    (element (id (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl"))) (kind "part") (name "vehicle4Cyl") (declared-name "vehicle4Cyl") (range (start (line 3) (character 1)) (end (line 3) (character 153))) (parent (node (document "d0") (qualified-name "Variation Configuration"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "vehicleFamily") (range (start (line 3) (character 21)) (end (line 3) (character 34)))))))
+    (element (id (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::engine"))) (kind "part") (name "engine") (range (start (line 4) (character 2)) (end (line 4) (character 47))) (parent (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "engine") (range (start (line 4) (character 17)) (end (line 4) (character 23)))))))
+    (element (id (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::transmission"))) (kind "part") (name "transmission") (range (start (line 5) (character 2)) (end (line 5) (character 65))) (parent (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "transmission") (range (start (line 5) (character 17)) (end (line 5) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl"))) (kind "part") (name "vehicle6Cyl") (declared-name "vehicle6Cyl") (range (start (line 8) (character 1)) (end (line 8) (character 153))) (parent (node (document "d0") (qualified-name "Variation Configuration"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "vehicleFamily") (range (start (line 8) (character 21)) (end (line 8) (character 34)))))))
+    (element (id (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::engine"))) (kind "part") (name "engine") (range (start (line 9) (character 2)) (end (line 9) (character 47))) (parent (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "engine") (range (start (line 9) (character 17)) (end (line 9) (character 23)))))))
+    (element (id (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::transmission"))) (kind "part") (name "transmission") (range (start (line 10) (character 2)) (end (line 10) (character 65))) (parent (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "transmission") (range (start (line 10) (character 17)) (end (line 10) (character 29)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Variation Configuration::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Variation Usages::*") (range (start (line 1) (character 16)) (end (line 1) (character 34))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl"))) (kind subsetting) (ordinal 0)) (authored-target "vehicleFamily") (range (start (line 3) (character 21)) (end (line 3) (character 34))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::engine"))) (kind redefinition) (ordinal 0)) (authored-target "engine") (range (start (line 4) (character 17)) (end (line 4) (character 23))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::engine")))))
+    (reference (id (source (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::transmission"))) (kind redefinition) (ordinal 0)) (authored-target "transmission") (range (start (line 5) (character 17)) (end (line 5) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::transmission")))))
+    (reference (id (source (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl"))) (kind subsetting) (ordinal 0)) (authored-target "vehicleFamily") (range (start (line 8) (character 21)) (end (line 8) (character 34))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::engine"))) (kind redefinition) (ordinal 0)) (authored-target "engine") (range (start (line 9) (character 17)) (end (line 9) (character 23))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::engine")))))
+    (reference (id (source (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::transmission"))) (kind redefinition) (ordinal 0)) (authored-target "transmission") (range (start (line 10) (character 17)) (end (line 10) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::transmission")))))
   )
   (relationships
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::engine"))) (target (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::engine"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::engine"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::transmission"))) (target (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::transmission"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::transmission"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::engine"))) (target (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::engine"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::engine"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::transmission"))) (target (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::transmission"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::transmission"))) (kind redefinition) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::engine"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::transmission"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::engine"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::transmission"))) (status missing-prerequisite) (target "Parts::parts"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/36_variation_configuration.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 4 2) (end 4 47))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 5 2) (end 5 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 9 2) (end 9 47))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 10 2) (end 10 65))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::engine")) (expression (status "unresolved") (error "expression has an unresolved reference")))
+    (node (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::transmission")) (expression (status "unresolved") (error "expression has an unresolved reference")))
+    (node (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::engine")) (expression (status "unresolved") (error "expression has an unresolved reference")))
+    (node (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::transmission")) (expression (status "unresolved") (error "expression has an unresolved reference")))
   )
 )
 ~~~

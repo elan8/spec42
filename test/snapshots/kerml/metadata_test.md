@@ -61,6 +61,27 @@ package MetadataTest {
     }
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "metadata_test.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_package_body_element")
+        (source "sysml")
+        (range (start 31 1) (end 31 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 31 1) (end 31 44))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -143,6 +164,28 @@ CloseCurly,EndOfFile,
     (structure_def #'M' 'T'
       (feature_def :>> 'cc'))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'ScalarValues::Natural'
+semantic.unresolved_name 'annotatedElement'
+semantic.unresolved_name 'KerML::Feature'
+semantic.unresolved_name 'Metaobjects::SemanticMetadata'
+semantic.unresolved_name 'annotatedElement'
+semantic.unresolved_name 'KerML::Class'
+semantic.unresolved_name 'baseType'
+semantic.unresolved_name 'cc'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'ScalarValues::Natural'
+semantic.unresolved_name 'annotatedElement'
+semantic.unresolved_name 'KerML::Feature'
+semantic.unresolved_name 'Metaobjects::SemanticMetadata'
+semantic.unresolved_name 'annotatedElement'
+semantic.unresolved_name 'KerML::Class'
+semantic.unresolved_name 'baseType'
+semantic.unresolved_name 'cc'
+~~~
 # FORMAT
 ~~~sysml
 package MetadataTest {
@@ -201,88 +244,31 @@ package MetadataTest {
     }
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'ScalarValues::Natural'
-semantic.unresolved_name 'annotatedElement'
-semantic.unresolved_name 'KerML::Feature'
-semantic.unresolved_name 'Metaobjects::SemanticMetadata'
-semantic.unresolved_name 'annotatedElement'
-semantic.unresolved_name 'KerML::Class'
-semantic.unresolved_name 'baseType'
-semantic.unresolved_name 'cc'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'ScalarValues::Natural'
-semantic.unresolved_name 'annotatedElement'
-semantic.unresolved_name 'KerML::Feature'
-semantic.unresolved_name 'Metaobjects::SemanticMetadata'
-semantic.unresolved_name 'annotatedElement'
-semantic.unresolved_name 'KerML::Class'
-semantic.unresolved_name 'baseType'
-semantic.unresolved_name 'cc'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "MetadataTest"))) (name "MetadataTest") (declared-name "MetadataTest")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "MetadataTest::*"))) (name "*") (declared-name "*"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "MetadataTest::T"))) (name "T") (declared-name "T"))
-        (element (kind "package") (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions"))) (name "User Defined Extensions") (declared-name "User Defined Extensions")
-          (contains
-            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel"))) (name "ClassificationLevel") (declared-name "ClassificationLevel"))
-            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::Classified"))) (name "Classified") (declared-name "Classified"))
-            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::Security"))) (name "Security") (declared-name "Security"))
-            (element (kind "feature decl") (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::conf1"))) (name "conf1") (declared-name "conf1"))
-            (element (kind "feature decl") (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::secret1"))) (name "secret1") (declared-name "secret1"))
-            (element (kind "feature decl") (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::uncl1"))) (name "uncl1") (declared-name "uncl1"))
-          )
-        )
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "MetadataTest::_M"))) (name "M") (declared-name "M"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "MetadataTest::x"))) (name "x") (declared-name "x"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "MetadataTest::y"))) (name "y") (declared-name "y"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "e7d57a38f22de586f098c3127f7e12042dc9fa5b11708dc819bdf3004f759c98") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "MetadataTest"))) (kind "package") (name "MetadataTest") (declared-name "MetadataTest") (range (start (line 0) (character 0)) (end (line 0) (character 1182))))
+    (element (id (node (document "d0") (qualified-name "MetadataTest::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 45))) (parent (node (document "d0") (qualified-name "MetadataTest"))) (authored (membership (kind Import) (visibility "private") (import (reference "User Defined Extensions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 41))))))
+    (element (id (node (document "d0") (qualified-name "MetadataTest::T"))) (kind "classifier decl") (name "T") (declared-name "T") (range (start (line 51) (character 7)) (end (line 51) (character 47))) (parent (node (document "d0") (qualified-name "MetadataTest"))))
+    (element (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions"))) (kind "package") (name "User Defined Extensions") (declared-name "User Defined Extensions") (range (start (line 3) (character 1)) (end (line 3) (character 405))) (parent (node (document "d0") (qualified-name "MetadataTest"))))
+    (element (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel"))) (kind "kermlDecl") (name "ClassificationLevel") (declared-name "ClassificationLevel") (range (start (line 5) (character 2)) (end (line 5) (character 56))) (parent (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions"))))
+    (element (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::Classified"))) (kind "kermlDecl") (name "Classified") (declared-name "Classified") (range (start (line 10) (character 2)) (end (line 10) (character 132))) (parent (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions"))))
+    (element (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::Security"))) (kind "kermlDecl") (name "Security") (declared-name "Security") (range (start (line 15) (character 2)) (end (line 15) (character 21))) (parent (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions"))))
+    (element (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::conf1"))) (kind "feature decl") (name "conf1") (declared-name "conf1") (range (start (line 7) (character 2)) (end (line 7) (character 44))) (parent (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions"))))
+    (element (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::secret1"))) (kind "feature decl") (name "secret1") (declared-name "secret1") (range (start (line 8) (character 2)) (end (line 8) (character 46))) (parent (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions"))))
+    (element (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::uncl1"))) (kind "feature decl") (name "uncl1") (declared-name "uncl1") (range (start (line 6) (character 2)) (end (line 6) (character 44))) (parent (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions"))))
+    (element (id (node (document "d0") (qualified-name "MetadataTest::_M"))) (kind "metadata keyword") (name "M") (declared-name "M") (range (start (line 51) (character 4)) (end (line 51) (character 7))) (parent (node (document "d0") (qualified-name "MetadataTest"))))
+    (element (id (node (document "d0") (qualified-name "MetadataTest::x"))) (kind "feature decl") (name "x") (declared-name "x") (range (start (line 18) (character 1)) (end (line 18) (character 74))) (parent (node (document "d0") (qualified-name "MetadataTest"))))
+    (element (id (node (document "d0") (qualified-name "MetadataTest::y"))) (kind "feature decl") (name "y") (declared-name "y") (range (start (line 24) (character 1)) (end (line 24) (character 79))) (parent (node (document "d0") (qualified-name "MetadataTest"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "MetadataTest::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "User Defined Extensions::*") (range (start (line 1) (character 16)) (end (line 1) (character 41))) (outcome (status resolved) (target (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions")))))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "MetadataTest::_M"))) (to (node (document "d0") (qualified-name "MetadataTest"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MetadataTest::_M"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/metadata_test.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "recovered_package_body_element")
-        (source "sysml")
-        (range (start 31 1) (end 31 44))
-      )
-      (diagnostic
-        (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 31 1) (end 31 44))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 51 4) (end 51 7))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

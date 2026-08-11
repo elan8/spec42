@@ -15,17 +15,32 @@ package P {
     }
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'Engine'
-semantic.unresolved_name 'Fuel'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'Engine'
-semantic.unresolved_name 'Fuel'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz_flow_value_no_name.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1 19) (end 1 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 2 19) (end 2 25))
+      )
+      (diagnostic
+        (severity error)
+        (code "missing_semicolon")
+        (source "sysml")
+        (range (start 4 8) (end 4 108))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -48,6 +63,18 @@ CloseCurly,EndOfFile,
         (connector_end)
         (connector_end)))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'Engine'
+semantic.unresolved_name 'Fuel'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'Engine'
+semantic.unresolved_name 'Fuel'
+~~~
 # FORMAT
 ~~~sysml
 package P {
@@ -63,54 +90,20 @@ package P {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "P"))) (name "P") (declared-name "P")
-      (contains
-        (element (kind "part") (id (node (document "d0") (qualified-name "P::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "P::vehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "21cf7b67153dc9766ed6fc2832f399dc9bf7530f3c9cc850337c6edcfe9ecf62") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P") (range (start (line 0) (character 0)) (end (line 0) (character 180))))
+    (element (id (node (document "d0") (qualified-name "P::vehicle"))) (kind "part") (name "vehicle") (declared-name "vehicle") (range (start (line 1) (character 4)) (end (line 1) (character 166))) (parent (node (document "d0") (qualified-name "P"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle") (range (start (line 1) (character 19)) (end (line 1) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "P::vehicle::eng"))) (kind "part") (name "eng") (declared-name "eng") (range (start (line 2) (character 8)) (end (line 2) (character 26))) (parent (node (document "d0") (qualified-name "P::vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Engine") (range (start (line 2) (character 19)) (end (line 2) (character 25)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "P::vehicle"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (range (start (line 1) (character 19)) (end (line 1) (character 26))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "P::vehicle::eng"))) (kind featureTyping) (ordinal 0)) (authored-target "Engine") (range (start (line 2) (character 19)) (end (line 2) (character 25))) (outcome (status unresolved)))
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "P::vehicle"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "P::vehicle::eng"))) (status missing-prerequisite) (target "Parts::parts"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "fuzz/fuzz_flow_value_no_name.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1 19) (end 1 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 2 19) (end 2 25))
-      )
-      (diagnostic
-        (severity error)
-        (code "missing_semicolon")
-        (source "sysml")
-        (range (start 4 8) (end 4 108))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

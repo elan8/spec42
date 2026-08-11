@@ -26,6 +26,15 @@ package 'Port Conjugation Example' {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "10_port_conjugation_example.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -59,6 +68,14 @@ CloseCurly,EndOfFile,
     (part_def 'Engine'
       (port_usage 'engineFuelPort' : ~'FuelPort'))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package 'Port Conjugation Example' {
@@ -83,76 +100,41 @@ package 'Port Conjugation Example' {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Port Conjugation Example"))) (name "Port Conjugation Example") (declared-name "Port Conjugation Example")
-      (contains
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Port Conjugation Example::Engine"))) (name "Engine") (declared-name "Engine") (declared)
-          (contains
-            (element (kind "port") (id (node (document "d0") (qualified-name "Port Conjugation Example::Engine::engineFuelPort"))) (name "engineFuelPort") (declared-name "engineFuelPort") (declared (properties (conjugated true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Port Conjugation Example::Engine")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Port Conjugation Example::Fuel"))) (name "Fuel") (declared-name "Fuel") (declared))
-        (element (kind "port def") (id (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort"))) (name "FuelPort") (declared-name "FuelPort")
-          (contains
-            (element (kind "item") (id (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::fuelReturn"))) (name "fuelReturn") (declared-name "fuelReturn") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort")))))
-            (element (kind "item") (id (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::fuelSupply"))) (name "fuelSupply") (declared-name "fuelSupply") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::temperature"))) (name "temperature") (declared-name "temperature") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort")))))
-            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::~FuelPort"))) (name "~FuelPort") (declared-name "~FuelPort") (effective (featuring-type (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Port Conjugation Example::FuelTank"))) (name "FuelTank") (declared-name "FuelTank") (declared)
-          (contains
-            (element (kind "port") (id (node (document "d0") (qualified-name "Port Conjugation Example::FuelTank::fuelTankPort"))) (name "fuelTankPort") (declared-name "fuelTankPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Port Conjugation Example::FuelTank")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Port Conjugation Example::Temp"))) (name "Temp") (declared-name "Temp") (declared (properties (ordered false) (unique true))))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "bc033299730b710fd120b765f9421366959017148ba36fad788e0f7c3736b913") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Port Conjugation Example"))) (kind "package") (name "Port Conjugation Example") (declared-name "Port Conjugation Example") (range (start (line 0) (character 0)) (end (line 0) (character 313))))
+    (element (id (node (document "d0") (qualified-name "Port Conjugation Example::Engine"))) (kind "part def") (name "Engine") (declared-name "Engine") (range (start (line 16) (character 1)) (end (line 16) (character 56))) (parent (node (document "d0") (qualified-name "Port Conjugation Example"))))
+    (element (id (node (document "d0") (qualified-name "Port Conjugation Example::Engine::engineFuelPort"))) (kind "port") (name "engineFuelPort") (declared-name "engineFuelPort") (range (start (line 17) (character 2)) (end (line 17) (character 34))) (parent (node (document "d0") (qualified-name "Port Conjugation Example::Engine"))) (authored (membership (kind Feature)) (relationships (typing (reference "~FuelPort") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Port Conjugation Example::Fuel"))) (kind "part def") (name "Fuel") (declared-name "Fuel") (range (start (line 4) (character 1)) (end (line 4) (character 15))) (parent (node (document "d0") (qualified-name "Port Conjugation Example"))))
+    (element (id (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort"))) (kind "port def") (name "FuelPort") (declared-name "FuelPort") (range (start (line 6) (character 1)) (end (line 6) (character 114))) (parent (node (document "d0") (qualified-name "Port Conjugation Example"))))
+    (element (id (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::fuelReturn"))) (kind "item") (name "fuelReturn") (declared-name "fuelReturn") (range (start (line 9) (character 2)) (end (line 9) (character 28))) (parent (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort"))) (authored (membership (kind Feature)) (relationships (typing (reference "Fuel") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::fuelSupply"))) (kind "item") (name "fuelSupply") (declared-name "fuelSupply") (range (start (line 8) (character 2)) (end (line 8) (character 29))) (parent (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort"))) (authored (membership (kind Feature)) (relationships (typing (reference "Fuel") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::temperature"))) (kind "attribute") (name "temperature") (declared-name "temperature") (range (start (line 7) (character 2)) (end (line 7) (character 31))) (parent (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort"))) (authored (membership (kind Feature)) (relationships (typing (reference "Temp") (range none)) (typing (reference "Temp") (range (start (line 7) (character 26)) (end (line 7) (character 30)))))))
+    (element (id (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::~FuelPort"))) (kind "conjugated port definition") (name "~FuelPort") (declared-name "~FuelPort") (range (start (line 6) (character 1)) (end (line 6) (character 114))) (parent (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort"))))
+    (element (id (node (document "d0") (qualified-name "Port Conjugation Example::FuelTank"))) (kind "part def") (name "FuelTank") (declared-name "FuelTank") (range (start (line 12) (character 1)) (end (line 12) (character 55))) (parent (node (document "d0") (qualified-name "Port Conjugation Example"))))
+    (element (id (node (document "d0") (qualified-name "Port Conjugation Example::FuelTank::fuelTankPort"))) (kind "port") (name "fuelTankPort") (declared-name "fuelTankPort") (range (start (line 13) (character 2)) (end (line 13) (character 31))) (parent (node (document "d0") (qualified-name "Port Conjugation Example::FuelTank"))) (authored (membership (kind Feature)) (relationships (typing (reference "FuelPort") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Port Conjugation Example::Temp"))) (kind "attribute def") (name "Temp") (declared-name "Temp") (range (start (line 2) (character 1)) (end (line 2) (character 20))) (parent (node (document "d0") (qualified-name "Port Conjugation Example"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Port Conjugation Example::Engine::engineFuelPort"))) (kind featureTyping) (ordinal 0)) (authored-target "~FuelPort") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort")))))
+    (reference (id (source (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::fuelReturn"))) (kind featureTyping) (ordinal 0)) (authored-target "Fuel") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Port Conjugation Example::Fuel")))))
+    (reference (id (source (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::fuelSupply"))) (kind featureTyping) (ordinal 0)) (authored-target "Fuel") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Port Conjugation Example::Fuel")))))
+    (reference (id (source (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::temperature"))) (kind featureTyping) (ordinal 0)) (authored-target "Temp") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Port Conjugation Example::Temp")))))
+    (reference (id (source (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::temperature"))) (kind featureTyping) (ordinal 1)) (authored-target "Temp") (range (start (line 7) (character 26)) (end (line 7) (character 30))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Port Conjugation Example::Temp")))))
+    (reference (id (source (node (document "d0") (qualified-name "Port Conjugation Example::FuelTank::fuelTankPort"))) (kind featureTyping) (ordinal 0)) (authored-target "FuelPort") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort")))))
   )
   (relationships
-    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::~FuelPort"))) (to (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Port Conjugation Example::Engine::engineFuelPort"))) (to (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::~FuelPort"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::fuelReturn"))) (to (node (document "d0") (qualified-name "Port Conjugation Example::Fuel"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::fuelSupply"))) (to (node (document "d0") (qualified-name "Port Conjugation Example::Fuel"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::temperature"))) (to (node (document "d0") (qualified-name "Port Conjugation Example::Temp"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Port Conjugation Example::FuelTank::fuelTankPort"))) (to (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Port Conjugation Example::Engine::engineFuelPort"))) (target (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Port Conjugation Example::Engine::engineFuelPort"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::fuelReturn"))) (target (node (document "d0") (qualified-name "Port Conjugation Example::Fuel"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::fuelReturn"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::fuelSupply"))) (target (node (document "d0") (qualified-name "Port Conjugation Example::Fuel"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::fuelSupply"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::temperature"))) (target (node (document "d0") (qualified-name "Port Conjugation Example::Temp"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::temperature"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::temperature"))) (target (node (document "d0") (qualified-name "Port Conjugation Example::Temp"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::temperature"))) (kind featureTyping) (ordinal 1)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Port Conjugation Example::FuelTank::fuelTankPort"))) (target (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Port Conjugation Example::FuelTank::fuelTankPort"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Port Conjugation Example::Engine"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Port Conjugation Example::Engine::engineFuelPort"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Port Conjugation Example::Fuel"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort"))) (status missing-prerequisite) (target "Ports::Port"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::fuelReturn"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::fuelSupply"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::temperature"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::~FuelPort"))) (status missing-prerequisite) (target "Ports::Port"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Port Conjugation Example::FuelTank"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Port Conjugation Example::FuelTank::fuelTankPort"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Port Conjugation Example::Temp"))) (status missing-prerequisite) (target "Base::DataValue"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/10_port_conjugation_example.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

@@ -17,19 +17,14 @@ class A {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Natural'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'portionOfLife'
-semantic.unresolved_name 'Occurrence'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Natural'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'portionOfLife'
-semantic.unresolved_name 'Occurrence'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "bare_redefines_feature.md"
+    (diagnostics
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -53,6 +48,20 @@ CloseCurly,EndOfFile,
     (feature_def all 'spaceTimeEnclosedPoints' : 'Occurrence' multiplicity
       (feature_def :>> 'innerSpaceDimension' value))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'portionOfLife'
+semantic.unresolved_name 'Occurrence'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'portionOfLife'
+semantic.unresolved_name 'Occurrence'
+~~~
 # FORMAT
 ~~~sysml
 class A {
@@ -67,23 +76,15 @@ class A {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "3d53c5d159f8b41aaa38c159d133c8ac77b1731dbedc6c68901dbffda38588fd") (contract-version "canonical-resolution-v1"))
+  (structure
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/bare_redefines_feature.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

@@ -31,6 +31,39 @@ package 'Variation Usages' {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "36_variation_usages.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 39))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 5 1) (end 5 25))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 6 1) (end 6 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 9 16) (end 9 29))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -73,6 +106,14 @@ CloseCurly,EndOfFile,
       (sysml_decl
         (result_expr_member)))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'EngineChoices'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'EngineChoices'
+~~~
 # FORMAT
 ~~~sysml
 package 'Variation Usages' {
@@ -102,100 +143,34 @@ package 'Variation Usages' {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'EngineChoices'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'EngineChoices'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Variation Usages"))) (name "Variation Usages") (declared-name "Variation Usages")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Variation Usages::*"))) (name "*") (declared-name "*"))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Variation Usages::Transmission"))) (name "Transmission") (declared-name "Transmission") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Variation Usages::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Variation Usages::automaticTransmission"))) (name "automaticTransmission") (declared-name "automaticTransmission") (declared (properties (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Variation Usages::manualTransmission"))) (name "manualTransmission") (declared-name "manualTransmission") (declared (properties (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Variation Usages::vehicleFamily"))) (name "vehicleFamily") (declared-name "vehicleFamily") (declared (properties (abstract true) (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::engine"))) (name "engine") (declared-name "engine") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Variation Usages::Vehicle")))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission"))) (name "transmission") (declared-name "transmission") (declared (properties (variation true) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Variation Usages::Vehicle"))))
-              (contains
-                (element (kind "variant") (id (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission::automaticTransmission"))) (name "automaticTransmission") (declared-name "automaticTransmission") (effective (featuring-type (node (document "d0") (qualified-name "Variation Usages::Transmission")))))
-                (element (kind "variant") (id (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission::manualTransmission"))) (name "manualTransmission") (declared-name "manualTransmission") (effective (featuring-type (node (document "d0") (qualified-name "Variation Usages::Transmission")))))
-              )
-            )
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "30c0802480995a246eb31968af76f254862fdd5c0c0695309f1a2d248f8a1df8") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Variation Usages"))) (kind "package") (name "Variation Usages") (declared-name "Variation Usages") (range (start (line 0) (character 0)) (end (line 0) (character 602))))
+    (element (id (node (document "d0") (qualified-name "Variation Usages::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 43))) (parent (node (document "d0") (qualified-name "Variation Usages"))) (authored (membership (kind Import) (visibility "private") (import (reference "Variation Definitions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 39))))))
+    (element (id (node (document "d0") (qualified-name "Variation Usages::Transmission"))) (kind "part def") (name "Transmission") (declared-name "Transmission") (range (start (line 4) (character 1)) (end (line 4) (character 23))) (parent (node (document "d0") (qualified-name "Variation Usages"))))
+    (element (id (node (document "d0") (qualified-name "Variation Usages::Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (range (start (line 3) (character 1)) (end (line 3) (character 18))) (parent (node (document "d0") (qualified-name "Variation Usages"))))
+    (element (id (node (document "d0") (qualified-name "Variation Usages::automaticTransmission"))) (kind "part") (name "automaticTransmission") (declared-name "automaticTransmission") (range (start (line 6) (character 1)) (end (line 6) (character 28))) (parent (node (document "d0") (qualified-name "Variation Usages"))))
+    (element (id (node (document "d0") (qualified-name "Variation Usages::manualTransmission"))) (kind "part") (name "manualTransmission") (declared-name "manualTransmission") (range (start (line 5) (character 1)) (end (line 5) (character 25))) (parent (node (document "d0") (qualified-name "Variation Usages"))))
+    (element (id (node (document "d0") (qualified-name "Variation Usages::vehicleFamily"))) (kind "part") (name "vehicleFamily") (declared-name "vehicleFamily") (range (start (line 8) (character 1)) (end (line 8) (character 423))) (parent (node (document "d0") (qualified-name "Variation Usages"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle") (range (start (line 8) (character 31)) (end (line 8) (character 38)))))))
+    (element (id (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::engine"))) (kind "part") (name "engine") (declared-name "engine") (range (start (line 9) (character 2)) (end (line 9) (character 33))) (parent (node (document "d0") (qualified-name "Variation Usages::vehicleFamily"))) (authored (membership (kind Feature)) (relationships (typing (reference "EngineChoices") (range (start (line 9) (character 16)) (end (line 9) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission"))) (kind "part") (name "transmission") (declared-name "transmission") (range (start (line 11) (character 2)) (end (line 11) (character 118))) (parent (node (document "d0") (qualified-name "Variation Usages::vehicleFamily"))) (authored (membership (kind Feature)) (relationships (typing (reference "Transmission") (range (start (line 11) (character 32)) (end (line 11) (character 44)))))))
+    (element (id (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission::automaticTransmission"))) (kind "variant") (name "automaticTransmission") (declared-name "automaticTransmission") (range (start (line 13) (character 3)) (end (line 13) (character 33))) (parent (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission"))))
+    (element (id (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission::manualTransmission"))) (kind "variant") (name "manualTransmission") (declared-name "manualTransmission") (range (start (line 12) (character 3)) (end (line 12) (character 30))) (parent (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Variation Usages::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Variation Definitions::*") (range (start (line 1) (character 16)) (end (line 1) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Variation Usages::vehicleFamily"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (range (start (line 8) (character 31)) (end (line 8) (character 38))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Variation Usages::Vehicle")))))
+    (reference (id (source (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::engine"))) (kind featureTyping) (ordinal 0)) (authored-target "EngineChoices") (range (start (line 9) (character 16)) (end (line 9) (character 29))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission"))) (kind featureTyping) (ordinal 0)) (authored-target "Transmission") (range (start (line 11) (character 32)) (end (line 11) (character 44))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Variation Usages::Transmission")))))
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Variation Usages::vehicleFamily"))) (to (node (document "d0") (qualified-name "Variation Usages::Vehicle"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission"))) (to (node (document "d0") (qualified-name "Variation Usages::Transmission"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Variation Usages::vehicleFamily"))) (target (node (document "d0") (qualified-name "Variation Usages::Vehicle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Variation Usages::vehicleFamily"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission"))) (target (node (document "d0") (qualified-name "Variation Usages::Transmission"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Usages::Transmission"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Usages::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Usages::automaticTransmission"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Usages::manualTransmission"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Usages::vehicleFamily"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::engine"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission"))) (status missing-prerequisite) (target "Parts::parts"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/36_variation_usages.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 39))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 5 1) (end 5 25))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 6 1) (end 6 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 9 16) (end 9 29))
-      )
-      (diagnostic
-        (severity warning)
-        (code "invalid_variation_member_kind")
-        (source "semantic")
-        (range (start 12 3) (end 12 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "invalid_variation_member_kind")
-        (source "semantic")
-        (range (start 13 3) (end 13 33))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

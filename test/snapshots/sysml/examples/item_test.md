@@ -29,6 +29,21 @@ package ItemTest {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "item_test.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_part_def_body_element")
+        (source "sysml")
+        (range (start 14 2) (end 14 27))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -65,6 +80,14 @@ CloseCurly,EndOfFile,
       (item_usage in 'a1' : 'A')
       (item_usage out 'a2' : 'A'))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package ItemTest {
@@ -92,79 +115,38 @@ package ItemTest {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ItemTest"))) (name "ItemTest") (declared-name "ItemTest")
-      (contains
-        (element (kind "item def") (id (node (document "d0") (qualified-name "ItemTest::A"))) (name "A") (declared-name "A")
-          (contains
-            (element (kind "ref") (id (node (document "d0") (qualified-name "ItemTest::A::c"))) (name "c") (declared-name "c") (declared (properties (composite false) (reference true) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "ItemTest::A")))))
-          )
-        )
-        (element (kind "item def") (id (node (document "d0") (qualified-name "ItemTest::B"))) (name "B") (declared-name "B")
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "ItemTest::B::a"))) (name "a") (declared-name "a") (declared (properties (abstract true) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ItemTest::B")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "ItemTest::C"))) (name "C") (declared-name "C") (declared))
-        (element (kind "port def") (id (node (document "d0") (qualified-name "ItemTest::P"))) (name "P") (declared-name "P")
-          (contains
-            (element (kind "item") (id (node (document "d0") (qualified-name "ItemTest::P::a1"))) (name "a1") (declared-name "a1") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "ItemTest::P")))))
-            (element (kind "item") (id (node (document "d0") (qualified-name "ItemTest::P::a2"))) (name "a2") (declared-name "a2") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "ItemTest::P")))))
-            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "ItemTest::P::~P"))) (name "~P") (declared-name "~P") (effective (featuring-type (node (document "d0") (qualified-name "ItemTest::P")))))
-          )
-        )
-        (element (kind "item def") (id (node (document "d0") (qualified-name "ItemTest::f"))) (name "f") (declared-name "f"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "09e5cf33075e0e311dfda961522cdeab1acab26936fa23dc135fbcf677496910") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ItemTest"))) (kind "package") (name "ItemTest") (declared-name "ItemTest") (range (start (line 0) (character 0)) (end (line 0) (character 265))))
+    (element (id (node (document "d0") (qualified-name "ItemTest::A"))) (kind "item def") (name "A") (declared-name "A") (range (start (line 4) (character 1)) (end (line 4) (character 63))) (parent (node (document "d0") (qualified-name "ItemTest"))))
+    (element (id (node (document "d0") (qualified-name "ItemTest::A::c"))) (kind "ref") (name "c") (declared-name "c") (range (start (line 6) (character 2)) (end (line 6) (character 26))) (parent (node (document "d0") (qualified-name "ItemTest::A"))) (authored (membership (kind Feature) (visibility "protected")) (relationships (typing (reference "C") (range (start (line 6) (character 24)) (end (line 6) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ItemTest::B"))) (kind "item def") (name "B") (declared-name "B") (range (start (line 9) (character 1)) (end (line 9) (character 54))) (parent (node (document "d0") (qualified-name "ItemTest"))))
+    (element (id (node (document "d0") (qualified-name "ItemTest::B::a"))) (kind "part") (name "a") (declared-name "a") (range (start (line 10) (character 2)) (end (line 10) (character 28))) (parent (node (document "d0") (qualified-name "ItemTest::B"))) (authored (membership (kind Feature) (visibility "public")) (relationships (typing (reference "A") (range (start (line 10) (character 26)) (end (line 10) (character 27)))))))
+    (element (id (node (document "d0") (qualified-name "ItemTest::C"))) (kind "part def") (name "C") (declared-name "C") (range (start (line 13) (character 1)) (end (line 13) (character 50))) (parent (node (document "d0") (qualified-name "ItemTest"))))
+    (element (id (node (document "d0") (qualified-name "ItemTest::P"))) (kind "port def") (name "P") (declared-name "P") (range (start (line 17) (character 1)) (end (line 17) (character 51))) (parent (node (document "d0") (qualified-name "ItemTest"))))
+    (element (id (node (document "d0") (qualified-name "ItemTest::P::a1"))) (kind "item") (name "a1") (declared-name "a1") (range (start (line 18) (character 2)) (end (line 18) (character 16))) (parent (node (document "d0") (qualified-name "ItemTest::P"))) (authored (membership (kind Feature)) (relationships (typing (reference "A") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ItemTest::P::a2"))) (kind "item") (name "a2") (declared-name "a2") (range (start (line 19) (character 2)) (end (line 19) (character 17))) (parent (node (document "d0") (qualified-name "ItemTest::P"))) (authored (membership (kind Feature)) (relationships (typing (reference "A") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ItemTest::P::~P"))) (kind "conjugated port definition") (name "~P") (declared-name "~P") (range (start (line 17) (character 1)) (end (line 17) (character 51))) (parent (node (document "d0") (qualified-name "ItemTest::P"))))
+    (element (id (node (document "d0") (qualified-name "ItemTest::f"))) (kind "item def") (name "f") (declared-name "f") (range (start (line 2) (character 1)) (end (line 2) (character 11))) (parent (node (document "d0") (qualified-name "ItemTest"))) (authored (membership (kind Owning)) (relationships (specializes (reference "A") (range (start (line 0) (character 0)) (end (line 0) (character 1)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "ItemTest::A::c"))) (kind featureTyping) (ordinal 0)) (authored-target "C") (range (start (line 6) (character 24)) (end (line 6) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ItemTest::C")))))
+    (reference (id (source (node (document "d0") (qualified-name "ItemTest::B::a"))) (kind featureTyping) (ordinal 0)) (authored-target "A") (range (start (line 10) (character 26)) (end (line 10) (character 27))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ItemTest::A")))))
+    (reference (id (source (node (document "d0") (qualified-name "ItemTest::P::a1"))) (kind featureTyping) (ordinal 0)) (authored-target "A") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ItemTest::A")))))
+    (reference (id (source (node (document "d0") (qualified-name "ItemTest::P::a2"))) (kind featureTyping) (ordinal 0)) (authored-target "A") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ItemTest::A")))))
+    (reference (id (source (node (document "d0") (qualified-name "ItemTest::f"))) (kind specialization) (ordinal 0)) (authored-target "A") (range (start (line 0) (character 0)) (end (line 0) (character 1))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ItemTest::A")))))
   )
   (relationships
-    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "ItemTest::P::~P"))) (to (node (document "d0") (qualified-name "ItemTest::P"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "ItemTest::f"))) (to (node (document "d0") (qualified-name "ItemTest::A"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ItemTest::A::c"))) (to (node (document "d0") (qualified-name "ItemTest::C"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ItemTest::B::a"))) (to (node (document "d0") (qualified-name "ItemTest::A"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ItemTest::P::a1"))) (to (node (document "d0") (qualified-name "ItemTest::A"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ItemTest::P::a2"))) (to (node (document "d0") (qualified-name "ItemTest::A"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ItemTest::A::c"))) (target (node (document "d0") (qualified-name "ItemTest::C"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ItemTest::A::c"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ItemTest::B::a"))) (target (node (document "d0") (qualified-name "ItemTest::A"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ItemTest::B::a"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ItemTest::P::a1"))) (target (node (document "d0") (qualified-name "ItemTest::A"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ItemTest::P::a1"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ItemTest::P::a2"))) (target (node (document "d0") (qualified-name "ItemTest::A"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ItemTest::P::a2"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "ItemTest::f"))) (target (node (document "d0") (qualified-name "ItemTest::A"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ItemTest::f"))) (kind specialization) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ItemTest::A"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ItemTest::B"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ItemTest::B::a"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ItemTest::C"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ItemTest::P"))) (status missing-prerequisite) (target "Ports::Port"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ItemTest::P::a1"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ItemTest::P::a2"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ItemTest::P::~P"))) (status missing-prerequisite) (target "Ports::Port"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ItemTest::f"))) (status missing-prerequisite) (target "Items::Item"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/item_test.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "recovered_part_def_body_element")
-        (source "sysml")
-        (range (start 14 2) (end 14 27))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

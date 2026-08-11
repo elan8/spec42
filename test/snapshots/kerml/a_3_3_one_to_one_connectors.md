@@ -64,6 +64,51 @@ package OneToOneConnectorsExecution {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "a_3_3_one_to_one_connectors.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 18) (end 6 59))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 18) (end 7 62))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 25 16) (end 25 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 27 15) (end 27 51))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 28 15) (end 28 51))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 29 15) (end 29 50))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -153,6 +198,30 @@ CloseCurly,EndOfFile,
         (connector_end)
         (connector_end)))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'MyWheel1'
+semantic.unresolved_name 'MyWheel2'
+semantic.unresolved_name 'MyWheel'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'MyWheel1'
+semantic.unresolved_name 'MyWheel2'
+semantic.unresolved_name 'MyWheel'
+~~~
 # FORMAT
 ~~~sysml
 
@@ -214,162 +283,47 @@ package OneToOneConnectorsExecution {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'MyWheel1'
-semantic.unresolved_name 'MyWheel2'
-semantic.unresolved_name 'MyWheel'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'MyWheel1'
-semantic.unresolved_name 'MyWheel2'
-semantic.unresolved_name 'MyWheel'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))) (name "OneToOneConnectorsExecution") (declared-name "OneToOneConnectorsExecution")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyBike"))) (name "MyBike") (declared-name "MyBike"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyBikeFork"))) (name "MyBikeFork") (declared-name "MyBikeFork"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyBikeFork1"))) (name "MyBikeFork1") (declared-name "MyBikeFork1"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyBikeFork2"))) (name "MyBikeFork2") (declared-name "MyBikeFork2"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyBikeWheel1_Fork1_BWF_Link"))) (name "MyBikeWheel1_Fork1_BWF_Link") (declared-name "MyBikeWheel1_Fork1_BWF_Link"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyBikeWheel2_Fork2_BWF_Link"))) (name "MyBikeWheel2_Fork2_BWF_Link") (declared-name "MyBikeWheel2_Fork2_BWF_Link"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyBikeWheel_Fork_BWF_Link"))) (name "MyBikeWheel_Fork_BWF_Link") (declared-name "MyBikeWheel_Fork_BWF_Link"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyWheel"))) (name "MyWheel") (declared-name "MyWheel"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyWheel1"))) (name "MyWheel1") (declared-name "MyWheel1"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyWheel2"))) (name "MyWheel2") (declared-name "MyWheel2"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom#metadata_keyword"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom#metadata_keyword2"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom#metadata_keyword3"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom#metadata_keyword4"))) (name "atom") (declared-name "atom"))
-      )
-    )
-    (element (kind "package") (id (node (document "d0") (qualified-name "OneToOneConnectorsModelToBeExecuted"))) (name "OneToOneConnectorsModelToBeExecuted") (declared-name "OneToOneConnectorsModelToBeExecuted")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToOneConnectorsModelToBeExecuted::Bicycle"))) (name "Bicycle") (declared-name "Bicycle"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "OneToOneConnectorsModelToBeExecuted::BikeFork"))) (name "BikeFork") (declared-name "BikeFork"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "OneToOneConnectorsModelToBeExecuted::BikeWheelFixed"))) (name "BikeWheelFixed") (declared-name "BikeWheelFixed"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "OneToOneConnectorsModelToBeExecuted::Wheel"))) (name "Wheel") (declared-name "Wheel"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "337fa3fc1d3f1afb82edf88715da47886c3b1e49a6243d102e71cfb76ffc7f91") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))) (kind "package") (name "OneToOneConnectorsExecution") (declared-name "OneToOneConnectorsExecution") (range (start (line 20) (character 0)) (end (line 20) (character 1125))))
+    (element (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 25) (character 1)) (end (line 25) (character 25))) (parent (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))) (authored (membership (kind Import) (visibility "private") (import (reference "Atoms::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 25) (character 16)) (end (line 25) (character 21))))))
+    (element (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 26) (character 1)) (end (line 26) (character 54))) (parent (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))) (authored (membership (kind Import) (visibility "public") (import (reference "OneToOneConnectorsModelToBeExecuted::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 26) (character 15)) (end (line 26) (character 50))))))
+    (element (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyBike"))) (kind "classifier decl") (name "MyBike") (declared-name "MyBike") (range (start (line 52) (character 1)) (end (line 52) (character 226))) (parent (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyBikeFork"))) (kind "classifier decl") (name "MyBikeFork") (declared-name "MyBikeFork") (range (start (line 36) (character 1)) (end (line 36) (character 55))) (parent (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyBikeFork1"))) (kind "classifier decl") (name "MyBikeFork1") (declared-name "MyBikeFork1") (range (start (line 32) (character 1)) (end (line 32) (character 45))) (parent (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyBikeFork2"))) (kind "classifier decl") (name "MyBikeFork2") (declared-name "MyBikeFork2") (range (start (line 34) (character 1)) (end (line 34) (character 45))) (parent (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyBikeWheel1_Fork1_BWF_Link"))) (kind "kermlDecl") (name "MyBikeWheel1_Fork1_BWF_Link") (declared-name "MyBikeWheel1_Fork1_BWF_Link") (range (start (line 39) (character 2)) (end (line 39) (character 156))) (parent (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyBikeWheel2_Fork2_BWF_Link"))) (kind "kermlDecl") (name "MyBikeWheel2_Fork2_BWF_Link") (declared-name "MyBikeWheel2_Fork2_BWF_Link") (range (start (line 44) (character 1)) (end (line 44) (character 155))) (parent (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyBikeWheel_Fork_BWF_Link"))) (kind "classifier decl") (name "MyBikeWheel_Fork_BWF_Link") (declared-name "MyBikeWheel_Fork_BWF_Link") (range (start (line 49) (character 1)) (end (line 49) (character 102))) (parent (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyWheel"))) (kind "import") (name "MyWheel") (declared-name "MyWheel") (range (start (line 29) (character 1)) (end (line 29) (character 51))) (parent (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))) (authored (membership (kind Import) (visibility "public") (import (reference "WithoutConnectorsExecution::MyWheel") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 29) (character 15)) (end (line 29) (character 50))))))
+    (element (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyWheel1"))) (kind "import") (name "MyWheel1") (declared-name "MyWheel1") (range (start (line 27) (character 1)) (end (line 27) (character 52))) (parent (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))) (authored (membership (kind Import) (visibility "public") (import (reference "WithoutConnectorsExecution::MyWheel1") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 27) (character 15)) (end (line 27) (character 51))))))
+    (element (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyWheel2"))) (kind "import") (name "MyWheel2") (declared-name "MyWheel2") (range (start (line 28) (character 1)) (end (line 28) (character 52))) (parent (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))) (authored (membership (kind Import) (visibility "public") (import (reference "WithoutConnectorsExecution::MyWheel2") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 28) (character 15)) (end (line 28) (character 51))))))
+    (element (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 31) (character 1)) (end (line 31) (character 8))) (parent (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom#metadata_keyword"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 33) (character 1)) (end (line 33) (character 8))) (parent (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom#metadata_keyword2"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 38) (character 1)) (end (line 38) (character 9))) (parent (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom#metadata_keyword3"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 43) (character 1)) (end (line 43) (character 8))) (parent (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom#metadata_keyword4"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 51) (character 1)) (end (line 51) (character 8))) (parent (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "OneToOneConnectorsModelToBeExecuted"))) (kind "package") (name "OneToOneConnectorsModelToBeExecuted") (declared-name "OneToOneConnectorsModelToBeExecuted") (range (start (line 1) (character 0)) (end (line 1) (character 446))))
+    (element (id (node (document "d0") (qualified-name "OneToOneConnectorsModelToBeExecuted::Bicycle"))) (kind "classifier decl") (name "Bicycle") (declared-name "Bicycle") (range (start (line 9) (character 1)) (end (line 9) (character 166))) (parent (node (document "d0") (qualified-name "OneToOneConnectorsModelToBeExecuted"))))
+    (element (id (node (document "d0") (qualified-name "OneToOneConnectorsModelToBeExecuted::BikeFork"))) (kind "import") (name "BikeFork") (declared-name "BikeFork") (range (start (line 7) (character 4)) (end (line 7) (character 63))) (parent (node (document "d0") (qualified-name "OneToOneConnectorsModelToBeExecuted"))) (authored (membership (kind Import) (visibility "public") (import (reference "WithoutConnectorsModelToBeExecuted::BikeFork") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 18)) (end (line 7) (character 62))))))
+    (element (id (node (document "d0") (qualified-name "OneToOneConnectorsModelToBeExecuted::BikeWheelFixed"))) (kind "kermlDecl") (name "BikeWheelFixed") (declared-name "BikeWheelFixed") (range (start (line 14) (character 1)) (end (line 14) (character 89))) (parent (node (document "d0") (qualified-name "OneToOneConnectorsModelToBeExecuted"))))
+    (element (id (node (document "d0") (qualified-name "OneToOneConnectorsModelToBeExecuted::Wheel"))) (kind "import") (name "Wheel") (declared-name "Wheel") (range (start (line 6) (character 4)) (end (line 6) (character 60))) (parent (node (document "d0") (qualified-name "OneToOneConnectorsModelToBeExecuted"))) (authored (membership (kind Import) (visibility "public") (import (reference "WithoutConnectorsModelToBeExecuted::Wheel") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 6) (character 18)) (end (line 6) (character 59))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "OneToOneConnectorsExecution::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Atoms::*") (range (start (line 25) (character 16)) (end (line 25) (character 21))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "OneToOneConnectorsExecution::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "OneToOneConnectorsModelToBeExecuted::*") (range (start (line 26) (character 15)) (end (line 26) (character 50))) (outcome (status resolved) (target (node (document "d0") (qualified-name "OneToOneConnectorsModelToBeExecuted")))))
+    (reference (id (source (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyWheel"))) (kind membershipImport) (ordinal 0)) (authored-target "WithoutConnectorsExecution::MyWheel") (range (start (line 29) (character 15)) (end (line 29) (character 50))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyWheel1"))) (kind membershipImport) (ordinal 0)) (authored-target "WithoutConnectorsExecution::MyWheel1") (range (start (line 27) (character 15)) (end (line 27) (character 51))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyWheel2"))) (kind membershipImport) (ordinal 0)) (authored-target "WithoutConnectorsExecution::MyWheel2") (range (start (line 28) (character 15)) (end (line 28) (character 51))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "OneToOneConnectorsModelToBeExecuted::BikeFork"))) (kind membershipImport) (ordinal 0)) (authored-target "WithoutConnectorsModelToBeExecuted::BikeFork") (range (start (line 7) (character 18)) (end (line 7) (character 62))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "OneToOneConnectorsModelToBeExecuted::Wheel"))) (kind membershipImport) (ordinal 0)) (authored-target "WithoutConnectorsModelToBeExecuted::Wheel") (range (start (line 6) (character 18)) (end (line 6) (character 59))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom"))) (to (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom#metadata_keyword"))) (to (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom#metadata_keyword2"))) (to (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom#metadata_keyword3"))) (to (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom#metadata_keyword4"))) (to (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom#metadata_keyword"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom#metadata_keyword2"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom#metadata_keyword3"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom#metadata_keyword4"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/a_3_3_one_to_one_connectors.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 6 18) (end 6 59))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 18) (end 7 62))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 25 16) (end 25 21))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 27 15) (end 27 51))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 28 15) (end 28 51))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 29 15) (end 29 50))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 31 1) (end 31 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 33 1) (end 33 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 33 1) (end 33 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 38 1) (end 38 9))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 43 1) (end 43 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 51 1) (end 51 8))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

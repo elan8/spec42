@@ -11,6 +11,21 @@ package AyPkpowerTrain {
     part engine {
         g { }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "incomplete_part_unmatched_braces.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "missing_closing_brace")
+        (source "sysml")
+        (range (start 2 13) (end 2 14))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -24,13 +39,6 @@ Ident,OpenCurly,CloseCurly,EndOfFile,
     (part_usage 'engine'
       (default_ref_usage 'g'))))
 ~~~
-# FORMAT
-~~~sysml
-package AyPkpowerTrain {
-    part engine {
-        g { }
-
-~~~
 # EXPECTED
 ~~~
 parse.expected_close_curly
@@ -41,31 +49,24 @@ parse.expected_close_curly
 parse.expected_close_curly
 parse.expected_close_curly
 ~~~
+# FORMAT
+~~~sysml
+package AyPkpowerTrain {
+    part engine {
+        g { }
+
+~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "9c0ee1daa6cee75fb9ccedddd0cb85589549f14d5627c0ec19dbf3dc659cecf4") (contract-version "canonical-resolution-v1"))
+  (structure
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "incomplete_part_unmatched_braces.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "missing_closing_brace")
-        (source "sysml")
-        (range (start 2 13) (end 2 14))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

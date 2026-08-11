@@ -36,23 +36,56 @@ part def Outer {
     end feature endFeat;
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Integer'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Integer'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "coverage_sysml_body_members.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_part_def_body_element")
+        (source "sysml")
+        (range (start 4 4) (end 4 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 9 4) (end 9 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 9 18) (end 9 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 10 4) (end 10 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 12 15) (end 12 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 15 4) (end 15 25))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 22 4) (end 22 230))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -114,6 +147,24 @@ CloseCurly,EndOfFile,
     (attribute_usage const 'constAttr' : 'Integer' value)
     (interface_end end 'endFeat')))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Integer'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Integer'
+~~~
 # FORMAT
 ~~~sysml
 part def Outer {
@@ -150,96 +201,41 @@ part def Outer {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "part def") (id (node (document "d0") (qualified-name "Outer"))) (name "Outer") (declared-name "Outer") (declared)
-      (contains
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Outer::InnerAttr"))) (name "InnerAttr") (declared-name "InnerAttr") (declared (properties (ordered false) (unique true))) (effective (featuring-type (node (document "d0") (qualified-name "Outer")))))
-        (element (kind "item def") (id (node (document "d0") (qualified-name "Outer::InnerItem"))) (name "InnerItem") (declared-name "InnerItem") (effective (featuring-type (node (document "d0") (qualified-name "Outer")))))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Outer::InnerPart"))) (name "InnerPart") (declared-name "InnerPart") (declared) (effective (featuring-type (node (document "d0") (qualified-name "Outer")))))
-        (element (kind "enumeration") (id (node (document "d0") (qualified-name "Outer::e"))) (name "e") (declared-name "e") (effective (featuring-type (node (document "d0") (qualified-name "Outer")))))
-        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Outer::ev1"))) (name "ev1") (declared-name "ev1") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Outer")))))
-        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Outer::ind1"))) (name "ind1") (declared-name "ind1") (declared (properties (individual true))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Outer")))))
-        (element (kind "item") (id (node (document "d0") (qualified-name "Outer::it1"))) (name "it1") (declared-name "it1") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Outer")))))
-        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Outer::o1"))) (name "o1") (declared-name "o1") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Outer")))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Outer::p1"))) (name "p1") (declared-name "p1") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Outer")))))
-        (element (kind "port") (id (node (document "d0") (qualified-name "Outer::pt1"))) (name "pt1") (declared-name "pt1") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Outer")))))
-        (element (kind "ref") (id (node (document "d0") (qualified-name "Outer::r1"))) (name "r1") (declared-name "r1") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Outer")))))
-        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Outer::snap1"))) (name "snap1") (declared-name "snap1") (declared (properties (portion true) (portion-kind "snapshot"))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Outer")))))
-        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Outer::ts1"))) (name "ts1") (declared-name "ts1") (declared (properties (portion true) (portion-kind "timeslice"))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Outer")))))
-        (element (kind "attribute") (id (node (document "d0") (qualified-name "Outer::x"))) (name "x") (declared-name "x") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Outer")))))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "2963a7e829136144873e7099399cbf6b12e33dd5e5974fe6016f561891e52a5f") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Outer"))) (kind "part def") (name "Outer") (declared-name "Outer") (range (start (line 0) (character 0)) (end (line 0) (character 754))))
+    (element (id (node (document "d0") (qualified-name "Outer::InnerAttr"))) (kind "attribute def") (name "InnerAttr") (declared-name "InnerAttr") (range (start (line 1) (character 4)) (end (line 1) (character 28))) (parent (node (document "d0") (qualified-name "Outer"))))
+    (element (id (node (document "d0") (qualified-name "Outer::InnerItem"))) (kind "item def") (name "InnerItem") (declared-name "InnerItem") (range (start (line 5) (character 4)) (end (line 5) (character 23))) (parent (node (document "d0") (qualified-name "Outer"))))
+    (element (id (node (document "d0") (qualified-name "Outer::InnerPart"))) (kind "part def") (name "InnerPart") (declared-name "InnerPart") (range (start (line 6) (character 4)) (end (line 6) (character 23))) (parent (node (document "d0") (qualified-name "Outer"))))
+    (element (id (node (document "d0") (qualified-name "Outer::e"))) (kind "enumeration") (name "e") (declared-name "e") (range (start (line 10) (character 4)) (end (line 10) (character 23))) (parent (node (document "d0") (qualified-name "Outer"))) (authored (membership (kind Feature)) (relationships (typing (reference "InnerEnum") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Outer::ev1"))) (kind "occurrence") (name "ev1") (declared-name "ev1") (range (start (line 17) (character 21)) (end (line 17) (character 25))) (parent (node (document "d0") (qualified-name "Outer"))))
+    (element (id (node (document "d0") (qualified-name "Outer::ind1"))) (kind "occurrence") (name "ind1") (declared-name "ind1") (range (start (line 12) (character 15)) (end (line 12) (character 38))) (parent (node (document "d0") (qualified-name "Outer"))) (authored (membership (kind Feature)) (relationships (typing (reference "InnerIndividual") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Outer::it1"))) (kind "item") (name "it1") (declared-name "it1") (range (start (line 13) (character 4)) (end (line 13) (character 25))) (parent (node (document "d0") (qualified-name "Outer"))) (authored (membership (kind Feature)) (relationships (typing (reference "InnerItem") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Outer::o1"))) (kind "occurrence") (name "o1") (declared-name "o1") (range (start (line 11) (character 15)) (end (line 11) (character 18))) (parent (node (document "d0") (qualified-name "Outer"))))
+    (element (id (node (document "d0") (qualified-name "Outer::p1"))) (kind "part") (name "p1") (declared-name "p1") (range (start (line 14) (character 4)) (end (line 14) (character 24))) (parent (node (document "d0") (qualified-name "Outer"))) (authored (membership (kind Feature)) (relationships (typing (reference "InnerPart") (range (start (line 14) (character 14)) (end (line 14) (character 23)))))))
+    (element (id (node (document "d0") (qualified-name "Outer::pt1"))) (kind "port") (name "pt1") (declared-name "pt1") (range (start (line 15) (character 4)) (end (line 15) (character 25))) (parent (node (document "d0") (qualified-name "Outer"))) (authored (membership (kind Feature)) (relationships (typing (reference "InnerPort") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Outer::r1"))) (kind "ref") (name "r1") (declared-name "r1") (range (start (line 18) (character 4)) (end (line 18) (character 23))) (parent (node (document "d0") (qualified-name "Outer"))) (authored (membership (kind Feature)) (relationships (typing (reference "InnerPart") (range (start (line 18) (character 13)) (end (line 18) (character 22)))))))
+    (element (id (node (document "d0") (qualified-name "Outer::snap1"))) (kind "occurrence") (name "snap1") (declared-name "snap1") (range (start (line 19) (character 13)) (end (line 19) (character 19))) (parent (node (document "d0") (qualified-name "Outer"))))
+    (element (id (node (document "d0") (qualified-name "Outer::ts1"))) (kind "occurrence") (name "ts1") (declared-name "ts1") (range (start (line 20) (character 14)) (end (line 20) (character 18))) (parent (node (document "d0") (qualified-name "Outer"))))
+    (element (id (node (document "d0") (qualified-name "Outer::x"))) (kind "attribute") (name "x") (declared-name "x") (range (start (line 9) (character 4)) (end (line 9) (character 26))) (parent (node (document "d0") (qualified-name "Outer"))) (authored (membership (kind Feature)) (relationships (typing (reference "Integer") (range none)) (typing (reference "Integer") (range (start (line 9) (character 18)) (end (line 9) (character 25)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Outer::e"))) (kind featureTyping) (ordinal 0)) (authored-target "InnerEnum") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Outer::ind1"))) (kind featureTyping) (ordinal 0)) (authored-target "InnerIndividual") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Outer::it1"))) (kind featureTyping) (ordinal 0)) (authored-target "InnerItem") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Outer::InnerItem")))))
+    (reference (id (source (node (document "d0") (qualified-name "Outer::p1"))) (kind featureTyping) (ordinal 0)) (authored-target "InnerPart") (range (start (line 14) (character 14)) (end (line 14) (character 23))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Outer::InnerPart")))))
+    (reference (id (source (node (document "d0") (qualified-name "Outer::pt1"))) (kind featureTyping) (ordinal 0)) (authored-target "InnerPort") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Outer::r1"))) (kind featureTyping) (ordinal 0)) (authored-target "InnerPart") (range (start (line 18) (character 13)) (end (line 18) (character 22))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Outer::InnerPart")))))
+    (reference (id (source (node (document "d0") (qualified-name "Outer::x"))) (kind featureTyping) (ordinal 0)) (authored-target "Integer") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Outer::x"))) (kind featureTyping) (ordinal 1)) (authored-target "Integer") (range (start (line 9) (character 18)) (end (line 9) (character 25))) (outcome (status unresolved)))
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Outer::it1"))) (to (node (document "d0") (qualified-name "Outer::InnerItem"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Outer::p1"))) (to (node (document "d0") (qualified-name "Outer::InnerPart"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Outer::r1"))) (to (node (document "d0") (qualified-name "Outer::InnerPart"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Outer::it1"))) (target (node (document "d0") (qualified-name "Outer::InnerItem"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Outer::it1"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Outer::p1"))) (target (node (document "d0") (qualified-name "Outer::InnerPart"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Outer::p1"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Outer::r1"))) (target (node (document "d0") (qualified-name "Outer::InnerPart"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Outer::r1"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::InnerAttr"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::InnerItem"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::InnerPart"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::e"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::ev1"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::ind1"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::it1"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::o1"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::p1"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::pt1"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::snap1"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::ts1"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::x"))) (status missing-prerequisite) (target "Base::dataValues"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/coverage_sysml_body_members.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "recovered_part_def_body_element")
-        (source "sysml")
-        (range (start 4 4) (end 4 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 9 4) (end 9 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 10 4) (end 10 23))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 12 15) (end 12 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 15 4) (end 15 25))
-      )
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 22 4) (end 22 230))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

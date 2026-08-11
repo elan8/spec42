@@ -68,6 +68,33 @@ package SequencesExecution {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "a_3_6_sequences.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 23 16) (end 23 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 25 16) (end 25 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 26 16) (end 26 42))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -169,6 +196,32 @@ CloseCurly,EndOfFile,
         (connector_end)
         (connector_end)))))
 ~~~
+# EXPECTED
+~~~
+parse.expected_keyword_to
+parse.expected_keyword_to
+semantic.ambiguous_member 'malformed'
+semantic.unresolved_name 'HappensBefore'
+semantic.unresolved_name 'earlierOccurrence'
+semantic.unresolved_name 'laterOccurrence'
+semantic.unresolved_name 'HappensBefore'
+semantic.unresolved_name 'earlierOccurrence'
+semantic.unresolved_name 'laterOccurrence'
+semantic.unresolved_name 'timeEnclosedOccurrences'
+~~~
+# PROBLEMS
+~~~
+parse.expected_keyword_to
+parse.expected_keyword_to
+semantic.ambiguous_member 'malformed'
+semantic.unresolved_name 'HappensBefore'
+semantic.unresolved_name 'earlierOccurrence'
+semantic.unresolved_name 'laterOccurrence'
+semantic.unresolved_name 'HappensBefore'
+semantic.unresolved_name 'earlierOccurrence'
+semantic.unresolved_name 'laterOccurrence'
+semantic.unresolved_name 'timeEnclosedOccurrences'
+~~~
 # FORMAT
 ~~~sysml
 
@@ -234,155 +287,45 @@ package SequencesExecution {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-parse.expected_keyword_to
-parse.expected_keyword_to
-semantic.ambiguous_member 'malformed'
-semantic.unresolved_name 'HappensBefore'
-semantic.unresolved_name 'earlierOccurrence'
-semantic.unresolved_name 'laterOccurrence'
-semantic.unresolved_name 'HappensBefore'
-semantic.unresolved_name 'earlierOccurrence'
-semantic.unresolved_name 'laterOccurrence'
-semantic.unresolved_name 'timeEnclosedOccurrences'
-~~~
-# PROBLEMS
-~~~
-parse.expected_keyword_to
-parse.expected_keyword_to
-semantic.ambiguous_member 'malformed'
-semantic.unresolved_name 'HappensBefore'
-semantic.unresolved_name 'earlierOccurrence'
-semantic.unresolved_name 'laterOccurrence'
-semantic.unresolved_name 'HappensBefore'
-semantic.unresolved_name 'earlierOccurrence'
-semantic.unresolved_name 'laterOccurrence'
-semantic.unresolved_name 'timeEnclosedOccurrences'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "SequencesExecution"))) (name "SequencesExecution") (declared-name "SequencesExecution")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "SequencesExecution::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "SequencesExecution::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "SequencesExecution::HappensBefore"))) (name "HappensBefore") (declared-name "HappensBefore"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequencesExecution::MyDry"))) (name "MyDry") (declared-name "MyDry"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequencesExecution::MyDry_Before_Ship_Link"))) (name "MyDry_Before_Ship_Link") (declared-name "MyDry_Before_Ship_Link"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequencesExecution::MyManufacture"))) (name "MyManufacture") (declared-name "MyManufacture"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequencesExecution::MyManufactureStepsPD"))) (name "MyManufactureStepsPD") (declared-name "MyManufactureStepsPD"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequencesExecution::MyManufactureStepsPDS"))) (name "MyManufactureStepsPDS") (declared-name "MyManufactureStepsPDS"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequencesExecution::MyPaint"))) (name "MyPaint") (declared-name "MyPaint"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequencesExecution::MyPaint_Before_Dry_Link"))) (name "MyPaint_Before_Dry_Link") (declared-name "MyPaint_Before_Dry_Link"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequencesExecution::MyShip"))) (name "MyShip") (declared-name "MyShip"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "SequencesExecution::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "SequencesExecution::_atom"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword2"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword3"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword4"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword5"))) (name "atom") (declared-name "atom"))
-      )
-    )
-    (element (kind "package") (id (node (document "d0") (qualified-name "SequencesModelToBeExecuted"))) (name "SequencesModelToBeExecuted") (declared-name "SequencesModelToBeExecuted")
-      (contains
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequencesModelToBeExecuted::Dry"))) (name "Dry") (declared-name "Dry"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequencesModelToBeExecuted::Manufacture"))) (name "Manufacture") (declared-name "Manufacture"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequencesModelToBeExecuted::Paint"))) (name "Paint") (declared-name "Paint"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequencesModelToBeExecuted::Ship"))) (name "Ship") (declared-name "Ship"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "99b2d2f6c0df418776c198653812301c929b092074f1c4ff24c3b3f39f98de1d") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "SequencesExecution"))) (kind "package") (name "SequencesExecution") (declared-name "SequencesExecution") (range (start (line 18) (character 0)) (end (line 18) (character 1207))))
+    (element (id (node (document "d0") (qualified-name "SequencesExecution::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 23) (character 1)) (end (line 23) (character 25))) (parent (node (document "d0") (qualified-name "SequencesExecution"))) (authored (membership (kind Import) (visibility "private") (import (reference "Atoms::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 23) (character 16)) (end (line 23) (character 21))))))
+    (element (id (node (document "d0") (qualified-name "SequencesExecution::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 24) (character 1)) (end (line 24) (character 46))) (parent (node (document "d0") (qualified-name "SequencesExecution"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequencesModelToBeExecuted::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 24) (character 16)) (end (line 24) (character 42))))))
+    (element (id (node (document "d0") (qualified-name "SequencesExecution::HappensBefore"))) (kind "import") (name "HappensBefore") (declared-name "HappensBefore") (range (start (line 26) (character 1)) (end (line 26) (character 43))) (parent (node (document "d0") (qualified-name "SequencesExecution"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::HappensBefore") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 26) (character 16)) (end (line 26) (character 42))))))
+    (element (id (node (document "d0") (qualified-name "SequencesExecution::MyDry"))) (kind "kermlDecl") (name "MyDry") (declared-name "MyDry") (range (start (line 31) (character 1)) (end (line 31) (character 32))) (parent (node (document "d0") (qualified-name "SequencesExecution"))))
+    (element (id (node (document "d0") (qualified-name "SequencesExecution::MyDry_Before_Ship_Link"))) (kind "kermlDecl") (name "MyDry_Before_Ship_Link") (declared-name "MyDry_Before_Ship_Link") (range (start (line 45) (character 1)) (end (line 45) (character 161))) (parent (node (document "d0") (qualified-name "SequencesExecution"))))
+    (element (id (node (document "d0") (qualified-name "SequencesExecution::MyManufacture"))) (kind "kermlDecl") (name "MyManufacture") (declared-name "MyManufacture") (range (start (line 53) (character 1)) (end (line 53) (character 399))) (parent (node (document "d0") (qualified-name "SequencesExecution"))))
+    (element (id (node (document "d0") (qualified-name "SequencesExecution::MyManufactureStepsPD"))) (kind "kermlDecl") (name "MyManufactureStepsPD") (declared-name "MyManufactureStepsPD") (range (start (line 39) (character 1)) (end (line 39) (character 53))) (parent (node (document "d0") (qualified-name "SequencesExecution"))))
+    (element (id (node (document "d0") (qualified-name "SequencesExecution::MyManufactureStepsPDS"))) (kind "kermlDecl") (name "MyManufactureStepsPDS") (declared-name "MyManufactureStepsPDS") (range (start (line 50) (character 1)) (end (line 50) (character 68))) (parent (node (document "d0") (qualified-name "SequencesExecution"))))
+    (element (id (node (document "d0") (qualified-name "SequencesExecution::MyPaint"))) (kind "kermlDecl") (name "MyPaint") (declared-name "MyPaint") (range (start (line 29) (character 1)) (end (line 29) (character 36))) (parent (node (document "d0") (qualified-name "SequencesExecution"))))
+    (element (id (node (document "d0") (qualified-name "SequencesExecution::MyPaint_Before_Dry_Link"))) (kind "kermlDecl") (name "MyPaint_Before_Dry_Link") (declared-name "MyPaint_Before_Dry_Link") (range (start (line 34) (character 1)) (end (line 34) (character 163))) (parent (node (document "d0") (qualified-name "SequencesExecution"))))
+    (element (id (node (document "d0") (qualified-name "SequencesExecution::MyShip"))) (kind "kermlDecl") (name "MyShip") (declared-name "MyShip") (range (start (line 42) (character 1)) (end (line 42) (character 34))) (parent (node (document "d0") (qualified-name "SequencesExecution"))))
+    (element (id (node (document "d0") (qualified-name "SequencesExecution::Occurrence"))) (kind "import") (name "Occurrence") (declared-name "Occurrence") (range (start (line 25) (character 1)) (end (line 25) (character 40))) (parent (node (document "d0") (qualified-name "SequencesExecution"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::Occurrence") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 25) (character 16)) (end (line 25) (character 39))))))
+    (element (id (node (document "d0") (qualified-name "SequencesExecution::_atom"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 28) (character 1)) (end (line 28) (character 8))) (parent (node (document "d0") (qualified-name "SequencesExecution"))))
+    (element (id (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 30) (character 1)) (end (line 30) (character 8))) (parent (node (document "d0") (qualified-name "SequencesExecution"))))
+    (element (id (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword2"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 33) (character 1)) (end (line 33) (character 8))) (parent (node (document "d0") (qualified-name "SequencesExecution"))))
+    (element (id (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword3"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 41) (character 1)) (end (line 41) (character 8))) (parent (node (document "d0") (qualified-name "SequencesExecution"))))
+    (element (id (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword4"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 44) (character 1)) (end (line 44) (character 8))) (parent (node (document "d0") (qualified-name "SequencesExecution"))))
+    (element (id (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword5"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 52) (character 1)) (end (line 52) (character 8))) (parent (node (document "d0") (qualified-name "SequencesExecution"))))
+    (element (id (node (document "d0") (qualified-name "SequencesModelToBeExecuted"))) (kind "package") (name "SequencesModelToBeExecuted") (declared-name "SequencesModelToBeExecuted") (range (start (line 1) (character 0)) (end (line 1) (character 308))))
+    (element (id (node (document "d0") (qualified-name "SequencesModelToBeExecuted::Dry"))) (kind "kermlDecl") (name "Dry") (declared-name "Dry") (range (start (line 14) (character 1)) (end (line 14) (character 14))) (parent (node (document "d0") (qualified-name "SequencesModelToBeExecuted"))))
+    (element (id (node (document "d0") (qualified-name "SequencesModelToBeExecuted::Manufacture"))) (kind "kermlDecl") (name "Manufacture") (declared-name "Manufacture") (range (start (line 6) (character 1)) (end (line 6) (character 205))) (parent (node (document "d0") (qualified-name "SequencesModelToBeExecuted"))))
+    (element (id (node (document "d0") (qualified-name "SequencesModelToBeExecuted::Paint"))) (kind "kermlDecl") (name "Paint") (declared-name "Paint") (range (start (line 13) (character 1)) (end (line 13) (character 16))) (parent (node (document "d0") (qualified-name "SequencesModelToBeExecuted"))))
+    (element (id (node (document "d0") (qualified-name "SequencesModelToBeExecuted::Ship"))) (kind "kermlDecl") (name "Ship") (declared-name "Ship") (range (start (line 15) (character 1)) (end (line 15) (character 15))) (parent (node (document "d0") (qualified-name "SequencesModelToBeExecuted"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "SequencesExecution::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Atoms::*") (range (start (line 23) (character 16)) (end (line 23) (character 21))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SequencesExecution::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "SequencesModelToBeExecuted::*") (range (start (line 24) (character 16)) (end (line 24) (character 42))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SequencesModelToBeExecuted")))))
+    (reference (id (source (node (document "d0") (qualified-name "SequencesExecution::HappensBefore"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::HappensBefore") (range (start (line 26) (character 16)) (end (line 26) (character 42))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SequencesExecution::Occurrence"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::Occurrence") (range (start (line 25) (character 16)) (end (line 25) (character 39))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "SequencesExecution::_atom"))) (to (node (document "d0") (qualified-name "SequencesExecution"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword"))) (to (node (document "d0") (qualified-name "SequencesExecution"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword2"))) (to (node (document "d0") (qualified-name "SequencesExecution"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword3"))) (to (node (document "d0") (qualified-name "SequencesExecution"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword4"))) (to (node (document "d0") (qualified-name "SequencesExecution"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword5"))) (to (node (document "d0") (qualified-name "SequencesExecution"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SequencesExecution::_atom"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword2"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword3"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword4"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword5"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/a_3_6_sequences.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 23 16) (end 23 21))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 25 16) (end 25 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 26 16) (end 26 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 28 1) (end 28 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 30 1) (end 30 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 30 1) (end 30 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 33 1) (end 33 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 41 1) (end 41 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 44 1) (end 44 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 52 1) (end 52 8))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

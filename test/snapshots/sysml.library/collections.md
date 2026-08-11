@@ -153,21 +153,44 @@ standard library package Collections {
     
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Positive'
-semantic.unresolved_name 'Natural'
-semantic.unresolved_name 'Positive'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Positive'
-semantic.unresolved_name 'Natural'
-semantic.unresolved_name 'Positive'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "collections.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 16) (end 8 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 16) (end 9 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 16) (end 10 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 11 16) (end 11 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 12 16) (end 12 32))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -299,6 +322,22 @@ CloseCurly,EndOfFile,
       (documentation)
       (feature_def 'elements' : 'KeyValuePair' multiplicity :>> 'Map::elements' ordered
         (comment)))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Positive'
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'Positive'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Positive'
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'Positive'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
 ~~~
 # FORMAT
 ~~~sysml
@@ -452,75 +491,38 @@ standard library package Collections {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Collections"))) (name "Collections") (declared-name "Collections")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Collections::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Collections::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Collections::*#import2"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Collections::*#import3"))) (name "*") (declared-name "*"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Collections::Array"))) (name "Array") (declared-name "Array"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Collections::Bag"))) (name "Bag") (declared-name "Bag"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Collections::Collection"))) (name "Collection") (declared-name "Collection"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Collections::KeyValuePair"))) (name "KeyValuePair") (declared-name "KeyValuePair"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Collections::List"))) (name "List") (declared-name "List"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Collections::Map"))) (name "Map") (declared-name "Map"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Collections::OrderedCollection"))) (name "OrderedCollection") (declared-name "OrderedCollection"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Collections::OrderedMap"))) (name "OrderedMap") (declared-name "OrderedMap"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Collections::OrderedSet"))) (name "OrderedSet") (declared-name "OrderedSet"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Collections::Set"))) (name "Set") (declared-name "Set"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Collections::UniqueCollection"))) (name "UniqueCollection") (declared-name "UniqueCollection"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "Collections::_documentation"))) (name ""))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Collections::size"))) (name "size") (declared-name "size"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "057b9c94feb32d456af0cdc122dde1d481213efd29f4e2b3d17b39de2fdf9525") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Collections"))) (kind "package") (name "Collections") (declared-name "Collections") (range (start (line 0) (character 0)) (end (line 0) (character 4973))))
+    (element (id (node (document "d0") (qualified-name "Collections::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 8) (character 1)) (end (line 8) (character 24))) (parent (node (document "d0") (qualified-name "Collections"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 20))))))
+    (element (id (node (document "d0") (qualified-name "Collections::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 9) (character 1)) (end (line 9) (character 32))) (parent (node (document "d0") (qualified-name "Collections"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 9) (character 16)) (end (line 9) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "Collections::*#import2"))) (kind "import") (name "*") (declared-name "*") (range (start (line 11) (character 1)) (end (line 11) (character 36))) (parent (node (document "d0") (qualified-name "Collections"))) (authored (membership (kind Import) (visibility "private") (import (reference "IntegerFunctions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 11) (character 16)) (end (line 11) (character 32))))))
+    (element (id (node (document "d0") (qualified-name "Collections::*#import3"))) (kind "import") (name "*") (declared-name "*") (range (start (line 12) (character 1)) (end (line 12) (character 36))) (parent (node (document "d0") (qualified-name "Collections"))) (authored (membership (kind Import) (visibility "private") (import (reference "ControlFunctions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 12) (character 16)) (end (line 12) (character 32))))))
+    (element (id (node (document "d0") (qualified-name "Collections::Array"))) (kind "kermlDecl") (name "Array") (declared-name "Array") (range (start (line 44) (character 4)) (end (line 44) (character 1947))) (parent (node (document "d0") (qualified-name "Collections"))))
+    (element (id (node (document "d0") (qualified-name "Collections::Bag"))) (kind "kermlDecl") (name "Bag") (declared-name "Bag") (range (start (line 77) (character 1)) (end (line 77) (character 124))) (parent (node (document "d0") (qualified-name "Collections"))))
+    (element (id (node (document "d0") (qualified-name "Collections::Collection"))) (kind "kermlDecl") (name "Collection") (declared-name "Collection") (range (start (line 14) (character 1)) (end (line 14) (character 251))) (parent (node (document "d0") (qualified-name "Collections"))))
+    (element (id (node (document "d0") (qualified-name "Collections::KeyValuePair"))) (kind "kermlDecl") (name "KeyValuePair") (declared-name "KeyValuePair") (range (start (line 110) (character 4)) (end (line 110) (character 279))) (parent (node (document "d0") (qualified-name "Collections"))))
+    (element (id (node (document "d0") (qualified-name "Collections::List"))) (kind "kermlDecl") (name "List") (declared-name "List") (range (start (line 103) (character 1)) (end (line 103) (character 129))) (parent (node (document "d0") (qualified-name "Collections"))))
+    (element (id (node (document "d0") (qualified-name "Collections::Map"))) (kind "kermlDecl") (name "Map") (declared-name "Map") (range (start (line 121) (character 4)) (end (line 121) (character 432))) (parent (node (document "d0") (qualified-name "Collections"))))
+    (element (id (node (document "d0") (qualified-name "Collections::OrderedCollection"))) (kind "kermlDecl") (name "OrderedCollection") (declared-name "OrderedCollection") (range (start (line 24) (character 4)) (end (line 24) (character 239))) (parent (node (document "d0") (qualified-name "Collections"))))
+    (element (id (node (document "d0") (qualified-name "Collections::OrderedMap"))) (kind "kermlDecl") (name "OrderedMap") (declared-name "OrderedMap") (range (start (line 135) (character 4)) (end (line 135) (character 288))) (parent (node (document "d0") (qualified-name "Collections"))))
+    (element (id (node (document "d0") (qualified-name "Collections::OrderedSet"))) (kind "kermlDecl") (name "OrderedSet") (declared-name "OrderedSet") (range (start (line 91) (character 1)) (end (line 91) (character 373))) (parent (node (document "d0") (qualified-name "Collections"))))
+    (element (id (node (document "d0") (qualified-name "Collections::Set"))) (kind "kermlDecl") (name "Set") (declared-name "Set") (range (start (line 84) (character 1)) (end (line 84) (character 125))) (parent (node (document "d0") (qualified-name "Collections"))))
+    (element (id (node (document "d0") (qualified-name "Collections::UniqueCollection"))) (kind "kermlDecl") (name "UniqueCollection") (declared-name "UniqueCollection") (range (start (line 33) (character 4)) (end (line 33) (character 298))) (parent (node (document "d0") (qualified-name "Collections"))))
+    (element (id (node (document "d0") (qualified-name "Collections::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 4973))) (parent (node (document "d0") (qualified-name "Collections"))))
+    (element (id (node (document "d0") (qualified-name "Collections::size"))) (kind "import") (name "size") (declared-name "size") (range (start (line 10) (character 1)) (end (line 10) (character 40))) (parent (node (document "d0") (qualified-name "Collections"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::size") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 10) (character 16)) (end (line 10) (character 39))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Collections::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Base::*") (range (start (line 8) (character 16)) (end (line 8) (character 20))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Collections::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (range (start (line 9) (character 16)) (end (line 9) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Collections::*#import2"))) (kind namespaceImport) (ordinal 0)) (authored-target "IntegerFunctions::*") (range (start (line 11) (character 16)) (end (line 11) (character 32))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Collections::*#import3"))) (kind namespaceImport) (ordinal 0)) (authored-target "ControlFunctions::*") (range (start (line 12) (character 16)) (end (line 12) (character 32))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Collections::size"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::size") (range (start (line 10) (character 16)) (end (line 10) (character 39))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Collections::_documentation"))) (to (node (document "d0") (qualified-name "Collections"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/collections.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 16) (end 8 20))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 9 16) (end 9 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 10 16) (end 10 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 11 16) (end 11 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 12 16) (end 12 32))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

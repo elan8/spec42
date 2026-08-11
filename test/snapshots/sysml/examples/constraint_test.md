@@ -96,6 +96,147 @@ package ConstraintTest {
 	assert not massLimitation { :>> mass = vehicle3.mass; :>> massLimit = vehicle4.mass; }
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "constraint_test.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 3 16) (end 3 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 28 7) (end 28 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 28 32) (end 28 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 29 7) (end 29 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 29 38) (end 29 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 30 7) (end 30 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 30 38) (end 30 60))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 31 7) (end 31 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 31 38) (end 31 59))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 51 7) (end 51 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 51 34) (end 51 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 52 7) (end 52 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 52 40) (end 52 51))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 53 7) (end 53 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 53 40) (end 53 62))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 54 7) (end 54 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 54 40) (end 54 61))
+      )
+      (diagnostic
+        (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 69 1) (end 69 152))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_part_usage_body_element")
+        (source "sysml")
+        (range (start 77 2) (end 77 140))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 77 2) (end 77 140))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -252,6 +393,42 @@ CloseCurly,EndOfFile,
       (default_ref_usage :>> 'mass' value)
       (default_ref_usage :>> 'massLimit' value))))
 ~~~
+# EXPECTED
+~~~
+semantic.duplicate_name 'massLimitation'
+semantic.ambiguous_member 'massLimitation'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'mass'
+semantic.unresolved_name 'massLimit'
+~~~
+# PROBLEMS
+~~~
+semantic.duplicate_name 'massLimitation'
+semantic.ambiguous_member 'massLimitation'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'mass'
+semantic.unresolved_name 'massLimit'
+~~~
 # FORMAT
 ~~~sysml
 package ConstraintTest {
@@ -345,219 +522,87 @@ package ConstraintTest {
 	assert not massLimitation { :>> mass = vehicle3.mass; :>> massLimit = vehicle4.mass; }
 }
 ~~~
-# EXPECTED
-~~~
-semantic.duplicate_name 'massLimitation'
-semantic.ambiguous_member 'massLimitation'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'mass'
-semantic.unresolved_name 'massLimit'
-~~~
-# PROBLEMS
-~~~
-semantic.duplicate_name 'massLimitation'
-semantic.ambiguous_member 'massLimitation'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'mass'
-semantic.unresolved_name 'massLimit'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ConstraintTest"))) (name "ConstraintTest") (declared-name "ConstraintTest")
-      (contains
-        (element (kind "part def") (id (node (document "d0") (qualified-name "ConstraintTest::Component"))) (name "Component") (declared-name "Component") (declared)
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ConstraintTest::Component::mass"))) (name "mass") (declared-name "mass") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ConstraintTest::Component")))))
-          )
-        )
-        (element (kind "constraint def") (id (node (document "d0") (qualified-name "ConstraintTest::MassAnalysis"))) (name "MassAnalysis") (declared-name "MassAnalysis") (declared (own-expression (expression (kind "featureReference") (reference "attribute")))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-        (element (kind "constraint def") (id (node (document "d0") (qualified-name "ConstraintTest::MassAnalysis2"))) (name "MassAnalysis2") (declared-name "MassAnalysis2") (declared (own-expression (expression (kind "binary") (operator "==") (children (expression (kind "featureReference") (reference "totalMass")) (expression (kind "invocation") (children (expression (kind "featureReference") (reference "sum"))) (arguments (argument (expression (kind "featureReference") (reference "componentMasses"))))))))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-        (element (kind "constraint def") (id (node (document "d0") (qualified-name "ConstraintTest::MassAnalysis3"))) (name "MassAnalysis3") (declared-name "MassAnalysis3"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ConstraintTest::MassValue"))) (name "MassValue") (declared-name "MassValue"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ConstraintTest::kg"))) (name "kg") (declared-name "kg"))
-        (element (kind "constraint") (id (node (document "d0") (qualified-name "ConstraintTest::massAnalysis3"))) (name "massAnalysis3") (declared-name "massAnalysis3") (declared (own-expression (expression (kind "binary") (operator "==") (children (expression (kind "featureReference") (reference "totalMass")) (expression (kind "invocation") (children (expression (kind "featureReference") (reference "sum"))) (arguments (argument (expression (kind "featureReference") (reference "componentMasses"))))))))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference")) (analysis (status "unresolved"))))
-        (element (kind "constraint") (id (node (document "d0") (qualified-name "ConstraintTest::massLimitation"))) (name "massLimitation") (declared-name "massLimitation") (declared (own-expression (expression (kind "featureReference") (reference "mass")))) (evaluation (expression (status "incomplete") (error "expression is incomplete")) (analysis (status "incomplete"))))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ConstraintTest::sum"))) (name "sum") (declared-name "sum"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "ConstraintTest::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "ConstraintTest::vehicle::engine"))) (name "engine") (declared-name "engine") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ConstraintTest::Component")))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "ConstraintTest::vehicle::frontAxleAssembly"))) (name "frontAxleAssembly") (declared-name "frontAxleAssembly") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ConstraintTest::Component")))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "ConstraintTest::vehicle::rearAxleAssembly"))) (name "rearAxleAssembly") (declared-name "rearAxleAssembly") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ConstraintTest::Component")))))
-          )
-        )
-        (element (kind "part") (id (node (document "d0") (qualified-name "ConstraintTest::vehicle1a"))) (name "vehicle1a") (declared-name "vehicle1a") (declared (properties (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "ConstraintTest::vehicle1b"))) (name "vehicle1b") (declared-name "vehicle1b") (declared (properties (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "ConstraintTest::vehicle2a"))) (name "vehicle2a") (declared-name "vehicle2a") (declared (properties (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "ConstraintTest::vehicle2b"))) (name "vehicle2b") (declared-name "vehicle2b") (declared (properties (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "ConstraintTest::vehicle3"))) (name "vehicle3") (declared-name "vehicle3") (declared (properties (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "ConstraintTest::vehicle4"))) (name "vehicle4") (declared-name "vehicle4") (declared (properties (ordered false))))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "2f473f7caa0375c91449d9a7c721135a4b2765677d5dd56827f3fdf43e9ee00c") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ConstraintTest"))) (kind "package") (name "ConstraintTest") (declared-name "ConstraintTest") (range (start (line 0) (character 0)) (end (line 0) (character 2477))))
+    (element (id (node (document "d0") (qualified-name "ConstraintTest::Component"))) (kind "part def") (name "Component") (declared-name "Component") (range (start (line 12) (character 1)) (end (line 12) (character 53))) (parent (node (document "d0") (qualified-name "ConstraintTest"))))
+    (element (id (node (document "d0") (qualified-name "ConstraintTest::Component::mass"))) (kind "attribute") (name "mass") (declared-name "mass") (range (start (line 13) (character 2)) (end (line 13) (character 28))) (parent (node (document "d0") (qualified-name "ConstraintTest::Component"))) (authored (membership (kind Feature)) (relationships (typing (reference "MassValue") (range none)) (typing (reference "MassValue") (range (start (line 13) (character 18)) (end (line 13) (character 27)))))))
+    (element (id (node (document "d0") (qualified-name "ConstraintTest::MassAnalysis"))) (kind "constraint def") (name "MassAnalysis") (declared-name "MassAnalysis") (range (start (line 5) (character 1)) (end (line 5) (character 152))) (parent (node (document "d0") (qualified-name "ConstraintTest"))))
+    (element (id (node (document "d0") (qualified-name "ConstraintTest::MassAnalysis2"))) (kind "constraint def") (name "MassAnalysis2") (declared-name "MassAnalysis2") (range (start (line 41) (character 1)) (end (line 41) (character 141))) (parent (node (document "d0") (qualified-name "ConstraintTest"))))
+    (element (id (node (document "d0") (qualified-name "ConstraintTest::MassAnalysis3"))) (kind "constraint def") (name "MassAnalysis3") (declared-name "MassAnalysis3") (range (start (line 64) (character 1)) (end (line 64) (character 101))) (parent (node (document "d0") (qualified-name "ConstraintTest"))))
+    (element (id (node (document "d0") (qualified-name "ConstraintTest::MassValue"))) (kind "import") (name "MassValue") (declared-name "MassValue") (range (start (line 1) (character 1)) (end (line 1) (character 31))) (parent (node (document "d0") (qualified-name "ConstraintTest"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::MassValue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 30))))))
+    (element (id (node (document "d0") (qualified-name "ConstraintTest::kg"))) (kind "import") (name "kg") (declared-name "kg") (range (start (line 2) (character 1)) (end (line 2) (character 23))) (parent (node (document "d0") (qualified-name "ConstraintTest"))) (authored (membership (kind Import) (visibility "private") (import (reference "SI::kg") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 22))))))
+    (element (id (node (document "d0") (qualified-name "ConstraintTest::massAnalysis3"))) (kind "constraint") (name "massAnalysis3") (declared-name "massAnalysis3") (range (start (line 69) (character 1)) (end (line 69) (character 152))) (parent (node (document "d0") (qualified-name "ConstraintTest"))) (authored (membership (kind Feature)) (relationships (typing (reference "MassAnalysis3") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ConstraintTest::massLimitation"))) (kind "constraint") (name "massLimitation") (declared-name "massLimitation") (range (start (line 87) (character 1)) (end (line 87) (character 88))) (parent (node (document "d0") (qualified-name "ConstraintTest"))))
+    (element (id (node (document "d0") (qualified-name "ConstraintTest::sum"))) (kind "import") (name "sum") (declared-name "sum") (range (start (line 3) (character 1)) (end (line 3) (character 40))) (parent (node (document "d0") (qualified-name "ConstraintTest"))) (authored (membership (kind Import) (visibility "private") (import (reference "NumericalFunctions::sum") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 3) (character 16)) (end (line 3) (character 39))))))
+    (element (id (node (document "d0") (qualified-name "ConstraintTest::vehicle"))) (kind "part") (name "vehicle") (declared-name "vehicle") (range (start (line 16) (character 1)) (end (line 16) (character 134))) (parent (node (document "d0") (qualified-name "ConstraintTest"))) (authored (membership (kind Feature)) (relationships (typing (reference "Component") (range (start (line 16) (character 16)) (end (line 16) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ConstraintTest::vehicle1a"))) (kind "part") (name "vehicle1a") (declared-name "vehicle1a") (range (start (line 22) (character 1)) (end (line 22) (character 374))) (parent (node (document "d0") (qualified-name "ConstraintTest"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "vehicle") (range (start (line 22) (character 19)) (end (line 22) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ConstraintTest::vehicle1b"))) (kind "part") (name "vehicle1b") (declared-name "vehicle1b") (range (start (line 34) (character 1)) (end (line 34) (character 234))) (parent (node (document "d0") (qualified-name "ConstraintTest"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "vehicle") (range (start (line 34) (character 19)) (end (line 34) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ConstraintTest::vehicle2a"))) (kind "part") (name "vehicle2a") (declared-name "vehicle2a") (range (start (line 48) (character 1)) (end (line 48) (character 306))) (parent (node (document "d0") (qualified-name "ConstraintTest"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "vehicle") (range (start (line 48) (character 19)) (end (line 48) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ConstraintTest::vehicle2b"))) (kind "part") (name "vehicle2b") (declared-name "vehicle2b") (range (start (line 57) (character 1)) (end (line 57) (character 197))) (parent (node (document "d0") (qualified-name "ConstraintTest"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "vehicle") (range (start (line 57) (character 19)) (end (line 57) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ConstraintTest::vehicle3"))) (kind "part") (name "vehicle3") (declared-name "vehicle3") (range (start (line 76) (character 1)) (end (line 76) (character 169))) (parent (node (document "d0") (qualified-name "ConstraintTest"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "vehicle") (range (start (line 76) (character 18)) (end (line 76) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ConstraintTest::vehicle4"))) (kind "part") (name "vehicle4") (declared-name "vehicle4") (range (start (line 83) (character 1)) (end (line 83) (character 123))) (parent (node (document "d0") (qualified-name "ConstraintTest"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "vehicle") (range (start (line 83) (character 18)) (end (line 83) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ConstraintTest::vehicle::engine"))) (kind "part") (name "engine") (declared-name "engine") (range (start (line 17) (character 2)) (end (line 17) (character 26))) (parent (node (document "d0") (qualified-name "ConstraintTest::vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Component") (range (start (line 17) (character 16)) (end (line 17) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ConstraintTest::vehicle::frontAxleAssembly"))) (kind "part") (name "frontAxleAssembly") (declared-name "frontAxleAssembly") (range (start (line 18) (character 2)) (end (line 18) (character 37))) (parent (node (document "d0") (qualified-name "ConstraintTest::vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Component") (range (start (line 18) (character 27)) (end (line 18) (character 36)))))))
+    (element (id (node (document "d0") (qualified-name "ConstraintTest::vehicle::rearAxleAssembly"))) (kind "part") (name "rearAxleAssembly") (declared-name "rearAxleAssembly") (range (start (line 19) (character 2)) (end (line 19) (character 36))) (parent (node (document "d0") (qualified-name "ConstraintTest::vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Component") (range (start (line 19) (character 26)) (end (line 19) (character 35)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::Component::mass"))) (kind featureTyping) (ordinal 0)) (authored-target "MassValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConstraintTest::MassValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::Component::mass"))) (kind featureTyping) (ordinal 1)) (authored-target "MassValue") (range (start (line 13) (character 18)) (end (line 13) (character 27))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConstraintTest::MassValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::MassValue"))) (kind membershipImport) (ordinal 0)) (authored-target "ISQ::MassValue") (range (start (line 1) (character 16)) (end (line 1) (character 30))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::kg"))) (kind membershipImport) (ordinal 0)) (authored-target "SI::kg") (range (start (line 2) (character 16)) (end (line 2) (character 22))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::massAnalysis3"))) (kind featureTyping) (ordinal 0)) (authored-target "MassAnalysis3") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConstraintTest::MassAnalysis3")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::sum"))) (kind membershipImport) (ordinal 0)) (authored-target "NumericalFunctions::sum") (range (start (line 3) (character 16)) (end (line 3) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle"))) (kind featureTyping) (ordinal 0)) (authored-target "Component") (range (start (line 16) (character 16)) (end (line 16) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConstraintTest::Component")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle1a"))) (kind subsetting) (ordinal 0)) (authored-target "vehicle") (range (start (line 22) (character 19)) (end (line 22) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConstraintTest::vehicle")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle1a"))) (kind bindSource) (ordinal 0)) (authored-target "massAnalysis::totalMass") (range (start (line 28) (character 7)) (end (line 28) (character 29))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle1a"))) (kind bindSource) (ordinal 1)) (authored-target "massAnalysis::componentMasses") (range (start (line 29) (character 7)) (end (line 29) (character 35))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle1a"))) (kind bindSource) (ordinal 2)) (authored-target "massAnalysis::componentMasses") (range (start (line 30) (character 7)) (end (line 30) (character 35))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle1a"))) (kind bindSource) (ordinal 3)) (authored-target "massAnalysis::componentMasses") (range (start (line 31) (character 7)) (end (line 31) (character 35))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle1a"))) (kind bindTarget) (ordinal 0)) (authored-target "mass") (range (start (line 28) (character 32)) (end (line 28) (character 36))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle1a"))) (kind bindTarget) (ordinal 1)) (authored-target "engine::mass") (range (start (line 29) (character 38)) (end (line 29) (character 49))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle1a"))) (kind bindTarget) (ordinal 2)) (authored-target "frontAxleAssembly::mass") (range (start (line 30) (character 38)) (end (line 30) (character 60))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle1a"))) (kind bindTarget) (ordinal 3)) (authored-target "rearAxleAssembly::mass") (range (start (line 31) (character 38)) (end (line 31) (character 59))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle1b"))) (kind subsetting) (ordinal 0)) (authored-target "vehicle") (range (start (line 34) (character 19)) (end (line 34) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConstraintTest::vehicle")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle2a"))) (kind subsetting) (ordinal 0)) (authored-target "vehicle") (range (start (line 48) (character 19)) (end (line 48) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConstraintTest::vehicle")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle2a"))) (kind bindSource) (ordinal 0)) (authored-target "massConstraint::totalMass") (range (start (line 51) (character 7)) (end (line 51) (character 31))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle2a"))) (kind bindSource) (ordinal 1)) (authored-target "massConstraint::componentMasses") (range (start (line 52) (character 7)) (end (line 52) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle2a"))) (kind bindSource) (ordinal 2)) (authored-target "massConstraint::componentMasses") (range (start (line 53) (character 7)) (end (line 53) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle2a"))) (kind bindSource) (ordinal 3)) (authored-target "massConstraint::componentMasses") (range (start (line 54) (character 7)) (end (line 54) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle2a"))) (kind bindTarget) (ordinal 0)) (authored-target "mass") (range (start (line 51) (character 34)) (end (line 51) (character 38))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle2a"))) (kind bindTarget) (ordinal 1)) (authored-target "engine::mass") (range (start (line 52) (character 40)) (end (line 52) (character 51))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle2a"))) (kind bindTarget) (ordinal 2)) (authored-target "frontAxleAssembly::mass") (range (start (line 53) (character 40)) (end (line 53) (character 62))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle2a"))) (kind bindTarget) (ordinal 3)) (authored-target "rearAxleAssembly::mass") (range (start (line 54) (character 40)) (end (line 54) (character 61))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle2b"))) (kind subsetting) (ordinal 0)) (authored-target "vehicle") (range (start (line 57) (character 19)) (end (line 57) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConstraintTest::vehicle")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle3"))) (kind subsetting) (ordinal 0)) (authored-target "vehicle") (range (start (line 76) (character 18)) (end (line 76) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConstraintTest::vehicle")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle4"))) (kind subsetting) (ordinal 0)) (authored-target "vehicle") (range (start (line 83) (character 18)) (end (line 83) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConstraintTest::vehicle")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle::engine"))) (kind featureTyping) (ordinal 0)) (authored-target "Component") (range (start (line 17) (character 16)) (end (line 17) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConstraintTest::Component")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle::frontAxleAssembly"))) (kind featureTyping) (ordinal 0)) (authored-target "Component") (range (start (line 18) (character 27)) (end (line 18) (character 36))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConstraintTest::Component")))))
+    (reference (id (source (node (document "d0") (qualified-name "ConstraintTest::vehicle::rearAxleAssembly"))) (kind featureTyping) (ordinal 0)) (authored-target "Component") (range (start (line 19) (character 26)) (end (line 19) (character 35))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ConstraintTest::Component")))))
   )
   (relationships
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "ConstraintTest::vehicle1a"))) (to (node (document "d0") (qualified-name "ConstraintTest::vehicle"))) (provenance authored))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "ConstraintTest::vehicle1b"))) (to (node (document "d0") (qualified-name "ConstraintTest::vehicle"))) (provenance authored))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "ConstraintTest::vehicle2a"))) (to (node (document "d0") (qualified-name "ConstraintTest::vehicle"))) (provenance authored))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "ConstraintTest::vehicle2b"))) (to (node (document "d0") (qualified-name "ConstraintTest::vehicle"))) (provenance authored))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "ConstraintTest::vehicle3"))) (to (node (document "d0") (qualified-name "ConstraintTest::vehicle"))) (provenance authored))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "ConstraintTest::vehicle4"))) (to (node (document "d0") (qualified-name "ConstraintTest::vehicle"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ConstraintTest::massAnalysis3"))) (to (node (document "d0") (qualified-name "ConstraintTest::MassAnalysis3"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ConstraintTest::vehicle"))) (to (node (document "d0") (qualified-name "ConstraintTest::Component"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ConstraintTest::vehicle::engine"))) (to (node (document "d0") (qualified-name "ConstraintTest::Component"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ConstraintTest::vehicle::frontAxleAssembly"))) (to (node (document "d0") (qualified-name "ConstraintTest::Component"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ConstraintTest::vehicle::rearAxleAssembly"))) (to (node (document "d0") (qualified-name "ConstraintTest::Component"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ConstraintTest::Component::mass"))) (target (node (document "d0") (qualified-name "ConstraintTest::MassValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConstraintTest::Component::mass"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ConstraintTest::Component::mass"))) (target (node (document "d0") (qualified-name "ConstraintTest::MassValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConstraintTest::Component::mass"))) (kind featureTyping) (ordinal 1)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ConstraintTest::massAnalysis3"))) (target (node (document "d0") (qualified-name "ConstraintTest::MassAnalysis3"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConstraintTest::massAnalysis3"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ConstraintTest::vehicle"))) (target (node (document "d0") (qualified-name "ConstraintTest::Component"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConstraintTest::vehicle"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "d0") (qualified-name "ConstraintTest::vehicle1a"))) (target (node (document "d0") (qualified-name "ConstraintTest::vehicle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConstraintTest::vehicle1a"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "d0") (qualified-name "ConstraintTest::vehicle1b"))) (target (node (document "d0") (qualified-name "ConstraintTest::vehicle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConstraintTest::vehicle1b"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "d0") (qualified-name "ConstraintTest::vehicle2a"))) (target (node (document "d0") (qualified-name "ConstraintTest::vehicle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConstraintTest::vehicle2a"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "d0") (qualified-name "ConstraintTest::vehicle2b"))) (target (node (document "d0") (qualified-name "ConstraintTest::vehicle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConstraintTest::vehicle2b"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "d0") (qualified-name "ConstraintTest::vehicle3"))) (target (node (document "d0") (qualified-name "ConstraintTest::vehicle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConstraintTest::vehicle3"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "d0") (qualified-name "ConstraintTest::vehicle4"))) (target (node (document "d0") (qualified-name "ConstraintTest::vehicle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConstraintTest::vehicle4"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ConstraintTest::vehicle::engine"))) (target (node (document "d0") (qualified-name "ConstraintTest::Component"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConstraintTest::vehicle::engine"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ConstraintTest::vehicle::frontAxleAssembly"))) (target (node (document "d0") (qualified-name "ConstraintTest::Component"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConstraintTest::vehicle::frontAxleAssembly"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ConstraintTest::vehicle::rearAxleAssembly"))) (target (node (document "d0") (qualified-name "ConstraintTest::Component"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ConstraintTest::vehicle::rearAxleAssembly"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-    (bind (status pending-expression) (document "d0") (source-expression "massAnalysis::componentMasses") (target-expression "engine::mass") (container-prefix "ConstraintTest::vehicle1a"))
-    (bind (status pending-expression) (document "d0") (source-expression "massAnalysis::componentMasses") (target-expression "frontAxleAssembly::mass") (container-prefix "ConstraintTest::vehicle1a"))
-    (bind (status pending-expression) (document "d0") (source-expression "massAnalysis::componentMasses") (target-expression "rearAxleAssembly::mass") (container-prefix "ConstraintTest::vehicle1a"))
-    (bind (status pending-expression) (document "d0") (source-expression "massAnalysis::totalMass") (target-expression "mass") (container-prefix "ConstraintTest::vehicle1a"))
-    (bind (status pending-expression) (document "d0") (source-expression "massConstraint::componentMasses") (target-expression "engine::mass") (container-prefix "ConstraintTest::vehicle2a"))
-    (bind (status pending-expression) (document "d0") (source-expression "massConstraint::componentMasses") (target-expression "frontAxleAssembly::mass") (container-prefix "ConstraintTest::vehicle2a"))
-    (bind (status pending-expression) (document "d0") (source-expression "massConstraint::componentMasses") (target-expression "rearAxleAssembly::mass") (container-prefix "ConstraintTest::vehicle2a"))
-    (bind (status pending-expression) (document "d0") (source-expression "massConstraint::totalMass") (target-expression "mass") (container-prefix "ConstraintTest::vehicle2a"))
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConstraintTest::Component"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConstraintTest::Component::mass"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConstraintTest::MassAnalysis"))) (status missing-prerequisite) (target "Constraints::ConstraintCheck"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConstraintTest::MassAnalysis2"))) (status missing-prerequisite) (target "Constraints::ConstraintCheck"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConstraintTest::MassAnalysis3"))) (status missing-prerequisite) (target "Constraints::ConstraintCheck"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConstraintTest::massAnalysis3"))) (status missing-prerequisite) (target "Constraints::constraintChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConstraintTest::massLimitation"))) (status missing-prerequisite) (target "Constraints::constraintChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConstraintTest::vehicle"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConstraintTest::vehicle1a"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConstraintTest::vehicle1b"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConstraintTest::vehicle2a"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConstraintTest::vehicle2b"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConstraintTest::vehicle3"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConstraintTest::vehicle4"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConstraintTest::vehicle::engine"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConstraintTest::vehicle::frontAxleAssembly"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ConstraintTest::vehicle::rearAxleAssembly"))) (status missing-prerequisite) (target "Parts::parts"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/constraint_test.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 16) (end 2 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 3 16) (end 3 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 13 2) (end 13 28))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_expression_relationship")
-        (source "semantic")
-        (range (start 28 7) (end 28 29))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_expression_relationship")
-        (source "semantic")
-        (range (start 29 7) (end 29 35))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_expression_relationship")
-        (source "semantic")
-        (range (start 30 7) (end 30 35))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_expression_relationship")
-        (source "semantic")
-        (range (start 31 7) (end 31 35))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_expression_relationship")
-        (source "semantic")
-        (range (start 51 7) (end 51 31))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_expression_relationship")
-        (source "semantic")
-        (range (start 52 7) (end 52 37))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_expression_relationship")
-        (source "semantic")
-        (range (start 53 7) (end 53 37))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_expression_relationship")
-        (source "semantic")
-        (range (start 54 7) (end 54 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "analysis_evaluation_unresolved")
-        (source "semantic")
-        (range (start 69 1) (end 69 152))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_part_usage_body_element")
-        (source "sysml")
-        (range (start 77 2) (end 77 140))
-      )
-      (diagnostic
-        (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 77 2) (end 77 140))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "ConstraintTest::MassAnalysis")) (expression (status "unresolved") (error "expression has an unresolved reference")))
+    (node (node (document "d0") (qualified-name "ConstraintTest::MassAnalysis2")) (expression (status "unresolved") (error "expression has an unresolved reference")))
+    (node (node (document "d0") (qualified-name "ConstraintTest::massAnalysis3")) (expression (status "unresolved") (error "expression has an unresolved reference")) (analysis (status "unresolved")))
+    (node (node (document "d0") (qualified-name "ConstraintTest::massLimitation")) (expression (status "incomplete") (error "expression is incomplete")) (analysis (status "incomplete")))
   )
 )
 ~~~

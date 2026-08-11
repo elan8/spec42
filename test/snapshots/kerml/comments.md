@@ -52,6 +52,21 @@ package Comments {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "comments.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 24 1) (end 24 92))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 RegularComment,
@@ -102,6 +117,14 @@ CloseCurly,EndOfFile,
       (documentation 'a')
       (comment_annotating about 'a' locale "en_US"))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 /* AAA */
@@ -151,45 +174,20 @@ package Comments {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Comments"))) (name "Comments") (declared-name "Comments")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Comments::A"))) (name "A") (declared-name "A"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Comments::C"))) (name "C") (declared-name "C"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "e9dfef1f84fae68931677e06cf6772b453c579493ef47c74ddf8a243ac2cb377") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Comments"))) (kind "package") (name "Comments") (declared-name "Comments") (range (start (line 2) (character 0)) (end (line 2) (character 693))))
+    (element (id (node (document "d0") (qualified-name "Comments::A"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 41) (character 1)) (end (line 41) (character 135))) (parent (node (document "d0") (qualified-name "Comments"))))
+    (element (id (node (document "d0") (qualified-name "Comments::C"))) (kind "classifier decl") (name "C") (declared-name "C") (range (start (line 34) (character 1)) (end (line 34) (character 155))) (parent (node (document "d0") (qualified-name "Comments"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/comments.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 24 1) (end 24 92))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

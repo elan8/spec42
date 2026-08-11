@@ -38,6 +38,39 @@ package 'User Keyword Example' {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "41_user_keyword_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 3 16) (end 3 39))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 11 11) (end 11 418))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -93,6 +126,20 @@ CloseCurly,EndOfFile,
       (extended_usage #'failure' ''device shutoff''
         (default_ref_usage :>> 'severity' value)))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'probability'
+semantic.unresolved_name 'severity'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'probability'
+semantic.unresolved_name 'severity'
+~~~
 # FORMAT
 ~~~sysml
 package 'User Keyword Example' {
@@ -129,99 +176,32 @@ package 'User Keyword Example' {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'probability'
-semantic.unresolved_name 'severity'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'probability'
-semantic.unresolved_name 'severity'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "User Keyword Example"))) (name "User Keyword Example") (declared-name "User Keyword Example")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "User Keyword Example::*"))) (name "*") (declared-name "*"))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "User Keyword Example::Device"))) (name "Device") (declared-name "Device") (declared)
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "User Keyword Example::Device::battery"))) (name "battery") (declared-name "battery") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "User Keyword Example::Device"))))
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "User Keyword Example::Device::battery::power"))) (name "power") (declared-name "power") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "User Keyword Example::Device")))))
-              )
-            )
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "User Keyword Example::LevelEnum"))) (name "LevelEnum") (declared-name "LevelEnum"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "User Keyword Example::Real"))) (name "Real") (declared-name "Real"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "User Keyword Example::_scenario"))) (name "scenario") (declared-name "scenario"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "d81dcf6bb85720d5fe864d8cde98849e8022a9e1d2777f15e83968dd4334b651") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "User Keyword Example"))) (kind "package") (name "User Keyword Example") (declared-name "User Keyword Example") (range (start (line 0) (character 0)) (end (line 0) (character 651))))
+    (element (id (node (document "d0") (qualified-name "User Keyword Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 47))) (parent (node (document "d0") (qualified-name "User Keyword Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "Semantic Metadata Example::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 43))))))
+    (element (id (node (document "d0") (qualified-name "User Keyword Example::Device"))) (kind "part def") (name "Device") (declared-name "Device") (range (start (line 5) (character 1)) (end (line 5) (character 69))) (parent (node (document "d0") (qualified-name "User Keyword Example"))))
+    (element (id (node (document "d0") (qualified-name "User Keyword Example::Device::battery"))) (kind "part") (name "battery") (declared-name "battery") (range (start (line 6) (character 2)) (end (line 6) (character 47))) (parent (node (document "d0") (qualified-name "User Keyword Example::Device"))))
+    (element (id (node (document "d0") (qualified-name "User Keyword Example::Device::battery::power"))) (kind "attribute") (name "power") (declared-name "power") (range (start (line 7) (character 3)) (end (line 7) (character 26))) (parent (node (document "d0") (qualified-name "User Keyword Example::Device::battery"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (typing (reference "Real") (range (start (line 7) (character 21)) (end (line 7) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "User Keyword Example::LevelEnum"))) (kind "import") (name "LevelEnum") (declared-name "LevelEnum") (range (start (line 3) (character 1)) (end (line 3) (character 40))) (parent (node (document "d0") (qualified-name "User Keyword Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "RiskMetadata::LevelEnum") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 3) (character 16)) (end (line 3) (character 39))))))
+    (element (id (node (document "d0") (qualified-name "User Keyword Example::Real"))) (kind "import") (name "Real") (declared-name "Real") (range (start (line 1) (character 1)) (end (line 1) (character 35))) (parent (node (document "d0") (qualified-name "User Keyword Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 34))))))
+    (element (id (node (document "d0") (qualified-name "User Keyword Example::_scenario"))) (kind "metadata keyword") (name "scenario") (declared-name "scenario") (range (start (line 11) (character 1)) (end (line 11) (character 11))) (parent (node (document "d0") (qualified-name "User Keyword Example"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "User Keyword Example::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Semantic Metadata Example::*") (range (start (line 2) (character 16)) (end (line 2) (character 43))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "User Keyword Example::Device::battery::power"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "User Keyword Example::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "User Keyword Example::Device::battery::power"))) (kind featureTyping) (ordinal 1)) (authored-target "Real") (range (start (line 7) (character 21)) (end (line 7) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "User Keyword Example::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "User Keyword Example::LevelEnum"))) (kind membershipImport) (ordinal 0)) (authored-target "RiskMetadata::LevelEnum") (range (start (line 3) (character 16)) (end (line 3) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "User Keyword Example::Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (range (start (line 1) (character 16)) (end (line 1) (character 34))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "User Keyword Example::_scenario"))) (to (node (document "d0") (qualified-name "User Keyword Example"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "User Keyword Example::Device::battery::power"))) (target (node (document "d0") (qualified-name "User Keyword Example::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "User Keyword Example::Device::battery::power"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "User Keyword Example::Device::battery::power"))) (target (node (document "d0") (qualified-name "User Keyword Example::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "User Keyword Example::Device::battery::power"))) (kind featureTyping) (ordinal 1)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "User Keyword Example::Device"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "User Keyword Example::Device::battery"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "User Keyword Example::Device::battery::power"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "User Keyword Example::_scenario"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/41_user_keyword_example.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 16) (end 2 43))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 3 16) (end 3 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 7 3) (end 7 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 11 1) (end 11 11))
-      )
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 11 11) (end 11 418))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

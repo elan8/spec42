@@ -100,6 +100,93 @@ package 'Wheel Package' {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "wheel_package.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 16) (end 6 19))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 8 1) (end 8 34))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_part_usage_body_element")
+        (source "sysml")
+        (range (start 13 3) (end 13 48))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 13 3) (end 13 48))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 20 2) (end 20 38))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_connection_def_body_element")
+        (source "sysml")
+        (range (start 43 2) (end 43 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 43 2) (end 43 23))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 48 2) (end 48 46))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_connection_def_body_element")
+        (source "sysml")
+        (range (start 58 2) (end 58 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 58 2) (end 58 20))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 73 2) (end 73 26))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 77 2) (end 77 54))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 89 2) (end 89 50))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -229,6 +316,28 @@ CloseCurly,EndOfFile,
       (default_ref_usage 'lugBoltSize' :> 'length')
       (default_ref_usage 'threadSize' :> 'length'))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'ScalarValues::String'
+semantic.unresolved_name 'length'
+semantic.unresolved_name 'length'
+semantic.unresolved_name 'length'
+semantic.unresolved_name 'ISQ::torque'
+semantic.unresolved_name 'force'
+semantic.unresolved_name 'length'
+semantic.unresolved_name 'length'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'ScalarValues::String'
+semantic.unresolved_name 'length'
+semantic.unresolved_name 'length'
+semantic.unresolved_name 'length'
+semantic.unresolved_name 'ISQ::torque'
+semantic.unresolved_name 'force'
+semantic.unresolved_name 'length'
+semantic.unresolved_name 'length'
+~~~
 # FORMAT
 ~~~sysml
 package 'Wheel Package' {
@@ -327,252 +436,85 @@ package 'Wheel Package' {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'ScalarValues::String'
-semantic.unresolved_name 'length'
-semantic.unresolved_name 'length'
-semantic.unresolved_name 'length'
-semantic.unresolved_name 'ISQ::torque'
-semantic.unresolved_name 'force'
-semantic.unresolved_name 'length'
-semantic.unresolved_name 'length'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'ScalarValues::String'
-semantic.unresolved_name 'length'
-semantic.unresolved_name 'length'
-semantic.unresolved_name 'length'
-semantic.unresolved_name 'ISQ::torque'
-semantic.unresolved_name 'force'
-semantic.unresolved_name 'length'
-semantic.unresolved_name 'length'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Wheel Package"))) (name "Wheel Package") (declared-name "Wheel Package")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Wheel Package::*"))) (name "*") (declared-name "*"))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Wheel Package::BalanceWeight"))) (name "BalanceWeight") (declared-name "BalanceWeight") (declared))
-        (element (kind "connection def") (id (node (document "d0") (qualified-name "Wheel Package::BandMount"))) (name "BandMount") (declared-name "BandMount"))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Wheel Package::Hub"))) (name "Hub") (declared-name "Hub") (declared)
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Wheel Package::Hub::h"))) (name "h") (declared-name "h") (declared (properties (ordered false)) (multiplicity (lower 5) (upper 5) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Wheel Package::Hub")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Wheel Package::InflationValve"))) (name "InflationValve") (declared-name "InflationValve") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Wheel Package::LugBoltJoint"))) (name "LugBoltJoint") (declared-name "LugBoltJoint") (declared)
-          (contains
-            (element (kind "opaque member") (id (node (document "d0") (qualified-name "Wheel Package::LugBoltJoint::mountingHole"))) (name "mountingHole") (declared-name "mountingHole") (effective (featuring-type (node (document "d0") (qualified-name "Wheel Package::LugBoltJoint")))))
-            (element (kind "opaque member") (id (node (document "d0") (qualified-name "Wheel Package::LugBoltJoint::threadedHole"))) (name "threadedHole") (declared-name "threadedHole") (effective (featuring-type (node (document "d0") (qualified-name "Wheel Package::LugBoltJoint")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Wheel Package::LugBoltMountingHole"))) (name "LugBoltMountingHole") (declared-name "LugBoltMountingHole") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Wheel Package::LugBoltThreadableHole"))) (name "LugBoltThreadableHole") (declared-name "LugBoltThreadableHole") (declared))
-        (element (kind "connection def") (id (node (document "d0") (qualified-name "Wheel Package::PressureSeat"))) (name "PressureSeat") (declared-name "PressureSeat"))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Wheel Package::Tire"))) (name "Tire") (declared-name "Tire") (declared)
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Wheel Package::Tire::bead"))) (name "bead") (declared-name "bead") (declared (properties (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Wheel Package::Tire")))))
-            (element (kind "action") (id (node (document "d0") (qualified-name "Wheel Package::Tire::mountTire"))) (name "mountTire") (declared-name "mountTire") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Wheel Package::Tire")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Wheel Package::TireBead"))) (name "TireBead") (declared-name "TireBead") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Wheel Package::TireMountingRim"))) (name "TireMountingRim") (declared-name "TireMountingRim") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Wheel Package::Wheel"))) (name "Wheel") (declared-name "Wheel") (declared)
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Wheel Package::Wheel::mountingHoles"))) (name "mountingHoles") (declared-name "mountingHoles") (declared (properties (ordered false)) (multiplicity (lower 5) (upper 5) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Wheel Package::Wheel")))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "Wheel Package::Wheel::rim"))) (name "rim") (declared-name "rim") (declared (properties (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Wheel Package::Wheel")))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "Wheel Package::Wheel::v"))) (name "v") (declared-name "v") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Wheel Package::Wheel")))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "Wheel Package::Wheel::weight"))) (name "weight") (declared-name "weight") (declared (properties (ordered false)) (multiplicity (lower 0) (upper 6) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Wheel Package::Wheel")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Wheel Package::WheelAssembly"))) (name "WheelAssembly") (declared-name "WheelAssembly") (declared)
-          (contains
-            (element (kind "connection") (id (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::_connection"))) (name "_connection") (declared-name "_connection") (effective (featuring-type (node (document "d0") (qualified-name "Wheel Package::WheelAssembly")))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::t"))) (name "t") (declared-name "t") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Wheel Package::WheelAssembly"))))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::t::bead"))) (name "bead") (declared-name "bead") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Wheel Package::Tire")))))
-              )
-            )
-            (element (kind "part") (id (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::w"))) (name "w") (declared-name "w") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Wheel Package::WheelAssembly"))))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::w::rim"))) (name "rim") (declared-name "rim") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Wheel Package::Wheel")))))
-              )
-            )
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly"))) (name "WheelHubAssembly") (declared-name "WheelHubAssembly") (declared)
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly::hub"))) (name "hub") (declared-name "hub") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly")))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly::lugBoltJoints"))) (name "lugBoltJoints") (declared-name "lugBoltJoints") (declared (properties (ordered false)) (multiplicity (lower 5) (upper 5) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly")))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly::wheel"))) (name "wheel") (declared-name "wheel") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Wheel Package::WirelessTirePressureMonitor"))) (name "WirelessTirePressureMonitor") (declared-name "WirelessTirePressureMonitor") (declared)
-          (contains
-            (element (kind "action") (id (node (document "d0") (qualified-name "Wheel Package::WirelessTirePressureMonitor::transmitPressure"))) (name "transmitPressure") (declared-name "transmitPressure") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Wheel Package::WirelessTirePressureMonitor")))))
-          )
-        )
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "Wheel Package::_documentation"))) (name ""))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "54de014cfd38e80a9740e61a4e96cce1b59331998cd05d05515cffb6af03b062") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Wheel Package"))) (kind "package") (name "Wheel Package") (declared-name "Wheel Package") (range (start (line 0) (character 0)) (end (line 0) (character 1723))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 6) (character 1)) (end (line 6) (character 23))) (parent (node (document "d0") (qualified-name "Wheel Package"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 19))))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::BalanceWeight"))) (kind "part def") (name "BalanceWeight") (declared-name "BalanceWeight") (range (start (line 70) (character 1)) (end (line 70) (character 24))) (parent (node (document "d0") (qualified-name "Wheel Package"))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::BandMount"))) (kind "connection def") (name "BandMount") (declared-name "BandMount") (range (start (line 57) (character 1)) (end (line 57) (character 88))) (parent (node (document "d0") (qualified-name "Wheel Package"))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::Hub"))) (kind "part def") (name "Hub") (declared-name "Hub") (range (start (line 84) (character 1)) (end (line 84) (character 54))) (parent (node (document "d0") (qualified-name "Wheel Package"))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::Hub::h"))) (kind "part") (name "h") (declared-name "h") (range (start (line 85) (character 2)) (end (line 85) (character 35))) (parent (node (document "d0") (qualified-name "Wheel Package::Hub"))) (authored (membership (kind Feature)) (relationships (typing (reference "LugBoltThreadableHole") (range (start (line 85) (character 10)) (end (line 85) (character 31)))))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::InflationValve"))) (kind "part def") (name "InflationValve") (declared-name "InflationValve") (range (start (line 68) (character 1)) (end (line 68) (character 25))) (parent (node (document "d0") (qualified-name "Wheel Package"))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::LugBoltJoint"))) (kind "part def") (name "LugBoltJoint") (declared-name "LugBoltJoint") (range (start (line 76) (character 1)) (end (line 76) (character 169))) (parent (node (document "d0") (qualified-name "Wheel Package"))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::LugBoltJoint::mountingHole"))) (kind "opaque member") (name "mountingHole") (declared-name "mountingHole") (range (start (line 80) (character 2)) (end (line 80) (character 43))) (parent (node (document "d0") (qualified-name "Wheel Package::LugBoltJoint"))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::LugBoltJoint::threadedHole"))) (kind "opaque member") (name "threadedHole") (declared-name "threadedHole") (range (start (line 81) (character 2)) (end (line 81) (character 45))) (parent (node (document "d0") (qualified-name "Wheel Package::LugBoltJoint"))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::LugBoltMountingHole"))) (kind "part def") (name "LugBoltMountingHole") (declared-name "LugBoltMountingHole") (range (start (line 72) (character 1)) (end (line 72) (character 59))) (parent (node (document "d0") (qualified-name "Wheel Package"))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::LugBoltThreadableHole"))) (kind "part def") (name "LugBoltThreadableHole") (declared-name "LugBoltThreadableHole") (range (start (line 88) (character 1)) (end (line 88) (character 85))) (parent (node (document "d0") (qualified-name "Wheel Package"))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::PressureSeat"))) (kind "connection def") (name "PressureSeat") (declared-name "PressureSeat") (range (start (line 42) (character 1)) (end (line 42) (character 82))) (parent (node (document "d0") (qualified-name "Wheel Package"))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::Tire"))) (kind "part def") (name "Tire") (declared-name "Tire") (range (start (line 32) (character 1)) (end (line 32) (character 116))) (parent (node (document "d0") (qualified-name "Wheel Package"))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::Tire::bead"))) (kind "part") (name "bead") (declared-name "bead") (range (start (line 35) (character 2)) (end (line 35) (character 26))) (parent (node (document "d0") (qualified-name "Wheel Package::Tire"))) (authored (membership (kind Feature)) (relationships (typing (reference "TireBead") (range (start (line 35) (character 14)) (end (line 35) (character 22)))))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::Tire::mountTire"))) (kind "action") (name "mountTire") (declared-name "mountTire") (range (start (line 37) (character 2)) (end (line 37) (character 19))) (parent (node (document "d0") (qualified-name "Wheel Package::Tire"))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::TireBead"))) (kind "part def") (name "TireBead") (declared-name "TireBead") (range (start (line 40) (character 1)) (end (line 40) (character 19))) (parent (node (document "d0") (qualified-name "Wheel Package"))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::TireMountingRim"))) (kind "part def") (name "TireMountingRim") (declared-name "TireMountingRim") (range (start (line 66) (character 1)) (end (line 66) (character 26))) (parent (node (document "d0") (qualified-name "Wheel Package"))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::Wheel"))) (kind "part def") (name "Wheel") (declared-name "Wheel") (range (start (line 47) (character 1)) (end (line 47) (character 211))) (parent (node (document "d0") (qualified-name "Wheel Package"))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::Wheel::mountingHoles"))) (kind "part") (name "mountingHoles") (declared-name "mountingHoles") (range (start (line 54) (character 2)) (end (line 54) (character 46))) (parent (node (document "d0") (qualified-name "Wheel Package::Wheel"))) (authored (membership (kind Feature)) (relationships (typing (reference "LugBoltMountingHole") (range (start (line 54) (character 23)) (end (line 54) (character 42)))))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::Wheel::rim"))) (kind "part") (name "rim") (declared-name "rim") (range (start (line 51) (character 2)) (end (line 51) (character 32))) (parent (node (document "d0") (qualified-name "Wheel Package::Wheel"))) (authored (membership (kind Feature)) (relationships (typing (reference "TireMountingRim") (range (start (line 51) (character 13)) (end (line 51) (character 28)))))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::Wheel::v"))) (kind "part") (name "v") (declared-name "v") (range (start (line 52) (character 2)) (end (line 52) (character 29))) (parent (node (document "d0") (qualified-name "Wheel Package::Wheel"))) (authored (membership (kind Feature)) (relationships (typing (reference "InflationValve") (range (start (line 52) (character 11)) (end (line 52) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::Wheel::weight"))) (kind "part") (name "weight") (declared-name "weight") (range (start (line 53) (character 2)) (end (line 53) (character 36))) (parent (node (document "d0") (qualified-name "Wheel Package::Wheel"))) (authored (membership (kind Feature)) (relationships (typing (reference "BalanceWeight") (range (start (line 53) (character 16)) (end (line 53) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::WheelAssembly"))) (kind "part def") (name "WheelAssembly") (declared-name "WheelAssembly") (range (start (line 19) (character 1)) (end (line 19) (character 244))) (parent (node (document "d0") (qualified-name "Wheel Package"))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::_connection"))) (kind "connection") (name "_connection") (declared-name "_connection") (range (start (line 29) (character 2)) (end (line 29) (character 52))) (parent (node (document "d0") (qualified-name "Wheel Package::WheelAssembly"))) (authored (membership (kind Feature)) (relationships (typing (reference "PressureSeat") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::t"))) (kind "part") (name "t") (declared-name "t") (range (start (line 22) (character 2)) (end (line 22) (character 58))) (parent (node (document "d0") (qualified-name "Wheel Package::WheelAssembly"))) (authored (membership (kind Feature)) (relationships (typing (reference "Tire") (range (start (line 22) (character 10)) (end (line 22) (character 14)))))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::t::bead"))) (kind "part") (name "bead") (declared-name "bead") (range (start (line 23) (character 3)) (end (line 23) (character 34))) (parent (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::t"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "Tire::bead") (range (start (line 23) (character 23)) (end (line 23) (character 33)))))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::w"))) (kind "part") (name "w") (declared-name "w") (range (start (line 25) (character 2)) (end (line 25) (character 58))) (parent (node (document "d0") (qualified-name "Wheel Package::WheelAssembly"))) (authored (membership (kind Feature)) (relationships (typing (reference "Wheel") (range (start (line 25) (character 10)) (end (line 25) (character 15)))))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::w::rim"))) (kind "part") (name "rim") (declared-name "rim") (range (start (line 26) (character 3)) (end (line 26) (character 33))) (parent (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::w"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "Wheel::rim") (range (start (line 26) (character 22)) (end (line 26) (character 32)))))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly"))) (kind "part def") (name "WheelHubAssembly") (declared-name "WheelHubAssembly") (range (start (line 10) (character 1)) (end (line 10) (character 233))) (parent (node (document "d0") (qualified-name "Wheel Package"))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly::hub"))) (kind "part") (name "hub") (declared-name "hub") (range (start (line 16) (character 2)) (end (line 16) (character 19))) (parent (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly"))) (authored (membership (kind Feature)) (relationships (typing (reference "Hub") (range (start (line 16) (character 12)) (end (line 16) (character 15)))))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly::lugBoltJoints"))) (kind "part") (name "lugBoltJoints") (declared-name "lugBoltJoints") (range (start (line 12) (character 2)) (end (line 12) (character 149))) (parent (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly"))) (authored (membership (kind Feature)) (relationships (typing (reference "LugBoltJoint") (range (start (line 12) (character 22)) (end (line 12) (character 34)))))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly::wheel"))) (kind "part") (name "wheel") (declared-name "wheel") (range (start (line 11) (character 2)) (end (line 11) (character 31))) (parent (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly"))) (authored (membership (kind Feature)) (relationships (typing (reference "WheelAssembly") (range (start (line 11) (character 14)) (end (line 11) (character 27)))))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::WirelessTirePressureMonitor"))) (kind "part def") (name "WirelessTirePressureMonitor") (declared-name "WirelessTirePressureMonitor") (range (start (line 62) (character 1)) (end (line 62) (character 69))) (parent (node (document "d0") (qualified-name "Wheel Package"))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::WirelessTirePressureMonitor::transmitPressure"))) (kind "action") (name "transmitPressure") (declared-name "transmitPressure") (range (start (line 63) (character 2)) (end (line 63) (character 26))) (parent (node (document "d0") (qualified-name "Wheel Package::WirelessTirePressureMonitor"))))
+    (element (id (node (document "d0") (qualified-name "Wheel Package::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 1723))) (parent (node (document "d0") (qualified-name "Wheel Package"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Wheel Package::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ISQ::*") (range (start (line 6) (character 16)) (end (line 6) (character 19))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Wheel Package::Hub::h"))) (kind featureTyping) (ordinal 0)) (authored-target "LugBoltThreadableHole") (range (start (line 85) (character 10)) (end (line 85) (character 31))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Wheel Package::LugBoltThreadableHole")))))
+    (reference (id (source (node (document "d0") (qualified-name "Wheel Package::Tire::bead"))) (kind featureTyping) (ordinal 0)) (authored-target "TireBead") (range (start (line 35) (character 14)) (end (line 35) (character 22))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Wheel Package::TireBead")))))
+    (reference (id (source (node (document "d0") (qualified-name "Wheel Package::Wheel::mountingHoles"))) (kind featureTyping) (ordinal 0)) (authored-target "LugBoltMountingHole") (range (start (line 54) (character 23)) (end (line 54) (character 42))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Wheel Package::LugBoltMountingHole")))))
+    (reference (id (source (node (document "d0") (qualified-name "Wheel Package::Wheel::rim"))) (kind featureTyping) (ordinal 0)) (authored-target "TireMountingRim") (range (start (line 51) (character 13)) (end (line 51) (character 28))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Wheel Package::TireMountingRim")))))
+    (reference (id (source (node (document "d0") (qualified-name "Wheel Package::Wheel::v"))) (kind featureTyping) (ordinal 0)) (authored-target "InflationValve") (range (start (line 52) (character 11)) (end (line 52) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Wheel Package::InflationValve")))))
+    (reference (id (source (node (document "d0") (qualified-name "Wheel Package::Wheel::weight"))) (kind featureTyping) (ordinal 0)) (authored-target "BalanceWeight") (range (start (line 53) (character 16)) (end (line 53) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Wheel Package::BalanceWeight")))))
+    (reference (id (source (node (document "d0") (qualified-name "Wheel Package::WheelAssembly"))) (kind connectionSource) (ordinal 0)) (authored-target "t::bead") (range (start (line 29) (character 36)) (end (line 29) (character 42))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::t::bead")))))
+    (reference (id (source (node (document "d0") (qualified-name "Wheel Package::WheelAssembly"))) (kind connectionTarget) (ordinal 0)) (authored-target "w::rim") (range (start (line 29) (character 46)) (end (line 29) (character 51))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::w::rim")))))
+    (reference (id (source (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::_connection"))) (kind featureTyping) (ordinal 0)) (authored-target "PressureSeat") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Wheel Package::PressureSeat")))))
+    (reference (id (source (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::t"))) (kind featureTyping) (ordinal 0)) (authored-target "Tire") (range (start (line 22) (character 10)) (end (line 22) (character 14))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Wheel Package::Tire")))))
+    (reference (id (source (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::t::bead"))) (kind redefinition) (ordinal 0)) (authored-target "Tire::bead") (range (start (line 23) (character 23)) (end (line 23) (character 33))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Wheel Package::Tire::bead")))))
+    (reference (id (source (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::w"))) (kind featureTyping) (ordinal 0)) (authored-target "Wheel") (range (start (line 25) (character 10)) (end (line 25) (character 15))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Wheel Package::Wheel")))))
+    (reference (id (source (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::w::rim"))) (kind redefinition) (ordinal 0)) (authored-target "Wheel::rim") (range (start (line 26) (character 22)) (end (line 26) (character 32))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Wheel Package::Wheel::rim")))))
+    (reference (id (source (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly::hub"))) (kind featureTyping) (ordinal 0)) (authored-target "Hub") (range (start (line 16) (character 12)) (end (line 16) (character 15))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Wheel Package::Hub")))))
+    (reference (id (source (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly::lugBoltJoints"))) (kind featureTyping) (ordinal 0)) (authored-target "LugBoltJoint") (range (start (line 12) (character 22)) (end (line 12) (character 34))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Wheel Package::LugBoltJoint")))))
+    (reference (id (source (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly::wheel"))) (kind featureTyping) (ordinal 0)) (authored-target "WheelAssembly") (range (start (line 11) (character 14)) (end (line 11) (character 27))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Wheel Package::WheelAssembly")))))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Wheel Package::_documentation"))) (to (node (document "d0") (qualified-name "Wheel Package"))) (provenance authored))
-    (connection (status resolved) (from (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::t::bead"))) (to (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::w::rim"))) (connect (source-expression "t::bead") (target-expression "w::rim") (container-prefix "Wheel Package::WheelAssembly")) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::t::bead"))) (to (node (document "d0") (qualified-name "Wheel Package::Tire::bead"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::w::rim"))) (to (node (document "d0") (qualified-name "Wheel Package::Wheel::rim"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Wheel Package::Hub::h"))) (to (node (document "d0") (qualified-name "Wheel Package::LugBoltThreadableHole"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Wheel Package::Tire::bead"))) (to (node (document "d0") (qualified-name "Wheel Package::TireBead"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Wheel Package::Wheel::mountingHoles"))) (to (node (document "d0") (qualified-name "Wheel Package::LugBoltMountingHole"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Wheel Package::Wheel::rim"))) (to (node (document "d0") (qualified-name "Wheel Package::TireMountingRim"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Wheel Package::Wheel::v"))) (to (node (document "d0") (qualified-name "Wheel Package::InflationValve"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Wheel Package::Wheel::weight"))) (to (node (document "d0") (qualified-name "Wheel Package::BalanceWeight"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::_connection"))) (to (node (document "d0") (qualified-name "Wheel Package::PressureSeat"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::t"))) (to (node (document "d0") (qualified-name "Wheel Package::Tire"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::w"))) (to (node (document "d0") (qualified-name "Wheel Package::Wheel"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly::hub"))) (to (node (document "d0") (qualified-name "Wheel Package::Hub"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly::lugBoltJoints"))) (to (node (document "d0") (qualified-name "Wheel Package::LugBoltJoint"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly::wheel"))) (to (node (document "d0") (qualified-name "Wheel Package::WheelAssembly"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Wheel Package::Hub::h"))) (target (node (document "d0") (qualified-name "Wheel Package::LugBoltThreadableHole"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Wheel Package::Hub::h"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Wheel Package::Tire::bead"))) (target (node (document "d0") (qualified-name "Wheel Package::TireBead"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Wheel Package::Tire::bead"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Wheel Package::Wheel::mountingHoles"))) (target (node (document "d0") (qualified-name "Wheel Package::LugBoltMountingHole"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Wheel Package::Wheel::mountingHoles"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Wheel Package::Wheel::rim"))) (target (node (document "d0") (qualified-name "Wheel Package::TireMountingRim"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Wheel Package::Wheel::rim"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Wheel Package::Wheel::v"))) (target (node (document "d0") (qualified-name "Wheel Package::InflationValve"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Wheel Package::Wheel::v"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Wheel Package::Wheel::weight"))) (target (node (document "d0") (qualified-name "Wheel Package::BalanceWeight"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Wheel Package::Wheel::weight"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::_connection"))) (target (node (document "d0") (qualified-name "Wheel Package::PressureSeat"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::_connection"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::t"))) (target (node (document "d0") (qualified-name "Wheel Package::Tire"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::t"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::t::bead"))) (target (node (document "d0") (qualified-name "Wheel Package::Tire::bead"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::t::bead"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind connection) (source (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::t::bead"))) (target (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::w::rim"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Wheel Package::WheelAssembly"))) (kind connectionSource) (ordinal 0)) (expression (kind connection) (source "t::bead") (target "w::rim") (source-range (start (line 29) (character 36)) (end (line 29) (character 42))) (target-range (start (line 29) (character 46)) (end (line 29) (character 51)))))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::w"))) (target (node (document "d0") (qualified-name "Wheel Package::Wheel"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::w"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::w::rim"))) (target (node (document "d0") (qualified-name "Wheel Package::Wheel::rim"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::w::rim"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly::hub"))) (target (node (document "d0") (qualified-name "Wheel Package::Hub"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly::hub"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly::lugBoltJoints"))) (target (node (document "d0") (qualified-name "Wheel Package::LugBoltJoint"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly::lugBoltJoints"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly::wheel"))) (target (node (document "d0") (qualified-name "Wheel Package::WheelAssembly"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly::wheel"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::BalanceWeight"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::BandMount"))) (status missing-prerequisite) (target "Connections::Connection"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::Hub"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::Hub::h"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::InflationValve"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::LugBoltJoint"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::LugBoltMountingHole"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::LugBoltThreadableHole"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::PressureSeat"))) (status missing-prerequisite) (target "Connections::Connection"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::Tire"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::Tire::bead"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::Tire::mountTire"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::TireBead"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::TireMountingRim"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::Wheel"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::Wheel::mountingHoles"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::Wheel::rim"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::Wheel::v"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::Wheel::weight"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::WheelAssembly"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::_connection"))) (status missing-prerequisite) (target "Connections::connections"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::t"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::t::bead"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::w"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::w::rim"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly::hub"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly::lugBoltJoints"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::WheelHubAssembly::wheel"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::WirelessTirePressureMonitor"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Wheel Package::WirelessTirePressureMonitor::transmitPressure"))) (status missing-prerequisite) (target "Actions::actions"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/wheel_package.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 6 16) (end 6 19))
-      )
-      (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 8 1) (end 8 34))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_part_usage_body_element")
-        (source "sysml")
-        (range (start 13 3) (end 13 48))
-      )
-      (diagnostic
-        (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 13 3) (end 13 48))
-      )
-      (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 20 2) (end 20 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 23 3) (end 23 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 26 3) (end 26 33))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_connection_def_body_element")
-        (source "sysml")
-        (range (start 43 2) (end 43 23))
-      )
-      (diagnostic
-        (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 43 2) (end 43 23))
-      )
-      (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 48 2) (end 48 46))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_connection_def_body_element")
-        (source "sysml")
-        (range (start 58 2) (end 58 20))
-      )
-      (diagnostic
-        (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 58 2) (end 58 20))
-      )
-      (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 73 2) (end 73 26))
-      )
-      (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 77 2) (end 77 54))
-      )
-      (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 89 2) (end 89 50))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

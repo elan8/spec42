@@ -19,13 +19,20 @@ state def S {
 
                 // var step focus [0..1];               member step package RiskMetadataExEmple {
 ~~~
-# EXPECTED
-~~~
-semantic.duplicate_name 'off'
-~~~
-# PROBLEMS
-~~~
-semantic.duplicate_name 'off'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz_transition_comment_idempotence.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "missing_closing_brace")
+        (source "sysml")
+        (range (start 10 97) (end 10 98))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -52,6 +59,14 @@ LineComment,EndOfFile,
       (transition_usage 't')))
   (line_comment))
 ~~~
+# EXPECTED
+~~~
+semantic.duplicate_name 'off'
+~~~
+# PROBLEMS
+~~~
+semantic.duplicate_name 'off'
+~~~
 # FORMAT
 ~~~sysml
 package j {
@@ -69,29 +84,15 @@ package j {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "f4c0a79d090d912d38e4d4a11f796f3f7261e36c82243d84659b55b1c7581ed2") (contract-version "canonical-resolution-v1"))
+  (structure
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "fuzz/fuzz_transition_comment_idempotence.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "missing_closing_brace")
-        (source "sysml")
-        (range (start 10 97) (end 10 98))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

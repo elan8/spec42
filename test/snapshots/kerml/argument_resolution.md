@@ -23,6 +23,15 @@ package ArgumentResolutionBug {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "argument_resolution.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -56,6 +65,14 @@ CloseCurly,EndOfFile,
         (connector_end)
         (connector_end)))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package ArgumentResolutionBug {
@@ -76,40 +93,21 @@ package ArgumentResolutionBug {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ArgumentResolutionBug"))) (name "ArgumentResolutionBug") (declared-name "ArgumentResolutionBug")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ArgumentResolutionBug::A"))) (name "A") (declared-name "A"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ArgumentResolutionBug::B"))) (name "B") (declared-name "B"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ArgumentResolutionBug::C"))) (name "C") (declared-name "C"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "3c9b371f6722855449615c5df05966a1f92f2b18f7fd3923ca66740f4adada05") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ArgumentResolutionBug"))) (kind "package") (name "ArgumentResolutionBug") (declared-name "ArgumentResolutionBug") (range (start (line 0) (character 0)) (end (line 0) (character 207))))
+    (element (id (node (document "d0") (qualified-name "ArgumentResolutionBug::A"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 1) (character 1)) (end (line 1) (character 26))) (parent (node (document "d0") (qualified-name "ArgumentResolutionBug"))))
+    (element (id (node (document "d0") (qualified-name "ArgumentResolutionBug::B"))) (kind "kermlDecl") (name "B") (declared-name "B") (range (start (line 5) (character 1)) (end (line 5) (character 63))) (parent (node (document "d0") (qualified-name "ArgumentResolutionBug"))))
+    (element (id (node (document "d0") (qualified-name "ArgumentResolutionBug::C"))) (kind "classifier decl") (name "C") (declared-name "C") (range (start (line 10) (character 1)) (end (line 10) (character 78))) (parent (node (document "d0") (qualified-name "ArgumentResolutionBug"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/argument_resolution.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

@@ -25,6 +25,15 @@ package 'Generalization Example' {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "03_generalization_example.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -54,6 +63,14 @@ CloseCurly,EndOfFile,
     (part_def 'Engine')
     (part_def 'Person')))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package 'Generalization Example' {
@@ -77,66 +94,38 @@ package 'Generalization Example' {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Generalization Example"))) (name "Generalization Example") (declared-name "Generalization Example")
-      (contains
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Generalization Example::Engine"))) (name "Engine") (declared-name "Engine") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Generalization Example::HumanDrivenPoweredVehicle"))) (name "HumanDrivenPoweredVehicle") (declared-name "HumanDrivenPoweredVehicle") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle"))) (name "HumanDrivenVehicle") (declared-name "HumanDrivenVehicle") (declared)
-          (contains
-            (element (kind "ref") (id (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle::driver"))) (name "driver") (declared-name "driver") (declared (properties (composite false) (reference true) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Generalization Example::Person"))) (name "Person") (declared-name "Person") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle"))) (name "PoweredVehicle") (declared-name "PoweredVehicle") (declared)
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Generalization Example::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared (properties (abstract true))))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a7a5941aed3de4640b4158550ae8d7346c7276e4a154297d68fceaa9e6da4f93") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Generalization Example"))) (kind "package") (name "Generalization Example") (declared-name "Generalization Example") (range (start (line 0) (character 0)) (end (line 0) (character 334))))
+    (element (id (node (document "d0") (qualified-name "Generalization Example::Engine"))) (kind "part def") (name "Engine") (declared-name "Engine") (range (start (line 15) (character 1)) (end (line 15) (character 17))) (parent (node (document "d0") (qualified-name "Generalization Example"))))
+    (element (id (node (document "d0") (qualified-name "Generalization Example::HumanDrivenPoweredVehicle"))) (kind "part def") (name "HumanDrivenPoweredVehicle") (declared-name "HumanDrivenPoweredVehicle") (range (start (line 12) (character 1)) (end (line 12) (character 77))) (parent (node (document "d0") (qualified-name "Generalization Example"))) (authored (membership (kind Owning)) (relationships (specializes (reference "HumanDrivenVehicle") (range (start (line 13) (character 2)) (end (line 13) (character 20)))) (specializes (reference "PoweredVehicle") (range (start (line 13) (character 22)) (end (line 13) (character 36)))))))
+    (element (id (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle"))) (kind "part def") (name "HumanDrivenVehicle") (declared-name "HumanDrivenVehicle") (range (start (line 4) (character 1)) (end (line 4) (character 81))) (parent (node (document "d0") (qualified-name "Generalization Example"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Vehicle") (range (start (line 4) (character 41)) (end (line 4) (character 48)))))))
+    (element (id (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle::driver"))) (kind "ref") (name "driver") (declared-name "driver") (range (start (line 5) (character 2)) (end (line 5) (character 27))) (parent (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Person") (range (start (line 5) (character 20)) (end (line 5) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "Generalization Example::Person"))) (kind "part def") (name "Person") (declared-name "Person") (range (start (line 16) (character 1)) (end (line 16) (character 17))) (parent (node (document "d0") (qualified-name "Generalization Example"))))
+    (element (id (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle"))) (kind "part def") (name "PoweredVehicle") (declared-name "PoweredVehicle") (range (start (line 8) (character 1)) (end (line 8) (character 61))) (parent (node (document "d0") (qualified-name "Generalization Example"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Vehicle") (range (start (line 8) (character 28)) (end (line 8) (character 35)))))))
+    (element (id (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle::eng"))) (kind "part") (name "eng") (declared-name "eng") (range (start (line 9) (character 2)) (end (line 9) (character 20))) (parent (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Engine") (range (start (line 9) (character 13)) (end (line 9) (character 19)))))))
+    (element (id (node (document "d0") (qualified-name "Generalization Example::Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (range (start (line 2) (character 1)) (end (line 2) (character 27))) (parent (node (document "d0") (qualified-name "Generalization Example"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Generalization Example::HumanDrivenPoweredVehicle"))) (kind specialization) (ordinal 0)) (authored-target "HumanDrivenVehicle") (range (start (line 13) (character 2)) (end (line 13) (character 20))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle")))))
+    (reference (id (source (node (document "d0") (qualified-name "Generalization Example::HumanDrivenPoweredVehicle"))) (kind specialization) (ordinal 1)) (authored-target "PoweredVehicle") (range (start (line 13) (character 22)) (end (line 13) (character 36))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle")))))
+    (reference (id (source (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle"))) (kind specialization) (ordinal 0)) (authored-target "Vehicle") (range (start (line 4) (character 41)) (end (line 4) (character 48))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Generalization Example::Vehicle")))))
+    (reference (id (source (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle::driver"))) (kind featureTyping) (ordinal 0)) (authored-target "Person") (range (start (line 5) (character 20)) (end (line 5) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Generalization Example::Person")))))
+    (reference (id (source (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle"))) (kind specialization) (ordinal 0)) (authored-target "Vehicle") (range (start (line 8) (character 28)) (end (line 8) (character 35))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Generalization Example::Vehicle")))))
+    (reference (id (source (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle::eng"))) (kind featureTyping) (ordinal 0)) (authored-target "Engine") (range (start (line 9) (character 13)) (end (line 9) (character 19))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Generalization Example::Engine")))))
   )
   (relationships
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "Generalization Example::HumanDrivenPoweredVehicle"))) (to (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "Generalization Example::HumanDrivenPoweredVehicle"))) (to (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle"))) (to (node (document "d0") (qualified-name "Generalization Example::Vehicle"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle"))) (to (node (document "d0") (qualified-name "Generalization Example::Vehicle"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle::driver"))) (to (node (document "d0") (qualified-name "Generalization Example::Person"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle::eng"))) (to (node (document "d0") (qualified-name "Generalization Example::Engine"))) (provenance authored))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Generalization Example::HumanDrivenPoweredVehicle"))) (target (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Generalization Example::HumanDrivenPoweredVehicle"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Generalization Example::HumanDrivenPoweredVehicle"))) (target (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Generalization Example::HumanDrivenPoweredVehicle"))) (kind specialization) (ordinal 1)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle"))) (target (node (document "d0") (qualified-name "Generalization Example::Vehicle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle::driver"))) (target (node (document "d0") (qualified-name "Generalization Example::Person"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle::driver"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle"))) (target (node (document "d0") (qualified-name "Generalization Example::Vehicle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle::eng"))) (target (node (document "d0") (qualified-name "Generalization Example::Engine"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle::eng"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Generalization Example::Engine"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Generalization Example::HumanDrivenPoweredVehicle"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Generalization Example::Person"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle::eng"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Generalization Example::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/03_generalization_example.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

@@ -30,6 +30,51 @@ package 'Action Definition Example' {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "14_action_succession_example_2.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "connection_context_invalid")
+        (source "semantic")
+        (range (start 12 7) (end 12 18))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 14 24) (end 14 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 14 34) (end 14 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 18 24) (end 18 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 18 34) (end 18 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "connection_context_invalid")
+        (source "semantic")
+        (range (start 20 7) (end 20 20))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -81,6 +126,14 @@ CloseCurly,EndOfFile,
         (connector_end)
         (connector_end)))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package 'Action Definition Example' {
@@ -109,96 +162,70 @@ package 'Action Definition Example' {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Action Definition Example"))) (name "Action Definition Example") (declared-name "Action Definition Example")
-      (contains
-        (element (kind "action def") (id (node (document "d0") (qualified-name "Action Definition Example::Focus"))) (name "Focus") (declared-name "Focus")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Definition Example::Focus::image"))) (name "image") (declared-name "image") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Definition Example::Focus")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Definition Example::Focus::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Definition Example::Focus")))))
-          )
-        )
-        (element (kind "item def") (id (node (document "d0") (qualified-name "Action Definition Example::Image"))) (name "Image") (declared-name "Image"))
-        (element (kind "item def") (id (node (document "d0") (qualified-name "Action Definition Example::Picture"))) (name "Picture") (declared-name "Picture"))
-        (element (kind "item def") (id (node (document "d0") (qualified-name "Action Definition Example::Scene"))) (name "Scene") (declared-name "Scene"))
-        (element (kind "action def") (id (node (document "d0") (qualified-name "Action Definition Example::Shoot"))) (name "Shoot") (declared-name "Shoot")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Definition Example::Shoot::image"))) (name "image") (declared-name "image") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Definition Example::Shoot")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Definition Example::Shoot::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Definition Example::Shoot")))))
-          )
-        )
-        (element (kind "action def") (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (name "TakePicture") (declared-name "TakePicture")
-          (contains
-            (element (kind "action") (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus"))) (name "focus") (declared-name "focus") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))))
-              (contains
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus::image"))) (name "image") (declared-name "image") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Definition Example::Focus")))))
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Definition Example::Focus")))))
-              )
-            )
-            (element (kind "flow") (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::from"))) (name "from") (declared-name "from") (effective (featuring-type (node (document "d0") (qualified-name "Action Definition Example::TakePicture")))))
-            (element (kind "item") (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Definition Example::TakePicture")))))
-            (element (kind "item") (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Definition Example::TakePicture")))))
-            (element (kind "action") (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot"))) (name "shoot") (declared-name "shoot") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))))
-              (contains
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot::image"))) (name "image") (declared-name "image") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Definition Example::Shoot")))))
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Definition Example::Shoot")))))
-              )
-            )
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "bfc2bd3c1ab2e6199d69fdd785b785291c60e889308b40872c4a9e0201754d78") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Action Definition Example"))) (kind "package") (name "Action Definition Example") (declared-name "Action Definition Example") (range (start (line 0) (character 0)) (end (line 0) (character 529))))
+    (element (id (node (document "d0") (qualified-name "Action Definition Example::Focus"))) (kind "action def") (name "Focus") (declared-name "Focus") (range (start (line 5) (character 1)) (end (line 5) (character 58))) (parent (node (document "d0") (qualified-name "Action Definition Example"))))
+    (element (id (node (document "d0") (qualified-name "Action Definition Example::Focus::image"))) (kind "in out parameter") (name "image") (declared-name "image") (range (start (line 5) (character 38)) (end (line 5) (character 56))) (parent (node (document "d0") (qualified-name "Action Definition Example::Focus"))) (authored (relationships (typing (reference "Image") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Action Definition Example::Focus::scene"))) (kind "in out parameter") (name "scene") (declared-name "scene") (range (start (line 5) (character 20)) (end (line 5) (character 37))) (parent (node (document "d0") (qualified-name "Action Definition Example::Focus"))) (authored (relationships (typing (reference "Scene") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Action Definition Example::Image"))) (kind "item def") (name "Image") (declared-name "Image") (range (start (line 2) (character 1)) (end (line 2) (character 16))) (parent (node (document "d0") (qualified-name "Action Definition Example"))))
+    (element (id (node (document "d0") (qualified-name "Action Definition Example::Picture"))) (kind "item def") (name "Picture") (declared-name "Picture") (range (start (line 3) (character 1)) (end (line 3) (character 18))) (parent (node (document "d0") (qualified-name "Action Definition Example"))))
+    (element (id (node (document "d0") (qualified-name "Action Definition Example::Scene"))) (kind "item def") (name "Scene") (declared-name "Scene") (range (start (line 1) (character 1)) (end (line 1) (character 16))) (parent (node (document "d0") (qualified-name "Action Definition Example"))))
+    (element (id (node (document "d0") (qualified-name "Action Definition Example::Shoot"))) (kind "action def") (name "Shoot") (declared-name "Shoot") (range (start (line 6) (character 1)) (end (line 6) (character 61))) (parent (node (document "d0") (qualified-name "Action Definition Example"))))
+    (element (id (node (document "d0") (qualified-name "Action Definition Example::Shoot::image"))) (kind "in out parameter") (name "image") (declared-name "image") (range (start (line 6) (character 20)) (end (line 6) (character 36))) (parent (node (document "d0") (qualified-name "Action Definition Example::Shoot"))) (authored (relationships (typing (reference "Image") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Action Definition Example::Shoot::picture"))) (kind "in out parameter") (name "picture") (declared-name "picture") (range (start (line 6) (character 37)) (end (line 6) (character 59))) (parent (node (document "d0") (qualified-name "Action Definition Example::Shoot"))) (authored (relationships (typing (reference "Picture") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (kind "action def") (name "TakePicture") (declared-name "TakePicture") (range (start (line 8) (character 1)) (end (line 8) (character 305))) (parent (node (document "d0") (qualified-name "Action Definition Example"))) (authored (membership (kind Owning)) (relationships (perform (reference "Action Definition Example::TakePicture::focus") (range none)) (perform (reference "Action Definition Example::TakePicture::shoot") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus"))) (kind "action") (name "focus") (declared-name "focus") (range (start (line 14) (character 2)) (end (line 14) (character 46))) (parent (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (authored (membership (kind Feature)) (relationships (typing (reference "Focus") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus::image"))) (kind "in out parameter") (name "image") (declared-name "image") (range (start (line 14) (character 34)) (end (line 14) (character 44))) (parent (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus"))) (authored (relationships (typing (reference "") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus::scene"))) (kind "in out parameter") (name "scene") (declared-name "scene") (range (start (line 14) (character 24)) (end (line 14) (character 33))) (parent (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus"))) (authored (relationships (typing (reference "") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::from"))) (kind "flow") (name "from") (declared-name "from") (range (start (line 16) (character 2)) (end (line 16) (character 50))) (parent (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))))
+    (element (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::picture"))) (kind "item") (name "picture") (declared-name "picture") (range (start (line 10) (character 2)) (end (line 10) (character 29))) (parent (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (authored (membership (kind Feature)) (relationships (typing (reference "Picture") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::scene"))) (kind "item") (name "scene") (declared-name "scene") (range (start (line 9) (character 2)) (end (line 9) (character 24))) (parent (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (authored (membership (kind Feature)) (relationships (typing (reference "Scene") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot"))) (kind "action") (name "shoot") (declared-name "shoot") (range (start (line 18) (character 2)) (end (line 18) (character 48))) (parent (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (authored (membership (kind Feature)) (relationships (typing (reference "Shoot") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot::image"))) (kind "in out parameter") (name "image") (declared-name "image") (range (start (line 18) (character 24)) (end (line 18) (character 33))) (parent (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot"))) (authored (relationships (typing (reference "") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot::picture"))) (kind "in out parameter") (name "picture") (declared-name "picture") (range (start (line 18) (character 34)) (end (line 18) (character 46))) (parent (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot"))) (authored (relationships (typing (reference "") (range none)))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Action Definition Example::Focus::image"))) (kind featureTyping) (ordinal 0)) (authored-target "Image") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Definition Example::Image")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Definition Example::Focus::scene"))) (kind featureTyping) (ordinal 0)) (authored-target "Scene") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Definition Example::Scene")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Definition Example::Shoot::image"))) (kind featureTyping) (ordinal 0)) (authored-target "Image") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Definition Example::Image")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Definition Example::Shoot::picture"))) (kind featureTyping) (ordinal 0)) (authored-target "Picture") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Definition Example::Picture")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (kind bindSource) (ordinal 0)) (authored-target "focus::scene") (range (start (line 12) (character 7)) (end (line 12) (character 18))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus::scene")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (kind bindSource) (ordinal 2)) (authored-target "shoot::picture") (range (start (line 20) (character 7)) (end (line 20) (character 20))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot::picture")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (kind bindTarget) (ordinal 0)) (authored-target "scene") (range (start (line 12) (character 21)) (end (line 12) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Definition Example::TakePicture::scene")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (kind bindTarget) (ordinal 2)) (authored-target "picture") (range (start (line 20) (character 23)) (end (line 20) (character 30))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Definition Example::TakePicture::picture")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (kind successionFlowSource) (ordinal 1)) (authored-target "focus::image") (range (start (line 16) (character 23)) (end (line 16) (character 34))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus::image")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (kind successionFlowTarget) (ordinal 1)) (authored-target "shoot::image") (range (start (line 16) (character 38)) (end (line 16) (character 49))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot::image")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (kind performSource) (ordinal 0)) (authored-target "Action Definition Example::TakePicture::focus") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (kind performSource) (ordinal 1)) (authored-target "Action Definition Example::TakePicture::shoot") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus"))) (kind featureTyping) (ordinal 0)) (authored-target "Focus") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Definition Example::Focus")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus::image"))) (kind featureTyping) (ordinal 0)) (authored-target "") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus::scene"))) (kind featureTyping) (ordinal 0)) (authored-target "") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture::picture"))) (kind featureTyping) (ordinal 0)) (authored-target "Picture") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Definition Example::Picture")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture::scene"))) (kind featureTyping) (ordinal 0)) (authored-target "Scene") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Definition Example::Scene")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot"))) (kind featureTyping) (ordinal 0)) (authored-target "Shoot") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Definition Example::Shoot")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot::image"))) (kind featureTyping) (ordinal 0)) (authored-target "") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot::picture"))) (kind featureTyping) (ordinal 0)) (authored-target "") (range none) (outcome (status unresolved)))
   )
   (relationships
-    (bind (status resolved) (from (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus::scene"))) (to (node (document "d0") (qualified-name "Action Definition Example::TakePicture::scene"))) (connect (source-expression "focus::scene") (target-expression "scene") (container-prefix "Action Definition Example::TakePicture")) (provenance authored))
-    (bind (status resolved) (from (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot::picture"))) (to (node (document "d0") (qualified-name "Action Definition Example::TakePicture::picture"))) (connect (source-expression "shoot::picture") (target-expression "picture") (container-prefix "Action Definition Example::TakePicture")) (provenance authored))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (to (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus"))) (provenance authored))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (to (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Definition Example::Focus::image"))) (to (node (document "d0") (qualified-name "Action Definition Example::Image"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Definition Example::Focus::scene"))) (to (node (document "d0") (qualified-name "Action Definition Example::Scene"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Definition Example::Shoot::image"))) (to (node (document "d0") (qualified-name "Action Definition Example::Image"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Definition Example::Shoot::picture"))) (to (node (document "d0") (qualified-name "Action Definition Example::Picture"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus"))) (to (node (document "d0") (qualified-name "Action Definition Example::Focus"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Definition Example::TakePicture::picture"))) (to (node (document "d0") (qualified-name "Action Definition Example::Picture"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Definition Example::TakePicture::scene"))) (to (node (document "d0") (qualified-name "Action Definition Example::Scene"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot"))) (to (node (document "d0") (qualified-name "Action Definition Example::Shoot"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Action Definition Example::Focus::image"))) (target (node (document "d0") (qualified-name "Action Definition Example::Image"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Definition Example::Focus::image"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Action Definition Example::Focus::scene"))) (target (node (document "d0") (qualified-name "Action Definition Example::Scene"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Definition Example::Focus::scene"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Action Definition Example::Shoot::image"))) (target (node (document "d0") (qualified-name "Action Definition Example::Image"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Definition Example::Shoot::image"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Action Definition Example::Shoot::picture"))) (target (node (document "d0") (qualified-name "Action Definition Example::Picture"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Definition Example::Shoot::picture"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (target (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (kind performSource) (ordinal 0)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (target (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (kind performSource) (ordinal 1)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus"))) (target (node (document "d0") (qualified-name "Action Definition Example::Focus"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind successionFlow) (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus::image"))) (target (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot::image"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (kind successionFlowSource) (ordinal 1)) (expression (kind successionFlow) (source "focus::image") (target "shoot::image") (source-range (start (line 16) (character 23)) (end (line 16) (character 34))) (target-range (start (line 16) (character 38)) (end (line 16) (character 49)))))
+    (relationship (kind bind) (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus::scene"))) (target (node (document "d0") (qualified-name "Action Definition Example::TakePicture::scene"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (kind bindSource) (ordinal 0)) (expression (kind bind) (source "focus::scene") (target "scene") (source-range (start (line 12) (character 7)) (end (line 12) (character 18))) (target-range (start (line 12) (character 21)) (end (line 12) (character 26)))))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture::picture"))) (target (node (document "d0") (qualified-name "Action Definition Example::Picture"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture::picture"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture::scene"))) (target (node (document "d0") (qualified-name "Action Definition Example::Scene"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture::scene"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot"))) (target (node (document "d0") (qualified-name "Action Definition Example::Shoot"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind bind) (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot::picture"))) (target (node (document "d0") (qualified-name "Action Definition Example::TakePicture::picture"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (kind bindSource) (ordinal 2)) (expression (kind bind) (source "shoot::picture") (target "picture") (source-range (start (line 20) (character 7)) (end (line 20) (character 20))) (target-range (start (line 20) (character 23)) (end (line 20) (character 30)))))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Definition Example::Focus"))) (status missing-prerequisite) (target "Actions::Action"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Definition Example::Image"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Definition Example::Picture"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Definition Example::Scene"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Definition Example::Shoot"))) (status missing-prerequisite) (target "Actions::Action"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (status missing-prerequisite) (target "Actions::Action"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Definition Example::TakePicture::from"))) (status missing-prerequisite) (target "Flows::messages"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Definition Example::TakePicture::picture"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Definition Example::TakePicture::scene"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot"))) (status missing-prerequisite) (target "Actions::actions"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/14_action_succession_example_2.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

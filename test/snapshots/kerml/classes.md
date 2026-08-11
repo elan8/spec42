@@ -39,6 +39,15 @@ package Classes {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "classes.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -94,6 +103,14 @@ CloseCurly,EndOfFile,
       (feature_def composite 'c' : 'C'
         (feature_def composite 'cc' : 'C')))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package Classes {
@@ -130,41 +147,22 @@ package Classes {
 	
 }
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Classes"))) (name "Classes") (declared-name "Classes")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Classes::1"))) (name "1") (declared-name "1"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Classes::2"))) (name "2") (declared-name "2"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Classes::C"))) (name "C") (declared-name "C"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Classes::f"))) (name "f") (declared-name "f"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "7a8258b38c858fdda33ee2df9e53e01969043007c0e173935210ba6c8f7e75f2") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Classes"))) (kind "package") (name "Classes") (declared-name "Classes") (range (start (line 0) (character 0)) (end (line 0) (character 537))))
+    (element (id (node (document "d0") (qualified-name "Classes::1"))) (kind "classifier decl") (name "1") (declared-name "1") (range (start (line 4) (character 1)) (end (line 4) (character 89))) (parent (node (document "d0") (qualified-name "Classes"))))
+    (element (id (node (document "d0") (qualified-name "Classes::2"))) (kind "classifier decl") (name "2") (declared-name "2") (range (start (line 10) (character 1)) (end (line 10) (character 250))) (parent (node (document "d0") (qualified-name "Classes"))))
+    (element (id (node (document "d0") (qualified-name "Classes::C"))) (kind "classifier decl") (name "C") (declared-name "C") (range (start (line 24) (character 1)) (end (line 24) (character 152))) (parent (node (document "d0") (qualified-name "Classes"))))
+    (element (id (node (document "d0") (qualified-name "Classes::f"))) (kind "feature decl") (name "f") (declared-name "f") (range (start (line 2) (character 1)) (end (line 2) (character 14))) (parent (node (document "d0") (qualified-name "Classes"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/classes.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

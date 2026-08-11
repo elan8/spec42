@@ -207,6 +207,153 @@ package TimingForStructuresExecution3 {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "a_3_5_timing_for_structures.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 16) (end 6 57))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 60))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 16) (end 8 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 21 16) (end 21 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 23 16) (end 23 52))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 24 16) (end 24 55))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 43 16) (end 43 57))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 44 16) (end 44 60))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 45 16) (end 45 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 46 16) (end 46 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 61 16) (end 61 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 63 16) (end 63 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 64 16) (end 64 52))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 65 16) (end 65 55))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 116 16) (end 116 57))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 117 16) (end 117 60))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 118 16) (end 118 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 119 16) (end 119 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 135 16) (end 135 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 137 16) (end 137 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 138 16) (end 138 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 139 16) (end 139 57))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 140 16) (end 140 60))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -502,6 +649,138 @@ CloseCurly,EndOfFile,
         (connector_end)
         (connector_end)))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'timeCoincidentOccurrences'
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'timeCoincidentOccurrences'
+semantic.unresolved_name 'self'
+semantic.unresolved_name 'timeCoincidentOccurrences'
+semantic.unresolved_name 'MyWheel'
+semantic.unresolved_name 'MyBikeFork'
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'HappensDuring'
+semantic.unresolved_name 'OneToOneConnectorsExecution::MyWheel1'
+semantic.unresolved_name 'OneToOneConnectorsExecution::MyWheel2'
+semantic.unresolved_name 'OneToOneConnectorsExecution::MyBikeFork1'
+semantic.unresolved_name 'OneToOneConnectorsExecution::MyBikeFork2'
+semantic.unresolved_name 'HappensDuring'
+semantic.unresolved_name 'shorterOccurrence'
+semantic.unresolved_name 'longerOccurrence'
+semantic.unresolved_name 'HappensDuring'
+semantic.unresolved_name 'shorterOccurrence'
+semantic.unresolved_name 'longerOccurrence'
+semantic.unresolved_name 'HappensDuring'
+semantic.unresolved_name 'shorterOccurrence'
+semantic.unresolved_name 'longerOccurrence'
+semantic.unresolved_name 'HappensDuring'
+semantic.unresolved_name 'shorterOccurrence'
+semantic.unresolved_name 'longerOccurrence'
+semantic.unresolved_name 'HappensDuring'
+semantic.unresolved_name 'MyWheel'
+semantic.unresolved_name 'MyBikeFork'
+semantic.unresolved_name 'self'
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'thisOccurrence'
+semantic.unresolved_name 'thatOccurrence'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'thisOccurrence'
+semantic.unresolved_name 'thatOccurrence'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'thisOccurrence'
+semantic.unresolved_name 'thatOccurrence'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'thisOccurrence'
+semantic.unresolved_name 'thatOccurrence'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'endShot'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'timeCoincidentOccurrences'
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'timeCoincidentOccurrences'
+semantic.unresolved_name 'self'
+semantic.unresolved_name 'timeCoincidentOccurrences'
+semantic.unresolved_name 'MyWheel'
+semantic.unresolved_name 'MyBikeFork'
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'HappensDuring'
+semantic.unresolved_name 'OneToOneConnectorsExecution::MyWheel1'
+semantic.unresolved_name 'OneToOneConnectorsExecution::MyWheel2'
+semantic.unresolved_name 'OneToOneConnectorsExecution::MyBikeFork1'
+semantic.unresolved_name 'OneToOneConnectorsExecution::MyBikeFork2'
+semantic.unresolved_name 'HappensDuring'
+semantic.unresolved_name 'shorterOccurrence'
+semantic.unresolved_name 'longerOccurrence'
+semantic.unresolved_name 'HappensDuring'
+semantic.unresolved_name 'shorterOccurrence'
+semantic.unresolved_name 'longerOccurrence'
+semantic.unresolved_name 'HappensDuring'
+semantic.unresolved_name 'shorterOccurrence'
+semantic.unresolved_name 'longerOccurrence'
+semantic.unresolved_name 'HappensDuring'
+semantic.unresolved_name 'shorterOccurrence'
+semantic.unresolved_name 'longerOccurrence'
+semantic.unresolved_name 'HappensDuring'
+semantic.unresolved_name 'MyWheel'
+semantic.unresolved_name 'MyBikeFork'
+semantic.unresolved_name 'self'
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'Wheel'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'thisOccurrence'
+semantic.unresolved_name 'thatOccurrence'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'thisOccurrence'
+semantic.unresolved_name 'thatOccurrence'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'thisOccurrence'
+semantic.unresolved_name 'thatOccurrence'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'thisOccurrence'
+semantic.unresolved_name 'thatOccurrence'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'endShot'
+~~~
 # FORMAT
 ~~~sysml
 
@@ -706,462 +985,124 @@ package TimingForStructuresExecution3 {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'timeCoincidentOccurrences'
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'timeCoincidentOccurrences'
-semantic.unresolved_name 'self'
-semantic.unresolved_name 'timeCoincidentOccurrences'
-semantic.unresolved_name 'MyWheel'
-semantic.unresolved_name 'MyBikeFork'
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'HappensDuring'
-semantic.unresolved_name 'OneToOneConnectorsExecution::MyWheel1'
-semantic.unresolved_name 'OneToOneConnectorsExecution::MyWheel2'
-semantic.unresolved_name 'OneToOneConnectorsExecution::MyBikeFork1'
-semantic.unresolved_name 'OneToOneConnectorsExecution::MyBikeFork2'
-semantic.unresolved_name 'HappensDuring'
-semantic.unresolved_name 'shorterOccurrence'
-semantic.unresolved_name 'longerOccurrence'
-semantic.unresolved_name 'HappensDuring'
-semantic.unresolved_name 'shorterOccurrence'
-semantic.unresolved_name 'longerOccurrence'
-semantic.unresolved_name 'HappensDuring'
-semantic.unresolved_name 'shorterOccurrence'
-semantic.unresolved_name 'longerOccurrence'
-semantic.unresolved_name 'HappensDuring'
-semantic.unresolved_name 'shorterOccurrence'
-semantic.unresolved_name 'longerOccurrence'
-semantic.unresolved_name 'HappensDuring'
-semantic.unresolved_name 'MyWheel'
-semantic.unresolved_name 'MyBikeFork'
-semantic.unresolved_name 'self'
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'HappensWhile'
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'HappensWhile'
-semantic.unresolved_name 'thisOccurrence'
-semantic.unresolved_name 'thatOccurrence'
-semantic.unresolved_name 'HappensWhile'
-semantic.unresolved_name 'thisOccurrence'
-semantic.unresolved_name 'thatOccurrence'
-semantic.unresolved_name 'HappensWhile'
-semantic.unresolved_name 'thisOccurrence'
-semantic.unresolved_name 'thatOccurrence'
-semantic.unresolved_name 'HappensWhile'
-semantic.unresolved_name 'thisOccurrence'
-semantic.unresolved_name 'thatOccurrence'
-semantic.unresolved_name 'HappensWhile'
-semantic.unresolved_name 'endShot'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'timeCoincidentOccurrences'
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'timeCoincidentOccurrences'
-semantic.unresolved_name 'self'
-semantic.unresolved_name 'timeCoincidentOccurrences'
-semantic.unresolved_name 'MyWheel'
-semantic.unresolved_name 'MyBikeFork'
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'HappensDuring'
-semantic.unresolved_name 'OneToOneConnectorsExecution::MyWheel1'
-semantic.unresolved_name 'OneToOneConnectorsExecution::MyWheel2'
-semantic.unresolved_name 'OneToOneConnectorsExecution::MyBikeFork1'
-semantic.unresolved_name 'OneToOneConnectorsExecution::MyBikeFork2'
-semantic.unresolved_name 'HappensDuring'
-semantic.unresolved_name 'shorterOccurrence'
-semantic.unresolved_name 'longerOccurrence'
-semantic.unresolved_name 'HappensDuring'
-semantic.unresolved_name 'shorterOccurrence'
-semantic.unresolved_name 'longerOccurrence'
-semantic.unresolved_name 'HappensDuring'
-semantic.unresolved_name 'shorterOccurrence'
-semantic.unresolved_name 'longerOccurrence'
-semantic.unresolved_name 'HappensDuring'
-semantic.unresolved_name 'shorterOccurrence'
-semantic.unresolved_name 'longerOccurrence'
-semantic.unresolved_name 'HappensDuring'
-semantic.unresolved_name 'MyWheel'
-semantic.unresolved_name 'MyBikeFork'
-semantic.unresolved_name 'self'
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'HappensWhile'
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'Wheel'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'HappensWhile'
-semantic.unresolved_name 'thisOccurrence'
-semantic.unresolved_name 'thatOccurrence'
-semantic.unresolved_name 'HappensWhile'
-semantic.unresolved_name 'thisOccurrence'
-semantic.unresolved_name 'thatOccurrence'
-semantic.unresolved_name 'HappensWhile'
-semantic.unresolved_name 'thisOccurrence'
-semantic.unresolved_name 'thatOccurrence'
-semantic.unresolved_name 'HappensWhile'
-semantic.unresolved_name 'thisOccurrence'
-semantic.unresolved_name 'thatOccurrence'
-semantic.unresolved_name 'HappensWhile'
-semantic.unresolved_name 'endShot'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "TimingForStructuresExecution1"))) (name "TimingForStructuresExecution1") (declared-name "TimingForStructuresExecution1")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresExecution1::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresExecution1::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution1::MyBike"))) (name "MyBike") (declared-name "MyBike"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresExecution1::MyBikeFork"))) (name "MyBikeFork") (declared-name "MyBikeFork"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution1::MyBikeTimeCoincident"))) (name "MyBikeTimeCoincident") (declared-name "MyBikeTimeCoincident"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresExecution1::MyWheel"))) (name "MyWheel") (declared-name "MyWheel"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "TimingForStructuresExecution1::_atom"))) (name "atom") (declared-name "atom"))
-      )
-    )
-    (element (kind "package") (id (node (document "d0") (qualified-name "TimingForStructuresExecution2"))) (name "TimingForStructuresExecution2") (declared-name "TimingForStructuresExecution2")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::HappensDuring"))) (name "HappensDuring") (declared-name "HappensDuring"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyBike"))) (name "MyBike") (declared-name "MyBike"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyBikeFork"))) (name "MyBikeFork") (declared-name "MyBikeFork"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyBikeFork1"))) (name "MyBikeFork1") (declared-name "MyBikeFork1"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyBikeFork2"))) (name "MyBikeFork2") (declared-name "MyBikeFork2"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyBikeParts"))) (name "MyBikeParts") (declared-name "MyBikeParts"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyBike_During_Fork1_Link"))) (name "MyBike_During_Fork1_Link") (declared-name "MyBike_During_Fork1_Link"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyBike_During_Fork2_Link"))) (name "MyBike_During_Fork2_Link") (declared-name "MyBike_During_Fork2_Link"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyBike_During_Parts_Link"))) (name "MyBike_During_Parts_Link") (declared-name "MyBike_During_Parts_Link"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyBike_During_Wheel1_Link"))) (name "MyBike_During_Wheel1_Link") (declared-name "MyBike_During_Wheel1_Link"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyBike_During_Wheel2_Link"))) (name "MyBike_During_Wheel2_Link") (declared-name "MyBike_During_Wheel2_Link"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyWheel"))) (name "MyWheel") (declared-name "MyWheel"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyWheel1"))) (name "MyWheel1") (declared-name "MyWheel1"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyWheel2"))) (name "MyWheel2") (declared-name "MyWheel2"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::_atom"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::_atom#metadata_keyword"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::_atom#metadata_keyword2"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::_atom#metadata_keyword3"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::_atom#metadata_keyword4"))) (name "atom") (declared-name "atom"))
-      )
-    )
-    (element (kind "package") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3"))) (name "TimingForStructuresExecution3") (declared-name "TimingForStructuresExecution3")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::BikeFork"))) (name "BikeFork") (declared-name "BikeFork"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::HappensWhile"))) (name "HappensWhile") (declared-name "HappensWhile"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyBike"))) (name "MyBike") (declared-name "MyBike"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyBikeEnd"))) (name "MyBikeEnd") (declared-name "MyBikeEnd"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyBikeEnd_While_Fork1End_Link"))) (name "MyBikeEnd_While_Fork1End_Link") (declared-name "MyBikeEnd_While_Fork1End_Link"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyBikeEnd_While_Fork2End_Link"))) (name "MyBikeEnd_While_Fork2End_Link") (declared-name "MyBikeEnd_While_Fork2End_Link"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyBikeEnd_While_PartsEnd_Link"))) (name "MyBikeEnd_While_PartsEnd_Link") (declared-name "MyBikeEnd_While_PartsEnd_Link"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyBikeEnd_While_Wheel1End_Link"))) (name "MyBikeEnd_While_Wheel1End_Link") (declared-name "MyBikeEnd_While_Wheel1End_Link"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyBikeEnd_While_Wheel2End_Link"))) (name "MyBikeEnd_While_Wheel2End_Link") (declared-name "MyBikeEnd_While_Wheel2End_Link"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyBikeFork1"))) (name "MyBikeFork1") (declared-name "MyBikeFork1"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyBikeFork1End"))) (name "MyBikeFork1End") (declared-name "MyBikeFork1End"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyBikeFork2"))) (name "MyBikeFork2") (declared-name "MyBikeFork2"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyBikeFork2End"))) (name "MyBikeFork2End") (declared-name "MyBikeFork2End"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyWheel1"))) (name "MyWheel1") (declared-name "MyWheel1"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyWheel1End"))) (name "MyWheel1End") (declared-name "MyWheel1End"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyWheel2"))) (name "MyWheel2") (declared-name "MyWheel2"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyWheel2End"))) (name "MyWheel2End") (declared-name "MyWheel2End"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::Wheel"))) (name "Wheel") (declared-name "Wheel"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword10"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword11"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword2"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword3"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword4"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword5"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword6"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword7"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword8"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword9"))) (name "atom") (declared-name "atom"))
-      )
-    )
-    (element (kind "package") (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted1"))) (name "TimingForStructuresModelToBeExecuted1") (declared-name "TimingForStructuresModelToBeExecuted1")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted1::Bicycle"))) (name "Bicycle") (declared-name "Bicycle"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted1::BikeFork"))) (name "BikeFork") (declared-name "BikeFork"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted1::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted1::Wheel"))) (name "Wheel") (declared-name "Wheel"))
-      )
-    )
-    (element (kind "package") (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted2"))) (name "TimingForStructuresModelToBeExecuted2") (declared-name "TimingForStructuresModelToBeExecuted2")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted2::Bicycle"))) (name "Bicycle") (declared-name "Bicycle"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted2::BikeFork"))) (name "BikeFork") (declared-name "BikeFork"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted2::HappensDuring"))) (name "HappensDuring") (declared-name "HappensDuring"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted2::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted2::Wheel"))) (name "Wheel") (declared-name "Wheel"))
-      )
-    )
-    (element (kind "package") (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted3"))) (name "TimingForStructuresModelToBeExecuted3") (declared-name "TimingForStructuresModelToBeExecuted3")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted3::Bicycle"))) (name "Bicycle") (declared-name "Bicycle"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted3::BikeFork"))) (name "BikeFork") (declared-name "BikeFork"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted3::HappensWhile"))) (name "HappensWhile") (declared-name "HappensWhile"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted3::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted3::Wheel"))) (name "Wheel") (declared-name "Wheel"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "02b5a004970012b95ad0fbc1094b176ce883c68c804cf6eda00d8d3fa9743133") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution1"))) (kind "package") (name "TimingForStructuresExecution1") (declared-name "TimingForStructuresExecution1") (range (start (line 16) (character 0)) (end (line 16) (character 559))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution1::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 21) (character 1)) (end (line 21) (character 25))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution1"))) (authored (membership (kind Import) (visibility "private") (import (reference "Atoms::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 21) (character 16)) (end (line 21) (character 21))))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution1::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 22) (character 1)) (end (line 22) (character 57))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution1"))) (authored (membership (kind Import) (visibility "private") (import (reference "TimingForStructuresModelToBeExecuted1::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 22) (character 16)) (end (line 22) (character 53))))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution1::MyBike"))) (kind "classifier decl") (name "MyBike") (declared-name "MyBike") (range (start (line 29) (character 1)) (end (line 29) (character 232))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution1"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution1::MyBikeFork"))) (kind "import") (name "MyBikeFork") (declared-name "MyBikeFork") (range (start (line 24) (character 1)) (end (line 24) (character 56))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution1"))) (authored (membership (kind Import) (visibility "private") (import (reference "OneToOneConnectorsExecution::MyBikeFork") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 24) (character 16)) (end (line 24) (character 55))))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution1::MyBikeTimeCoincident"))) (kind "classifier decl") (name "MyBikeTimeCoincident") (declared-name "MyBikeTimeCoincident") (range (start (line 26) (character 1)) (end (line 26) (character 64))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution1"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution1::MyWheel"))) (kind "import") (name "MyWheel") (declared-name "MyWheel") (range (start (line 23) (character 1)) (end (line 23) (character 53))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution1"))) (authored (membership (kind Import) (visibility "private") (import (reference "OneToOneConnectorsExecution::MyWheel") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 23) (character 16)) (end (line 23) (character 52))))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution1::_atom"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 28) (character 1)) (end (line 28) (character 8))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution1"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution2"))) (kind "package") (name "TimingForStructuresExecution2") (declared-name "TimingForStructuresExecution2") (range (start (line 56) (character 0)) (end (line 56) (character 1844))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 61) (character 1)) (end (line 61) (character 25))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution2"))) (authored (membership (kind Import) (visibility "private") (import (reference "Atoms::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 61) (character 16)) (end (line 61) (character 21))))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 62) (character 1)) (end (line 62) (character 57))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution2"))) (authored (membership (kind Import) (visibility "private") (import (reference "TimingForStructuresModelToBeExecuted2::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 62) (character 16)) (end (line 62) (character 53))))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::HappensDuring"))) (kind "import") (name "HappensDuring") (declared-name "HappensDuring") (range (start (line 63) (character 1)) (end (line 63) (character 43))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution2"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::HappensDuring") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 63) (character 16)) (end (line 63) (character 42))))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyBike"))) (kind "classifier decl") (name "MyBike") (declared-name "MyBike") (range (start (line 100) (character 1)) (end (line 100) (character 306))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution2"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyBikeFork"))) (kind "import") (name "MyBikeFork") (declared-name "MyBikeFork") (range (start (line 65) (character 1)) (end (line 65) (character 56))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution2"))) (authored (membership (kind Import) (visibility "private") (import (reference "OneToOneConnectorsExecution::MyBikeFork") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 65) (character 16)) (end (line 65) (character 55))))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyBikeFork1"))) (kind "classifier decl") (name "MyBikeFork1") (declared-name "MyBikeFork1") (range (start (line 69) (character 4)) (end (line 69) (character 76))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution2"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyBikeFork2"))) (kind "classifier decl") (name "MyBikeFork2") (declared-name "MyBikeFork2") (range (start (line 70) (character 4)) (end (line 70) (character 76))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution2"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyBikeParts"))) (kind "classifier decl") (name "MyBikeParts") (declared-name "MyBikeParts") (range (start (line 97) (character 1)) (end (line 97) (character 47))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution2"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyBike_During_Fork1_Link"))) (kind "kermlDecl") (name "MyBike_During_Fork1_Link") (declared-name "MyBike_During_Fork1_Link") (range (start (line 83) (character 1)) (end (line 83) (character 170))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution2"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyBike_During_Fork2_Link"))) (kind "kermlDecl") (name "MyBike_During_Fork2_Link") (declared-name "MyBike_During_Fork2_Link") (range (start (line 88) (character 1)) (end (line 88) (character 170))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution2"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyBike_During_Parts_Link"))) (kind "kermlDecl") (name "MyBike_During_Parts_Link") (declared-name "MyBike_During_Parts_Link") (range (start (line 93) (character 1)) (end (line 93) (character 181))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution2"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyBike_During_Wheel1_Link"))) (kind "kermlDecl") (name "MyBike_During_Wheel1_Link") (declared-name "MyBike_During_Wheel1_Link") (range (start (line 73) (character 1)) (end (line 73) (character 168))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution2"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyBike_During_Wheel2_Link"))) (kind "kermlDecl") (name "MyBike_During_Wheel2_Link") (declared-name "MyBike_During_Wheel2_Link") (range (start (line 78) (character 1)) (end (line 78) (character 168))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution2"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyWheel"))) (kind "import") (name "MyWheel") (declared-name "MyWheel") (range (start (line 64) (character 1)) (end (line 64) (character 53))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution2"))) (authored (membership (kind Import) (visibility "private") (import (reference "OneToOneConnectorsExecution::MyWheel") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 64) (character 16)) (end (line 64) (character 52))))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyWheel1"))) (kind "classifier decl") (name "MyWheel1") (declared-name "MyWheel1") (range (start (line 67) (character 1)) (end (line 67) (character 67))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution2"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyWheel2"))) (kind "classifier decl") (name "MyWheel2") (declared-name "MyWheel2") (range (start (line 68) (character 1)) (end (line 68) (character 67))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution2"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::_atom"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 72) (character 1)) (end (line 72) (character 8))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution2"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::_atom#metadata_keyword"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 77) (character 1)) (end (line 77) (character 8))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution2"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::_atom#metadata_keyword2"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 82) (character 1)) (end (line 82) (character 8))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution2"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::_atom#metadata_keyword3"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 87) (character 1)) (end (line 87) (character 8))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution2"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution2::_atom#metadata_keyword4"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 99) (character 1)) (end (line 99) (character 8))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution2"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3"))) (kind "package") (name "TimingForStructuresExecution3") (declared-name "TimingForStructuresExecution3") (range (start (line 130) (character 0)) (end (line 130) (character 2150))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 135) (character 1)) (end (line 135) (character 25))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))) (authored (membership (kind Import) (visibility "private") (import (reference "Atoms::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 135) (character 16)) (end (line 135) (character 21))))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 136) (character 1)) (end (line 136) (character 57))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))) (authored (membership (kind Import) (visibility "private") (import (reference "TimingForStructuresModelToBeExecuted3::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 136) (character 16)) (end (line 136) (character 53))))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::BikeFork"))) (kind "import") (name "BikeFork") (declared-name "BikeFork") (range (start (line 140) (character 1)) (end (line 140) (character 61))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))) (authored (membership (kind Import) (visibility "private") (import (reference "WithoutConnectorsModelToBeExecuted::BikeFork") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 140) (character 16)) (end (line 140) (character 60))))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::HappensWhile"))) (kind "import") (name "HappensWhile") (declared-name "HappensWhile") (range (start (line 138) (character 1)) (end (line 138) (character 42))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::HappensWhile") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 138) (character 16)) (end (line 138) (character 41))))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyBike"))) (kind "classifier decl") (name "MyBike") (declared-name "MyBike") (range (start (line 195) (character 1)) (end (line 195) (character 205))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyBikeEnd"))) (kind "classifier decl") (name "MyBikeEnd") (declared-name "MyBikeEnd") (range (start (line 166) (character 1)) (end (line 166) (character 38))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyBikeEnd_While_Fork1End_Link"))) (kind "kermlDecl") (name "MyBikeEnd_While_Fork1End_Link") (declared-name "MyBikeEnd_While_Fork1End_Link") (range (start (line 180) (character 1)) (end (line 180) (character 175))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyBikeEnd_While_Fork2End_Link"))) (kind "kermlDecl") (name "MyBikeEnd_While_Fork2End_Link") (declared-name "MyBikeEnd_While_Fork2End_Link") (range (start (line 185) (character 1)) (end (line 185) (character 175))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyBikeEnd_While_PartsEnd_Link"))) (kind "kermlDecl") (name "MyBikeEnd_While_PartsEnd_Link") (declared-name "MyBikeEnd_While_PartsEnd_Link") (range (start (line 190) (character 1)) (end (line 190) (character 205))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyBikeEnd_While_Wheel1End_Link"))) (kind "kermlDecl") (name "MyBikeEnd_While_Wheel1End_Link") (declared-name "MyBikeEnd_While_Wheel1End_Link") (range (start (line 170) (character 1)) (end (line 170) (character 173))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyBikeEnd_While_Wheel2End_Link"))) (kind "kermlDecl") (name "MyBikeEnd_While_Wheel2End_Link") (declared-name "MyBikeEnd_While_Wheel2End_Link") (range (start (line 175) (character 1)) (end (line 175) (character 173))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyBikeFork1"))) (kind "classifier decl") (name "MyBikeFork1") (declared-name "MyBikeFork1") (range (start (line 157) (character 1)) (end (line 157) (character 91))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyBikeFork1End"))) (kind "classifier decl") (name "MyBikeFork1End") (declared-name "MyBikeFork1End") (range (start (line 155) (character 1)) (end (line 155) (character 44))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyBikeFork2"))) (kind "classifier decl") (name "MyBikeFork2") (declared-name "MyBikeFork2") (range (start (line 162) (character 1)) (end (line 162) (character 91))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyBikeFork2End"))) (kind "classifier decl") (name "MyBikeFork2End") (declared-name "MyBikeFork2End") (range (start (line 160) (character 1)) (end (line 160) (character 44))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyWheel1"))) (kind "classifier decl") (name "MyWheel1") (declared-name "MyWheel1") (range (start (line 146) (character 1)) (end (line 146) (character 82))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyWheel1End"))) (kind "classifier decl") (name "MyWheel1End") (declared-name "MyWheel1End") (range (start (line 144) (character 1)) (end (line 144) (character 38))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyWheel2"))) (kind "classifier decl") (name "MyWheel2") (declared-name "MyWheel2") (range (start (line 152) (character 1)) (end (line 152) (character 82))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::MyWheel2End"))) (kind "classifier decl") (name "MyWheel2End") (declared-name "MyWheel2End") (range (start (line 150) (character 1)) (end (line 150) (character 38))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::Occurrence"))) (kind "import") (name "Occurrence") (declared-name "Occurrence") (range (start (line 137) (character 1)) (end (line 137) (character 40))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::Occurrence") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 137) (character 16)) (end (line 137) (character 39))))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::Wheel"))) (kind "import") (name "Wheel") (declared-name "Wheel") (range (start (line 139) (character 1)) (end (line 139) (character 58))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))) (authored (membership (kind Import) (visibility "private") (import (reference "WithoutConnectorsModelToBeExecuted::Wheel") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 139) (character 16)) (end (line 139) (character 57))))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 143) (character 1)) (end (line 143) (character 8))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 145) (character 1)) (end (line 145) (character 8))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword10"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 184) (character 1)) (end (line 184) (character 8))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword11"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 194) (character 1)) (end (line 194) (character 8))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword2"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 149) (character 1)) (end (line 149) (character 8))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword3"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 151) (character 1)) (end (line 151) (character 8))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword4"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 156) (character 1)) (end (line 156) (character 8))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword5"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 161) (character 1)) (end (line 161) (character 8))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword6"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 165) (character 1)) (end (line 165) (character 8))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword7"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 169) (character 1)) (end (line 169) (character 8))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword8"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 174) (character 1)) (end (line 174) (character 8))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword9"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 179) (character 1)) (end (line 179) (character 8))) (parent (node (document "d0") (qualified-name "TimingForStructuresExecution3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted1"))) (kind "package") (name "TimingForStructuresModelToBeExecuted1") (declared-name "TimingForStructuresModelToBeExecuted1") (range (start (line 1) (character 0)) (end (line 1) (character 385))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted1::Bicycle"))) (kind "classifier decl") (name "Bicycle") (declared-name "Bicycle") (range (start (line 10) (character 1)) (end (line 10) (character 156))) (parent (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted1"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted1::BikeFork"))) (kind "import") (name "BikeFork") (declared-name "BikeFork") (range (start (line 7) (character 1)) (end (line 7) (character 61))) (parent (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted1"))) (authored (membership (kind Import) (visibility "private") (import (reference "WithoutConnectorsModelToBeExecuted::BikeFork") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 60))))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted1::Occurrence"))) (kind "import") (name "Occurrence") (declared-name "Occurrence") (range (start (line 8) (character 1)) (end (line 8) (character 40))) (parent (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted1"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::Occurrence") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 39))))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted1::Wheel"))) (kind "import") (name "Wheel") (declared-name "Wheel") (range (start (line 6) (character 1)) (end (line 6) (character 58))) (parent (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted1"))) (authored (membership (kind Import) (visibility "private") (import (reference "WithoutConnectorsModelToBeExecuted::Wheel") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 57))))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted2"))) (kind "package") (name "TimingForStructuresModelToBeExecuted2") (declared-name "TimingForStructuresModelToBeExecuted2") (range (start (line 38) (character 0)) (end (line 38) (character 492))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted2::Bicycle"))) (kind "classifier decl") (name "Bicycle") (declared-name "Bicycle") (range (start (line 48) (character 1)) (end (line 48) (character 219))) (parent (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted2"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted2::BikeFork"))) (kind "import") (name "BikeFork") (declared-name "BikeFork") (range (start (line 44) (character 1)) (end (line 44) (character 61))) (parent (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted2"))) (authored (membership (kind Import) (visibility "private") (import (reference "WithoutConnectorsModelToBeExecuted::BikeFork") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 44) (character 16)) (end (line 44) (character 60))))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted2::HappensDuring"))) (kind "import") (name "HappensDuring") (declared-name "HappensDuring") (range (start (line 46) (character 1)) (end (line 46) (character 43))) (parent (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted2"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::HappensDuring") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 46) (character 16)) (end (line 46) (character 42))))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted2::Occurrence"))) (kind "import") (name "Occurrence") (declared-name "Occurrence") (range (start (line 45) (character 1)) (end (line 45) (character 40))) (parent (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted2"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::Occurrence") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 45) (character 16)) (end (line 45) (character 39))))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted2::Wheel"))) (kind "import") (name "Wheel") (declared-name "Wheel") (range (start (line 43) (character 1)) (end (line 43) (character 58))) (parent (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted2"))) (authored (membership (kind Import) (visibility "private") (import (reference "WithoutConnectorsModelToBeExecuted::Wheel") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 43) (character 16)) (end (line 43) (character 57))))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted3"))) (kind "package") (name "TimingForStructuresModelToBeExecuted3") (declared-name "TimingForStructuresModelToBeExecuted3") (range (start (line 111) (character 0)) (end (line 111) (character 548))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted3::Bicycle"))) (kind "classifier decl") (name "Bicycle") (declared-name "Bicycle") (range (start (line 121) (character 1)) (end (line 121) (character 276))) (parent (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted3"))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted3::BikeFork"))) (kind "import") (name "BikeFork") (declared-name "BikeFork") (range (start (line 117) (character 1)) (end (line 117) (character 61))) (parent (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted3"))) (authored (membership (kind Import) (visibility "private") (import (reference "WithoutConnectorsModelToBeExecuted::BikeFork") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 117) (character 16)) (end (line 117) (character 60))))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted3::HappensWhile"))) (kind "import") (name "HappensWhile") (declared-name "HappensWhile") (range (start (line 119) (character 1)) (end (line 119) (character 42))) (parent (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted3"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::HappensWhile") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 119) (character 16)) (end (line 119) (character 41))))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted3::Occurrence"))) (kind "import") (name "Occurrence") (declared-name "Occurrence") (range (start (line 118) (character 1)) (end (line 118) (character 40))) (parent (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted3"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::Occurrence") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 118) (character 16)) (end (line 118) (character 39))))))
+    (element (id (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted3::Wheel"))) (kind "import") (name "Wheel") (declared-name "Wheel") (range (start (line 116) (character 1)) (end (line 116) (character 58))) (parent (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted3"))) (authored (membership (kind Import) (visibility "private") (import (reference "WithoutConnectorsModelToBeExecuted::Wheel") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 116) (character 16)) (end (line 116) (character 57))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresExecution1::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Atoms::*") (range (start (line 21) (character 16)) (end (line 21) (character 21))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresExecution1::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "TimingForStructuresModelToBeExecuted1::*") (range (start (line 22) (character 16)) (end (line 22) (character 53))) (outcome (status resolved) (target (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted1")))))
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresExecution1::MyBikeFork"))) (kind membershipImport) (ordinal 0)) (authored-target "OneToOneConnectorsExecution::MyBikeFork") (range (start (line 24) (character 16)) (end (line 24) (character 55))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresExecution1::MyWheel"))) (kind membershipImport) (ordinal 0)) (authored-target "OneToOneConnectorsExecution::MyWheel") (range (start (line 23) (character 16)) (end (line 23) (character 52))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresExecution2::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Atoms::*") (range (start (line 61) (character 16)) (end (line 61) (character 21))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresExecution2::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "TimingForStructuresModelToBeExecuted2::*") (range (start (line 62) (character 16)) (end (line 62) (character 53))) (outcome (status resolved) (target (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted2")))))
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresExecution2::HappensDuring"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::HappensDuring") (range (start (line 63) (character 16)) (end (line 63) (character 42))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyBikeFork"))) (kind membershipImport) (ordinal 0)) (authored-target "OneToOneConnectorsExecution::MyBikeFork") (range (start (line 65) (character 16)) (end (line 65) (character 55))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresExecution2::MyWheel"))) (kind membershipImport) (ordinal 0)) (authored-target "OneToOneConnectorsExecution::MyWheel") (range (start (line 64) (character 16)) (end (line 64) (character 52))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresExecution3::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Atoms::*") (range (start (line 135) (character 16)) (end (line 135) (character 21))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresExecution3::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "TimingForStructuresModelToBeExecuted3::*") (range (start (line 136) (character 16)) (end (line 136) (character 53))) (outcome (status resolved) (target (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted3")))))
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresExecution3::BikeFork"))) (kind membershipImport) (ordinal 0)) (authored-target "WithoutConnectorsModelToBeExecuted::BikeFork") (range (start (line 140) (character 16)) (end (line 140) (character 60))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresExecution3::HappensWhile"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::HappensWhile") (range (start (line 138) (character 16)) (end (line 138) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresExecution3::Occurrence"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::Occurrence") (range (start (line 137) (character 16)) (end (line 137) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresExecution3::Wheel"))) (kind membershipImport) (ordinal 0)) (authored-target "WithoutConnectorsModelToBeExecuted::Wheel") (range (start (line 139) (character 16)) (end (line 139) (character 57))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted1::BikeFork"))) (kind membershipImport) (ordinal 0)) (authored-target "WithoutConnectorsModelToBeExecuted::BikeFork") (range (start (line 7) (character 16)) (end (line 7) (character 60))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted1::Occurrence"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::Occurrence") (range (start (line 8) (character 16)) (end (line 8) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted1::Wheel"))) (kind membershipImport) (ordinal 0)) (authored-target "WithoutConnectorsModelToBeExecuted::Wheel") (range (start (line 6) (character 16)) (end (line 6) (character 57))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted2::BikeFork"))) (kind membershipImport) (ordinal 0)) (authored-target "WithoutConnectorsModelToBeExecuted::BikeFork") (range (start (line 44) (character 16)) (end (line 44) (character 60))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted2::HappensDuring"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::HappensDuring") (range (start (line 46) (character 16)) (end (line 46) (character 42))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted2::Occurrence"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::Occurrence") (range (start (line 45) (character 16)) (end (line 45) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted2::Wheel"))) (kind membershipImport) (ordinal 0)) (authored-target "WithoutConnectorsModelToBeExecuted::Wheel") (range (start (line 43) (character 16)) (end (line 43) (character 57))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted3::BikeFork"))) (kind membershipImport) (ordinal 0)) (authored-target "WithoutConnectorsModelToBeExecuted::BikeFork") (range (start (line 117) (character 16)) (end (line 117) (character 60))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted3::HappensWhile"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::HappensWhile") (range (start (line 119) (character 16)) (end (line 119) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted3::Occurrence"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::Occurrence") (range (start (line 118) (character 16)) (end (line 118) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimingForStructuresModelToBeExecuted3::Wheel"))) (kind membershipImport) (ordinal 0)) (authored-target "WithoutConnectorsModelToBeExecuted::Wheel") (range (start (line 116) (character 16)) (end (line 116) (character 57))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "TimingForStructuresExecution1::_atom"))) (to (node (document "d0") (qualified-name "TimingForStructuresExecution1"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "TimingForStructuresExecution2::_atom"))) (to (node (document "d0") (qualified-name "TimingForStructuresExecution2"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "TimingForStructuresExecution2::_atom#metadata_keyword"))) (to (node (document "d0") (qualified-name "TimingForStructuresExecution2"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "TimingForStructuresExecution2::_atom#metadata_keyword2"))) (to (node (document "d0") (qualified-name "TimingForStructuresExecution2"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "TimingForStructuresExecution2::_atom#metadata_keyword3"))) (to (node (document "d0") (qualified-name "TimingForStructuresExecution2"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "TimingForStructuresExecution2::_atom#metadata_keyword4"))) (to (node (document "d0") (qualified-name "TimingForStructuresExecution2"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom"))) (to (node (document "d0") (qualified-name "TimingForStructuresExecution3"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword"))) (to (node (document "d0") (qualified-name "TimingForStructuresExecution3"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword10"))) (to (node (document "d0") (qualified-name "TimingForStructuresExecution3"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword11"))) (to (node (document "d0") (qualified-name "TimingForStructuresExecution3"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword2"))) (to (node (document "d0") (qualified-name "TimingForStructuresExecution3"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword3"))) (to (node (document "d0") (qualified-name "TimingForStructuresExecution3"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword4"))) (to (node (document "d0") (qualified-name "TimingForStructuresExecution3"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword5"))) (to (node (document "d0") (qualified-name "TimingForStructuresExecution3"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword6"))) (to (node (document "d0") (qualified-name "TimingForStructuresExecution3"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword7"))) (to (node (document "d0") (qualified-name "TimingForStructuresExecution3"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword8"))) (to (node (document "d0") (qualified-name "TimingForStructuresExecution3"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword9"))) (to (node (document "d0") (qualified-name "TimingForStructuresExecution3"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimingForStructuresExecution1::_atom"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimingForStructuresExecution2::_atom"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimingForStructuresExecution2::_atom#metadata_keyword"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimingForStructuresExecution2::_atom#metadata_keyword2"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimingForStructuresExecution2::_atom#metadata_keyword3"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimingForStructuresExecution2::_atom#metadata_keyword4"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword10"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword11"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword2"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword3"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword4"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword5"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword6"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword7"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword8"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TimingForStructuresExecution3::_atom#metadata_keyword9"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/a_3_5_timing_for_structures.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 6 16) (end 6 57))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 16) (end 7 60))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 16) (end 8 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 21 16) (end 21 21))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 23 16) (end 23 52))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 24 16) (end 24 55))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 28 1) (end 28 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 46 16) (end 46 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 72 1) (end 72 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 77 1) (end 77 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 77 1) (end 77 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 82 1) (end 82 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 87 1) (end 87 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 99 1) (end 99 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 119 16) (end 119 41))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 143 1) (end 143 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 145 1) (end 145 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 145 1) (end 145 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 149 1) (end 149 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 151 1) (end 151 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 156 1) (end 156 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 161 1) (end 161 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 165 1) (end 165 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 169 1) (end 169 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 174 1) (end 174 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 179 1) (end 179 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 184 1) (end 184 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 194 1) (end 194 8))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

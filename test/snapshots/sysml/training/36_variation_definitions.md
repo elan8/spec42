@@ -41,6 +41,33 @@ package 'Variation Definitions' {
 
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "36_variation_definitions.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 4 1) (end 4 44))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -97,6 +124,14 @@ CloseCurly,EndOfFile,
       (variant_usage
         (default_ref_usage ''6cylEngine'')))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'ISQ::LengthValue'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'ISQ::LengthValue'
+~~~
 # FORMAT
 ~~~sysml
 package 'Variation Definitions' {
@@ -135,116 +170,52 @@ package 'Variation Definitions' {
 
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'ISQ::LengthValue'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'ISQ::LengthValue'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Variation Definitions"))) (name "Variation Definitions") (declared-name "Variation Definitions")
-      (contains
-        (element (kind "part") (id (node (document "d0") (qualified-name "Variation Definitions::4cylEngine"))) (name "4cylEngine") (declared-name "4cylEngine") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Variation Definitions::4cylEngine::cylinder"))) (name "cylinder") (declared (properties (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Variation Definitions::Engine")))))
-          )
-        )
-        (element (kind "part") (id (node (document "d0") (qualified-name "Variation Definitions::6cylEngine"))) (name "6cylEngine") (declared-name "6cylEngine") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Variation Definitions::6cylEngine::cylinder"))) (name "cylinder") (declared (properties (ordered false)) (multiplicity (lower 6) (upper 6) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Variation Definitions::Engine")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Variation Definitions::Cylinder"))) (name "Cylinder") (declared-name "Cylinder") (declared)
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Variation Definitions::Cylinder::diameter"))) (name "diameter") (declared-name "diameter") (declared (properties (ordered false) (unique true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Variation Definitions::Cylinder")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Variation Definitions::Diameter"))) (name "Diameter") (declared-name "Diameter") (declared (properties (ordered false) (unique true))))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Variation Definitions::DiameterChoices"))) (name "DiameterChoices") (declared-name "DiameterChoices"))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Variation Definitions::Engine"))) (name "Engine") (declared-name "Engine") (declared)
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Variation Definitions::Engine::cylinder"))) (name "cylinder") (declared-name "cylinder") (declared (properties (ordered false)) (multiplicity (lower 2) (upper unbounded) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Variation Definitions::Engine")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Variation Definitions::EngineChoices"))) (name "EngineChoices") (declared-name "EngineChoices") (declared (properties (variation true)))
-          (contains
-            (element (kind "variant") (id (node (document "d0") (qualified-name "Variation Definitions::EngineChoices::4cylEngine"))) (name "4cylEngine") (declared-name "4cylEngine") (effective (featuring-type (node (document "d0") (qualified-name "Variation Definitions::EngineChoices")))))
-            (element (kind "variant") (id (node (document "d0") (qualified-name "Variation Definitions::EngineChoices::6cylEngine"))) (name "6cylEngine") (declared-name "6cylEngine") (effective (featuring-type (node (document "d0") (qualified-name "Variation Definitions::EngineChoices")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "Variation Definitions::Real"))) (name "Real") (declared-name "Real"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Variation Definitions::mm"))) (name "mm") (declared-name "mm"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "dc3367ce9081a8f723213b71f664ff017f10b994ac042a535f57fe9d6bebc795") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Variation Definitions"))) (kind "package") (name "Variation Definitions") (declared-name "Variation Definitions") (range (start (line 0) (character 0)) (end (line 0) (character 717))))
+    (element (id (node (document "d0") (qualified-name "Variation Definitions::4cylEngine"))) (kind "part") (name "4cylEngine") (declared-name "4cylEngine") (range (start (line 14) (character 4)) (end (line 14) (character 71))) (parent (node (document "d0") (qualified-name "Variation Definitions"))) (authored (membership (kind Feature)) (relationships (typing (reference "Engine") (range (start (line 14) (character 24)) (end (line 14) (character 30)))))))
+    (element (id (node (document "d0") (qualified-name "Variation Definitions::4cylEngine::cylinder"))) (kind "part") (name "cylinder") (range (start (line 15) (character 5)) (end (line 15) (character 32))) (parent (node (document "d0") (qualified-name "Variation Definitions::4cylEngine"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "cylinder") (range (start (line 15) (character 20)) (end (line 15) (character 28)))))))
+    (element (id (node (document "d0") (qualified-name "Variation Definitions::6cylEngine"))) (kind "part") (name "6cylEngine") (declared-name "6cylEngine") (range (start (line 18) (character 4)) (end (line 18) (character 71))) (parent (node (document "d0") (qualified-name "Variation Definitions"))) (authored (membership (kind Feature)) (relationships (typing (reference "Engine") (range (start (line 18) (character 24)) (end (line 18) (character 30)))))))
+    (element (id (node (document "d0") (qualified-name "Variation Definitions::6cylEngine::cylinder"))) (kind "part") (name "cylinder") (range (start (line 19) (character 5)) (end (line 19) (character 32))) (parent (node (document "d0") (qualified-name "Variation Definitions::6cylEngine"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "cylinder") (range (start (line 19) (character 20)) (end (line 19) (character 28)))))))
+    (element (id (node (document "d0") (qualified-name "Variation Definitions::Cylinder"))) (kind "part def") (name "Cylinder") (declared-name "Cylinder") (range (start (line 6) (character 4)) (end (line 6) (character 71))) (parent (node (document "d0") (qualified-name "Variation Definitions"))))
+    (element (id (node (document "d0") (qualified-name "Variation Definitions::Cylinder::diameter"))) (kind "attribute") (name "diameter") (declared-name "diameter") (range (start (line 7) (character 8)) (end (line 7) (character 41))) (parent (node (document "d0") (qualified-name "Variation Definitions::Cylinder"))) (authored (membership (kind Feature)) (relationships (typing (reference "Diameter") (range none)) (typing (reference "Diameter") (range (start (line 7) (character 29)) (end (line 7) (character 37)))))))
+    (element (id (node (document "d0") (qualified-name "Variation Definitions::Diameter"))) (kind "attribute def") (name "Diameter") (declared-name "Diameter") (range (start (line 4) (character 1)) (end (line 4) (character 44))) (parent (node (document "d0") (qualified-name "Variation Definitions"))) (authored (membership (kind Owning)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Variation Definitions::DiameterChoices"))) (kind "kermlDecl") (name "DiameterChoices") (declared-name "DiameterChoices") (range (start (line 24) (character 1)) (end (line 24) (character 146))) (parent (node (document "d0") (qualified-name "Variation Definitions"))))
+    (element (id (node (document "d0") (qualified-name "Variation Definitions::Engine"))) (kind "part def") (name "Engine") (declared-name "Engine") (range (start (line 10) (character 4)) (end (line 10) (character 64))) (parent (node (document "d0") (qualified-name "Variation Definitions"))))
+    (element (id (node (document "d0") (qualified-name "Variation Definitions::Engine::cylinder"))) (kind "part") (name "cylinder") (declared-name "cylinder") (range (start (line 11) (character 5)) (end (line 11) (character 36))) (parent (node (document "d0") (qualified-name "Variation Definitions::Engine"))) (authored (membership (kind Feature)) (relationships (typing (reference "Cylinder") (range (start (line 11) (character 21)) (end (line 11) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "Variation Definitions::EngineChoices"))) (kind "part def") (name "EngineChoices") (declared-name "EngineChoices") (range (start (line 29) (character 1)) (end (line 29) (character 98))) (parent (node (document "d0") (qualified-name "Variation Definitions"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Engine") (range (start (line 29) (character 37)) (end (line 29) (character 43)))))))
+    (element (id (node (document "d0") (qualified-name "Variation Definitions::EngineChoices::4cylEngine"))) (kind "variant") (name "4cylEngine") (declared-name "4cylEngine") (range (start (line 30) (character 2)) (end (line 30) (character 23))) (parent (node (document "d0") (qualified-name "Variation Definitions::EngineChoices"))))
+    (element (id (node (document "d0") (qualified-name "Variation Definitions::EngineChoices::6cylEngine"))) (kind "variant") (name "6cylEngine") (declared-name "6cylEngine") (range (start (line 31) (character 2)) (end (line 31) (character 23))) (parent (node (document "d0") (qualified-name "Variation Definitions::EngineChoices"))))
+    (element (id (node (document "d0") (qualified-name "Variation Definitions::Real"))) (kind "import") (name "Real") (declared-name "Real") (range (start (line 1) (character 1)) (end (line 1) (character 35))) (parent (node (document "d0") (qualified-name "Variation Definitions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 34))))))
+    (element (id (node (document "d0") (qualified-name "Variation Definitions::mm"))) (kind "import") (name "mm") (declared-name "mm") (range (start (line 2) (character 1)) (end (line 2) (character 23))) (parent (node (document "d0") (qualified-name "Variation Definitions"))) (authored (membership (kind Import) (visibility "private") (import (reference "SI::mm") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 22))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Variation Definitions::4cylEngine"))) (kind featureTyping) (ordinal 0)) (authored-target "Engine") (range (start (line 14) (character 24)) (end (line 14) (character 30))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Variation Definitions::Engine")))))
+    (reference (id (source (node (document "d0") (qualified-name "Variation Definitions::4cylEngine::cylinder"))) (kind redefinition) (ordinal 0)) (authored-target "cylinder") (range (start (line 15) (character 20)) (end (line 15) (character 28))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Variation Definitions::4cylEngine::cylinder")))))
+    (reference (id (source (node (document "d0") (qualified-name "Variation Definitions::6cylEngine"))) (kind featureTyping) (ordinal 0)) (authored-target "Engine") (range (start (line 18) (character 24)) (end (line 18) (character 30))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Variation Definitions::Engine")))))
+    (reference (id (source (node (document "d0") (qualified-name "Variation Definitions::6cylEngine::cylinder"))) (kind redefinition) (ordinal 0)) (authored-target "cylinder") (range (start (line 19) (character 20)) (end (line 19) (character 28))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Variation Definitions::6cylEngine::cylinder")))))
+    (reference (id (source (node (document "d0") (qualified-name "Variation Definitions::Cylinder::diameter"))) (kind featureTyping) (ordinal 0)) (authored-target "Diameter") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Variation Definitions::Diameter")))))
+    (reference (id (source (node (document "d0") (qualified-name "Variation Definitions::Cylinder::diameter"))) (kind featureTyping) (ordinal 1)) (authored-target "Diameter") (range (start (line 7) (character 29)) (end (line 7) (character 37))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Variation Definitions::Diameter")))))
+    (reference (id (source (node (document "d0") (qualified-name "Variation Definitions::Diameter"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Variation Definitions::Engine::cylinder"))) (kind featureTyping) (ordinal 0)) (authored-target "Cylinder") (range (start (line 11) (character 21)) (end (line 11) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Variation Definitions::Cylinder")))))
+    (reference (id (source (node (document "d0") (qualified-name "Variation Definitions::EngineChoices"))) (kind specialization) (ordinal 0)) (authored-target "Engine") (range (start (line 29) (character 37)) (end (line 29) (character 43))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Variation Definitions::Engine")))))
+    (reference (id (source (node (document "d0") (qualified-name "Variation Definitions::Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (range (start (line 1) (character 16)) (end (line 1) (character 34))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Variation Definitions::mm"))) (kind membershipImport) (ordinal 0)) (authored-target "SI::mm") (range (start (line 2) (character 16)) (end (line 2) (character 22))) (outcome (status unresolved)))
   )
   (relationships
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Variation Definitions::4cylEngine::cylinder"))) (to (node (document "d0") (qualified-name "Variation Definitions::Engine::cylinder"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Variation Definitions::6cylEngine::cylinder"))) (to (node (document "d0") (qualified-name "Variation Definitions::Engine::cylinder"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "Variation Definitions::EngineChoices"))) (to (node (document "d0") (qualified-name "Variation Definitions::Engine"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Variation Definitions::4cylEngine"))) (to (node (document "d0") (qualified-name "Variation Definitions::Engine"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Variation Definitions::6cylEngine"))) (to (node (document "d0") (qualified-name "Variation Definitions::Engine"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Variation Definitions::Cylinder::diameter"))) (to (node (document "d0") (qualified-name "Variation Definitions::Diameter"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Variation Definitions::Engine::cylinder"))) (to (node (document "d0") (qualified-name "Variation Definitions::Cylinder"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Variation Definitions::4cylEngine"))) (target (node (document "d0") (qualified-name "Variation Definitions::Engine"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Variation Definitions::4cylEngine"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Variation Definitions::4cylEngine::cylinder"))) (target (node (document "d0") (qualified-name "Variation Definitions::4cylEngine::cylinder"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Variation Definitions::4cylEngine::cylinder"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Variation Definitions::6cylEngine"))) (target (node (document "d0") (qualified-name "Variation Definitions::Engine"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Variation Definitions::6cylEngine"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Variation Definitions::6cylEngine::cylinder"))) (target (node (document "d0") (qualified-name "Variation Definitions::6cylEngine::cylinder"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Variation Definitions::6cylEngine::cylinder"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Variation Definitions::Cylinder::diameter"))) (target (node (document "d0") (qualified-name "Variation Definitions::Diameter"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Variation Definitions::Cylinder::diameter"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Variation Definitions::Cylinder::diameter"))) (target (node (document "d0") (qualified-name "Variation Definitions::Diameter"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Variation Definitions::Cylinder::diameter"))) (kind featureTyping) (ordinal 1)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Variation Definitions::Engine::cylinder"))) (target (node (document "d0") (qualified-name "Variation Definitions::Cylinder"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Variation Definitions::Engine::cylinder"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Variation Definitions::EngineChoices"))) (target (node (document "d0") (qualified-name "Variation Definitions::Engine"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Variation Definitions::EngineChoices"))) (kind specialization) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Definitions::4cylEngine"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Definitions::4cylEngine::cylinder"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Definitions::6cylEngine"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Definitions::6cylEngine::cylinder"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Definitions::Cylinder"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Definitions::Cylinder::diameter"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Definitions::Diameter"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Definitions::Engine"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Definitions::Engine::cylinder"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Definitions::EngineChoices"))) (status missing-prerequisite) (target "Parts::Part"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/36_variation_definitions.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 16) (end 2 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 4 1) (end 4 44))
-      )
-      (diagnostic
-        (severity warning)
-        (code "invalid_variation_member_kind")
-        (source "semantic")
-        (range (start 30 2) (end 30 23))
-      )
-      (diagnostic
-        (severity warning)
-        (code "invalid_variation_member_kind")
-        (source "semantic")
-        (range (start 31 2) (end 31 23))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

@@ -29,6 +29,15 @@ package Redefinition {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "redefinition.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -67,6 +76,18 @@ CloseCurly,EndOfFile,
       (feature_def :>> 'startShot')
       (feature_def :>> 'endShot'))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'g'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'endShot'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'g'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'endShot'
+~~~
 # FORMAT
 ~~~sysml
 package Redefinition {
@@ -93,45 +114,22 @@ package Redefinition {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'g'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'endShot'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'g'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'endShot'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Redefinition"))) (name "Redefinition") (declared-name "Redefinition")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Redefinition::A"))) (name "A") (declared-name "A"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Redefinition::B"))) (name "B") (declared-name "B"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Redefinition::C"))) (name "C") (declared-name "C"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Redefinition::X"))) (name "X") (declared-name "X"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a65431c61d3eae2ccdaa78118065520d6e574757c8aa3f545e4464519399fcee") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Redefinition"))) (kind "package") (name "Redefinition") (declared-name "Redefinition") (range (start (line 0) (character 0)) (end (line 0) (character 325))))
+    (element (id (node (document "d0") (qualified-name "Redefinition::A"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 2) (character 1)) (end (line 2) (character 34))) (parent (node (document "d0") (qualified-name "Redefinition"))))
+    (element (id (node (document "d0") (qualified-name "Redefinition::B"))) (kind "classifier decl") (name "B") (declared-name "B") (range (start (line 6) (character 1)) (end (line 6) (character 86))) (parent (node (document "d0") (qualified-name "Redefinition"))))
+    (element (id (node (document "d0") (qualified-name "Redefinition::C"))) (kind "classifier decl") (name "C") (declared-name "C") (range (start (line 12) (character 1)) (end (line 12) (character 97))) (parent (node (document "d0") (qualified-name "Redefinition"))))
+    (element (id (node (document "d0") (qualified-name "Redefinition::X"))) (kind "classifier decl") (name "X") (declared-name "X") (range (start (line 18) (character 1)) (end (line 18) (character 73))) (parent (node (document "d0") (qualified-name "Redefinition"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/redefinition.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

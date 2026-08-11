@@ -36,6 +36,33 @@ package '15_04-Logical Expressions' {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "15_04_logical_expressions.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 12 2) (end 12 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 12 31) (end 12 38))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -83,6 +110,14 @@ CloseCurly,EndOfFile,
       (sysml_decl
         (result_expr_member)))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Boolean'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Boolean'
+~~~
 # FORMAT
 ~~~sysml
 package '15_04-Logical Expressions' {
@@ -117,81 +152,44 @@ package '15_04-Logical Expressions' {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Boolean'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Boolean'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "15_04-Logical Expressions"))) (name "15_04-Logical Expressions") (declared-name "15_04-Logical Expressions")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "15_04-Logical Expressions::*"))) (name "*") (declared-name "*"))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "15_04-Logical Expressions::4CylEngine"))) (name "4CylEngine") (declared-name "4CylEngine") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "15_04-Logical Expressions::6CylEngine"))) (name "6CylEngine") (declared-name "6CylEngine") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "15_04-Logical Expressions::AutomaticTransmission"))) (name "AutomaticTransmission") (declared-name "AutomaticTransmission") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "15_04-Logical Expressions::Engine"))) (name "Engine") (declared-name "Engine") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "15_04-Logical Expressions::ManualTransmission"))) (name "ManualTransmission") (declared-name "ManualTransmission") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "15_04-Logical Expressions::Transmission"))) (name "Transmission") (declared-name "Transmission") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle::engine"))) (name "engine") (declared-name "engine") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle::isHighPerformance"))) (name "isHighPerformance") (declared-name "isHighPerformance") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle")))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle::transmission"))) (name "transmission") (declared-name "transmission") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle")))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "4ed840359cee2757f41f258f77faf0ec3f92973d2527143a59ab0be8fdd74723") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "15_04-Logical Expressions"))) (kind "package") (name "15_04-Logical Expressions") (declared-name "15_04-Logical Expressions") (range (start (line 0) (character 0)) (end (line 0) (character 724))))
+    (element (id (node (document "d0") (qualified-name "15_04-Logical Expressions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "15_04-Logical Expressions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "15_04-Logical Expressions::4CylEngine"))) (kind "part def") (name "4CylEngine") (declared-name "4CylEngine") (range (start (line 4) (character 1)) (end (line 4) (character 33))) (parent (node (document "d0") (qualified-name "15_04-Logical Expressions"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Engine") (range (start (line 4) (character 26)) (end (line 4) (character 32)))))))
+    (element (id (node (document "d0") (qualified-name "15_04-Logical Expressions::6CylEngine"))) (kind "part def") (name "6CylEngine") (declared-name "6CylEngine") (range (start (line 5) (character 1)) (end (line 5) (character 33))) (parent (node (document "d0") (qualified-name "15_04-Logical Expressions"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Engine") (range (start (line 5) (character 26)) (end (line 5) (character 32)))))))
+    (element (id (node (document "d0") (qualified-name "15_04-Logical Expressions::AutomaticTransmission"))) (kind "part def") (name "AutomaticTransmission") (declared-name "AutomaticTransmission") (range (start (line 9) (character 1)) (end (line 9) (character 48))) (parent (node (document "d0") (qualified-name "15_04-Logical Expressions"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Transmission") (range (start (line 9) (character 35)) (end (line 9) (character 47)))))))
+    (element (id (node (document "d0") (qualified-name "15_04-Logical Expressions::Engine"))) (kind "part def") (name "Engine") (declared-name "Engine") (range (start (line 3) (character 1)) (end (line 3) (character 17))) (parent (node (document "d0") (qualified-name "15_04-Logical Expressions"))))
+    (element (id (node (document "d0") (qualified-name "15_04-Logical Expressions::ManualTransmission"))) (kind "part def") (name "ManualTransmission") (declared-name "ManualTransmission") (range (start (line 8) (character 1)) (end (line 8) (character 45))) (parent (node (document "d0") (qualified-name "15_04-Logical Expressions"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Transmission") (range (start (line 8) (character 32)) (end (line 8) (character 44)))))))
+    (element (id (node (document "d0") (qualified-name "15_04-Logical Expressions::Transmission"))) (kind "part def") (name "Transmission") (declared-name "Transmission") (range (start (line 7) (character 1)) (end (line 7) (character 23))) (parent (node (document "d0") (qualified-name "15_04-Logical Expressions"))))
+    (element (id (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (range (start (line 11) (character 1)) (end (line 11) (character 440))) (parent (node (document "d0") (qualified-name "15_04-Logical Expressions"))))
+    (element (id (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle::engine"))) (kind "part") (name "engine") (declared-name "engine") (range (start (line 14) (character 2)) (end (line 14) (character 25))) (parent (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Engine") (range (start (line 14) (character 15)) (end (line 14) (character 21)))))))
+    (element (id (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle::isHighPerformance"))) (kind "attribute") (name "isHighPerformance") (declared-name "isHighPerformance") (range (start (line 12) (character 2)) (end (line 12) (character 39))) (parent (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Boolean") (range none)) (typing (reference "Boolean") (range (start (line 12) (character 31)) (end (line 12) (character 38)))))))
+    (element (id (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle::transmission"))) (kind "part") (name "transmission") (declared-name "transmission") (range (start (line 15) (character 2)) (end (line 15) (character 37))) (parent (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Transmission") (range (start (line 15) (character 21)) (end (line 15) (character 33)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "15_04-Logical Expressions::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (range (start (line 1) (character 16)) (end (line 1) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_04-Logical Expressions::4CylEngine"))) (kind specialization) (ordinal 0)) (authored-target "Engine") (range (start (line 4) (character 26)) (end (line 4) (character 32))) (outcome (status resolved) (target (node (document "d0") (qualified-name "15_04-Logical Expressions::Engine")))))
+    (reference (id (source (node (document "d0") (qualified-name "15_04-Logical Expressions::6CylEngine"))) (kind specialization) (ordinal 0)) (authored-target "Engine") (range (start (line 5) (character 26)) (end (line 5) (character 32))) (outcome (status resolved) (target (node (document "d0") (qualified-name "15_04-Logical Expressions::Engine")))))
+    (reference (id (source (node (document "d0") (qualified-name "15_04-Logical Expressions::AutomaticTransmission"))) (kind specialization) (ordinal 0)) (authored-target "Transmission") (range (start (line 9) (character 35)) (end (line 9) (character 47))) (outcome (status resolved) (target (node (document "d0") (qualified-name "15_04-Logical Expressions::Transmission")))))
+    (reference (id (source (node (document "d0") (qualified-name "15_04-Logical Expressions::ManualTransmission"))) (kind specialization) (ordinal 0)) (authored-target "Transmission") (range (start (line 8) (character 32)) (end (line 8) (character 44))) (outcome (status resolved) (target (node (document "d0") (qualified-name "15_04-Logical Expressions::Transmission")))))
+    (reference (id (source (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle::engine"))) (kind featureTyping) (ordinal 0)) (authored-target "Engine") (range (start (line 14) (character 15)) (end (line 14) (character 21))) (outcome (status resolved) (target (node (document "d0") (qualified-name "15_04-Logical Expressions::Engine")))))
+    (reference (id (source (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle::isHighPerformance"))) (kind featureTyping) (ordinal 0)) (authored-target "Boolean") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle::isHighPerformance"))) (kind featureTyping) (ordinal 1)) (authored-target "Boolean") (range (start (line 12) (character 31)) (end (line 12) (character 38))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle::transmission"))) (kind featureTyping) (ordinal 0)) (authored-target "Transmission") (range (start (line 15) (character 21)) (end (line 15) (character 33))) (outcome (status resolved) (target (node (document "d0") (qualified-name "15_04-Logical Expressions::Transmission")))))
   )
   (relationships
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "15_04-Logical Expressions::4CylEngine"))) (to (node (document "d0") (qualified-name "15_04-Logical Expressions::Engine"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "15_04-Logical Expressions::6CylEngine"))) (to (node (document "d0") (qualified-name "15_04-Logical Expressions::Engine"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "15_04-Logical Expressions::AutomaticTransmission"))) (to (node (document "d0") (qualified-name "15_04-Logical Expressions::Transmission"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "15_04-Logical Expressions::ManualTransmission"))) (to (node (document "d0") (qualified-name "15_04-Logical Expressions::Transmission"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle::engine"))) (to (node (document "d0") (qualified-name "15_04-Logical Expressions::Engine"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle::transmission"))) (to (node (document "d0") (qualified-name "15_04-Logical Expressions::Transmission"))) (provenance authored))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "15_04-Logical Expressions::4CylEngine"))) (target (node (document "d0") (qualified-name "15_04-Logical Expressions::Engine"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "15_04-Logical Expressions::4CylEngine"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "15_04-Logical Expressions::6CylEngine"))) (target (node (document "d0") (qualified-name "15_04-Logical Expressions::Engine"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "15_04-Logical Expressions::6CylEngine"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "15_04-Logical Expressions::AutomaticTransmission"))) (target (node (document "d0") (qualified-name "15_04-Logical Expressions::Transmission"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "15_04-Logical Expressions::AutomaticTransmission"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "15_04-Logical Expressions::ManualTransmission"))) (target (node (document "d0") (qualified-name "15_04-Logical Expressions::Transmission"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "15_04-Logical Expressions::ManualTransmission"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle::engine"))) (target (node (document "d0") (qualified-name "15_04-Logical Expressions::Engine"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle::engine"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle::transmission"))) (target (node (document "d0") (qualified-name "15_04-Logical Expressions::Transmission"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle::transmission"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_04-Logical Expressions::4CylEngine"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_04-Logical Expressions::6CylEngine"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_04-Logical Expressions::AutomaticTransmission"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_04-Logical Expressions::Engine"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_04-Logical Expressions::ManualTransmission"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_04-Logical Expressions::Transmission"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle::engine"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle::isHighPerformance"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle::transmission"))) (status missing-prerequisite) (target "Parts::parts"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/validation/15_04_logical_expressions.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 12 2) (end 12 39))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

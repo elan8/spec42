@@ -46,6 +46,15 @@ package Scoping {
     }
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "scoping.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -117,6 +126,16 @@ CloseCurly,EndOfFile,
         (class_def 'E' :> '$::Objects::Object'
           (feature_def :>> 'subobjects'))))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name '$::Objects::Object'
+semantic.unresolved_name 'subobjects'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name '$::Objects::Object'
+semantic.unresolved_name 'subobjects'
+~~~
 # FORMAT
 ~~~sysml
 package Scoping {
@@ -161,71 +180,32 @@ package Scoping {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name '$::Objects::Object'
-semantic.unresolved_name 'subobjects'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name '$::Objects::Object'
-semantic.unresolved_name 'subobjects'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Scoping"))) (name "Scoping") (declared-name "Scoping")
-      (contains
-        (element (kind "package") (id (node (document "d0") (qualified-name "Scoping::P1"))) (name "P1") (declared-name "P1")
-          (contains
-            (element (kind "package") (id (node (document "d0") (qualified-name "Scoping::P1::$"))) (name "$") (declared-name "$")
-              (contains
-                (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Scoping::P1::$::Objects"))) (name "Objects") (declared-name "Objects"))
-              )
-            )
-            (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Scoping::P1::A"))) (name "A") (declared-name "A"))
-            (element (kind "package") (id (node (document "d0") (qualified-name "Scoping::P1::Objects"))) (name "Objects") (declared-name "Objects")
-              (contains
-                (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Scoping::P1::Objects::Object"))) (name "Object") (declared-name "Object"))
-              )
-            )
-            (element (kind "package") (id (node (document "d0") (qualified-name "Scoping::P1::P2"))) (name "P2") (declared-name "P2")
-              (contains
-                (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Scoping::P1::P2::A"))) (name "A") (declared-name "A"))
-                (element (kind "package") (id (node (document "d0") (qualified-name "Scoping::P1::P2::P3"))) (name "P3") (declared-name "P3")
-                  (contains
-                    (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Scoping::P1::P2::P3::B"))) (name "B") (declared-name "B"))
-                  )
-                )
-              )
-            )
-            (element (kind "package") (id (node (document "d0") (qualified-name "Scoping::P1::P4"))) (name "P4") (declared-name "P4")
-              (contains
-                (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Scoping::P1::P4::C"))) (name "C") (declared-name "C"))
-                (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Scoping::P1::P4::D"))) (name "D") (declared-name "D"))
-                (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Scoping::P1::P4::E"))) (name "E") (declared-name "E"))
-              )
-            )
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e8ec502f83d09fb45f7def358606c08488f47cb7d39207d16ab09ee714c3c898") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Scoping"))) (kind "package") (name "Scoping") (declared-name "Scoping") (range (start (line 0) (character 0)) (end (line 0) (character 890))))
+    (element (id (node (document "d0") (qualified-name "Scoping::P1"))) (kind "package") (name "P1") (declared-name "P1") (range (start (line 1) (character 4)) (end (line 1) (character 870))) (parent (node (document "d0") (qualified-name "Scoping"))))
+    (element (id (node (document "d0") (qualified-name "Scoping::P1::$"))) (kind "package") (name "$") (declared-name "$") (range (start (line 20) (character 8)) (end (line 20) (character 157))) (parent (node (document "d0") (qualified-name "Scoping::P1"))))
+    (element (id (node (document "d0") (qualified-name "Scoping::P1::$::Objects"))) (kind "classifier decl") (name "Objects") (declared-name "Objects") (range (start (line 21) (character 12)) (end (line 21) (character 125))) (parent (node (document "d0") (qualified-name "Scoping::P1::$"))))
+    (element (id (node (document "d0") (qualified-name "Scoping::P1::A"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 2) (character 8)) (end (line 2) (character 50))) (parent (node (document "d0") (qualified-name "Scoping::P1"))))
+    (element (id (node (document "d0") (qualified-name "Scoping::P1::Objects"))) (kind "package") (name "Objects") (declared-name "Objects") (range (start (line 15) (character 8)) (end (line 15) (character 107))) (parent (node (document "d0") (qualified-name "Scoping::P1"))))
+    (element (id (node (document "d0") (qualified-name "Scoping::P1::Objects::Object"))) (kind "classifier decl") (name "Object") (declared-name "Object") (range (start (line 16) (character 12)) (end (line 16) (character 71))) (parent (node (document "d0") (qualified-name "Scoping::P1::Objects"))))
+    (element (id (node (document "d0") (qualified-name "Scoping::P1::P2"))) (kind "package") (name "P2") (declared-name "P2") (range (start (line 5) (character 8)) (end (line 5) (character 216))) (parent (node (document "d0") (qualified-name "Scoping::P1"))))
+    (element (id (node (document "d0") (qualified-name "Scoping::P1::P2::A"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 6) (character 12)) (end (line 6) (character 62))) (parent (node (document "d0") (qualified-name "Scoping::P1::P2"))))
+    (element (id (node (document "d0") (qualified-name "Scoping::P1::P2::P3"))) (kind "package") (name "P3") (declared-name "P3") (range (start (line 9) (character 12)) (end (line 9) (character 122))) (parent (node (document "d0") (qualified-name "Scoping::P1::P2"))))
+    (element (id (node (document "d0") (qualified-name "Scoping::P1::P2::P3::B"))) (kind "classifier decl") (name "B") (declared-name "B") (range (start (line 10) (character 16)) (end (line 10) (character 83))) (parent (node (document "d0") (qualified-name "Scoping::P1::P2::P3"))))
+    (element (id (node (document "d0") (qualified-name "Scoping::P1::P4"))) (kind "package") (name "P4") (declared-name "P4") (range (start (line 27) (character 8)) (end (line 27) (character 313))) (parent (node (document "d0") (qualified-name "Scoping::P1"))))
+    (element (id (node (document "d0") (qualified-name "Scoping::P1::P4::C"))) (kind "classifier decl") (name "C") (declared-name "C") (range (start (line 28) (character 12)) (end (line 28) (character 89))) (parent (node (document "d0") (qualified-name "Scoping::P1::P4"))))
+    (element (id (node (document "d0") (qualified-name "Scoping::P1::P4::D"))) (kind "classifier decl") (name "D") (declared-name "D") (range (start (line 31) (character 12)) (end (line 31) (character 94))) (parent (node (document "d0") (qualified-name "Scoping::P1::P4"))))
+    (element (id (node (document "d0") (qualified-name "Scoping::P1::P4::E"))) (kind "classifier decl") (name "E") (declared-name "E") (range (start (line 34) (character 12)) (end (line 34) (character 97))) (parent (node (document "d0") (qualified-name "Scoping::P1::P4"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/scoping.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

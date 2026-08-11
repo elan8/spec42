@@ -445,293 +445,314 @@ standard library package ISQAcoustics {
 
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneUnit'
-semantic.unresolved_name 'PressureValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'PressureValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'CartesianVelocity3dCoordinateFrame'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'CartesianAcceleration3dCoordinateFrame'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name 'SpeedValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'EnergyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'PowerValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dCoordinateFrame'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'isOrthogonal'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneUnit'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneUnit'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneUnit'
-semantic.unresolved_name 'DurationValue'
-semantic.unresolved_name 'scalarQuantities'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneUnit'
-semantic.unresolved_name 'PressureValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'PressureValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'CartesianVelocity3dCoordinateFrame'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'CartesianAcceleration3dCoordinateFrame'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name 'SpeedValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'EnergyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'PowerValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dCoordinateFrame'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'isOrthogonal'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneUnit'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneUnit'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneUnit'
-semantic.unresolved_name 'DurationValue'
-semantic.unresolved_name 'scalarQuantities'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "isq_acoustics.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 14 19) (end 14 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 15 19) (end 15 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 16 19) (end 16 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 17 19) (end 17 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 20 19) (end 20 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 21 19) (end 21 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 22 19) (end 22 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 23 19) (end 23 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 24 19) (end 24 67))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 25 19) (end 25 50))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 26 19) (end 26 71))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 27 19) (end 27 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 30 4) (end 30 1479))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 49 4) (end 49 75))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 85 4) (end 85 747))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 105 4) (end 105 901))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 125 4) (end 125 893))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 163 4) (end 163 1267))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 182 4) (end 182 477))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 183 8) (end 183 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 184 8) (end 184 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 185 8) (end 185 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 222 4) (end 222 734))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 241 4) (end 241 359))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 242 8) (end 242 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 243 8) (end 243 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 247 4) (end 247 780))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 266 4) (end 266 223))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 273 4) (end 273 1046))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 292 4) (end 292 472))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 293 8) (end 293 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 294 8) (end 294 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 295 8) (end 295 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 300 4) (end 300 1260))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 319 4) (end 319 511))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 320 8) (end 320 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 321 8) (end 321 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 322 8) (end 322 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 327 4) (end 327 1182))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 346 4) (end 346 476))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 347 8) (end 347 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 348 8) (end 348 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 349 8) (end 349 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 354 4) (end 354 1863))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 373 4) (end 373 68))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 377 4) (end 377 1405))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 396 4) (end 396 65))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 400 4) (end 400 1550))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 419 4) (end 419 68))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 423 4) (end 423 888))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -1108,6 +1129,294 @@ CloseCurly,EndOfFile,
     (comment)
     (attribute_usage 'reverberationTime' : 'DurationValue' :> 'scalarQuantities'
       (documentation))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneUnit'
+semantic.unresolved_name 'PressureValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'PressureValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'CartesianVelocity3dCoordinateFrame'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'CartesianAcceleration3dCoordinateFrame'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name 'SpeedValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'EnergyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'PowerValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dCoordinateFrame'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'isOrthogonal'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneUnit'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneUnit'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneUnit'
+semantic.unresolved_name 'DurationValue'
+semantic.unresolved_name 'scalarQuantities'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneUnit'
+semantic.unresolved_name 'PressureValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'PressureValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'CartesianVelocity3dCoordinateFrame'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'CartesianAcceleration3dCoordinateFrame'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name 'SpeedValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'EnergyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'PowerValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dCoordinateFrame'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'isOrthogonal'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneUnit'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneUnit'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneUnit'
+semantic.unresolved_name 'DurationValue'
+semantic.unresolved_name 'scalarQuantities'
 ~~~
 # FORMAT
 ~~~sysml
@@ -1554,967 +1863,339 @@ standard library package ISQAcoustics {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ISQAcoustics"))) (name "ISQAcoustics") (declared-name "ISQAcoustics")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQAcoustics::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQAcoustics::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQAcoustics::*#import2"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQAcoustics::AccelerationValue"))) (name "AccelerationValue") (declared-name "AccelerationValue"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit"))) (name "AcousticImpedanceUnit") (declared-name "AcousticImpedanceUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue"))) (name "AcousticImpedanceValue") (declared-name "AcousticImpedanceValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianAcceleration3dCoordinateFrame"))) (name "CartesianAcceleration3dCoordinateFrame") (declared-name "CartesianAcceleration3dCoordinateFrame"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame"))) (name "CartesianSoundIntensity3dCoordinateFrame") (declared-name "CartesianSoundIntensity3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector"))) (name "CartesianSoundIntensity3dVector") (declared-name "CartesianSoundIntensity3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector"))) (name "CartesianSoundParticleAcceleration3dVector") (declared-name "CartesianSoundParticleAcceleration3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector"))) (name "CartesianSoundParticleDisplacement3dVector") (declared-name "CartesianSoundParticleDisplacement3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector"))) (name "CartesianSoundParticleVelocity3dVector") (declared-name "CartesianSoundParticleVelocity3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSpatial3dCoordinateFrame"))) (name "CartesianSpatial3dCoordinateFrame") (declared-name "CartesianSpatial3dCoordinateFrame"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianVelocity3dCoordinateFrame"))) (name "CartesianVelocity3dCoordinateFrame") (declared-name "CartesianVelocity3dCoordinateFrame"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit"))) (name "CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit") (declared-name "CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue"))) (name "CharacteristicImpedanceOfAMediumForLongitudinalWavesValue") (declared-name "CharacteristicImpedanceOfAMediumForLongitudinalWavesValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQAcoustics::EnergyValue"))) (name "EnergyValue") (declared-name "EnergyValue"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeUnit"))) (name "LogarithmicFrequencyRangeUnit") (declared-name "LogarithmicFrequencyRangeUnit") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue"))) (name "LogarithmicFrequencyRangeValue") (declared-name "LogarithmicFrequencyRangeValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQAcoustics::PowerValue"))) (name "PowerValue") (declared-name "PowerValue"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQAcoustics::PressureValue"))) (name "PressureValue") (declared-name "PressureValue"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQAcoustics::Real"))) (name "Real") (declared-name "Real"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit"))) (name "SoundEnergyDensityUnit") (declared-name "SoundEnergyDensityUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue"))) (name "SoundEnergyDensityValue") (declared-name "SoundEnergyDensityValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelUnit"))) (name "SoundExposureLevelUnit") (declared-name "SoundExposureLevelUnit") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue"))) (name "SoundExposureLevelValue") (declared-name "SoundExposureLevelValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit"))) (name "SoundExposureUnit") (declared-name "SoundExposureUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue"))) (name "SoundExposureValue") (declared-name "SoundExposureValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit"))) (name "SoundIntensityUnit") (declared-name "SoundIntensityUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue"))) (name "SoundIntensityValue") (declared-name "SoundIntensityValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelUnit"))) (name "SoundPowerLevelUnit") (declared-name "SoundPowerLevelUnit") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue"))) (name "SoundPowerLevelValue") (declared-name "SoundPowerLevelValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelUnit"))) (name "SoundPressureLevelUnit") (declared-name "SoundPressureLevelUnit") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue"))) (name "SoundPressureLevelValue") (declared-name "SoundPressureLevelValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQAcoustics::SpeedValue"))) (name "SpeedValue") (declared-name "SpeedValue"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAcoustics::_documentation"))) (name ""))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::acousticImpedance"))) (name "acousticImpedance") (declared-name "acousticImpedance") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundIntensity3dVector"))) (name "cartesianSoundIntensity3dVector") (declared-name "cartesianSoundIntensity3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundParticleAcceleration3dVector"))) (name "cartesianSoundParticleAcceleration3dVector") (declared-name "cartesianSoundParticleAcceleration3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundParticleDisplacement3dVector"))) (name "cartesianSoundParticleDisplacement3dVector") (declared-name "cartesianSoundParticleDisplacement3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundParticleVelocity3dVector"))) (name "cartesianSoundParticleVelocity3dVector") (declared-name "cartesianSoundParticleVelocity3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::characteristicImpedanceOfAMediumForLongitudinalWaves"))) (name "characteristicImpedanceOfAMediumForLongitudinalWaves") (declared-name "characteristicImpedanceOfAMediumForLongitudinalWaves") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::logarithmicFrequencyRange"))) (name "logarithmicFrequencyRange") (declared-name "logarithmicFrequencyRange") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::reverberationTime"))) (name "reverberationTime") (declared-name "reverberationTime") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAcoustics::reverberationTime::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::reverberationTime")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::soundEnergy"))) (name "soundEnergy") (declared-name "soundEnergy") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAcoustics::soundEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::soundEnergy")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::soundEnergyDensity"))) (name "soundEnergyDensity") (declared-name "soundEnergyDensity") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::soundExposure"))) (name "soundExposure") (declared-name "soundExposure") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::soundExposureLevel"))) (name "soundExposureLevel") (declared-name "soundExposureLevel") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::soundIntensity"))) (name "soundIntensity") (declared-name "soundIntensity") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::soundPower"))) (name "soundPower") (declared-name "soundPower") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAcoustics::soundPower::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::soundPower")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::soundPowerLevel"))) (name "soundPowerLevel") (declared-name "soundPowerLevel") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::soundPressure"))) (name "soundPressure") (declared-name "soundPressure") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAcoustics::soundPressure::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::soundPressure")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::soundPressureLevel"))) (name "soundPressureLevel") (declared-name "soundPressureLevel") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::staticPressure"))) (name "staticPressure") (declared-name "staticPressure") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAcoustics::staticPressure::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::staticPressure")))))
-          )
-        )
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAcoustics::volumeFlowRate"))) (name "volumeFlowRate") (declared-name "volumeFlowRate"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAcoustics::volumeVelocity"))) (name "volumeVelocity") (declared-name "volumeVelocity") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAcoustics::volumeVelocity::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAcoustics::volumeVelocity")))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c16c9b5fd4522186c01b54316c376834330a65c1652c455cf72c8c9369d12bd9") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics"))) (kind "package") (name "ISQAcoustics") (declared-name "ISQAcoustics") (range (start (line 0) (character 0)) (end (line 0) (character 26005))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 15) (character 4)) (end (line 15) (character 33))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Import) (visibility "private") (import (reference "Quantities::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 15) (character 19)) (end (line 15) (character 29))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 16) (character 4)) (end (line 16) (character 44))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Import) (visibility "private") (import (reference "MeasurementReferences::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 16) (character 19)) (end (line 16) (character 40))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::*#import2"))) (kind "import") (name "*") (declared-name "*") (range (start (line 17) (character 4)) (end (line 17) (character 30))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQBase::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 17) (character 19)) (end (line 17) (character 26))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::AccelerationValue"))) (kind "import") (name "AccelerationValue") (declared-name "AccelerationValue") (range (start (line 25) (character 4)) (end (line 25) (character 51))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQSpaceTime::AccelerationValue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 25) (character 19)) (end (line 25) (character 50))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit"))) (kind "attribute def") (name "AcousticImpedanceUnit") (declared-name "AcousticImpedanceUnit") (range (start (line 346) (character 4)) (end (line 346) (character 476))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 349) (character 8)) (end (line 349) (character 105))) (parent (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 347) (character 8)) (end (line 347) (character 103))) (parent (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 348) (character 8)) (end (line 348) (character 100))) (parent (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 350) (character 8)) (end (line 350) (character 102))) (parent (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 350) (character 22)) (end (line 350) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue"))) (kind "attribute def") (name "AcousticImpedanceValue") (declared-name "AcousticImpedanceValue") (range (start (line 327) (character 4)) (end (line 327) (character 1182))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::_documentation"))) (kind "documentation") (name "") (range (start (line 327) (character 4)) (end (line 327) (character 1182))) (parent (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 341) (character 8)) (end (line 341) (character 53))) (parent (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "AcousticImpedanceUnit") (range none)) (redefinition (reference "mRef") (range (start (line 341) (character 22)) (end (line 341) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 340) (character 8)) (end (line 340) (character 32))) (parent (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 340) (character 22)) (end (line 340) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianAcceleration3dCoordinateFrame"))) (kind "import") (name "CartesianAcceleration3dCoordinateFrame") (declared-name "CartesianAcceleration3dCoordinateFrame") (range (start (line 26) (character 4)) (end (line 26) (character 72))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 26) (character 19)) (end (line 26) (character 71))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame"))) (kind "attribute def") (name "CartesianSoundIntensity3dCoordinateFrame") (declared-name "CartesianSoundIntensity3dCoordinateFrame") (range (start (line 266) (character 4)) (end (line 266) (character 223))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dCoordinateFrame") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 267) (character 8)) (end (line 267) (character 38))) (parent (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 267) (character 22)) (end (line 267) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::isOrthogonal"))) (kind "attribute") (name "isOrthogonal") (declared-name "isOrthogonal") (range (start (line 268) (character 8)) (end (line 268) (character 42))) (parent (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isOrthogonal") (range (start (line 268) (character 22)) (end (line 268) (character 34)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::mRefs"))) (kind "attribute") (name "mRefs") (declared-name "mRefs") (range (start (line 269) (character 8)) (end (line 269) (character 51))) (parent (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (typing (reference "SoundIntensityUnit") (range none)) (redefinition (reference "mRefs") (range (start (line 269) (character 22)) (end (line 269) (character 27)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector"))) (kind "attribute def") (name "CartesianSoundIntensity3dVector") (declared-name "CartesianSoundIntensity3dVector") (range (start (line 247) (character 4)) (end (line 247) (character 780))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dVectorQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector::_documentation"))) (kind "documentation") (name "") (range (start (line 247) (character 4)) (end (line 247) (character 780))) (parent (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector"))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 260) (character 8)) (end (line 260) (character 38))) (parent (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 260) (character 22)) (end (line 260) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 261) (character 8)) (end (line 261) (character 72))) (parent (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "CartesianSoundIntensity3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 261) (character 22)) (end (line 261) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector"))) (kind "attribute def") (name "CartesianSoundParticleAcceleration3dVector") (declared-name "CartesianSoundParticleAcceleration3dVector") (range (start (line 125) (character 4)) (end (line 125) (character 893))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dVectorQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector::_documentation"))) (kind "documentation") (name "") (range (start (line 125) (character 4)) (end (line 125) (character 893))) (parent (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector"))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 138) (character 8)) (end (line 138) (character 38))) (parent (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 138) (character 22)) (end (line 138) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 139) (character 8)) (end (line 139) (character 70))) (parent (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "CartesianAcceleration3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 139) (character 22)) (end (line 139) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector"))) (kind "attribute def") (name "CartesianSoundParticleDisplacement3dVector") (declared-name "CartesianSoundParticleDisplacement3dVector") (range (start (line 85) (character 4)) (end (line 85) (character 747))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dVectorQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector::_documentation"))) (kind "documentation") (name "") (range (start (line 85) (character 4)) (end (line 85) (character 747))) (parent (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector"))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 98) (character 8)) (end (line 98) (character 38))) (parent (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 98) (character 22)) (end (line 98) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 99) (character 8)) (end (line 99) (character 65))) (parent (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "CartesianSpatial3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 99) (character 22)) (end (line 99) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector"))) (kind "attribute def") (name "CartesianSoundParticleVelocity3dVector") (declared-name "CartesianSoundParticleVelocity3dVector") (range (start (line 105) (character 4)) (end (line 105) (character 901))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dVectorQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector::_documentation"))) (kind "documentation") (name "") (range (start (line 105) (character 4)) (end (line 105) (character 901))) (parent (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector"))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 118) (character 8)) (end (line 118) (character 38))) (parent (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 118) (character 22)) (end (line 118) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 119) (character 8)) (end (line 119) (character 66))) (parent (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "CartesianVelocity3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 119) (character 22)) (end (line 119) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianSpatial3dCoordinateFrame"))) (kind "import") (name "CartesianSpatial3dCoordinateFrame") (declared-name "CartesianSpatial3dCoordinateFrame") (range (start (line 22) (character 4)) (end (line 22) (character 67))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQSpaceTime::CartesianSpatial3dCoordinateFrame") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 22) (character 19)) (end (line 22) (character 66))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CartesianVelocity3dCoordinateFrame"))) (kind "import") (name "CartesianVelocity3dCoordinateFrame") (declared-name "CartesianVelocity3dCoordinateFrame") (range (start (line 24) (character 4)) (end (line 24) (character 68))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQSpaceTime::CartesianVelocity3dCoordinateFrame") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 24) (character 19)) (end (line 24) (character 67))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit"))) (kind "attribute def") (name "CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit") (declared-name "CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit") (range (start (line 319) (character 4)) (end (line 319) (character 511))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 322) (character 8)) (end (line 322) (character 105))) (parent (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 320) (character 8)) (end (line 320) (character 103))) (parent (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 321) (character 8)) (end (line 321) (character 100))) (parent (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 323) (character 8)) (end (line 323) (character 102))) (parent (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 323) (character 22)) (end (line 323) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue"))) (kind "attribute def") (name "CharacteristicImpedanceOfAMediumForLongitudinalWavesValue") (declared-name "CharacteristicImpedanceOfAMediumForLongitudinalWavesValue") (range (start (line 300) (character 4)) (end (line 300) (character 1260))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::_documentation"))) (kind "documentation") (name "") (range (start (line 300) (character 4)) (end (line 300) (character 1260))) (parent (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 314) (character 8)) (end (line 314) (character 88))) (parent (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit") (range none)) (redefinition (reference "mRef") (range (start (line 314) (character 22)) (end (line 314) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 313) (character 8)) (end (line 313) (character 32))) (parent (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 313) (character 22)) (end (line 313) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::EnergyValue"))) (kind "import") (name "EnergyValue") (declared-name "EnergyValue") (range (start (line 27) (character 4)) (end (line 27) (character 50))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQThermodynamics::EnergyValue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 27) (character 19)) (end (line 27) (character 49))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeUnit"))) (kind "attribute def") (name "LogarithmicFrequencyRangeUnit") (declared-name "LogarithmicFrequencyRangeUnit") (range (start (line 49) (character 4)) (end (line 49) (character 75))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue"))) (kind "attribute def") (name "LogarithmicFrequencyRangeValue") (declared-name "LogarithmicFrequencyRangeValue") (range (start (line 30) (character 4)) (end (line 30) (character 1479))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::_documentation"))) (kind "documentation") (name "") (range (start (line 30) (character 4)) (end (line 30) (character 1479))) (parent (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 44) (character 8)) (end (line 44) (character 61))) (parent (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "LogarithmicFrequencyRangeUnit") (range none)) (redefinition (reference "mRef") (range (start (line 44) (character 22)) (end (line 44) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 43) (character 8)) (end (line 43) (character 32))) (parent (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 43) (character 22)) (end (line 43) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::PowerValue"))) (kind "import") (name "PowerValue") (declared-name "PowerValue") (range (start (line 20) (character 4)) (end (line 20) (character 44))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQMechanics::PowerValue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 20) (character 19)) (end (line 20) (character 43))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::PressureValue"))) (kind "import") (name "PressureValue") (declared-name "PressureValue") (range (start (line 21) (character 4)) (end (line 21) (character 47))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQMechanics::PressureValue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 21) (character 19)) (end (line 21) (character 46))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::Real"))) (kind "import") (name "Real") (declared-name "Real") (range (start (line 14) (character 4)) (end (line 14) (character 38))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 14) (character 19)) (end (line 14) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit"))) (kind "attribute def") (name "SoundEnergyDensityUnit") (declared-name "SoundEnergyDensityUnit") (range (start (line 182) (character 4)) (end (line 182) (character 477))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 185) (character 8)) (end (line 185) (character 105))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 183) (character 8)) (end (line 183) (character 103))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 184) (character 8)) (end (line 184) (character 100))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 186) (character 8)) (end (line 186) (character 102))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 186) (character 22)) (end (line 186) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue"))) (kind "attribute def") (name "SoundEnergyDensityValue") (declared-name "SoundEnergyDensityValue") (range (start (line 163) (character 4)) (end (line 163) (character 1267))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::_documentation"))) (kind "documentation") (name "") (range (start (line 163) (character 4)) (end (line 163) (character 1267))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 177) (character 8)) (end (line 177) (character 54))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "SoundEnergyDensityUnit") (range none)) (redefinition (reference "mRef") (range (start (line 177) (character 22)) (end (line 177) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 176) (character 8)) (end (line 176) (character 32))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 176) (character 22)) (end (line 176) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelUnit"))) (kind "attribute def") (name "SoundExposureLevelUnit") (declared-name "SoundExposureLevelUnit") (range (start (line 419) (character 4)) (end (line 419) (character 68))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue"))) (kind "attribute def") (name "SoundExposureLevelValue") (declared-name "SoundExposureLevelValue") (range (start (line 400) (character 4)) (end (line 400) (character 1550))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::_documentation"))) (kind "documentation") (name "") (range (start (line 400) (character 4)) (end (line 400) (character 1550))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 414) (character 8)) (end (line 414) (character 54))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "SoundExposureLevelUnit") (range none)) (redefinition (reference "mRef") (range (start (line 414) (character 22)) (end (line 414) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 413) (character 8)) (end (line 413) (character 32))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 413) (character 22)) (end (line 413) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit"))) (kind "attribute def") (name "SoundExposureUnit") (declared-name "SoundExposureUnit") (range (start (line 292) (character 4)) (end (line 292) (character 472))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 295) (character 8)) (end (line 295) (character 105))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 293) (character 8)) (end (line 293) (character 103))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 294) (character 8)) (end (line 294) (character 100))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 296) (character 8)) (end (line 296) (character 102))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 296) (character 22)) (end (line 296) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue"))) (kind "attribute def") (name "SoundExposureValue") (declared-name "SoundExposureValue") (range (start (line 273) (character 4)) (end (line 273) (character 1046))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::_documentation"))) (kind "documentation") (name "") (range (start (line 273) (character 4)) (end (line 273) (character 1046))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 287) (character 8)) (end (line 287) (character 49))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "SoundExposureUnit") (range none)) (redefinition (reference "mRef") (range (start (line 287) (character 22)) (end (line 287) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 286) (character 8)) (end (line 286) (character 32))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 286) (character 22)) (end (line 286) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit"))) (kind "attribute def") (name "SoundIntensityUnit") (declared-name "SoundIntensityUnit") (range (start (line 241) (character 4)) (end (line 241) (character 359))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 243) (character 8)) (end (line 243) (character 105))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 242) (character 8)) (end (line 242) (character 100))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 244) (character 8)) (end (line 244) (character 92))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 244) (character 22)) (end (line 244) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue"))) (kind "attribute def") (name "SoundIntensityValue") (declared-name "SoundIntensityValue") (range (start (line 222) (character 4)) (end (line 222) (character 734))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::_documentation"))) (kind "documentation") (name "") (range (start (line 222) (character 4)) (end (line 222) (character 734))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 236) (character 8)) (end (line 236) (character 50))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "SoundIntensityUnit") (range none)) (redefinition (reference "mRef") (range (start (line 236) (character 22)) (end (line 236) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 235) (character 8)) (end (line 235) (character 32))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 235) (character 22)) (end (line 235) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelUnit"))) (kind "attribute def") (name "SoundPowerLevelUnit") (declared-name "SoundPowerLevelUnit") (range (start (line 396) (character 4)) (end (line 396) (character 65))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue"))) (kind "attribute def") (name "SoundPowerLevelValue") (declared-name "SoundPowerLevelValue") (range (start (line 377) (character 4)) (end (line 377) (character 1405))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::_documentation"))) (kind "documentation") (name "") (range (start (line 377) (character 4)) (end (line 377) (character 1405))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 391) (character 8)) (end (line 391) (character 51))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "SoundPowerLevelUnit") (range none)) (redefinition (reference "mRef") (range (start (line 391) (character 22)) (end (line 391) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 390) (character 8)) (end (line 390) (character 32))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 390) (character 22)) (end (line 390) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelUnit"))) (kind "attribute def") (name "SoundPressureLevelUnit") (declared-name "SoundPressureLevelUnit") (range (start (line 373) (character 4)) (end (line 373) (character 68))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue"))) (kind "attribute def") (name "SoundPressureLevelValue") (declared-name "SoundPressureLevelValue") (range (start (line 354) (character 4)) (end (line 354) (character 1863))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::_documentation"))) (kind "documentation") (name "") (range (start (line 354) (character 4)) (end (line 354) (character 1863))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 368) (character 8)) (end (line 368) (character 54))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "SoundPressureLevelUnit") (range none)) (redefinition (reference "mRef") (range (start (line 368) (character 22)) (end (line 368) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 367) (character 8)) (end (line 367) (character 32))) (parent (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 367) (character 22)) (end (line 367) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::SpeedValue"))) (kind "import") (name "SpeedValue") (declared-name "SpeedValue") (range (start (line 23) (character 4)) (end (line 23) (character 44))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQSpaceTime::SpeedValue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 23) (character 19)) (end (line 23) (character 43))))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 26005))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::acousticImpedance"))) (kind "attribute def") (name "acousticImpedance") (declared-name "acousticImpedance") (range (start (line 344) (character 4)) (end (line 344) (character 89))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "AcousticImpedanceValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundIntensity3dVector"))) (kind "attribute def") (name "cartesianSoundIntensity3dVector") (declared-name "cartesianSoundIntensity3dVector") (range (start (line 264) (character 4)) (end (line 264) (character 99))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "CartesianSoundIntensity3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundParticleAcceleration3dVector"))) (kind "attribute def") (name "cartesianSoundParticleAcceleration3dVector") (declared-name "cartesianSoundParticleAcceleration3dVector") (range (start (line 142) (character 4)) (end (line 142) (character 121))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "CartesianSoundParticleAcceleration3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundParticleDisplacement3dVector"))) (kind "attribute def") (name "cartesianSoundParticleDisplacement3dVector") (declared-name "cartesianSoundParticleDisplacement3dVector") (range (start (line 102) (character 4)) (end (line 102) (character 121))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "CartesianSoundParticleDisplacement3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundParticleVelocity3dVector"))) (kind "attribute def") (name "cartesianSoundParticleVelocity3dVector") (declared-name "cartesianSoundParticleVelocity3dVector") (range (start (line 122) (character 4)) (end (line 122) (character 113))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "CartesianSoundParticleVelocity3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::characteristicImpedanceOfAMediumForLongitudinalWaves"))) (kind "attribute def") (name "characteristicImpedanceOfAMediumForLongitudinalWaves") (declared-name "characteristicImpedanceOfAMediumForLongitudinalWaves") (range (start (line 317) (character 4)) (end (line 317) (character 159))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "CharacteristicImpedanceOfAMediumForLongitudinalWavesValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::logarithmicFrequencyRange"))) (kind "attribute def") (name "logarithmicFrequencyRange") (declared-name "logarithmicFrequencyRange") (range (start (line 47) (character 4)) (end (line 47) (character 105))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "LogarithmicFrequencyRangeValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::reverberationTime"))) (kind "attribute def") (name "reverberationTime") (declared-name "reverberationTime") (range (start (line 423) (character 4)) (end (line 423) (character 888))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DurationValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::reverberationTime::_documentation"))) (kind "documentation") (name "") (range (start (line 423) (character 4)) (end (line 423) (character 888))) (parent (node (document "d0") (qualified-name "ISQAcoustics::reverberationTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::soundEnergy"))) (kind "attribute def") (name "soundEnergy") (declared-name "soundEnergy") (range (start (line 190) (character 4)) (end (line 190) (character 600))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "EnergyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::soundEnergy::_documentation"))) (kind "documentation") (name "") (range (start (line 190) (character 4)) (end (line 190) (character 600))) (parent (node (document "d0") (qualified-name "ISQAcoustics::soundEnergy"))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::soundEnergyDensity"))) (kind "attribute def") (name "soundEnergyDensity") (declared-name "soundEnergyDensity") (range (start (line 180) (character 4)) (end (line 180) (character 91))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "SoundEnergyDensityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::soundExposure"))) (kind "attribute def") (name "soundExposure") (declared-name "soundExposure") (range (start (line 290) (character 4)) (end (line 290) (character 81))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "SoundExposureValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::soundExposureLevel"))) (kind "attribute def") (name "soundExposureLevel") (declared-name "soundExposureLevel") (range (start (line 417) (character 4)) (end (line 417) (character 91))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "SoundExposureLevelValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::soundIntensity"))) (kind "attribute def") (name "soundIntensity") (declared-name "soundIntensity") (range (start (line 239) (character 4)) (end (line 239) (character 83))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "SoundIntensityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::soundPower"))) (kind "attribute def") (name "soundPower") (declared-name "soundPower") (range (start (line 206) (character 4)) (end (line 206) (character 1123))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "PowerValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::soundPower::_documentation"))) (kind "documentation") (name "") (range (start (line 206) (character 4)) (end (line 206) (character 1123))) (parent (node (document "d0") (qualified-name "ISQAcoustics::soundPower"))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::soundPowerLevel"))) (kind "attribute def") (name "soundPowerLevel") (declared-name "soundPowerLevel") (range (start (line 394) (character 4)) (end (line 394) (character 85))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "SoundPowerLevelValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::soundPressure"))) (kind "attribute def") (name "soundPressure") (declared-name "soundPressure") (range (start (line 69) (character 4)) (end (line 69) (character 520))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "PressureValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::soundPressure::_documentation"))) (kind "documentation") (name "") (range (start (line 69) (character 4)) (end (line 69) (character 520))) (parent (node (document "d0") (qualified-name "ISQAcoustics::soundPressure"))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::soundPressureLevel"))) (kind "attribute def") (name "soundPressureLevel") (declared-name "soundPressureLevel") (range (start (line 371) (character 4)) (end (line 371) (character 91))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "SoundPressureLevelValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::staticPressure"))) (kind "attribute def") (name "staticPressure") (declared-name "staticPressure") (range (start (line 53) (character 4)) (end (line 53) (character 555))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "PressureValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::staticPressure::_documentation"))) (kind "documentation") (name "") (range (start (line 53) (character 4)) (end (line 53) (character 555))) (parent (node (document "d0") (qualified-name "ISQAcoustics::staticPressure"))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::volumeFlowRate"))) (kind "alias") (name "volumeFlowRate") (declared-name "volumeFlowRate") (range (start (line 160) (character 4)) (end (line 160) (character 44))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::volumeVelocity"))) (kind "attribute def") (name "volumeVelocity") (declared-name "volumeVelocity") (range (start (line 145) (character 4)) (end (line 145) (character 552))) (parent (node (document "d0") (qualified-name "ISQAcoustics"))) (authored (membership (kind Owning)) (relationships (typing (reference "SpeedValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQAcoustics::volumeVelocity::_documentation"))) (kind "documentation") (name "") (range (start (line 145) (character 4)) (end (line 145) (character 552))) (parent (node (document "d0") (qualified-name "ISQAcoustics::volumeVelocity"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Quantities::*") (range (start (line 15) (character 19)) (end (line 15) (character 29))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "MeasurementReferences::*") (range (start (line 16) (character 19)) (end (line 16) (character 40))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::*#import2"))) (kind namespaceImport) (ordinal 0)) (authored-target "ISQBase::*") (range (start (line 17) (character 19)) (end (line 17) (character 26))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::AccelerationValue"))) (kind membershipImport) (ordinal 0)) (authored-target "ISQSpaceTime::AccelerationValue") (range (start (line 25) (character 19)) (end (line 25) (character 50))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 350) (character 22)) (end (line 350) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "AcousticImpedanceUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 341) (character 22)) (end (line 341) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 340) (character 22)) (end (line 340) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianAcceleration3dCoordinateFrame"))) (kind membershipImport) (ordinal 0)) (authored-target "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame") (range (start (line 26) (character 19)) (end (line 26) (character 71))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame"))) (kind featureTyping) (ordinal 0)) (authored-target "3dCoordinateFrame") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 267) (character 22)) (end (line 267) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::isOrthogonal"))) (kind redefinition) (ordinal 0)) (authored-target "isOrthogonal") (range (start (line 268) (character 22)) (end (line 268) (character 34))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::isOrthogonal")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::mRefs"))) (kind featureTyping) (ordinal 0)) (authored-target "SoundIntensityUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)) (authored-target "mRefs") (range (start (line 269) (character 22)) (end (line 269) (character 27))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::mRefs")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "3dVectorQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 260) (character 22)) (end (line 260) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianSoundIntensity3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 261) (character 22)) (end (line 261) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "3dVectorQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 138) (character 22)) (end (line 138) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianAcceleration3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianAcceleration3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 139) (character 22)) (end (line 139) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "3dVectorQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 98) (character 22)) (end (line 98) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianSpatial3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSpatial3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 99) (character 22)) (end (line 99) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "3dVectorQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 118) (character 22)) (end (line 118) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianVelocity3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianVelocity3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 119) (character 22)) (end (line 119) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSpatial3dCoordinateFrame"))) (kind membershipImport) (ordinal 0)) (authored-target "ISQSpaceTime::CartesianSpatial3dCoordinateFrame") (range (start (line 22) (character 19)) (end (line 22) (character 66))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianVelocity3dCoordinateFrame"))) (kind membershipImport) (ordinal 0)) (authored-target "ISQSpaceTime::CartesianVelocity3dCoordinateFrame") (range (start (line 24) (character 19)) (end (line 24) (character 67))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 323) (character 22)) (end (line 323) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 314) (character 22)) (end (line 314) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 313) (character 22)) (end (line 313) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::EnergyValue"))) (kind membershipImport) (ordinal 0)) (authored-target "ISQThermodynamics::EnergyValue") (range (start (line 27) (character 19)) (end (line 27) (character 49))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "LogarithmicFrequencyRangeUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 44) (character 22)) (end (line 44) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 43) (character 22)) (end (line 43) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::PowerValue"))) (kind membershipImport) (ordinal 0)) (authored-target "ISQMechanics::PowerValue") (range (start (line 20) (character 19)) (end (line 20) (character 43))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::PressureValue"))) (kind membershipImport) (ordinal 0)) (authored-target "ISQMechanics::PressureValue") (range (start (line 21) (character 19)) (end (line 21) (character 46))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (range (start (line 14) (character 19)) (end (line 14) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 186) (character 22)) (end (line 186) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "SoundEnergyDensityUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 177) (character 22)) (end (line 177) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 176) (character 22)) (end (line 176) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "SoundExposureLevelUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 414) (character 22)) (end (line 414) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 413) (character 22)) (end (line 413) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 296) (character 22)) (end (line 296) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "SoundExposureUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 287) (character 22)) (end (line 287) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 286) (character 22)) (end (line 286) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 244) (character 22)) (end (line 244) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "SoundIntensityUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 236) (character 22)) (end (line 236) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 235) (character 22)) (end (line 235) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "SoundPowerLevelUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 391) (character 22)) (end (line 391) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 390) (character 22)) (end (line 390) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "SoundPressureLevelUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 368) (character 22)) (end (line 368) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 367) (character 22)) (end (line 367) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::SpeedValue"))) (kind membershipImport) (ordinal 0)) (authored-target "ISQSpaceTime::SpeedValue") (range (start (line 23) (character 19)) (end (line 23) (character 43))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::acousticImpedance"))) (kind featureTyping) (ordinal 0)) (authored-target "AcousticImpedanceValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundIntensity3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianSoundIntensity3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundParticleAcceleration3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianSoundParticleAcceleration3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundParticleDisplacement3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianSoundParticleDisplacement3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundParticleVelocity3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianSoundParticleVelocity3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::characteristicImpedanceOfAMediumForLongitudinalWaves"))) (kind featureTyping) (ordinal 0)) (authored-target "CharacteristicImpedanceOfAMediumForLongitudinalWavesValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::logarithmicFrequencyRange"))) (kind featureTyping) (ordinal 0)) (authored-target "LogarithmicFrequencyRangeValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::reverberationTime"))) (kind featureTyping) (ordinal 0)) (authored-target "DurationValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::soundEnergy"))) (kind featureTyping) (ordinal 0)) (authored-target "EnergyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::EnergyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::soundEnergyDensity"))) (kind featureTyping) (ordinal 0)) (authored-target "SoundEnergyDensityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::soundExposure"))) (kind featureTyping) (ordinal 0)) (authored-target "SoundExposureValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::soundExposureLevel"))) (kind featureTyping) (ordinal 0)) (authored-target "SoundExposureLevelValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::soundIntensity"))) (kind featureTyping) (ordinal 0)) (authored-target "SoundIntensityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::soundPower"))) (kind featureTyping) (ordinal 0)) (authored-target "PowerValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::PowerValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::soundPowerLevel"))) (kind featureTyping) (ordinal 0)) (authored-target "SoundPowerLevelValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::soundPressure"))) (kind featureTyping) (ordinal 0)) (authored-target "PressureValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::PressureValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::soundPressureLevel"))) (kind featureTyping) (ordinal 0)) (authored-target "SoundPressureLevelValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::staticPressure"))) (kind featureTyping) (ordinal 0)) (authored-target "PressureValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::PressureValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQAcoustics::volumeVelocity"))) (kind featureTyping) (ordinal 0)) (authored-target "SpeedValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQAcoustics::SpeedValue")))))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::_documentation"))) (to (node (document "d0") (qualified-name "ISQAcoustics"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::reverberationTime::_documentation"))) (to (node (document "d0") (qualified-name "ISQAcoustics::reverberationTime"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::soundEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQAcoustics::soundEnergy"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::soundPower::_documentation"))) (to (node (document "d0") (qualified-name "ISQAcoustics::soundPower"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::soundPressure::_documentation"))) (to (node (document "d0") (qualified-name "ISQAcoustics::soundPressure"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::staticPressure::_documentation"))) (to (node (document "d0") (qualified-name "ISQAcoustics::staticPressure"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::volumeVelocity::_documentation"))) (to (node (document "d0") (qualified-name "ISQAcoustics::volumeVelocity"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::acousticImpedance"))) (to (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundIntensity3dVector"))) (to (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundParticleAcceleration3dVector"))) (to (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundParticleDisplacement3dVector"))) (to (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundParticleVelocity3dVector"))) (to (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::characteristicImpedanceOfAMediumForLongitudinalWaves"))) (to (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::logarithmicFrequencyRange"))) (to (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::soundEnergyDensity"))) (to (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::soundExposure"))) (to (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::soundExposureLevel"))) (to (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::soundIntensity"))) (to (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::soundPowerLevel"))) (to (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAcoustics::soundPressureLevel"))) (to (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue"))) (provenance authored))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::num"))) (target (node (document "d0") (qualified-name "ISQAcoustics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::num"))) (target (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::isBound"))) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::isOrthogonal"))) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::isOrthogonal"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::isOrthogonal"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::mRefs"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::mRefs"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::mRefs"))) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::mRefs"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector::isBound"))) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector::isBound"))) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianAcceleration3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector::isBound"))) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSpatial3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector::isBound"))) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianVelocity3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::num"))) (target (node (document "d0") (qualified-name "ISQAcoustics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::num"))) (target (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::num"))) (target (node (document "d0") (qualified-name "ISQAcoustics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::num"))) (target (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::num"))) (target (node (document "d0") (qualified-name "ISQAcoustics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::num"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::num"))) (target (node (document "d0") (qualified-name "ISQAcoustics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::num"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::num"))) (target (node (document "d0") (qualified-name "ISQAcoustics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::num"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::num"))) (target (node (document "d0") (qualified-name "ISQAcoustics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::num"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::num"))) (target (node (document "d0") (qualified-name "ISQAcoustics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::num"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::mRef"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::num"))) (target (node (document "d0") (qualified-name "ISQAcoustics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::num"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::acousticImpedance"))) (target (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::acousticImpedance"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundIntensity3dVector"))) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundIntensity3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundParticleAcceleration3dVector"))) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundParticleAcceleration3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundParticleDisplacement3dVector"))) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundParticleDisplacement3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundParticleVelocity3dVector"))) (target (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundParticleVelocity3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::characteristicImpedanceOfAMediumForLongitudinalWaves"))) (target (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::characteristicImpedanceOfAMediumForLongitudinalWaves"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::logarithmicFrequencyRange"))) (target (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::logarithmicFrequencyRange"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::soundEnergy"))) (target (node (document "d0") (qualified-name "ISQAcoustics::EnergyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::soundEnergy"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::soundEnergyDensity"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::soundEnergyDensity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::soundExposure"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::soundExposure"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::soundExposureLevel"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::soundExposureLevel"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::soundIntensity"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::soundIntensity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::soundPower"))) (target (node (document "d0") (qualified-name "ISQAcoustics::PowerValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::soundPower"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::soundPowerLevel"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::soundPowerLevel"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::soundPressure"))) (target (node (document "d0") (qualified-name "ISQAcoustics::PressureValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::soundPressure"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::soundPressureLevel"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::soundPressureLevel"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::staticPressure"))) (target (node (document "d0") (qualified-name "ISQAcoustics::PressureValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::staticPressure"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQAcoustics::volumeVelocity"))) (target (node (document "d0") (qualified-name "ISQAcoustics::SpeedValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQAcoustics::volumeVelocity"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::AcousticImpedanceValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::isOrthogonal"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dCoordinateFrame::mRefs"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundIntensity3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleAcceleration3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleDisplacement3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::CartesianSoundParticleVelocity3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::CharacteristicImpedanceOfAMediumForLongitudinalWavesValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::LogarithmicFrequencyRangeValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundEnergyDensityValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureLevelValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundExposureValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundIntensityValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundPowerLevelValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::SoundPressureLevelValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::acousticImpedance"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundIntensity3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundParticleAcceleration3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundParticleDisplacement3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::cartesianSoundParticleVelocity3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::characteristicImpedanceOfAMediumForLongitudinalWaves"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::logarithmicFrequencyRange"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::reverberationTime"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::soundEnergy"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::soundEnergyDensity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::soundExposure"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::soundExposureLevel"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::soundIntensity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::soundPower"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::soundPowerLevel"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::soundPressure"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::soundPressureLevel"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::staticPressure"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQAcoustics::volumeVelocity"))) (status missing-prerequisite) (target "Base::DataValue"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/isq_acoustics.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 14 19) (end 14 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 15 19) (end 15 29))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 16 19) (end 16 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 17 19) (end 17 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 20 19) (end 20 43))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 21 19) (end 21 46))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 22 19) (end 22 66))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 23 19) (end 23 43))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 24 19) (end 24 67))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 25 19) (end 25 50))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 26 19) (end 26 71))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 27 19) (end 27 49))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 30 4) (end 30 1479))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 43 8) (end 43 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 43 8) (end 43 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 44 8) (end 44 61))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 49 4) (end 49 75))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 53 4) (end 53 555))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 69 4) (end 69 520))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 85 4) (end 85 747))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 98 8) (end 98 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 99 8) (end 99 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 99 8) (end 99 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 105 4) (end 105 901))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 118 8) (end 118 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 119 8) (end 119 66))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 119 8) (end 119 66))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 125 4) (end 125 893))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 138 8) (end 138 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 139 8) (end 139 70))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 139 8) (end 139 70))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 145 4) (end 145 552))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 163 4) (end 163 1267))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 176 8) (end 176 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 176 8) (end 176 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 177 8) (end 177 54))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 182 4) (end 182 477))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 183 8) (end 183 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 184 8) (end 184 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 185 8) (end 185 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 186 8) (end 186 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 190 4) (end 190 600))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 206 4) (end 206 1123))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 222 4) (end 222 734))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 235 8) (end 235 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 235 8) (end 235 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 236 8) (end 236 50))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 241 4) (end 241 359))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 242 8) (end 242 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 243 8) (end 243 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 244 8) (end 244 92))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 247 4) (end 247 780))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 260 8) (end 260 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 261 8) (end 261 72))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 266 4) (end 266 223))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 267 8) (end 267 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 268 8) (end 268 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 269 8) (end 269 51))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 273 4) (end 273 1046))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 286 8) (end 286 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 286 8) (end 286 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 287 8) (end 287 49))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 292 4) (end 292 472))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 293 8) (end 293 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 294 8) (end 294 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 295 8) (end 295 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 296 8) (end 296 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 300 4) (end 300 1260))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 313 8) (end 313 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 313 8) (end 313 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 314 8) (end 314 88))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 319 4) (end 319 511))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 320 8) (end 320 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 321 8) (end 321 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 322 8) (end 322 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 323 8) (end 323 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 327 4) (end 327 1182))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 340 8) (end 340 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 340 8) (end 340 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 341 8) (end 341 53))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 346 4) (end 346 476))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 347 8) (end 347 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 348 8) (end 348 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 349 8) (end 349 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 350 8) (end 350 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 354 4) (end 354 1863))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 367 8) (end 367 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 367 8) (end 367 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 368 8) (end 368 54))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 373 4) (end 373 68))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 377 4) (end 377 1405))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 390 8) (end 390 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 390 8) (end 390 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 391 8) (end 391 51))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 396 4) (end 396 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 400 4) (end 400 1550))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 413 8) (end 413 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 413 8) (end 413 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 414 8) (end 414 54))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 419 4) (end 419 68))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 423 4) (end 423 888))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

@@ -11,13 +11,14 @@ package P {
     }
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'y'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'y'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz_member_var.md"
+    (diagnostics
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -34,6 +35,14 @@ CloseCurly,EndOfFile,
     (requirement_usage 'r'
       (feature_def var 'x' :>> 'y' value))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'y'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'y'
+~~~
 # FORMAT
 ~~~sysml
 package P {
@@ -45,31 +54,17 @@ package P {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "P"))) (name "P") (declared-name "P")
-      (contains
-        (element (kind "requirement") (id (node (document "d0") (qualified-name "P::r"))) (name "r") (declared-name "r"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "32acbcf67d7434c11ea06ef4e5dc81ab1f81bc10dfdf7a2539adf5cc683e9ef5") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P") (range (start (line 0) (character 0)) (end (line 0) (character 65))))
+    (element (id (node (document "d0") (qualified-name "P::r"))) (kind "requirement") (name "r") (declared-name "r") (range (start (line 1) (character 4)) (end (line 1) (character 51))) (parent (node (document "d0") (qualified-name "P"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "P::r"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "fuzz/fuzz_member_var.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

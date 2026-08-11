@@ -27,6 +27,39 @@ package 'Action Performance Example' {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "18_action_performance_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 38))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_part_usage_body_element")
+        (source "sysml")
+        (range (start 9 2) (end 9 71))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 12 2) (end 12 57))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 16 2) (end 16 51))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -61,6 +94,18 @@ CloseCurly,EndOfFile,
       (part_usage 'i' : 'Imager'
         (perform_action :>> 'takePhoto.shoot')))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'takePicture'
+semantic.unresolved_name 'takePhoto::focus'
+semantic.unresolved_name 'takePhoto::shoot'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'takePicture'
+semantic.unresolved_name 'takePhoto::focus'
+semantic.unresolved_name 'takePhoto::shoot'
+~~~
 # FORMAT
 ~~~sysml
 package 'Action Performance Example' {
@@ -86,98 +131,36 @@ package 'Action Performance Example' {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'takePicture'
-semantic.unresolved_name 'takePhoto::focus'
-semantic.unresolved_name 'takePhoto::shoot'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'takePicture'
-semantic.unresolved_name 'takePhoto::focus'
-semantic.unresolved_name 'takePhoto::shoot'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Action Performance Example"))) (name "Action Performance Example") (declared-name "Action Performance Example")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Action Performance Example::*"))) (name "*") (declared-name "*"))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Action Performance Example::AutoFocus"))) (name "AutoFocus") (declared-name "AutoFocus") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Action Performance Example::Camera"))) (name "Camera") (declared-name "Camera") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Action Performance Example::Imager"))) (name "Imager") (declared-name "Imager") (declared))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Action Performance Example::camera"))) (name "camera") (declared-name "camera") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Action Performance Example::camera::f"))) (name "f") (declared-name "f") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Action Performance Example::Camera"))))
-              (contains
-                (element (kind "action") (id (node (document "d0") (qualified-name "Action Performance Example::camera::f::takePhoto.focus"))) (name "takePhoto.focus") (declared-name "takePhoto.focus") (effective (featuring-type (node (document "d0") (qualified-name "Action Performance Example::AutoFocus")))))
-              )
-            )
-            (element (kind "part") (id (node (document "d0") (qualified-name "Action Performance Example::camera::i"))) (name "i") (declared-name "i") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Action Performance Example::Camera"))))
-              (contains
-                (element (kind "action") (id (node (document "d0") (qualified-name "Action Performance Example::camera::i::takePhoto.shoot"))) (name "takePhoto.shoot") (declared-name "takePhoto.shoot") (effective (featuring-type (node (document "d0") (qualified-name "Action Performance Example::Imager")))))
-              )
-            )
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "0bf226e695119c42a77e25dd001fddc476b58fe9ef07acabab5d56eac5c90d9f") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Action Performance Example"))) (kind "package") (name "Action Performance Example") (declared-name "Action Performance Example") (range (start (line 0) (character 0)) (end (line 0) (character 358))))
+    (element (id (node (document "d0") (qualified-name "Action Performance Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 42))) (parent (node (document "d0") (qualified-name "Action Performance Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "Action Decomposition::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 38))))))
+    (element (id (node (document "d0") (qualified-name "Action Performance Example::AutoFocus"))) (kind "part def") (name "AutoFocus") (declared-name "AutoFocus") (range (start (line 4) (character 1)) (end (line 4) (character 20))) (parent (node (document "d0") (qualified-name "Action Performance Example"))))
+    (element (id (node (document "d0") (qualified-name "Action Performance Example::Camera"))) (kind "part def") (name "Camera") (declared-name "Camera") (range (start (line 3) (character 1)) (end (line 3) (character 17))) (parent (node (document "d0") (qualified-name "Action Performance Example"))))
+    (element (id (node (document "d0") (qualified-name "Action Performance Example::Imager"))) (kind "part def") (name "Imager") (declared-name "Imager") (range (start (line 5) (character 1)) (end (line 5) (character 17))) (parent (node (document "d0") (qualified-name "Action Performance Example"))))
+    (element (id (node (document "d0") (qualified-name "Action Performance Example::camera"))) (kind "part") (name "camera") (declared-name "camera") (range (start (line 7) (character 1)) (end (line 7) (character 213))) (parent (node (document "d0") (qualified-name "Action Performance Example"))) (authored (membership (kind Feature)) (relationships (typing (reference "Camera") (range (start (line 7) (character 15)) (end (line 7) (character 21)))))))
+    (element (id (node (document "d0") (qualified-name "Action Performance Example::camera::f"))) (kind "part") (name "f") (declared-name "f") (range (start (line 12) (character 2)) (end (line 12) (character 57))) (parent (node (document "d0") (qualified-name "Action Performance Example::camera"))) (authored (membership (kind Feature)) (relationships (typing (reference "AutoFocus") (range (start (line 12) (character 11)) (end (line 12) (character 20)))) (perform (reference "Action Performance Example::camera::f::takePhoto::focus") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Action Performance Example::camera::f::takePhoto.focus"))) (kind "action") (name "takePhoto.focus") (declared-name "takePhoto.focus") (range (start (line 13) (character 3)) (end (line 13) (character 27))) (parent (node (document "d0") (qualified-name "Action Performance Example::camera::f"))))
+    (element (id (node (document "d0") (qualified-name "Action Performance Example::camera::i"))) (kind "part") (name "i") (declared-name "i") (range (start (line 16) (character 2)) (end (line 16) (character 51))) (parent (node (document "d0") (qualified-name "Action Performance Example::camera"))) (authored (membership (kind Feature)) (relationships (typing (reference "Imager") (range (start (line 16) (character 11)) (end (line 16) (character 17)))) (perform (reference "Action Performance Example::camera::i::takePhoto::shoot") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Action Performance Example::camera::i::takePhoto.shoot"))) (kind "action") (name "takePhoto.shoot") (declared-name "takePhoto.shoot") (range (start (line 17) (character 3)) (end (line 17) (character 27))) (parent (node (document "d0") (qualified-name "Action Performance Example::camera::i"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Action Performance Example::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Action Decomposition::*") (range (start (line 1) (character 16)) (end (line 1) (character 38))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Action Performance Example::camera"))) (kind featureTyping) (ordinal 0)) (authored-target "Camera") (range (start (line 7) (character 15)) (end (line 7) (character 21))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Performance Example::Camera")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Performance Example::camera::f"))) (kind featureTyping) (ordinal 0)) (authored-target "AutoFocus") (range (start (line 12) (character 11)) (end (line 12) (character 20))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Performance Example::AutoFocus")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Performance Example::camera::f"))) (kind performSource) (ordinal 0)) (authored-target "Action Performance Example::camera::f::takePhoto::focus") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Action Performance Example::camera::i"))) (kind featureTyping) (ordinal 0)) (authored-target "Imager") (range (start (line 16) (character 11)) (end (line 16) (character 17))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Action Performance Example::Imager")))))
+    (reference (id (source (node (document "d0") (qualified-name "Action Performance Example::camera::i"))) (kind performSource) (ordinal 0)) (authored-target "Action Performance Example::camera::i::takePhoto::shoot") (range none) (outcome (status unresolved)))
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Performance Example::camera"))) (to (node (document "d0") (qualified-name "Action Performance Example::Camera"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Performance Example::camera::f"))) (to (node (document "d0") (qualified-name "Action Performance Example::AutoFocus"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Performance Example::camera::i"))) (to (node (document "d0") (qualified-name "Action Performance Example::Imager"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Action Performance Example::camera"))) (target (node (document "d0") (qualified-name "Action Performance Example::Camera"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Performance Example::camera"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Action Performance Example::camera::f"))) (target (node (document "d0") (qualified-name "Action Performance Example::AutoFocus"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Performance Example::camera::f"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Action Performance Example::camera::i"))) (target (node (document "d0") (qualified-name "Action Performance Example::Imager"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Action Performance Example::camera::i"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-    (perform (status pending) (document "d0") (source-qualified "Action Performance Example::camera::f") (target-qualified "Action Performance Example::camera::f::takePhoto::focus"))
-    (perform (status pending) (document "d0") (source-qualified "Action Performance Example::camera::i") (target-qualified "Action Performance Example::camera::i::takePhoto::shoot"))
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Performance Example::AutoFocus"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Performance Example::Camera"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Performance Example::Imager"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Performance Example::camera"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Performance Example::camera::f"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Performance Example::camera::f::takePhoto.focus"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Performance Example::camera::i"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Performance Example::camera::i::takePhoto.shoot"))) (status missing-prerequisite) (target "Actions::actions"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/18_action_performance_example.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_relationship")
-        (source "semantic")
-        (range (start 0 0) (end 0 0))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_relationship")
-        (source "semantic")
-        (range (start 0 0) (end 0 0))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 38))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_part_usage_body_element")
-        (source "sysml")
-        (range (start 9 2) (end 9 71))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

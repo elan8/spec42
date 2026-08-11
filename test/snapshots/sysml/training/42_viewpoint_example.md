@@ -44,6 +44,21 @@ package 'Viewpoint Example' {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "42_viewpoint_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 25 1) (end 25 286))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -90,6 +105,14 @@ CloseCurly,EndOfFile,
       (sysml_decl
         (documentation)))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package 'Viewpoint Example' {
@@ -132,80 +155,39 @@ package 'Viewpoint Example' {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Viewpoint Example"))) (name "Viewpoint Example") (declared-name "Viewpoint Example")
-      (contains
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Viewpoint Example::IV&V"))) (name "IV&V") (declared-name "IV&V") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Viewpoint Example::Systems Engineer"))) (name "Systems Engineer") (declared-name "Systems Engineer") (declared))
-        (element (kind "concern") (id (node (document "d0") (qualified-name "Viewpoint Example::modularity"))) (name "modularity") (declared-name "modularity")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Viewpoint Example::modularity::_documentation"))) (name ""))
-            (element (kind "stakeholder") (id (node (document "d0") (qualified-name "Viewpoint Example::modularity::se"))) (name "se") (declared-name "se"))
-          )
-        )
-        (element (kind "concern") (id (node (document "d0") (qualified-name "Viewpoint Example::system breakdown"))) (name "system breakdown") (declared-name "system breakdown")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Viewpoint Example::system breakdown::_documentation"))) (name ""))
-            (element (kind "stakeholder") (id (node (document "d0") (qualified-name "Viewpoint Example::system breakdown::ivv"))) (name "ivv") (declared-name "ivv"))
-            (element (kind "stakeholder") (id (node (document "d0") (qualified-name "Viewpoint Example::system breakdown::se"))) (name "se") (declared-name "se"))
-          )
-        )
-        (element (kind "viewpoint") (id (node (document "d0") (qualified-name "Viewpoint Example::system structure perspective"))) (name "system structure perspective") (declared-name "system structure perspective")
-          (contains
-            (element (kind "require constraint") (id (node (document "d0") (qualified-name "Viewpoint Example::system structure perspective::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0")
-              (contains
-                (element (kind "documentation") (id (node (document "d0") (qualified-name "Viewpoint Example::system structure perspective::_requireConstraint_0::_documentation"))) (name ""))
-              )
-            )
-            (element (kind "frame") (id (node (document "d0") (qualified-name "Viewpoint Example::system structure perspective::modularity"))) (name "modularity") (declared-name "modularity"))
-            (element (kind "frame") (id (node (document "d0") (qualified-name "Viewpoint Example::system structure perspective::system breakdown"))) (name "system breakdown") (declared-name "system breakdown"))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d80f3108082d320a982458ca6cf16c607d6f034c502aa4bbe04dc9a27c040b10") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Viewpoint Example"))) (kind "package") (name "Viewpoint Example") (declared-name "Viewpoint Example") (range (start (line 0) (character 0)) (end (line 0) (character 974))))
+    (element (id (node (document "d0") (qualified-name "Viewpoint Example::IV&V"))) (kind "part def") (name "IV&V") (declared-name "IV&V") (range (start (line 2) (character 1)) (end (line 2) (character 17))) (parent (node (document "d0") (qualified-name "Viewpoint Example"))))
+    (element (id (node (document "d0") (qualified-name "Viewpoint Example::Systems Engineer"))) (kind "part def") (name "Systems Engineer") (declared-name "Systems Engineer") (range (start (line 1) (character 1)) (end (line 1) (character 29))) (parent (node (document "d0") (qualified-name "Viewpoint Example"))))
+    (element (id (node (document "d0") (qualified-name "Viewpoint Example::modularity"))) (kind "concern") (name "modularity") (declared-name "modularity") (range (start (line 15) (character 1)) (end (line 15) (character 280))) (parent (node (document "d0") (qualified-name "Viewpoint Example"))))
+    (element (id (node (document "d0") (qualified-name "Viewpoint Example::modularity::_documentation"))) (kind "documentation") (name "") (range (start (line 15) (character 1)) (end (line 15) (character 280))) (parent (node (document "d0") (qualified-name "Viewpoint Example::modularity"))))
+    (element (id (node (document "d0") (qualified-name "Viewpoint Example::modularity::se"))) (kind "stakeholder") (name "se") (declared-name "se") (range (start (line 22) (character 2)) (end (line 22) (character 38))) (parent (node (document "d0") (qualified-name "Viewpoint Example::modularity"))) (authored (relationships (typing (reference "Systems Engineer") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Viewpoint Example::system breakdown"))) (kind "concern") (name "system breakdown") (declared-name "system breakdown") (range (start (line 4) (character 1)) (end (line 4) (character 319))) (parent (node (document "d0") (qualified-name "Viewpoint Example"))))
+    (element (id (node (document "d0") (qualified-name "Viewpoint Example::system breakdown::_documentation"))) (kind "documentation") (name "") (range (start (line 4) (character 1)) (end (line 4) (character 319))) (parent (node (document "d0") (qualified-name "Viewpoint Example::system breakdown"))))
+    (element (id (node (document "d0") (qualified-name "Viewpoint Example::system breakdown::ivv"))) (kind "stakeholder") (name "ivv") (declared-name "ivv") (range (start (line 12) (character 2)) (end (line 12) (character 27))) (parent (node (document "d0") (qualified-name "Viewpoint Example::system breakdown"))) (authored (relationships (typing (reference "IV&V") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Viewpoint Example::system breakdown::se"))) (kind "stakeholder") (name "se") (declared-name "se") (range (start (line 11) (character 2)) (end (line 11) (character 38))) (parent (node (document "d0") (qualified-name "Viewpoint Example::system breakdown"))) (authored (relationships (typing (reference "Systems Engineer") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Viewpoint Example::system structure perspective"))) (kind "viewpoint") (name "system structure perspective") (declared-name "system structure perspective") (range (start (line 25) (character 1)) (end (line 25) (character 286))) (parent (node (document "d0") (qualified-name "Viewpoint Example"))) (authored (membership (kind Feature)) (relationships (typing (reference "") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Viewpoint Example::system structure perspective::_requireConstraint_0"))) (kind "require constraint") (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (range (start (line 29) (character 2)) (end (line 29) (character 184))) (parent (node (document "d0") (qualified-name "Viewpoint Example::system structure perspective"))))
+    (element (id (node (document "d0") (qualified-name "Viewpoint Example::system structure perspective::_requireConstraint_0::_documentation"))) (kind "documentation") (name "") (range (start (line 29) (character 2)) (end (line 29) (character 184))) (parent (node (document "d0") (qualified-name "Viewpoint Example::system structure perspective::_requireConstraint_0"))))
+    (element (id (node (document "d0") (qualified-name "Viewpoint Example::system structure perspective::modularity"))) (kind "frame") (name "modularity") (declared-name "modularity") (range (start (line 27) (character 2)) (end (line 27) (character 21))) (parent (node (document "d0") (qualified-name "Viewpoint Example::system structure perspective"))))
+    (element (id (node (document "d0") (qualified-name "Viewpoint Example::system structure perspective::system breakdown"))) (kind "frame") (name "system breakdown") (declared-name "system breakdown") (range (start (line 26) (character 2)) (end (line 26) (character 27))) (parent (node (document "d0") (qualified-name "Viewpoint Example::system structure perspective"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Viewpoint Example::modularity::se"))) (kind featureTyping) (ordinal 0)) (authored-target "Systems Engineer") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Viewpoint Example::Systems Engineer")))))
+    (reference (id (source (node (document "d0") (qualified-name "Viewpoint Example::system breakdown::ivv"))) (kind featureTyping) (ordinal 0)) (authored-target "IV&V") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Viewpoint Example::IV&V")))))
+    (reference (id (source (node (document "d0") (qualified-name "Viewpoint Example::system breakdown::se"))) (kind featureTyping) (ordinal 0)) (authored-target "Systems Engineer") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Viewpoint Example::Systems Engineer")))))
+    (reference (id (source (node (document "d0") (qualified-name "Viewpoint Example::system structure perspective"))) (kind featureTyping) (ordinal 0)) (authored-target "") (range none) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Viewpoint Example::modularity::_documentation"))) (to (node (document "d0") (qualified-name "Viewpoint Example::modularity"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Viewpoint Example::system breakdown::_documentation"))) (to (node (document "d0") (qualified-name "Viewpoint Example::system breakdown"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Viewpoint Example::system structure perspective::_requireConstraint_0::_documentation"))) (to (node (document "d0") (qualified-name "Viewpoint Example::system structure perspective::_requireConstraint_0"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Viewpoint Example::modularity::se"))) (to (node (document "d0") (qualified-name "Viewpoint Example::Systems Engineer"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Viewpoint Example::system breakdown::ivv"))) (to (node (document "d0") (qualified-name "Viewpoint Example::IV&V"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Viewpoint Example::system breakdown::se"))) (to (node (document "d0") (qualified-name "Viewpoint Example::Systems Engineer"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Viewpoint Example::modularity::se"))) (target (node (document "d0") (qualified-name "Viewpoint Example::Systems Engineer"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Viewpoint Example::modularity::se"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Viewpoint Example::system breakdown::ivv"))) (target (node (document "d0") (qualified-name "Viewpoint Example::IV&V"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Viewpoint Example::system breakdown::ivv"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Viewpoint Example::system breakdown::se"))) (target (node (document "d0") (qualified-name "Viewpoint Example::Systems Engineer"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Viewpoint Example::system breakdown::se"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Viewpoint Example::IV&V"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Viewpoint Example::Systems Engineer"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Viewpoint Example::modularity"))) (status missing-prerequisite) (target "Requirements::concernChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Viewpoint Example::modularity::se"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Viewpoint Example::system breakdown"))) (status missing-prerequisite) (target "Requirements::concernChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Viewpoint Example::system breakdown::ivv"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Viewpoint Example::system breakdown::se"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Viewpoint Example::system structure perspective"))) (status missing-prerequisite) (target "Views::viewpoints"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Viewpoint Example::system structure perspective::_requireConstraint_0"))) (status missing-prerequisite) (target "Constraints::constraintChecks"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/42_viewpoint_example.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

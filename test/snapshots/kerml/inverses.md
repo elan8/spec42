@@ -21,6 +21,21 @@ package Inverses {
 	feature gg : A featured by B inverse of A::f;
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "inverses.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 10 1) (end 10 114))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -49,6 +64,14 @@ CloseCurly,EndOfFile,
     (feature_inverting_decl)
     (feature_def 'gg' : 'A' featured by 'B' inverse of 'A::f')))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package Inverses {
@@ -67,45 +90,20 @@ package Inverses {
 	feature gg : A featured by B inverse of A::f;
 }
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Inverses"))) (name "Inverses") (declared-name "Inverses")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Inverses::A"))) (name "A") (declared-name "A"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Inverses::B"))) (name "B") (declared-name "B"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "a9584b997e5f18150bd0f99c99791ebd785aa56a62da5b521b931a1da31fa10a") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Inverses"))) (kind "package") (name "Inverses") (declared-name "Inverses") (range (start (line 0) (character 0)) (end (line 0) (character 249))))
+    (element (id (node (document "d0") (qualified-name "Inverses::A"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 1) (character 1)) (end (line 1) (character 79))) (parent (node (document "d0") (qualified-name "Inverses"))))
+    (element (id (node (document "d0") (qualified-name "Inverses::B"))) (kind "classifier decl") (name "B") (declared-name "B") (range (start (line 6) (character 1)) (end (line 6) (character 30))) (parent (node (document "d0") (qualified-name "Inverses"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/inverses.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 10 1) (end 10 114))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

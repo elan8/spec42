@@ -82,6 +82,123 @@ package '15_13-Discretely Sampled Function Value' {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "15_13_discretely_sampled_function_value.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 3 16) (end 3 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 4 16) (end 4 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 5 16) (end 5 18))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 16) (end 6 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 9 1) (end 9 559))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 15 2) (end 15 53))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 19 2) (end 19 158))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 34 1) (end 34 165))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 42 1) (end 42 280))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 50 1) (end 50 75))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 53 2) (end 53 52))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 54 2) (end 54 52))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 67 2) (end 67 207))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 69 2) (end 69 217))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 71 2) (end 71 225))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -210,6 +327,74 @@ CloseCurly,EndOfFile,
           (default_ref_usage :>> 'velocity' value)))
       (attribute_usage :>> 'samples' value))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'TimeScale'
+semantic.unresolved_name 'unit'
+semantic.unresolved_name 'definitionalEpoch'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'definition'
+semantic.unresolved_name 'Iso8601DateTime'
+semantic.unresolved_name 'transformation'
+semantic.unresolved_name 'CoordinateFramePlacement'
+semantic.unresolved_name 'source'
+semantic.unresolved_name 'origin'
+semantic.unresolved_name 'basisDirections'
+semantic.unresolved_name 'val'
+semantic.unresolved_name 'TimeInstantValue'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'CartesianVelocity3dCoordinateFrame'
+semantic.unresolved_name 'CartesianPosition3dVector'
+semantic.unresolved_name 'CartesianVelocity3dVector'
+semantic.unresolved_name 'SampledFunction'
+semantic.unresolved_name 'SamplePair'
+semantic.unresolved_name 'domainValue'
+semantic.unresolved_name 'rangeValue'
+semantic.unresolved_name 'samples'
+semantic.unresolved_name 'domainValue'
+semantic.unresolved_name 'rangeValue'
+semantic.unresolved_name 'domainValue'
+semantic.unresolved_name 'rangeValue'
+semantic.unresolved_name 'domainValue'
+semantic.unresolved_name 'rangeValue'
+semantic.unresolved_name 'samples'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'TimeScale'
+semantic.unresolved_name 'unit'
+semantic.unresolved_name 'definitionalEpoch'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'definition'
+semantic.unresolved_name 'Iso8601DateTime'
+semantic.unresolved_name 'transformation'
+semantic.unresolved_name 'CoordinateFramePlacement'
+semantic.unresolved_name 'source'
+semantic.unresolved_name 'origin'
+semantic.unresolved_name 'basisDirections'
+semantic.unresolved_name 'val'
+semantic.unresolved_name 'TimeInstantValue'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'CartesianVelocity3dCoordinateFrame'
+semantic.unresolved_name 'CartesianPosition3dVector'
+semantic.unresolved_name 'CartesianVelocity3dVector'
+semantic.unresolved_name 'SampledFunction'
+semantic.unresolved_name 'SamplePair'
+semantic.unresolved_name 'domainValue'
+semantic.unresolved_name 'rangeValue'
+semantic.unresolved_name 'samples'
+semantic.unresolved_name 'domainValue'
+semantic.unresolved_name 'rangeValue'
+semantic.unresolved_name 'domainValue'
+semantic.unresolved_name 'rangeValue'
+semantic.unresolved_name 'domainValue'
+semantic.unresolved_name 'rangeValue'
+semantic.unresolved_name 'samples'
+~~~
 # FORMAT
 ~~~sysml
 package '15_13-Discretely Sampled Function Value' {
@@ -290,327 +475,97 @@ package '15_13-Discretely Sampled Function Value' {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'TimeScale'
-semantic.unresolved_name 'unit'
-semantic.unresolved_name 'definitionalEpoch'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'definition'
-semantic.unresolved_name 'Iso8601DateTime'
-semantic.unresolved_name 'transformation'
-semantic.unresolved_name 'CoordinateFramePlacement'
-semantic.unresolved_name 'source'
-semantic.unresolved_name 'origin'
-semantic.unresolved_name 'basisDirections'
-semantic.unresolved_name 'val'
-semantic.unresolved_name 'TimeInstantValue'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'CartesianVelocity3dCoordinateFrame'
-semantic.unresolved_name 'CartesianPosition3dVector'
-semantic.unresolved_name 'CartesianVelocity3dVector'
-semantic.unresolved_name 'SampledFunction'
-semantic.unresolved_name 'SamplePair'
-semantic.unresolved_name 'domainValue'
-semantic.unresolved_name 'rangeValue'
-semantic.unresolved_name 'samples'
-semantic.unresolved_name 'domainValue'
-semantic.unresolved_name 'rangeValue'
-semantic.unresolved_name 'domainValue'
-semantic.unresolved_name 'rangeValue'
-semantic.unresolved_name 'domainValue'
-semantic.unresolved_name 'rangeValue'
-semantic.unresolved_name 'samples'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'TimeScale'
-semantic.unresolved_name 'unit'
-semantic.unresolved_name 'definitionalEpoch'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'definition'
-semantic.unresolved_name 'Iso8601DateTime'
-semantic.unresolved_name 'transformation'
-semantic.unresolved_name 'CoordinateFramePlacement'
-semantic.unresolved_name 'source'
-semantic.unresolved_name 'origin'
-semantic.unresolved_name 'basisDirections'
-semantic.unresolved_name 'val'
-semantic.unresolved_name 'TimeInstantValue'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'CartesianVelocity3dCoordinateFrame'
-semantic.unresolved_name 'CartesianPosition3dVector'
-semantic.unresolved_name 'CartesianVelocity3dVector'
-semantic.unresolved_name 'SampledFunction'
-semantic.unresolved_name 'SamplePair'
-semantic.unresolved_name 'domainValue'
-semantic.unresolved_name 'rangeValue'
-semantic.unresolved_name 'samples'
-semantic.unresolved_name 'domainValue'
-semantic.unresolved_name 'rangeValue'
-semantic.unresolved_name 'domainValue'
-semantic.unresolved_name 'rangeValue'
-semantic.unresolved_name 'domainValue'
-semantic.unresolved_name 'rangeValue'
-semantic.unresolved_name 'samples'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value"))) (name "15_13-Discretely Sampled Function Value") (declared-name "15_13-Discretely Sampled Function Value")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::*#import2"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::*#import3"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::Array"))) (name "Array") (declared-name "Array"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile"))) (name "AscentProfile") (declared-name "AscentProfile") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::AscentSample"))) (name "AscentSample") (declared-name "AscentSample") (effective (featuring-type (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::samples"))) (name "samples") (declared-name "samples") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale"))) (name "MissionElapsedTimeScale") (declared-name "MissionElapsedTimeScale") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::definitionalEpoch"))) (name "definitionalEpoch") (declared-name "definitionalEpoch") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::definitionalEpochInUTC"))) (name "definitionalEpochInUTC") (declared-name "definitionalEpochInUTC") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::transformation"))) (name "transformation") (declared-name "transformation") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::unit"))) (name "unit") (declared-name "unit") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeValue"))) (name "MissionElapsedTimeValue") (declared-name "MissionElapsedTimeValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::PositionAndVelocity"))) (name "PositionAndVelocity") (declared-name "PositionAndVelocity") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::PositionAndVelocity::position"))) (name "position") (declared-name "position") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::PositionAndVelocity")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::PositionAndVelocity::velocity"))) (name "velocity") (declared-name "velocity") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::PositionAndVelocity")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::SamplePair"))) (name "SamplePair") (declared-name "SamplePair"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::SampledFunction"))) (name "SampledFunction") (declared-name "SampledFunction"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1"))) (name "ascentProfile1") (declared-name "ascentProfile1") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::sample1"))) (name "sample1") (declared-name "sample1") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::sample2"))) (name "sample2") (declared-name "sample2") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::sample3"))) (name "sample3") (declared-name "sample3") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::samples"))) (name "samples") (declared-name "samples") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::mets"))) (name "mets") (declared-name "mets") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::mets::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::mets")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::mets::definitionalEpochInUTC"))) (name "definitionalEpochInUTC") (declared-name "definitionalEpochInUTC") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::mets")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF"))) (name "spatialCF") (declared-name "spatialCF") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::velocityCF"))) (name "velocityCF") (declared-name "velocityCF") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "binary") (operator "/") (children (expression (kind "featureReference") (reference "spatialCF")) (expression (kind "featureReference") (reference "s")))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::velocityCF"))) (role feature-value))) (evaluation (expression (status "incomplete") (error "expression is incomplete"))))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "eb87c216cd8ca9cd790f04d4d840ec8a6f169376f131ac185e065389679716be") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value"))) (kind "package") (name "15_13-Discretely Sampled Function Value") (declared-name "15_13-Discretely Sampled Function Value") (range (start (line 0) (character 0)) (end (line 0) (character 2825))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 4) (character 1)) (end (line 4) (character 23))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 4) (character 16)) (end (line 4) (character 19))))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 5) (character 1)) (end (line 5) (character 22))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value"))) (authored (membership (kind Import) (visibility "private") (import (reference "SI::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 5) (character 16)) (end (line 5) (character 18))))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::*#import2"))) (kind "import") (name "*") (declared-name "*") (range (start (line 6) (character 1)) (end (line 6) (character 41))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value"))) (authored (membership (kind Import) (visibility "private") (import (reference "MeasurementReferences::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::*#import3"))) (kind "import") (name "*") (declared-name "*") (range (start (line 7) (character 1)) (end (line 7) (character 24))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value"))) (authored (membership (kind Import) (visibility "private") (import (reference "Time::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 20))))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::Array"))) (kind "import") (name "Array") (declared-name "Array") (range (start (line 3) (character 1)) (end (line 3) (character 35))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value"))) (authored (membership (kind Import) (visibility "private") (import (reference "Collections::Array") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 3) (character 16)) (end (line 3) (character 34))))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile"))) (kind "attribute def") (name "AscentProfile") (declared-name "AscentProfile") (range (start (line 57) (character 1)) (end (line 57) (character 262))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value"))) (authored (membership (kind Owning)) (relationships (typing (reference "SampledFunction") (range none)))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::AscentSample"))) (kind "attribute def") (name "AscentSample") (declared-name "AscentSample") (range (start (line 58) (character 2)) (end (line 58) (character 159))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile"))) (authored (membership (kind Owning)) (relationships (typing (reference "SamplePair") (range none)))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::samples"))) (kind "attribute") (name "samples") (declared-name "samples") (range (start (line 62) (character 2)) (end (line 62) (character 49))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile"))) (authored (membership (kind Feature)) (relationships (typing (reference "AscentSample") (range none)) (redefinition (reference "samples") (range (start (line 62) (character 16)) (end (line 62) (character 23)))))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale"))) (kind "attribute def") (name "MissionElapsedTimeScale") (declared-name "MissionElapsedTimeScale") (range (start (line 9) (character 1)) (end (line 9) (character 559))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value"))) (authored (membership (kind Owning)) (relationships (typing (reference "TimeScale") (range none)))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::definitionalEpoch"))) (kind "attribute") (name "definitionalEpoch") (declared-name "definitionalEpoch") (range (start (line 11) (character 2)) (end (line 11) (character 106))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "definitionalEpoch") (range (start (line 11) (character 16)) (end (line 11) (character 33)))))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::definitionalEpochInUTC"))) (kind "attribute") (name "definitionalEpochInUTC") (declared-name "definitionalEpochInUTC") (range (start (line 15) (character 2)) (end (line 15) (character 53))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale"))) (authored (membership (kind Feature)) (relationships (typing (reference "Iso8601DateTime") (range none)))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::transformation"))) (kind "attribute") (name "transformation") (declared-name "transformation") (range (start (line 19) (character 2)) (end (line 19) (character 158))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale"))) (authored (membership (kind Feature)) (relationships (typing (reference "CoordinateFramePlacement") (range none)) (redefinition (reference "transformation") (range (start (line 19) (character 16)) (end (line 19) (character 30)))))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::unit"))) (kind "attribute") (name "unit") (declared-name "unit") (range (start (line 10) (character 2)) (end (line 10) (character 15))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "unit") (range (start (line 10) (character 2)) (end (line 10) (character 10)))))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeValue"))) (kind "attribute def") (name "MissionElapsedTimeValue") (declared-name "MissionElapsedTimeValue") (range (start (line 34) (character 1)) (end (line 34) (character 165))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value"))) (authored (membership (kind Owning)) (relationships (typing (reference "TimeInstantValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeValue::_documentation"))) (kind "documentation") (name "") (range (start (line 34) (character 1)) (end (line 34) (character 165))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeValue"))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 39) (character 3)) (end (line 39) (character 19))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeValue"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "mRef") (range (start (line 39) (character 3)) (end (line 39) (character 11)))))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::PositionAndVelocity"))) (kind "attribute def") (name "PositionAndVelocity") (declared-name "PositionAndVelocity") (range (start (line 52) (character 1)) (end (line 52) (character 145))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value"))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::PositionAndVelocity::position"))) (kind "attribute") (name "position") (declared-name "position") (range (start (line 53) (character 2)) (end (line 53) (character 52))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::PositionAndVelocity"))) (authored (membership (kind Feature)) (relationships (typing (reference "CartesianPosition3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::PositionAndVelocity::velocity"))) (kind "attribute") (name "velocity") (declared-name "velocity") (range (start (line 54) (character 2)) (end (line 54) (character 52))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::PositionAndVelocity"))) (authored (membership (kind Feature)) (relationships (typing (reference "CartesianVelocity3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::SamplePair"))) (kind "import") (name "SamplePair") (declared-name "SamplePair") (range (start (line 2) (character 1)) (end (line 2) (character 45))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value"))) (authored (membership (kind Import) (visibility "private") (import (reference "SampledFunctions::SamplePair") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 44))))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::SampledFunction"))) (kind "import") (name "SampledFunction") (declared-name "SampledFunction") (range (start (line 1) (character 1)) (end (line 1) (character 50))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value"))) (authored (membership (kind Import) (visibility "private") (import (reference "SampledFunctions::SampledFunction") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 49))))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1"))) (kind "attribute def") (name "ascentProfile1") (declared-name "ascentProfile1") (range (start (line 65) (character 1)) (end (line 65) (character 787))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value"))) (authored (membership (kind Owning)) (relationships (typing (reference "AscentProfile") (range none)))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::_documentation"))) (kind "documentation") (name "") (range (start (line 65) (character 1)) (end (line 65) (character 787))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1"))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::sample1"))) (kind "attribute") (name "sample1") (declared-name "sample1") (range (start (line 67) (character 2)) (end (line 67) (character 207))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1"))) (authored (membership (kind Feature)) (relationships (typing (reference "AscentSample") (range none)))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::sample2"))) (kind "attribute") (name "sample2") (declared-name "sample2") (range (start (line 69) (character 2)) (end (line 69) (character 217))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1"))) (authored (membership (kind Feature)) (relationships (typing (reference "AscentSample") (range none)))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::sample3"))) (kind "attribute") (name "sample3") (declared-name "sample3") (range (start (line 71) (character 2)) (end (line 71) (character 225))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1"))) (authored (membership (kind Feature)) (relationships (typing (reference "AscentSample") (range none)))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::samples"))) (kind "attribute") (name "samples") (declared-name "samples") (range (start (line 73) (character 2)) (end (line 73) (character 54))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "samples") (range (start (line 73) (character 16)) (end (line 73) (character 23)))))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::mets"))) (kind "attribute def") (name "mets") (declared-name "mets") (range (start (line 26) (character 1)) (end (line 26) (character 237))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value"))) (authored (membership (kind Owning)) (relationships (typing (reference "MissionElapsedTimeScale") (range none)))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::mets::_documentation"))) (kind "documentation") (name "") (range (start (line 26) (character 1)) (end (line 26) (character 237))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::mets"))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::mets::definitionalEpochInUTC"))) (kind "attribute") (name "definitionalEpochInUTC") (declared-name "definitionalEpochInUTC") (range (start (line 31) (character 2)) (end (line 31) (character 72))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::mets"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "definitionalEpochInUTC") (range (start (line 31) (character 2)) (end (line 31) (character 28)))))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF"))) (kind "attribute def") (name "spatialCF") (declared-name "spatialCF") (range (start (line 42) (character 1)) (end (line 42) (character 280))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value"))) (authored (membership (kind Owning)) (relationships (typing (reference "CartesianSpatial3dCoordinateFrame") (range none)))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF::_documentation"))) (kind "documentation") (name "") (range (start (line 42) (character 1)) (end (line 42) (character 280))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF"))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF::mRefs"))) (kind "attribute") (name "mRefs") (declared-name "mRefs") (range (start (line 48) (character 4)) (end (line 48) (character 26))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "mRefs") (range (start (line 48) (character 4)) (end (line 48) (character 13)))))))
+    (element (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::velocityCF"))) (kind "attribute def") (name "velocityCF") (declared-name "velocityCF") (range (start (line 50) (character 1)) (end (line 50) (character 75))) (parent (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value"))) (authored (membership (kind Owning)) (relationships (typing (reference "CartesianVelocity3dCoordinateFrame") (range none)))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ISQ::*") (range (start (line 4) (character 16)) (end (line 4) (character 19))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "SI::*") (range (start (line 5) (character 16)) (end (line 5) (character 18))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::*#import2"))) (kind namespaceImport) (ordinal 0)) (authored-target "MeasurementReferences::*") (range (start (line 6) (character 16)) (end (line 6) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::*#import3"))) (kind namespaceImport) (ordinal 0)) (authored-target "Time::*") (range (start (line 7) (character 16)) (end (line 7) (character 20))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::Array"))) (kind membershipImport) (ordinal 0)) (authored-target "Collections::Array") (range (start (line 3) (character 16)) (end (line 3) (character 34))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile"))) (kind featureTyping) (ordinal 0)) (authored-target "SampledFunction") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::SampledFunction")))))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::AscentSample"))) (kind featureTyping) (ordinal 0)) (authored-target "SamplePair") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::SamplePair")))))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::samples"))) (kind featureTyping) (ordinal 0)) (authored-target "AscentSample") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::AscentSample")))))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::samples"))) (kind redefinition) (ordinal 0)) (authored-target "samples") (range (start (line 62) (character 16)) (end (line 62) (character 23))) (outcome (status resolved) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::samples")))))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale"))) (kind featureTyping) (ordinal 0)) (authored-target "TimeScale") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::definitionalEpoch"))) (kind redefinition) (ordinal 0)) (authored-target "definitionalEpoch") (range (start (line 11) (character 16)) (end (line 11) (character 33))) (outcome (status resolved) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::definitionalEpoch")))))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::definitionalEpochInUTC"))) (kind featureTyping) (ordinal 0)) (authored-target "Iso8601DateTime") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::transformation"))) (kind featureTyping) (ordinal 0)) (authored-target "CoordinateFramePlacement") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::transformation"))) (kind redefinition) (ordinal 0)) (authored-target "transformation") (range (start (line 19) (character 16)) (end (line 19) (character 30))) (outcome (status resolved) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::transformation")))))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::unit"))) (kind redefinition) (ordinal 0)) (authored-target "unit") (range (start (line 10) (character 2)) (end (line 10) (character 10))) (outcome (status resolved) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::unit")))))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeValue"))) (kind featureTyping) (ordinal 0)) (authored-target "TimeInstantValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 39) (character 3)) (end (line 39) (character 11))) (outcome (status resolved) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::PositionAndVelocity::position"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianPosition3dVector") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::PositionAndVelocity::velocity"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianVelocity3dVector") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::SamplePair"))) (kind membershipImport) (ordinal 0)) (authored-target "SampledFunctions::SamplePair") (range (start (line 2) (character 16)) (end (line 2) (character 44))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::SampledFunction"))) (kind membershipImport) (ordinal 0)) (authored-target "SampledFunctions::SampledFunction") (range (start (line 1) (character 16)) (end (line 1) (character 49))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1"))) (kind featureTyping) (ordinal 0)) (authored-target "AscentProfile") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile")))))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::sample1"))) (kind featureTyping) (ordinal 0)) (authored-target "AscentSample") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::sample2"))) (kind featureTyping) (ordinal 0)) (authored-target "AscentSample") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::sample3"))) (kind featureTyping) (ordinal 0)) (authored-target "AscentSample") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::samples"))) (kind redefinition) (ordinal 0)) (authored-target "samples") (range (start (line 73) (character 16)) (end (line 73) (character 23))) (outcome (status resolved) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::samples")))))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::mets"))) (kind featureTyping) (ordinal 0)) (authored-target "MissionElapsedTimeScale") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale")))))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::mets::definitionalEpochInUTC"))) (kind redefinition) (ordinal 0)) (authored-target "definitionalEpochInUTC") (range (start (line 31) (character 2)) (end (line 31) (character 28))) (outcome (status resolved) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::mets::definitionalEpochInUTC")))))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianSpatial3dCoordinateFrame") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF::mRefs"))) (kind redefinition) (ordinal 0)) (authored-target "mRefs") (range (start (line 48) (character 4)) (end (line 48) (character 13))) (outcome (status resolved) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF::mRefs")))))
+    (reference (id (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::velocityCF"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianVelocity3dCoordinateFrame") (range none) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeValue::_documentation"))) (to (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::_documentation"))) (to (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::mets::_documentation"))) (to (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::mets"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF::_documentation"))) (to (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::samples"))) (to (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::samples"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::mets::definitionalEpochInUTC"))) (to (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::definitionalEpochInUTC"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::samples"))) (to (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::AscentSample"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1"))) (to (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::sample1"))) (to (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::AscentSample"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::sample2"))) (to (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::AscentSample"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::sample3"))) (to (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::AscentSample"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::mets"))) (to (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile"))) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::SampledFunction"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::AscentSample"))) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::SamplePair"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::AscentSample"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::samples"))) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::AscentSample"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::samples"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::samples"))) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::samples"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::samples"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::definitionalEpoch"))) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::definitionalEpoch"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::definitionalEpoch"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::transformation"))) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::transformation"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::transformation"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::unit"))) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::unit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::unit"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeValue::mRef"))) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1"))) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::samples"))) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::samples"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::samples"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::mets"))) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::mets"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::mets::definitionalEpochInUTC"))) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::mets::definitionalEpochInUTC"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::mets::definitionalEpochInUTC"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF::mRefs"))) (target (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF::mRefs"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF::mRefs"))) (kind redefinition) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::AscentSample"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::samples"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::definitionalEpoch"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::definitionalEpochInUTC"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::transformation"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::unit"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::PositionAndVelocity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::PositionAndVelocity::position"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::PositionAndVelocity::velocity"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::sample1"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::sample2"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::sample3"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::ascentProfile1::samples"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::mets"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::mets::definitionalEpochInUTC"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF::mRefs"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::velocityCF"))) (status missing-prerequisite) (target "Base::DataValue"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/validation/15_13_discretely_sampled_function_value.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 49))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 16) (end 2 44))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 3 16) (end 3 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 4 16) (end 4 19))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 5 16) (end 5 18))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 6 16) (end 6 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 16) (end 7 20))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 9 1) (end 9 559))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 10 2) (end 10 15))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 11 2) (end 11 106))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 15 2) (end 15 53))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 19 2) (end 19 158))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 19 2) (end 19 158))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 34 1) (end 34 165))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 39 3) (end 39 19))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 42 1) (end 42 280))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 48 4) (end 48 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 50 1) (end 50 75))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 53 2) (end 53 52))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 54 2) (end 54 52))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 57 1) (end 57 262))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 58 2) (end 58 159))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 62 2) (end 62 49))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::velocityCF")) (expression (status "incomplete") (error "expression is incomplete")))
   )
 )
 ~~~

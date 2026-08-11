@@ -31,6 +31,21 @@ package MassRollup2 {
 	metadata def SatyFeature;
 	m@ata def Securi
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz_crash_5.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "missing_closing_brace")
+        (source "sysml")
+        (range (start 22 17) (end 22 18))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -65,6 +80,24 @@ Ident,At,Ident,KwDef,Ident,EndOfFile,
       (default_ref_usage 'arValuete' :>> 'totalMass' value))
     (malformed)))
 ~~~
+# EXPECTED
+~~~
+tokenize.UnclosedUnrestrictedName
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_close_curly
+semantic.unresolved_name 'ISQ::mass'
+semantic.unresolved_name 'ISQ::mass'
+~~~
+# PROBLEMS
+~~~
+tokenize.UnclosedUnrestrictedName
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_close_curly
+semantic.unresolved_name 'ISQ::mass'
+semantic.unresolved_name 'ISQ::mass'
+~~~
 # FORMAT
 ~~~sysml
 package MassRollup2 {
@@ -91,49 +124,17 @@ package MassRollup2 {
 	metadata def SatyFeature;
 	m@ata def Securi
 ~~~
-# EXPECTED
-~~~
-tokenize.UnclosedUnrestrictedName
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_close_curly
-semantic.unresolved_name 'ISQ::mass'
-semantic.unresolved_name 'ISQ::mass'
-~~~
-# PROBLEMS
-~~~
-tokenize.UnclosedUnrestrictedName
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_close_curly
-semantic.unresolved_name 'ISQ::mass'
-semantic.unresolved_name 'ISQ::mass'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "4c4282c7ebf3df500a837b877c28e49d349ba582e46ad66852d7a21e32812cdf") (contract-version "canonical-resolution-v1"))
+  (structure
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "fuzz_crash_5.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "missing_closing_brace")
-        (source "sysml")
-        (range (start 22 17) (end 22 18))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

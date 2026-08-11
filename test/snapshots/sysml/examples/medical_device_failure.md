@@ -31,6 +31,21 @@ package MedicalDeviceFailure {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "medical_device_failure.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 30))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -71,6 +86,16 @@ CloseCurly,EndOfFile,
         (connector_end)
         (connector_end)))))
 ~~~
+# EXPECTED
+~~~
+parse.expected_usage_declaration
+parse.expected_usage_declaration
+~~~
+# PROBLEMS
+~~~
+parse.expected_usage_declaration
+parse.expected_usage_declaration
+~~~
 # FORMAT
 ~~~sysml
 package MedicalDeviceFailure {
@@ -100,65 +125,26 @@ package MedicalDeviceFailure {
 }
 
 ~~~
-# EXPECTED
-~~~
-parse.expected_usage_declaration
-parse.expected_usage_declaration
-~~~
-# PROBLEMS
-~~~
-parse.expected_usage_declaration
-parse.expected_usage_declaration
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "MedicalDeviceFailure"))) (name "MedicalDeviceFailure") (declared-name "MedicalDeviceFailure")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "MedicalDeviceFailure::*"))) (name "*") (declared-name "*"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice"))) (name "medicalDevice") (declared-name "medicalDevice") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::battery"))) (name "battery") (declared-name "battery") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::battery::cannotBeCharged"))) (name "cannotBeCharged") (declared-name "cannotBeCharged") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::battery::depleted"))) (name "depleted") (declared-name "depleted") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
-              )
-            )
-            (element (kind "occurrence") (id (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::deviceFails"))) (name "deviceFails") (declared-name "deviceFails") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
-            (element (kind "ref") (id (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::patient"))) (name "patient") (declared-name "patient") (declared (properties (composite false) (reference true))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c70f62480870edb017b5546e8da8725c70362aa424b71bd4edd03a0d647d08dc") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "MedicalDeviceFailure"))) (kind "package") (name "MedicalDeviceFailure") (declared-name "MedicalDeviceFailure") (range (start (line 0) (character 0)) (end (line 0) (character 491))))
+    (element (id (node (document "d0") (qualified-name "MedicalDeviceFailure::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 34))) (parent (node (document "d0") (qualified-name "MedicalDeviceFailure"))) (authored (membership (kind Import) (visibility "private") (import (reference "CauseAndEffect::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 30))))))
+    (element (id (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice"))) (kind "part") (name "medicalDevice") (declared-name "medicalDevice") (range (start (line 3) (character 1)) (end (line 3) (character 418))) (parent (node (document "d0") (qualified-name "MedicalDeviceFailure"))))
+    (element (id (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::battery"))) (kind "part") (name "battery") (declared-name "battery") (range (start (line 4) (character 2)) (end (line 4) (character 87))) (parent (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice"))))
+    (element (id (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::battery::cannotBeCharged"))) (kind "occurrence") (name "cannotBeCharged") (declared-name "cannotBeCharged") (range (start (line 6) (character 20)) (end (line 6) (character 36))) (parent (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::battery"))))
+    (element (id (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::battery::depleted"))) (kind "occurrence") (name "depleted") (declared-name "depleted") (range (start (line 5) (character 20)) (end (line 5) (character 29))) (parent (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::battery"))))
+    (element (id (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::deviceFails"))) (kind "occurrence") (name "deviceFails") (declared-name "deviceFails") (range (start (line 9) (character 19)) (end (line 9) (character 31))) (parent (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice"))))
+    (element (id (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::patient"))) (kind "ref") (name "patient") (declared-name "patient") (range (start (line 11) (character 2)) (end (line 11) (character 55))) (parent (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "MedicalDeviceFailure::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "CauseAndEffect::*") (range (start (line 1) (character 16)) (end (line 1) (character 30))) (outcome (status unresolved)))
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::battery"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::battery::cannotBeCharged"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::battery::depleted"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::deviceFails"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/medical_device_failure.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 30))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

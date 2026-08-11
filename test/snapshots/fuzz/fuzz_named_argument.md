@@ -11,13 +11,20 @@ package P {
     attribute b = new A(y = a, x = "");
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'A'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'A'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz_named_argument.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1 17) (end 1 26))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -36,6 +43,14 @@ CloseCurly,EndOfFile,
     (attribute_usage 'f' value)
     (attribute_usage 'b' value)))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'A'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'A'
+~~~
 # FORMAT
 ~~~sysml
 package P {
@@ -47,45 +62,23 @@ package P {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "P"))) (name "P") (declared-name "P")
-      (contains
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "P::F"))) (name "F") (declared-name "F")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "P::F::p"))) (name "p") (declared-name "p") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "P::F")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "P::b"))) (name "b") (declared-name "b") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "constructor") (reference "A") (arguments (argument (name "y") (expression (kind "featureReference") (reference "a"))) (argument (name "x") (expression (kind "stringLiteral") (literal (string "")))))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "P::b"))) (role feature-value))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "P::f"))) (name "f") (declared-name "f") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "invocation") (children (expression (kind "featureReference") (reference "F"))) (arguments (argument (name "q") (expression (kind "integerLiteral") (literal (integer 1)))) (argument (name "p") (expression (kind "featureReference") (reference "a"))))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "P::f"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "591f31a99faa64bddd9c804c2fb3b465671d435c8646c2ffc92a3f676722f213") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P") (range (start (line 0) (character 0)) (end (line 0) (character 117))))
+    (element (id (node (document "d0") (qualified-name "P::F"))) (kind "calc def") (name "F") (declared-name "F") (range (start (line 1) (character 4)) (end (line 1) (character 28))) (parent (node (document "d0") (qualified-name "P"))))
+    (element (id (node (document "d0") (qualified-name "P::F::p"))) (kind "in out parameter") (name "p") (declared-name "p") (range (start (line 1) (character 17)) (end (line 1) (character 26))) (parent (node (document "d0") (qualified-name "P::F"))) (authored (relationships (typing (reference "A") (range none)))))
+    (element (id (node (document "d0") (qualified-name "P::b"))) (kind "attribute def") (name "b") (declared-name "b") (range (start (line 3) (character 4)) (end (line 3) (character 39))) (parent (node (document "d0") (qualified-name "P"))))
+    (element (id (node (document "d0") (qualified-name "P::f"))) (kind "attribute def") (name "f") (declared-name "f") (range (start (line 2) (character 4)) (end (line 2) (character 34))) (parent (node (document "d0") (qualified-name "P"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "P::F::p"))) (kind featureTyping) (ordinal 0)) (authored-target "A") (range none) (outcome (status unresolved)))
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "P::F"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "P::b"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "P::f"))) (status missing-prerequisite) (target "Base::DataValue"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "fuzz/fuzz_named_argument.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1 17) (end 1 26))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "P::b")) (expression (status "unsupported") (error "declared expression form is not supported")))
+    (node (node (document "d0") (qualified-name "P::f")) (expression (status "unresolved") (error "expression has an unresolved reference")))
   )
 )
 ~~~

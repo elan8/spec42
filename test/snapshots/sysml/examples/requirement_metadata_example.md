@@ -40,6 +40,63 @@ package RequirementMetadataExample {
     
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "requirement_metadata_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 3 16) (end 3 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 4 16) (end 4 29))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 16 12) (end 16 37))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 23 6) (end 23 25))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 24 12) (end 24 27))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 29 5) (end 29 52))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -101,6 +158,18 @@ CloseCurly,EndOfFile,
       (sysml_decl)
       (extended_usage #'goal' 'vehicleMassRequirement'))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'SemanticMetadata'
+semantic.unresolved_name 'baseType'
+semantic.unresolved_name 'StatusInfo'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'SemanticMetadata'
+semantic.unresolved_name 'baseType'
+semantic.unresolved_name 'StatusInfo'
+~~~
 # FORMAT
 ~~~sysml
 package RequirementMetadataExample {
@@ -138,125 +207,44 @@ package RequirementMetadataExample {
     
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'SemanticMetadata'
-semantic.unresolved_name 'baseType'
-semantic.unresolved_name 'StatusInfo'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'SemanticMetadata'
-semantic.unresolved_name 'baseType'
-semantic.unresolved_name 'StatusInfo'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "RequirementMetadataExample"))) (name "RequirementMetadataExample") (declared-name "RequirementMetadataExample")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "RequirementMetadataExample::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "RequirementMetadataExample::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "RequirementMetadataExample::*#import2"))) (name "*") (declared-name "*"))
-        (element (kind "requirement def") (id (node (document "d0") (qualified-name "RequirementMetadataExample::Goal"))) (name "Goal") (declared-name "Goal"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "RequirementMetadataExample::SemanticMetadata"))) (name "SemanticMetadata") (declared-name "SemanticMetadata"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "RequirementMetadataExample::_goal"))) (name "goal") (declared-name "goal"))
-        (element (kind "requirement") (id (node (document "d0") (qualified-name "RequirementMetadataExample::deliverPayload"))) (name "deliverPayload") (declared-name "deliverPayload"))
-        (element (kind "metadata def") (id (node (document "d0") (qualified-name "RequirementMetadataExample::goal"))) (name "goal") (declared-name "goal")
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "RequirementMetadataExample::goal::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "RequirementMetadataExample::goal")))))
-          )
-        )
-        (element (kind "requirement") (id (node (document "d0") (qualified-name "RequirementMetadataExample::goals"))) (name "goals") (declared-name "goals"))
-        (element (kind "requirement") (id (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement"))) (name "vehicleMassRequirement") (declared-name "vehicleMassRequirement")
-          (contains
-            (element (kind "metadata usage") (id (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo"))) (name "StatusInfo") (declared-name "StatusInfo")
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo::originator"))) (name "originator") (declared-name "originator") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo::owner"))) (name "owner") (declared-name "owner") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo::status"))) (name "status") (declared-name "status") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
-              )
-            )
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::_documentation"))) (name ""))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "75de69a88b9790a2334d91ed0fb646573237a2ca629ff3cd8ccfb445080ed8f4") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "RequirementMetadataExample"))) (kind "package") (name "RequirementMetadataExample") (declared-name "RequirementMetadataExample") (range (start (line 0) (character 0)) (end (line 0) (character 923))))
+    (element (id (node (document "d0") (qualified-name "RequirementMetadataExample::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 36))) (parent (node (document "d0") (qualified-name "RequirementMetadataExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "ModelingMetadata::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 32))))))
+    (element (id (node (document "d0") (qualified-name "RequirementMetadataExample::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 3) (character 1)) (end (line 3) (character 32))) (parent (node (document "d0") (qualified-name "RequirementMetadataExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "RiskMetadata::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 3) (character 16)) (end (line 3) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "RequirementMetadataExample::*#import2"))) (kind "import") (name "*") (declared-name "*") (range (start (line 4) (character 1)) (end (line 4) (character 33))) (parent (node (document "d0") (qualified-name "RequirementMetadataExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "RiskLevelEnum::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 4) (character 16)) (end (line 4) (character 29))))))
+    (element (id (node (document "d0") (qualified-name "RequirementMetadataExample::Goal"))) (kind "requirement def") (name "Goal") (declared-name "Goal") (range (start (line 6) (character 1)) (end (line 6) (character 22))) (parent (node (document "d0") (qualified-name "RequirementMetadataExample"))))
+    (element (id (node (document "d0") (qualified-name "RequirementMetadataExample::SemanticMetadata"))) (kind "import") (name "SemanticMetadata") (declared-name "SemanticMetadata") (range (start (line 1) (character 1)) (end (line 1) (character 46))) (parent (node (document "d0") (qualified-name "RequirementMetadataExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "Metaobjects::SemanticMetadata") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 45))))))
+    (element (id (node (document "d0") (qualified-name "RequirementMetadataExample::_goal"))) (kind "metadata keyword") (name "goal") (declared-name "goal") (range (start (line 28) (character 4)) (end (line 28) (character 10))) (parent (node (document "d0") (qualified-name "RequirementMetadataExample"))))
+    (element (id (node (document "d0") (qualified-name "RequirementMetadataExample::deliverPayload"))) (kind "requirement") (name "deliverPayload") (declared-name "deliverPayload") (range (start (line 28) (character 10)) (end (line 28) (character 134))) (parent (node (document "d0") (qualified-name "RequirementMetadataExample"))))
+    (element (id (node (document "d0") (qualified-name "RequirementMetadataExample::goal"))) (kind "metadata def") (name "goal") (declared-name "goal") (range (start (line 8) (character 1)) (end (line 8) (character 99))) (parent (node (document "d0") (qualified-name "RequirementMetadataExample"))) (authored (membership (kind Owning)) (relationships (specializes (reference "SemanticMetadata") (range (start (line 8) (character 22)) (end (line 8) (character 38)))))))
+    (element (id (node (document "d0") (qualified-name "RequirementMetadataExample::goal::baseType"))) (kind "attribute") (name "baseType") (declared-name "baseType") (range (start (line 9) (character 5)) (end (line 9) (character 55))) (parent (node (document "d0") (qualified-name "RequirementMetadataExample::goal"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "baseType") (range (start (line 9) (character 5)) (end (line 9) (character 17)))))))
+    (element (id (node (document "d0") (qualified-name "RequirementMetadataExample::goals"))) (kind "requirement") (name "goals") (declared-name "goals") (range (start (line 7) (character 1)) (end (line 7) (character 39))) (parent (node (document "d0") (qualified-name "RequirementMetadataExample"))) (authored (membership (kind Feature)) (relationships (typing (reference "Goal") (range none)))))
+    (element (id (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement"))) (kind "requirement") (name "vehicleMassRequirement") (declared-name "vehicleMassRequirement") (range (start (line 12) (character 4)) (end (line 12) (character 422))) (parent (node (document "d0") (qualified-name "RequirementMetadataExample"))))
+    (element (id (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo"))) (kind "metadata usage") (name "StatusInfo") (declared-name "StatusInfo") (range (start (line 15) (character 8)) (end (line 15) (character 271))) (parent (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement"))))
+    (element (id (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo::originator"))) (kind "attribute") (name "originator") (declared-name "originator") (range (start (line 23) (character 6)) (end (line 23) (character 25))) (parent (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo"))))
+    (element (id (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo::owner"))) (kind "attribute") (name "owner") (declared-name "owner") (range (start (line 24) (character 12)) (end (line 24) (character 27))) (parent (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo"))))
+    (element (id (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo::status"))) (kind "attribute") (name "status") (declared-name "status") (range (start (line 16) (character 12)) (end (line 16) (character 37))) (parent (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo"))))
+    (element (id (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::_documentation"))) (kind "documentation") (name "") (range (start (line 12) (character 4)) (end (line 12) (character 422))) (parent (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "RequirementMetadataExample::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ModelingMetadata::*") (range (start (line 2) (character 16)) (end (line 2) (character 32))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "RequirementMetadataExample::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "RiskMetadata::*") (range (start (line 3) (character 16)) (end (line 3) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "RequirementMetadataExample::*#import2"))) (kind namespaceImport) (ordinal 0)) (authored-target "RiskLevelEnum::*") (range (start (line 4) (character 16)) (end (line 4) (character 29))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "RequirementMetadataExample::SemanticMetadata"))) (kind membershipImport) (ordinal 0)) (authored-target "Metaobjects::SemanticMetadata") (range (start (line 1) (character 16)) (end (line 1) (character 45))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "RequirementMetadataExample::goal"))) (kind specialization) (ordinal 0)) (authored-target "SemanticMetadata") (range (start (line 8) (character 22)) (end (line 8) (character 38))) (outcome (status resolved) (target (node (document "d0") (qualified-name "RequirementMetadataExample::SemanticMetadata")))))
+    (reference (id (source (node (document "d0") (qualified-name "RequirementMetadataExample::goal::baseType"))) (kind redefinition) (ordinal 0)) (authored-target "baseType") (range (start (line 9) (character 5)) (end (line 9) (character 17))) (outcome (status resolved) (target (node (document "d0") (qualified-name "RequirementMetadataExample::goal::baseType")))))
+    (reference (id (source (node (document "d0") (qualified-name "RequirementMetadataExample::goals"))) (kind featureTyping) (ordinal 0)) (authored-target "Goal") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "RequirementMetadataExample::Goal")))))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "RequirementMetadataExample::_goal"))) (to (node (document "d0") (qualified-name "RequirementMetadataExample"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo"))) (to (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::_documentation"))) (to (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "RequirementMetadataExample::goals"))) (to (node (document "d0") (qualified-name "RequirementMetadataExample::Goal"))) (provenance authored))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "RequirementMetadataExample::goal"))) (target (node (document "d0") (qualified-name "RequirementMetadataExample::SemanticMetadata"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "RequirementMetadataExample::goal"))) (kind specialization) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "RequirementMetadataExample::goal::baseType"))) (target (node (document "d0") (qualified-name "RequirementMetadataExample::goal::baseType"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "RequirementMetadataExample::goal::baseType"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "RequirementMetadataExample::goals"))) (target (node (document "d0") (qualified-name "RequirementMetadataExample::Goal"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "RequirementMetadataExample::goals"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementMetadataExample::Goal"))) (status missing-prerequisite) (target "Requirements::RequirementCheck"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementMetadataExample::_goal"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementMetadataExample::deliverPayload"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementMetadataExample::goal"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementMetadataExample::goal::baseType"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementMetadataExample::goals"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo::originator"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo::owner"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo::status"))) (status missing-prerequisite) (target "Base::dataValues"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/requirement_metadata_example.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 45))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 16) (end 2 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 3 16) (end 3 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 4 16) (end 4 29))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 8 1) (end 8 99))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_annotation_unresolved")
-        (source "semantic")
-        (range (start 15 8) (end 15 271))
-      )
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 29 5) (end 29 52))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

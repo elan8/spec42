@@ -196,91 +196,86 @@ standard library package FeatureReferencingPerformances {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Performance'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'HappensWhile'
-semantic.unresolved_name 'SelfSameLifeLink'
-semantic.unresolved_name 'Evaluation'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'result'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'snapshots'
-semantic.unresolved_name 'HappensJustBefore'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'HappensWhile'
-semantic.unresolved_name 'SelfSameLifeLink'
-semantic.unresolved_name 'SelfSameLifeLink'
-semantic.unresolved_name 'HappensBefore'
-semantic.unresolved_name 'Evaluation'
-semantic.unresolved_name 'Evaluation'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'result'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'HappensJustBefore'
-semantic.unresolved_name 'HappensJustBefore'
-semantic.unresolved_name 'HappensJustBefore'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Performance'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'HappensWhile'
-semantic.unresolved_name 'SelfSameLifeLink'
-semantic.unresolved_name 'Evaluation'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'result'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'snapshots'
-semantic.unresolved_name 'HappensJustBefore'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'HappensWhile'
-semantic.unresolved_name 'SelfSameLifeLink'
-semantic.unresolved_name 'SelfSameLifeLink'
-semantic.unresolved_name 'HappensBefore'
-semantic.unresolved_name 'Evaluation'
-semantic.unresolved_name 'Evaluation'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'result'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'HappensJustBefore'
-semantic.unresolved_name 'HappensJustBefore'
-semantic.unresolved_name 'HappensJustBefore'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "feature_referencing_performances.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 16) (end 8 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 16) (end 9 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 16) (end 10 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 11 16) (end 11 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 12 16) (end 12 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 13 16) (end 13 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 14 16) (end 14 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 15 16) (end 15 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 16 16) (end 16 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 17 16) (end 17 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 18 16) (end 18 41))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -517,6 +512,92 @@ CloseCurly,EndOfFile,
         (connector_end)
         (connector_end)))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'SelfSameLifeLink'
+semantic.unresolved_name 'Evaluation'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'result'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'snapshots'
+semantic.unresolved_name 'HappensJustBefore'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'SelfSameLifeLink'
+semantic.unresolved_name 'SelfSameLifeLink'
+semantic.unresolved_name 'HappensBefore'
+semantic.unresolved_name 'Evaluation'
+semantic.unresolved_name 'Evaluation'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'result'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'HappensJustBefore'
+semantic.unresolved_name 'HappensJustBefore'
+semantic.unresolved_name 'HappensJustBefore'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'SelfSameLifeLink'
+semantic.unresolved_name 'Evaluation'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'result'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'snapshots'
+semantic.unresolved_name 'HappensJustBefore'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'SelfSameLifeLink'
+semantic.unresolved_name 'SelfSameLifeLink'
+semantic.unresolved_name 'HappensBefore'
+semantic.unresolved_name 'Evaluation'
+semantic.unresolved_name 'Evaluation'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'result'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'HappensJustBefore'
+semantic.unresolved_name 'HappensJustBefore'
+semantic.unresolved_name 'HappensJustBefore'
+~~~
 # FORMAT
 ~~~sysml
 standard library package FeatureReferencingPerformances {
@@ -712,121 +793,49 @@ standard library package FeatureReferencingPerformances {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances"))) (name "FeatureReferencingPerformances") (declared-name "FeatureReferencingPerformances")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::Anything"))) (name "Anything") (declared-name "Anything"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::Boolean"))) (name "Boolean") (declared-name "Boolean"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::BooleanEvaluationResultMonitorPerformance"))) (name "BooleanEvaluationResultMonitorPerformance") (declared-name "BooleanEvaluationResultMonitorPerformance"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::BooleanEvaluationResultToMonitorPerformance"))) (name "BooleanEvaluationResultToMonitorPerformance") (declared-name "BooleanEvaluationResultToMonitorPerformance"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::Evaluation"))) (name "Evaluation") (declared-name "Evaluation"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::EvaluationResultMonitorPerformance"))) (name "EvaluationResultMonitorPerformance") (declared-name "EvaluationResultMonitorPerformance"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::FeatureAccessPerformance"))) (name "FeatureAccessPerformance") (declared-name "FeatureAccessPerformance"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::FeatureMonitorPerformance"))) (name "FeatureMonitorPerformance") (declared-name "FeatureMonitorPerformance"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::FeatureReadEvaluation"))) (name "FeatureReadEvaluation") (declared-name "FeatureReadEvaluation"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::FeatureReferencingPerformance"))) (name "FeatureReferencingPerformance") (declared-name "FeatureReferencingPerformance"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::FeatureWritePerformance"))) (name "FeatureWritePerformance") (declared-name "FeatureWritePerformance"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::HappensBefore"))) (name "HappensBefore") (declared-name "HappensBefore"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::HappensJustBefore"))) (name "HappensJustBefore") (declared-name "HappensJustBefore"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::HappensWhile"))) (name "HappensWhile") (declared-name "HappensWhile"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::Performance"))) (name "Performance") (declared-name "Performance"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::SelfSameLifeLink"))) (name "SelfSameLifeLink") (declared-name "SelfSameLifeLink"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::_documentation"))) (name ""))
-        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::equals"))) (name "equals") (declared-name "equals"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::isEmpty"))) (name "isEmpty") (declared-name "isEmpty"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::things"))) (name "things") (declared-name "things"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f8e1ab2dc8f4b28eaf3e3111a5d009f3375a15ae2efb83e9542645f9b9ab3e1e") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "FeatureReferencingPerformances"))) (kind "package") (name "FeatureReferencingPerformances") (declared-name "FeatureReferencingPerformances") (range (start (line 0) (character 0)) (end (line 0) (character 7575))))
+    (element (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::Anything"))) (kind "import") (name "Anything") (declared-name "Anything") (range (start (line 7) (character 1)) (end (line 7) (character 31))) (parent (node (document "d0") (qualified-name "FeatureReferencingPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::Anything") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 30))))))
+    (element (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::Boolean"))) (kind "import") (name "Boolean") (declared-name "Boolean") (range (start (line 16) (character 1)) (end (line 16) (character 38))) (parent (node (document "d0") (qualified-name "FeatureReferencingPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Boolean") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 16) (character 16)) (end (line 16) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::BooleanEvaluationResultMonitorPerformance"))) (kind "kermlDecl") (name "BooleanEvaluationResultMonitorPerformance") (declared-name "BooleanEvaluationResultMonitorPerformance") (range (start (line 141) (character 1)) (end (line 141) (character 540))) (parent (node (document "d0") (qualified-name "FeatureReferencingPerformances"))))
+    (element (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::BooleanEvaluationResultToMonitorPerformance"))) (kind "kermlDecl") (name "BooleanEvaluationResultToMonitorPerformance") (declared-name "BooleanEvaluationResultToMonitorPerformance") (range (start (line 157) (character 1)) (end (line 157) (character 1442))) (parent (node (document "d0") (qualified-name "FeatureReferencingPerformances"))))
+    (element (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::Evaluation"))) (kind "import") (name "Evaluation") (declared-name "Evaluation") (range (start (line 15) (character 1)) (end (line 15) (character 41))) (parent (node (document "d0") (qualified-name "FeatureReferencingPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Performances::Evaluation") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 15) (character 16)) (end (line 15) (character 40))))))
+    (element (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::EvaluationResultMonitorPerformance"))) (kind "kermlDecl") (name "EvaluationResultMonitorPerformance") (declared-name "EvaluationResultMonitorPerformance") (range (start (line 125) (character 1)) (end (line 125) (character 723))) (parent (node (document "d0") (qualified-name "FeatureReferencingPerformances"))))
+    (element (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::FeatureAccessPerformance"))) (kind "kermlDecl") (name "FeatureAccessPerformance") (declared-name "FeatureAccessPerformance") (range (start (line 43) (character 4)) (end (line 43) (character 1057))) (parent (node (document "d0") (qualified-name "FeatureReferencingPerformances"))))
+    (element (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::FeatureMonitorPerformance"))) (kind "kermlDecl") (name "FeatureMonitorPerformance") (declared-name "FeatureMonitorPerformance") (range (start (line 91) (character 1)) (end (line 91) (character 1608))) (parent (node (document "d0") (qualified-name "FeatureReferencingPerformances"))))
+    (element (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::FeatureReadEvaluation"))) (kind "kermlDecl") (name "FeatureReadEvaluation") (declared-name "FeatureReadEvaluation") (range (start (line 69) (character 1)) (end (line 69) (character 411))) (parent (node (document "d0") (qualified-name "FeatureReferencingPerformances"))))
+    (element (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::FeatureReferencingPerformance"))) (kind "kermlDecl") (name "FeatureReferencingPerformance") (declared-name "FeatureReferencingPerformance") (range (start (line 20) (character 1)) (end (line 20) (character 652))) (parent (node (document "d0") (qualified-name "FeatureReferencingPerformances"))))
+    (element (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::FeatureWritePerformance"))) (kind "kermlDecl") (name "FeatureWritePerformance") (declared-name "FeatureWritePerformance") (range (start (line 80) (character 1)) (end (line 80) (character 430))) (parent (node (document "d0") (qualified-name "FeatureReferencingPerformances"))))
+    (element (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::HappensBefore"))) (kind "import") (name "HappensBefore") (declared-name "HappensBefore") (range (start (line 11) (character 1)) (end (line 11) (character 43))) (parent (node (document "d0") (qualified-name "FeatureReferencingPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::HappensBefore") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 11) (character 16)) (end (line 11) (character 42))))))
+    (element (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::HappensJustBefore"))) (kind "import") (name "HappensJustBefore") (declared-name "HappensJustBefore") (range (start (line 12) (character 1)) (end (line 12) (character 47))) (parent (node (document "d0") (qualified-name "FeatureReferencingPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::HappensJustBefore") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 12) (character 16)) (end (line 12) (character 46))))))
+    (element (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::HappensWhile"))) (kind "import") (name "HappensWhile") (declared-name "HappensWhile") (range (start (line 10) (character 1)) (end (line 10) (character 42))) (parent (node (document "d0") (qualified-name "FeatureReferencingPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::HappensWhile") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 10) (character 16)) (end (line 10) (character 41))))))
+    (element (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::Occurrence"))) (kind "import") (name "Occurrence") (declared-name "Occurrence") (range (start (line 9) (character 1)) (end (line 9) (character 40))) (parent (node (document "d0") (qualified-name "FeatureReferencingPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::Occurrence") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 9) (character 16)) (end (line 9) (character 39))))))
+    (element (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::Performance"))) (kind "import") (name "Performance") (declared-name "Performance") (range (start (line 14) (character 1)) (end (line 14) (character 42))) (parent (node (document "d0") (qualified-name "FeatureReferencingPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Performances::Performance") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 14) (character 16)) (end (line 14) (character 41))))))
+    (element (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::SelfSameLifeLink"))) (kind "import") (name "SelfSameLifeLink") (declared-name "SelfSameLifeLink") (range (start (line 13) (character 1)) (end (line 13) (character 46))) (parent (node (document "d0") (qualified-name "FeatureReferencingPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::SelfSameLifeLink") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 13) (character 16)) (end (line 13) (character 45))))))
+    (element (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 7575))) (parent (node (document "d0") (qualified-name "FeatureReferencingPerformances"))))
+    (element (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::equals"))) (kind "import") (name "equals") (declared-name "equals") (range (start (line 18) (character 1)) (end (line 18) (character 42))) (parent (node (document "d0") (qualified-name "FeatureReferencingPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::equals") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 18) (character 16)) (end (line 18) (character 41))))))
+    (element (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::isEmpty"))) (kind "import") (name "isEmpty") (declared-name "isEmpty") (range (start (line 17) (character 1)) (end (line 17) (character 43))) (parent (node (document "d0") (qualified-name "FeatureReferencingPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::isEmpty") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 17) (character 16)) (end (line 17) (character 42))))))
+    (element (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::things"))) (kind "import") (name "things") (declared-name "things") (range (start (line 8) (character 1)) (end (line 8) (character 29))) (parent (node (document "d0") (qualified-name "FeatureReferencingPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::things") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 28))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "FeatureReferencingPerformances::Anything"))) (kind membershipImport) (ordinal 0)) (authored-target "Base::Anything") (range (start (line 7) (character 16)) (end (line 7) (character 30))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "FeatureReferencingPerformances::Boolean"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Boolean") (range (start (line 16) (character 16)) (end (line 16) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "FeatureReferencingPerformances::Evaluation"))) (kind membershipImport) (ordinal 0)) (authored-target "Performances::Evaluation") (range (start (line 15) (character 16)) (end (line 15) (character 40))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "FeatureReferencingPerformances::HappensBefore"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::HappensBefore") (range (start (line 11) (character 16)) (end (line 11) (character 42))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "FeatureReferencingPerformances::HappensJustBefore"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::HappensJustBefore") (range (start (line 12) (character 16)) (end (line 12) (character 46))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "FeatureReferencingPerformances::HappensWhile"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::HappensWhile") (range (start (line 10) (character 16)) (end (line 10) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "FeatureReferencingPerformances::Occurrence"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::Occurrence") (range (start (line 9) (character 16)) (end (line 9) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "FeatureReferencingPerformances::Performance"))) (kind membershipImport) (ordinal 0)) (authored-target "Performances::Performance") (range (start (line 14) (character 16)) (end (line 14) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "FeatureReferencingPerformances::SelfSameLifeLink"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::SelfSameLifeLink") (range (start (line 13) (character 16)) (end (line 13) (character 45))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "FeatureReferencingPerformances::equals"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::equals") (range (start (line 18) (character 16)) (end (line 18) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "FeatureReferencingPerformances::isEmpty"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::isEmpty") (range (start (line 17) (character 16)) (end (line 17) (character 42))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "FeatureReferencingPerformances::things"))) (kind membershipImport) (ordinal 0)) (authored-target "Base::things") (range (start (line 8) (character 16)) (end (line 8) (character 28))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "FeatureReferencingPerformances::_documentation"))) (to (node (document "d0") (qualified-name "FeatureReferencingPerformances"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/feature_referencing_performances.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 16) (end 7 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 16) (end 8 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 9 16) (end 9 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 10 16) (end 10 41))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 11 16) (end 11 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 12 16) (end 12 46))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 13 16) (end 13 45))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 14 16) (end 14 41))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 15 16) (end 15 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 16 16) (end 16 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 17 16) (end 17 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 18 16) (end 18 41))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

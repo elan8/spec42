@@ -128,6 +128,51 @@ package AHFNorwaySequences {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "ahfsequences.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 3 16) (end 3 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 4 16) (end 4 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 5 16) (end 5 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 16) (end 6 28))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 8 1) (end 8 4415))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_part_usage_body_element")
+        (source "sysml")
+        (range (start 76 2) (end 76 1677))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 LineComment,
@@ -333,6 +378,42 @@ CloseCurly,EndOfFile,
       (malformed)
       (malformed))))
 ~~~
+# EXPECTED
+~~~
+parse.expected_interface_end
+parse.expected_interface_end
+parse.expected_connector_part
+parse.expected_connector_part
+semantic.invalid_connection_end_count
+semantic.invalid_connection_end_count
+semantic.unresolved_name 'Publish'
+semantic.unresolved_name 'Subscribe'
+semantic.unresolved_name 'CallGiveItems'
+semantic.unresolved_name 'ResultGiveItems'
+semantic.unresolved_name 'CallGiveItems'
+semantic.unresolved_name 'ResultGiveItems'
+semantic.unresolved_name 'AHFNorway_LocalCloudDD::APISConsumer'
+semantic.unresolved_name 'Return_AllItems'
+semantic.unresolved_name 'Return_AllItems'
+~~~
+# PROBLEMS
+~~~
+parse.expected_interface_end
+parse.expected_interface_end
+parse.expected_connector_part
+parse.expected_connector_part
+semantic.invalid_connection_end_count
+semantic.invalid_connection_end_count
+semantic.unresolved_name 'Publish'
+semantic.unresolved_name 'Subscribe'
+semantic.unresolved_name 'CallGiveItems'
+semantic.unresolved_name 'ResultGiveItems'
+semantic.unresolved_name 'CallGiveItems'
+semantic.unresolved_name 'ResultGiveItems'
+semantic.unresolved_name 'AHFNorway_LocalCloudDD::APISConsumer'
+semantic.unresolved_name 'Return_AllItems'
+semantic.unresolved_name 'Return_AllItems'
+~~~
 # FORMAT
 ~~~sysml
 // ** This is the Norwegian use-case for Arrowhead Framework */
@@ -458,103 +539,28 @@ package AHFNorwaySequences {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-parse.expected_interface_end
-parse.expected_interface_end
-parse.expected_connector_part
-parse.expected_connector_part
-semantic.invalid_connection_end_count
-semantic.invalid_connection_end_count
-semantic.unresolved_name 'Publish'
-semantic.unresolved_name 'Subscribe'
-semantic.unresolved_name 'CallGiveItems'
-semantic.unresolved_name 'ResultGiveItems'
-semantic.unresolved_name 'CallGiveItems'
-semantic.unresolved_name 'ResultGiveItems'
-semantic.unresolved_name 'AHFNorway_LocalCloudDD::APISConsumer'
-semantic.unresolved_name 'Return_AllItems'
-semantic.unresolved_name 'Return_AllItems'
-~~~
-# PROBLEMS
-~~~
-parse.expected_interface_end
-parse.expected_interface_end
-parse.expected_connector_part
-parse.expected_connector_part
-semantic.invalid_connection_end_count
-semantic.invalid_connection_end_count
-semantic.unresolved_name 'Publish'
-semantic.unresolved_name 'Subscribe'
-semantic.unresolved_name 'CallGiveItems'
-semantic.unresolved_name 'ResultGiveItems'
-semantic.unresolved_name 'CallGiveItems'
-semantic.unresolved_name 'ResultGiveItems'
-semantic.unresolved_name 'AHFNorway_LocalCloudDD::APISConsumer'
-semantic.unresolved_name 'Return_AllItems'
-semantic.unresolved_name 'Return_AllItems'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "AHFNorwaySequences"))) (name "AHFNorwaySequences") (declared-name "AHFNorwaySequences")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "AHFNorwaySequences::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "AHFNorwaySequences::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "AHFNorwaySequences::*#import2"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "AHFNorwaySequences::*#import3"))) (name "*") (declared-name "*"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs"))) (name "AHFN_LocalCloudDD_Seqs") (declared-name "AHFN_LocalCloudDD_Seqs") (declared (properties (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "AHFNorway_LocalCloudDD")))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "2c10b25de84bba2f156d33589ab474e04da15ca29d0a27578cccad701b34c5fa") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "AHFNorwaySequences"))) (kind "package") (name "AHFNorwaySequences") (declared-name "AHFNorwaySequences") (range (start (line 1) (character 0)) (end (line 1) (character 4629))))
+    (element (id (node (document "d0") (qualified-name "AHFNorwaySequences::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 3) (character 1)) (end (line 3) (character 33))) (parent (node (document "d0") (qualified-name "AHFNorwaySequences"))) (authored (membership (kind Import) (visibility "private") (import (reference "AHFProfileLib::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 3) (character 16)) (end (line 3) (character 29))))))
+    (element (id (node (document "d0") (qualified-name "AHFNorwaySequences::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 4) (character 1)) (end (line 4) (character 30))) (parent (node (document "d0") (qualified-name "AHFNorwaySequences"))) (authored (membership (kind Import) (visibility "private") (import (reference "AHFCoreLib::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 4) (character 16)) (end (line 4) (character 26))))))
+    (element (id (node (document "d0") (qualified-name "AHFNorwaySequences::*#import2"))) (kind "import") (name "*") (declared-name "*") (range (start (line 5) (character 1)) (end (line 5) (character 29))) (parent (node (document "d0") (qualified-name "AHFNorwaySequences"))) (authored (membership (kind Import) (visibility "private") (import (reference "AHFNorway::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 5) (character 16)) (end (line 5) (character 25))))))
+    (element (id (node (document "d0") (qualified-name "AHFNorwaySequences::*#import3"))) (kind "import") (name "*") (declared-name "*") (range (start (line 6) (character 1)) (end (line 6) (character 32))) (parent (node (document "d0") (qualified-name "AHFNorwaySequences"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs"))) (kind "part") (name "AHFN_LocalCloudDD_Seqs") (declared-name "AHFN_LocalCloudDD_Seqs") (range (start (line 8) (character 1)) (end (line 8) (character 4415))) (parent (node (document "d0") (qualified-name "AHFNorwaySequences"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "AHFNorwaySequences::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "AHFProfileLib::*") (range (start (line 3) (character 16)) (end (line 3) (character 29))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AHFNorwaySequences::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "AHFCoreLib::*") (range (start (line 4) (character 16)) (end (line 4) (character 26))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AHFNorwaySequences::*#import2"))) (kind namespaceImport) (ordinal 0)) (authored-target "AHFNorway::*") (range (start (line 5) (character 16)) (end (line 5) (character 25))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AHFNorwaySequences::*#import3"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (range (start (line 6) (character 16)) (end (line 6) (character 28))) (outcome (status unresolved)))
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs"))) (status missing-prerequisite) (target "Parts::parts"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/ahfsequences.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 3 16) (end 3 29))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 4 16) (end 4 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 5 16) (end 5 25))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 6 16) (end 6 28))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_part_usage_body_element")
-        (source "sysml")
-        (range (start 76 2) (end 76 1677))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs")) (expression (status "unresolved") (error "expression has an unresolved reference")))
   )
 )
 ~~~

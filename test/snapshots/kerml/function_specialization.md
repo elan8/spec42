@@ -16,27 +16,14 @@ package FuncSpec {
     inv I { not x }
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Base::G'
-semantic.unresolved_name 'Base::I'
-semantic.unresolved_name 'Base::J'
-semantic.unresolved_name 'Base::L'
-semantic.unresolved_name 'Base::Q'
-semantic.unresolved_name 'Base::S'
-semantic.unresolved_name 'Base::G'
-semantic.unresolved_name 'Base::Q'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Base::G'
-semantic.unresolved_name 'Base::I'
-semantic.unresolved_name 'Base::J'
-semantic.unresolved_name 'Base::L'
-semantic.unresolved_name 'Base::Q'
-semantic.unresolved_name 'Base::S'
-semantic.unresolved_name 'Base::G'
-semantic.unresolved_name 'Base::Q'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "function_specialization.md"
+    (diagnostics
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -65,6 +52,28 @@ CloseCurly,EndOfFile,
     (invariant_def
       (result_expr_member))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Base::G'
+semantic.unresolved_name 'Base::I'
+semantic.unresolved_name 'Base::J'
+semantic.unresolved_name 'Base::L'
+semantic.unresolved_name 'Base::Q'
+semantic.unresolved_name 'Base::S'
+semantic.unresolved_name 'Base::G'
+semantic.unresolved_name 'Base::Q'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Base::G'
+semantic.unresolved_name 'Base::I'
+semantic.unresolved_name 'Base::J'
+semantic.unresolved_name 'Base::L'
+semantic.unresolved_name 'Base::Q'
+semantic.unresolved_name 'Base::S'
+semantic.unresolved_name 'Base::G'
+semantic.unresolved_name 'Base::Q'
+~~~
 # FORMAT
 ~~~sysml
 package FuncSpec {
@@ -81,35 +90,24 @@ package FuncSpec {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "FuncSpec"))) (name "FuncSpec") (declared-name "FuncSpec")
-      (contains
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FuncSpec::F"))) (name "F") (declared-name "F"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FuncSpec::FI"))) (name "FI") (declared-name "FI"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FuncSpec::H"))) (name "H") (declared-name "H"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FuncSpec::I"))) (name "I") (declared-name "I"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FuncSpec::K"))) (name "K") (declared-name "K"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FuncSpec::P"))) (name "P") (declared-name "P"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FuncSpec::PI"))) (name "PI") (declared-name "PI"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FuncSpec::R"))) (name "R") (declared-name "R"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c34d05deb8a522dc7a7d138961cb947d0b33def0099ebecb53cd74ef258d861b") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "FuncSpec"))) (kind "package") (name "FuncSpec") (declared-name "FuncSpec") (range (start (line 0) (character 0)) (end (line 0) (character 350))))
+    (element (id (node (document "d0") (qualified-name "FuncSpec::F"))) (kind "kermlDecl") (name "F") (declared-name "F") (range (start (line 1) (character 4)) (end (line 1) (character 38))) (parent (node (document "d0") (qualified-name "FuncSpec"))))
+    (element (id (node (document "d0") (qualified-name "FuncSpec::FI"))) (kind "kermlDecl") (name "FI") (declared-name "FI") (range (start (line 6) (character 4)) (end (line 6) (character 58))) (parent (node (document "d0") (qualified-name "FuncSpec"))))
+    (element (id (node (document "d0") (qualified-name "FuncSpec::H"))) (kind "kermlDecl") (name "H") (declared-name "H") (range (start (line 2) (character 4)) (end (line 2) (character 38))) (parent (node (document "d0") (qualified-name "FuncSpec"))))
+    (element (id (node (document "d0") (qualified-name "FuncSpec::I"))) (kind "kermlDecl") (name "I") (declared-name "I") (range (start (line 8) (character 4)) (end (line 8) (character 19))) (parent (node (document "d0") (qualified-name "FuncSpec"))))
+    (element (id (node (document "d0") (qualified-name "FuncSpec::K"))) (kind "kermlDecl") (name "K") (declared-name "K") (range (start (line 3) (character 4)) (end (line 3) (character 35))) (parent (node (document "d0") (qualified-name "FuncSpec"))))
+    (element (id (node (document "d0") (qualified-name "FuncSpec::P"))) (kind "kermlDecl") (name "P") (declared-name "P") (range (start (line 4) (character 4)) (end (line 4) (character 39))) (parent (node (document "d0") (qualified-name "FuncSpec"))))
+    (element (id (node (document "d0") (qualified-name "FuncSpec::PI"))) (kind "kermlDecl") (name "PI") (declared-name "PI") (range (start (line 7) (character 4)) (end (line 7) (character 68))) (parent (node (document "d0") (qualified-name "FuncSpec"))))
+    (element (id (node (document "d0") (qualified-name "FuncSpec::R"))) (kind "kermlDecl") (name "R") (declared-name "R") (range (start (line 5) (character 4)) (end (line 5) (character 27))) (parent (node (document "d0") (qualified-name "FuncSpec"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/function_specialization.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

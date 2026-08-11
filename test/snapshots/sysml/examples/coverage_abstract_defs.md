@@ -26,15 +26,26 @@ abstract part def Container {
     abstract port def InnerPort;
 }
 ~~~
-# EXPECTED
-~~~
-parse.expected_enum_body
-parse.expected_enum_body
-~~~
-# PROBLEMS
-~~~
-parse.expected_enum_body
-parse.expected_enum_body
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "coverage_abstract_defs.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "expected_keyword")
+        (source "sysml")
+        (range (start 5 0) (end 5 39))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_part_def_body_element")
+        (source "sysml")
+        (range (start 15 4) (end 15 38))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -79,6 +90,16 @@ CloseCurly,EndOfFile,
     (part_def abstract 'InnerPart')
     (port_def abstract 'InnerPort')))
 ~~~
+# EXPECTED
+~~~
+parse.expected_enum_body
+parse.expected_enum_body
+~~~
+# PROBLEMS
+~~~
+parse.expected_enum_body
+parse.expected_enum_body
+~~~
 # FORMAT
 ~~~sysml
 abstract part def AbstractVehicle;
@@ -105,72 +126,28 @@ abstract part def Container {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "occurrence def") (id (node (document "d0") (qualified-name "AbstractEvent"))) (name "AbstractEvent") (declared-name "AbstractEvent") (declared (properties (abstract true))))
-    (element (kind "port def") (id (node (document "d0") (qualified-name "AbstractPort"))) (name "AbstractPort") (declared-name "AbstractPort")
-      (contains
-        (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "AbstractPort::~AbstractPort"))) (name "~AbstractPort") (declared-name "~AbstractPort") (effective (featuring-type (node (document "d0") (qualified-name "AbstractPort")))))
-      )
-    )
-    (element (kind "part def") (id (node (document "d0") (qualified-name "AbstractVehicle"))) (name "AbstractVehicle") (declared-name "AbstractVehicle") (declared (properties (abstract true))))
-    (element (kind "item def") (id (node (document "d0") (qualified-name "AbstractWidget"))) (name "AbstractWidget") (declared-name "AbstractWidget"))
-    (element (kind "part def") (id (node (document "d0") (qualified-name "Container"))) (name "Container") (declared-name "Container") (declared (properties (abstract true)))
-      (contains
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Container::InnerPart"))) (name "InnerPart") (declared-name "InnerPart") (declared (properties (abstract true))) (effective (featuring-type (node (document "d0") (qualified-name "Container")))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Container::InnerWeight"))) (name "InnerWeight") (declared-name "InnerWeight") (declared (properties (ordered false) (unique true))) (effective (featuring-type (node (document "d0") (qualified-name "Container")))))
-        (element (kind "item def") (id (node (document "d0") (qualified-name "Container::InnerWidget"))) (name "InnerWidget") (declared-name "InnerWidget") (effective (featuring-type (node (document "d0") (qualified-name "Container")))))
-      )
-    )
-    (element (kind "part def") (id (node (document "d0") (qualified-name "EngineChoices"))) (name "EngineChoices") (declared-name "EngineChoices") (declared (properties (variation true)))
-      (contains
-        (element (kind "part") (id (node (document "d0") (qualified-name "EngineChoices::fourCyl"))) (name "fourCyl") (declared-name "fourCyl") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "EngineChoices")))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "EngineChoices::sixCyl"))) (name "sixCyl") (declared-name "sixCyl") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "EngineChoices")))))
-      )
-    )
-    (element (kind "attribute def") (id (node (document "d0") (qualified-name "Weight"))) (name "Weight") (declared-name "Weight") (declared (properties (ordered false) (unique true))))
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "d5d07cf991c4eb2470678d0a3beed929edff2735854a2d533533257981f022f4") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "AbstractEvent"))) (kind "occurrence def") (name "AbstractEvent") (declared-name "AbstractEvent") (range (start (line 6) (character 0)) (end (line 6) (character 38))))
+    (element (id (node (document "d0") (qualified-name "AbstractPort"))) (kind "port def") (name "AbstractPort") (declared-name "AbstractPort") (range (start (line 3) (character 0)) (end (line 3) (character 31))))
+    (element (id (node (document "d0") (qualified-name "AbstractPort::~AbstractPort"))) (kind "conjugated port definition") (name "~AbstractPort") (declared-name "~AbstractPort") (range (start (line 3) (character 0)) (end (line 3) (character 31))) (parent (node (document "d0") (qualified-name "AbstractPort"))))
+    (element (id (node (document "d0") (qualified-name "AbstractVehicle"))) (kind "part def") (name "AbstractVehicle") (declared-name "AbstractVehicle") (range (start (line 0) (character 0)) (end (line 0) (character 34))))
+    (element (id (node (document "d0") (qualified-name "AbstractWidget"))) (kind "item def") (name "AbstractWidget") (declared-name "AbstractWidget") (range (start (line 2) (character 0)) (end (line 2) (character 33))))
+    (element (id (node (document "d0") (qualified-name "Container"))) (kind "part def") (name "Container") (declared-name "Container") (range (start (line 13) (character 0)) (end (line 13) (character 206))))
+    (element (id (node (document "d0") (qualified-name "Container::InnerPart"))) (kind "part def") (name "InnerPart") (declared-name "InnerPart") (range (start (line 17) (character 4)) (end (line 17) (character 32))) (parent (node (document "d0") (qualified-name "Container"))))
+    (element (id (node (document "d0") (qualified-name "Container::InnerWeight"))) (kind "attribute def") (name "InnerWeight") (declared-name "InnerWeight") (range (start (line 14) (character 4)) (end (line 14) (character 39))) (parent (node (document "d0") (qualified-name "Container"))))
+    (element (id (node (document "d0") (qualified-name "Container::InnerWidget"))) (kind "item def") (name "InnerWidget") (declared-name "InnerWidget") (range (start (line 16) (character 4)) (end (line 16) (character 34))) (parent (node (document "d0") (qualified-name "Container"))))
+    (element (id (node (document "d0") (qualified-name "EngineChoices"))) (kind "part def") (name "EngineChoices") (declared-name "EngineChoices") (range (start (line 8) (character 0)) (end (line 8) (character 87))))
+    (element (id (node (document "d0") (qualified-name "EngineChoices::fourCyl"))) (kind "part") (name "fourCyl") (declared-name "fourCyl") (range (start (line 9) (character 12)) (end (line 9) (character 25))) (parent (node (document "d0") (qualified-name "EngineChoices"))))
+    (element (id (node (document "d0") (qualified-name "EngineChoices::sixCyl"))) (kind "part") (name "sixCyl") (declared-name "sixCyl") (range (start (line 10) (character 12)) (end (line 10) (character 24))) (parent (node (document "d0") (qualified-name "EngineChoices"))))
+    (element (id (node (document "d0") (qualified-name "Weight"))) (kind "attribute def") (name "Weight") (declared-name "Weight") (range (start (line 1) (character 0)) (end (line 1) (character 30))))
+  )
+  (references
   )
   (relationships
-    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "AbstractPort::~AbstractPort"))) (to (node (document "d0") (qualified-name "AbstractPort"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AbstractPort"))) (status missing-prerequisite) (target "Ports::Port"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AbstractPort::~AbstractPort"))) (status missing-prerequisite) (target "Ports::Port"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AbstractVehicle"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AbstractWidget"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Container"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Container::InnerPart"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Container::InnerWeight"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Container::InnerWidget"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "EngineChoices"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "EngineChoices::fourCyl"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "EngineChoices::sixCyl"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Weight"))) (status missing-prerequisite) (target "Base::DataValue"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/coverage_abstract_defs.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "expected_keyword")
-        (source "sysml")
-        (range (start 5 0) (end 5 39))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_part_def_body_element")
-        (source "sysml")
-        (range (start 15 4) (end 15 38))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

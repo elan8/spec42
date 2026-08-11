@@ -41,6 +41,57 @@ action def ControlNodeTest {
 	merge M;
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "control_node_test.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 5 5) (end 5 11))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 9 14) (end 9 17))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_action_body_element")
+        (source "sysml")
+        (range (start 12 1) (end 12 56))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 20 6) (end 20 10))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 21 6) (end 21 10))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 24 5) (end 24 10))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 29 5) (end 29 10))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwAction,KwDef,Ident,OpenCurly,
@@ -106,6 +157,40 @@ CloseCurly,EndOfFile,
       (default_ref_usage 'M'))
     (sysml_decl 'M')))
 ~~~
+# EXPECTED
+~~~
+semantic.duplicate_name 'J'
+semantic.duplicate_name 'A2'
+semantic.duplicate_name 'J'
+semantic.duplicate_name 'F'
+semantic.duplicate_name 'F'
+semantic.duplicate_name 'B1'
+semantic.duplicate_name 'B2'
+semantic.duplicate_name 'M'
+semantic.duplicate_name 'M'
+semantic.ambiguous_member 'A2'
+semantic.ambiguous_member 'F'
+semantic.invalid_connection_end_count
+semantic.invalid_connection_end_count
+semantic.invalid_connection_end_count
+~~~
+# PROBLEMS
+~~~
+semantic.duplicate_name 'J'
+semantic.duplicate_name 'A2'
+semantic.duplicate_name 'J'
+semantic.duplicate_name 'F'
+semantic.duplicate_name 'F'
+semantic.duplicate_name 'B1'
+semantic.duplicate_name 'B2'
+semantic.duplicate_name 'M'
+semantic.duplicate_name 'M'
+semantic.ambiguous_member 'A2'
+semantic.ambiguous_member 'F'
+semantic.invalid_connection_end_count
+semantic.invalid_connection_end_count
+semantic.invalid_connection_end_count
+~~~
 # FORMAT
 ~~~sysml
 action def ControlNodeTest {
@@ -145,122 +230,48 @@ action def ControlNodeTest {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.duplicate_name 'J'
-semantic.duplicate_name 'A2'
-semantic.duplicate_name 'J'
-semantic.duplicate_name 'F'
-semantic.duplicate_name 'F'
-semantic.duplicate_name 'B1'
-semantic.duplicate_name 'B2'
-semantic.duplicate_name 'M'
-semantic.duplicate_name 'M'
-semantic.ambiguous_member 'A2'
-semantic.ambiguous_member 'F'
-semantic.invalid_connection_end_count
-semantic.invalid_connection_end_count
-semantic.invalid_connection_end_count
-~~~
-# PROBLEMS
-~~~
-semantic.duplicate_name 'J'
-semantic.duplicate_name 'A2'
-semantic.duplicate_name 'J'
-semantic.duplicate_name 'F'
-semantic.duplicate_name 'F'
-semantic.duplicate_name 'B1'
-semantic.duplicate_name 'B2'
-semantic.duplicate_name 'M'
-semantic.duplicate_name 'M'
-semantic.ambiguous_member 'A2'
-semantic.ambiguous_member 'F'
-semantic.invalid_connection_end_count
-semantic.invalid_connection_end_count
-semantic.invalid_connection_end_count
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "action def") (id (node (document "d0") (qualified-name "ControlNodeTest"))) (name "ControlNodeTest") (declared-name "ControlNodeTest")
-      (contains
-        (element (kind "action") (id (node (document "d0") (qualified-name "ControlNodeTest::A1"))) (name "A1") (declared-name "A1") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ControlNodeTest")))))
-        (element (kind "action") (id (node (document "d0") (qualified-name "ControlNodeTest::A2"))) (name "A2") (declared-name "A2") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ControlNodeTest"))))
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ControlNodeTest::A2::a"))) (name "a") (declared-name "a") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "ControlNodeTest")))))
-          )
-        )
-        (element (kind "action") (id (node (document "d0") (qualified-name "ControlNodeTest::B1"))) (name "B1") (declared-name "B1") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ControlNodeTest"))))
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ControlNodeTest::B1::b"))) (name "b") (declared-name "b") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "ControlNodeTest")))))
-          )
-        )
-        (element (kind "action") (id (node (document "d0") (qualified-name "ControlNodeTest::B2"))) (name "B2") (declared-name "B2") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ControlNodeTest"))))
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ControlNodeTest::B2::b"))) (name "b") (declared-name "b") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "ControlNodeTest")))))
-          )
-        )
-        (element (kind "join") (id (node (document "d0") (qualified-name "ControlNodeTest::J"))) (name "join") (declared-name "join") (effective (featuring-type (node (document "d0") (qualified-name "ControlNodeTest")))))
-        (element (kind "merge") (id (node (document "d0") (qualified-name "ControlNodeTest::M"))) (name "merge") (declared-name "merge") (effective (featuring-type (node (document "d0") (qualified-name "ControlNodeTest")))))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "3ce1580445616b797cedd2122af9f1bc39575fe96ed018697c9bdefafc4fd3ca") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ControlNodeTest"))) (kind "action def") (name "ControlNodeTest") (declared-name "ControlNodeTest") (range (start (line 0) (character 0)) (end (line 0) (character 329))) (authored (membership (kind Owning)) (relationships (flow (reference "ControlNodeTest::J") (range none)) (perform (reference "ControlNodeTest::A1") (range none)) (perform (reference "ControlNodeTest::A2") (range none)) (perform (reference "ControlNodeTest::B1") (range none)) (perform (reference "ControlNodeTest::B2") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ControlNodeTest::A1"))) (kind "action") (name "A1") (declared-name "A1") (range (start (line 1) (character 1)) (end (line 1) (character 11))) (parent (node (document "d0") (qualified-name "ControlNodeTest"))))
+    (element (id (node (document "d0") (qualified-name "ControlNodeTest::A2"))) (kind "action") (name "A2") (declared-name "A2") (range (start (line 4) (character 1)) (end (line 4) (character 27))) (parent (node (document "d0") (qualified-name "ControlNodeTest"))))
+    (element (id (node (document "d0") (qualified-name "ControlNodeTest::A2::a"))) (kind "in out parameter") (name "a") (declared-name "a") (range (start (line 5) (character 5)) (end (line 5) (character 11))) (parent (node (document "d0") (qualified-name "ControlNodeTest::A2"))) (authored (relationships (typing (reference "") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ControlNodeTest::B1"))) (kind "action") (name "B1") (declared-name "B1") (range (start (line 23) (character 1)) (end (line 23) (character 26))) (parent (node (document "d0") (qualified-name "ControlNodeTest"))))
+    (element (id (node (document "d0") (qualified-name "ControlNodeTest::B1::b"))) (kind "in out parameter") (name "b") (declared-name "b") (range (start (line 24) (character 5)) (end (line 24) (character 10))) (parent (node (document "d0") (qualified-name "ControlNodeTest::B1"))) (authored (relationships (typing (reference "") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ControlNodeTest::B2"))) (kind "action") (name "B2") (declared-name "B2") (range (start (line 28) (character 1)) (end (line 28) (character 26))) (parent (node (document "d0") (qualified-name "ControlNodeTest"))))
+    (element (id (node (document "d0") (qualified-name "ControlNodeTest::B2::b"))) (kind "in out parameter") (name "b") (declared-name "b") (range (start (line 29) (character 5)) (end (line 29) (character 10))) (parent (node (document "d0") (qualified-name "ControlNodeTest::B2"))) (authored (relationships (typing (reference "") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ControlNodeTest::J"))) (kind "join") (name "join") (declared-name "join") (range (start (line 11) (character 1)) (end (line 11) (character 8))) (parent (node (document "d0") (qualified-name "ControlNodeTest"))) (authored (relationships (flow (reference "ControlNodeTest::B1") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ControlNodeTest::M"))) (kind "merge") (name "merge") (declared-name "merge") (range (start (line 33) (character 1)) (end (line 33) (character 9))) (parent (node (document "d0") (qualified-name "ControlNodeTest"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "ControlNodeTest"))) (kind flowSource) (ordinal 0)) (authored-target "ControlNodeTest::J") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ControlNodeTest::J")))))
+    (reference (id (source (node (document "d0") (qualified-name "ControlNodeTest"))) (kind flowSource) (ordinal 0)) (authored-target "A2::a") (range (start (line 9) (character 6)) (end (line 9) (character 10))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ControlNodeTest::A2::a")))))
+    (reference (id (source (node (document "d0") (qualified-name "ControlNodeTest"))) (kind flowSource) (ordinal 1)) (authored-target "F::b1") (range (start (line 20) (character 6)) (end (line 20) (character 10))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ControlNodeTest"))) (kind flowSource) (ordinal 2)) (authored-target "F::b2") (range (start (line 21) (character 6)) (end (line 21) (character 10))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ControlNodeTest"))) (kind flowTarget) (ordinal 0)) (authored-target "F::a") (range (start (line 9) (character 14)) (end (line 9) (character 17))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ControlNodeTest"))) (kind flowTarget) (ordinal 1)) (authored-target "B1::b") (range (start (line 20) (character 14)) (end (line 20) (character 18))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ControlNodeTest::B1::b")))))
+    (reference (id (source (node (document "d0") (qualified-name "ControlNodeTest"))) (kind flowTarget) (ordinal 2)) (authored-target "B2::b") (range (start (line 21) (character 14)) (end (line 21) (character 18))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ControlNodeTest::B2::b")))))
+    (reference (id (source (node (document "d0") (qualified-name "ControlNodeTest"))) (kind performSource) (ordinal 0)) (authored-target "ControlNodeTest::A1") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ControlNodeTest::A1")))))
+    (reference (id (source (node (document "d0") (qualified-name "ControlNodeTest"))) (kind performSource) (ordinal 1)) (authored-target "ControlNodeTest::A2") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ControlNodeTest::A2")))))
+    (reference (id (source (node (document "d0") (qualified-name "ControlNodeTest"))) (kind performSource) (ordinal 2)) (authored-target "ControlNodeTest::B1") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ControlNodeTest::B1")))))
+    (reference (id (source (node (document "d0") (qualified-name "ControlNodeTest"))) (kind performSource) (ordinal 3)) (authored-target "ControlNodeTest::B2") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ControlNodeTest::B2")))))
+    (reference (id (source (node (document "d0") (qualified-name "ControlNodeTest::A2::a"))) (kind featureTyping) (ordinal 0)) (authored-target "") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ControlNodeTest::B1::b"))) (kind featureTyping) (ordinal 0)) (authored-target "") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ControlNodeTest::B2::b"))) (kind featureTyping) (ordinal 0)) (authored-target "") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ControlNodeTest::J"))) (kind flowSource) (ordinal 0)) (authored-target "ControlNodeTest::B1") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ControlNodeTest::B1")))))
   )
   (relationships
-    (flow (status resolved) (from (node (document "d0") (qualified-name "ControlNodeTest"))) (to (node (document "d0") (qualified-name "ControlNodeTest::J"))) (provenance authored))
-    (flow (status resolved) (from (node (document "d0") (qualified-name "ControlNodeTest::B1"))) (to (node (document "d0") (qualified-name "ControlNodeTest::B2"))) (provenance authored))
-    (flow (status resolved) (from (node (document "d0") (qualified-name "ControlNodeTest::B2"))) (to (node (document "d0") (qualified-name "ControlNodeTest::M"))) (provenance authored))
-    (flow (status resolved) (from (node (document "d0") (qualified-name "ControlNodeTest::J"))) (to (node (document "d0") (qualified-name "ControlNodeTest::B1"))) (provenance authored))
-    (flow (status resolved) (from (node (document "d0") (qualified-name "ControlNodeTest::J"))) (to (node (document "d0") (qualified-name "ControlNodeTest::J"))) (provenance authored))
-    (flow (status resolved) (from (node (document "d0") (qualified-name "ControlNodeTest::M"))) (to (node (document "d0") (qualified-name "ControlNodeTest::M"))) (provenance authored))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "ControlNodeTest"))) (to (node (document "d0") (qualified-name "ControlNodeTest::A1"))) (provenance authored))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "ControlNodeTest"))) (to (node (document "d0") (qualified-name "ControlNodeTest::A2"))) (provenance authored))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "ControlNodeTest"))) (to (node (document "d0") (qualified-name "ControlNodeTest::B1"))) (provenance authored))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "ControlNodeTest"))) (to (node (document "d0") (qualified-name "ControlNodeTest::B2"))) (provenance authored))
+    (relationship (kind flow) (source (node (document "d0") (qualified-name "ControlNodeTest"))) (target (node (document "d0") (qualified-name "ControlNodeTest::J"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ControlNodeTest"))) (kind flowSource) (ordinal 0)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "ControlNodeTest"))) (target (node (document "d0") (qualified-name "ControlNodeTest::A1"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ControlNodeTest"))) (kind performSource) (ordinal 0)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "ControlNodeTest"))) (target (node (document "d0") (qualified-name "ControlNodeTest::A2"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ControlNodeTest"))) (kind performSource) (ordinal 1)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "ControlNodeTest"))) (target (node (document "d0") (qualified-name "ControlNodeTest::B1"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ControlNodeTest"))) (kind performSource) (ordinal 2)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "ControlNodeTest"))) (target (node (document "d0") (qualified-name "ControlNodeTest::B2"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ControlNodeTest"))) (kind performSource) (ordinal 3)))
+    (relationship (kind flow) (source (node (document "d0") (qualified-name "ControlNodeTest::J"))) (target (node (document "d0") (qualified-name "ControlNodeTest::B1"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ControlNodeTest::J"))) (kind flowSource) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ControlNodeTest"))) (status missing-prerequisite) (target "Actions::Action"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ControlNodeTest::A1"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ControlNodeTest::A2"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ControlNodeTest::B1"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ControlNodeTest::B2"))) (status missing-prerequisite) (target "Actions::actions"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/control_node_test.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "succession_endpoint_invalid")
-        (source "semantic")
-        (range (start 0 0) (end 0 329))
-      )
-      (diagnostic
-        (severity warning)
-        (code "succession_endpoint_invalid")
-        (source "semantic")
-        (range (start 11 1) (end 11 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "succession_endpoint_invalid")
-        (source "semantic")
-        (range (start 11 1) (end 11 8))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_action_body_element")
-        (source "sysml")
-        (range (start 12 1) (end 12 56))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

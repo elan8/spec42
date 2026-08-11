@@ -21,6 +21,15 @@ package Comments {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "comments.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -50,6 +59,14 @@ CloseCurly,EndOfFile,
       (comment_annotating)
       (comment_annotating about 'Comments'))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package Comments {
@@ -69,50 +86,22 @@ package Comments {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Comments"))) (name "Comments") (declared-name "Comments")
-      (contains
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Comments::C"))) (name "C") (declared-name "C") (declared)
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Comments::C::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Comments::C")))))
-          )
-        )
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "Comments::_documentation"))) (name ""))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "Comments::_documentation#documentation"))) (name ""))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e3cd3cee75eca71e23e2bfa76db1b3687b2eab7c804dd1bd18e164de8114d0f9") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Comments"))) (kind "package") (name "Comments") (declared-name "Comments") (range (start (line 0) (character 0)) (end (line 0) (character 384))))
+    (element (id (node (document "d0") (qualified-name "Comments::C"))) (kind "part def") (name "C") (declared-name "C") (range (start (line 9) (character 1)) (end (line 9) (character 143))) (parent (node (document "d0") (qualified-name "Comments"))))
+    (element (id (node (document "d0") (qualified-name "Comments::C::_documentation"))) (kind "documentation") (name "") (range (start (line 9) (character 1)) (end (line 9) (character 143))) (parent (node (document "d0") (qualified-name "Comments::C"))))
+    (element (id (node (document "d0") (qualified-name "Comments::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 384))) (parent (node (document "d0") (qualified-name "Comments"))))
+    (element (id (node (document "d0") (qualified-name "Comments::_documentation#documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 384))) (parent (node (document "d0") (qualified-name "Comments"))))
+  )
+  (references
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Comments::C::_documentation"))) (to (node (document "d0") (qualified-name "Comments::C"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Comments::_documentation"))) (to (node (document "d0") (qualified-name "Comments"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Comments::_documentation#documentation"))) (to (node (document "d0") (qualified-name "Comments"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Comments::C"))) (status missing-prerequisite) (target "Parts::Part"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/comments.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

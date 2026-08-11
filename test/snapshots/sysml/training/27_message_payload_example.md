@@ -42,6 +42,63 @@ package 'Message Payload Example' {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "27_message_payload_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 6 2) (end 6 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 11 18) (end 11 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 23 8) (end 23 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 23 31) (end 23 72))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 25 2) (end 25 149))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 28 2) (end 28 167))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 31 2) (end 31 203))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -102,6 +159,30 @@ CloseCurly,EndOfFile,
       (source_succession
         (message_usage 'fuelCommandForwardingMessage' : 'fuelCommand')))))
 ~~~
+# EXPECTED
+~~~
+semantic.feature_typing_kind_mismatch
+semantic.feature_typing_kind_mismatch
+semantic.invalid_connection_end_count
+semantic.invalid_connection_end_count
+semantic.unresolved_name 'ScalarValues::Real'
+semantic.unresolved_name 'vehicle'
+semantic.unresolved_name 'driver'
+semantic.unresolved_name 'fuelCommand'
+semantic.unresolved_name 'fuelCommand'
+~~~
+# PROBLEMS
+~~~
+semantic.feature_typing_kind_mismatch
+semantic.feature_typing_kind_mismatch
+semantic.invalid_connection_end_count
+semantic.invalid_connection_end_count
+semantic.unresolved_name 'ScalarValues::Real'
+semantic.unresolved_name 'vehicle'
+semantic.unresolved_name 'driver'
+semantic.unresolved_name 'fuelCommand'
+semantic.unresolved_name 'fuelCommand'
+~~~
 # FORMAT
 ~~~sysml
 package 'Message Payload Example' {
@@ -142,125 +223,40 @@ package 'Message Payload Example' {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.feature_typing_kind_mismatch
-semantic.feature_typing_kind_mismatch
-semantic.invalid_connection_end_count
-semantic.invalid_connection_end_count
-semantic.unresolved_name 'ScalarValues::Real'
-semantic.unresolved_name 'vehicle'
-semantic.unresolved_name 'driver'
-semantic.unresolved_name 'fuelCommand'
-semantic.unresolved_name 'fuelCommand'
-~~~
-# PROBLEMS
-~~~
-semantic.feature_typing_kind_mismatch
-semantic.feature_typing_kind_mismatch
-semantic.invalid_connection_end_count
-semantic.invalid_connection_end_count
-semantic.unresolved_name 'ScalarValues::Real'
-semantic.unresolved_name 'vehicle'
-semantic.unresolved_name 'driver'
-semantic.unresolved_name 'fuelCommand'
-semantic.unresolved_name 'fuelCommand'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Message Payload Example"))) (name "Message Payload Example") (declared-name "Message Payload Example")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Message Payload Example::*"))) (name "*") (declared-name "*"))
-        (element (kind "occurrence def") (id (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction"))) (name "CruiseControlInteraction") (declared-name "CruiseControlInteraction") (declared)
-          (contains
-            (element (kind "flow") (id (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction::setSpeedMessage"))) (name "setSpeedMessage") (declared-name "setSpeedMessage") (effective (featuring-type (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction"))))
-              (contains
-                (element (kind "flow payload") (id (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction::setSpeedMessage::_payload"))) (name "_payload") (declared-name "_payload") (effective (featuring-type (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction")))))
-              )
-            )
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Message Payload Example::EngineController"))) (name "EngineController") (declared-name "EngineController") (declared))
-        (element (kind "item def") (id (node (document "d0") (qualified-name "Message Payload Example::FuelCommand"))) (name "FuelCommand") (declared-name "FuelCommand")
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Message Payload Example::FuelCommand::fuelFlow"))) (name "fuelFlow") (declared-name "fuelFlow") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Message Payload Example::FuelCommand")))))
-          )
-        )
-        (element (kind "item def") (id (node (document "d0") (qualified-name "Message Payload Example::SensedSpeed"))) (name "SensedSpeed") (declared-name "SensedSpeed"))
-        (element (kind "item def") (id (node (document "d0") (qualified-name "Message Payload Example::SetSpeed"))) (name "SetSpeed") (declared-name "SetSpeed"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Message Payload Example::vehicle1"))) (name "vehicle1") (declared-name "vehicle1") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController"))) (name "engineController") (declared-name "engineController") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController::fuelCommandForwarded"))) (name "fuelCommandForwarded") (declared-name "fuelCommandForwarded") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Message Payload Example::EngineController")))))
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController::fuelCommandReceived"))) (name "fuelCommandReceived") (declared-name "fuelCommandReceived") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Message Payload Example::EngineController")))))
-              )
-            )
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "fe77d90c35754c43a7dbb1aa965db0993fcfa6b94626b02741f02e592d3e14a5") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Message Payload Example"))) (kind "package") (name "Message Payload Example") (declared-name "Message Payload Example") (range (start (line 0) (character 0)) (end (line 0) (character 1141))))
+    (element (id (node (document "d0") (qualified-name "Message Payload Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 46))) (parent (node (document "d0") (qualified-name "Message Payload Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "Event Occurrence Example::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 42))))))
+    (element (id (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction"))) (kind "occurrence def") (name "CruiseControlInteraction") (declared-name "CruiseControlInteraction") (range (start (line 18) (character 1)) (end (line 18) (character 739))) (parent (node (document "d0") (qualified-name "Message Payload Example"))))
+    (element (id (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction::setSpeedMessage"))) (kind "flow") (name "setSpeedMessage") (declared-name "setSpeedMessage") (range (start (line 22) (character 2)) (end (line 22) (character 112))) (parent (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction"))))
+    (element (id (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction::setSpeedMessage::_payload"))) (kind "flow payload") (name "_payload") (declared-name "_payload") (range (start (line 22) (character 29)) (end (line 22) (character 37))) (parent (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction::setSpeedMessage"))) (authored (relationships (typing (reference "SetSpeed") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Message Payload Example::EngineController"))) (kind "part def") (name "EngineController") (declared-name "EngineController") (range (start (line 9) (character 1)) (end (line 9) (character 27))) (parent (node (document "d0") (qualified-name "Message Payload Example"))))
+    (element (id (node (document "d0") (qualified-name "Message Payload Example::FuelCommand"))) (kind "item def") (name "FuelCommand") (declared-name "FuelCommand") (range (start (line 5) (character 1)) (end (line 5) (character 69))) (parent (node (document "d0") (qualified-name "Message Payload Example"))))
+    (element (id (node (document "d0") (qualified-name "Message Payload Example::FuelCommand::fuelFlow"))) (kind "attribute") (name "fuelFlow") (declared-name "fuelFlow") (range (start (line 6) (character 2)) (end (line 6) (character 42))) (parent (node (document "d0") (qualified-name "Message Payload Example::FuelCommand"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Message Payload Example::SensedSpeed"))) (kind "item def") (name "SensedSpeed") (declared-name "SensedSpeed") (range (start (line 4) (character 1)) (end (line 4) (character 22))) (parent (node (document "d0") (qualified-name "Message Payload Example"))))
+    (element (id (node (document "d0") (qualified-name "Message Payload Example::SetSpeed"))) (kind "item def") (name "SetSpeed") (declared-name "SetSpeed") (range (start (line 3) (character 1)) (end (line 3) (character 19))) (parent (node (document "d0") (qualified-name "Message Payload Example"))))
+    (element (id (node (document "d0") (qualified-name "Message Payload Example::vehicle1"))) (kind "part") (name "vehicle1") (declared-name "vehicle1") (range (start (line 11) (character 1)) (end (line 11) (character 167))) (parent (node (document "d0") (qualified-name "Message Payload Example"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "vehicle") (range (start (line 11) (character 18)) (end (line 11) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController"))) (kind "part") (name "engineController") (declared-name "engineController") (range (start (line 12) (character 2)) (end (line 12) (character 136))) (parent (node (document "d0") (qualified-name "Message Payload Example::vehicle1"))) (authored (membership (kind Feature)) (relationships (typing (reference "EngineController") (range (start (line 12) (character 26)) (end (line 12) (character 42)))))))
+    (element (id (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController::fuelCommandForwarded"))) (kind "occurrence") (name "fuelCommandForwarded") (declared-name "fuelCommandForwarded") (range (start (line 14) (character 25)) (end (line 14) (character 46))) (parent (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController"))))
+    (element (id (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController::fuelCommandReceived"))) (kind "occurrence") (name "fuelCommandReceived") (declared-name "fuelCommandReceived") (range (start (line 13) (character 20)) (end (line 13) (character 40))) (parent (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Message Payload Example::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Event Occurrence Example::*") (range (start (line 1) (character 16)) (end (line 1) (character 42))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction"))) (kind flowSource) (ordinal 0)) (authored-target "driver::setSpeedSent") (range (start (line 23) (character 8)) (end (line 23) (character 27))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction"))) (kind flowTarget) (ordinal 0)) (authored-target "vehicle::cruiseController::setSpeedReceived") (range (start (line 23) (character 31)) (end (line 23) (character 72))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction::setSpeedMessage::_payload"))) (kind featureTyping) (ordinal 0)) (authored-target "SetSpeed") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Message Payload Example::SetSpeed")))))
+    (reference (id (source (node (document "d0") (qualified-name "Message Payload Example::FuelCommand::fuelFlow"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Message Payload Example::vehicle1"))) (kind subsetting) (ordinal 0)) (authored-target "vehicle") (range (start (line 11) (character 18)) (end (line 11) (character 25))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController"))) (kind featureTyping) (ordinal 0)) (authored-target "EngineController") (range (start (line 12) (character 26)) (end (line 12) (character 42))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Message Payload Example::EngineController")))))
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction::setSpeedMessage::_payload"))) (to (node (document "d0") (qualified-name "Message Payload Example::SetSpeed"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController"))) (to (node (document "d0") (qualified-name "Message Payload Example::EngineController"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction::setSpeedMessage::_payload"))) (target (node (document "d0") (qualified-name "Message Payload Example::SetSpeed"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction::setSpeedMessage::_payload"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController"))) (target (node (document "d0") (qualified-name "Message Payload Example::EngineController"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction::setSpeedMessage"))) (status missing-prerequisite) (target "Flows::messages"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Message Payload Example::EngineController"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Message Payload Example::FuelCommand"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Message Payload Example::FuelCommand::fuelFlow"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Message Payload Example::SensedSpeed"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Message Payload Example::SetSpeed"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Message Payload Example::vehicle1"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController::fuelCommandForwarded"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController::fuelCommandReceived"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/27_message_payload_example.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 6 2) (end 6 42))
-      )
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 25 2) (end 25 149))
-      )
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 28 2) (end 28 167))
-      )
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 31 2) (end 31 203))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

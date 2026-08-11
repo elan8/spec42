@@ -36,33 +36,26 @@ package FeatureAdvancedCoverage {
     import C::**;
 }
 ~~~
-# EXPECTED
-~~~
-parse.expected_specialization_or_body
-parse.unexpected_token
-semantic.ambiguous_member 'malformed'
-semantic.unresolved_name 'T'
-semantic.unresolved_name 'T'
-semantic.unresolved_name 'myFeature'
-semantic.unresolved_name 'myFeature'
-semantic.unresolved_name 'T'
-semantic.unresolved_name 'T'
-semantic.unresolved_name 'T'
-semantic.unresolved_name 'T'
-~~~
-# PROBLEMS
-~~~
-parse.expected_specialization_or_body
-parse.unexpected_token
-semantic.ambiguous_member 'malformed'
-semantic.unresolved_name 'T'
-semantic.unresolved_name 'T'
-semantic.unresolved_name 'myFeature'
-semantic.unresolved_name 'myFeature'
-semantic.unresolved_name 'T'
-semantic.unresolved_name 'T'
-semantic.unresolved_name 'T'
-semantic.unresolved_name 'T'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "coverage_features_advanced.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 1 4) (end 1 48))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_package_body_element")
+        (source "sysml")
+        (range (start 25 4) (end 25 44))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -115,6 +108,34 @@ CloseCurly,EndOfFile,
     (import_decl 'C::*')
     (import_decl 'C::**')))
 ~~~
+# EXPECTED
+~~~
+parse.expected_specialization_or_body
+parse.unexpected_token
+semantic.ambiguous_member 'malformed'
+semantic.unresolved_name 'T'
+semantic.unresolved_name 'T'
+semantic.unresolved_name 'myFeature'
+semantic.unresolved_name 'myFeature'
+semantic.unresolved_name 'T'
+semantic.unresolved_name 'T'
+semantic.unresolved_name 'T'
+semantic.unresolved_name 'T'
+~~~
+# PROBLEMS
+~~~
+parse.expected_specialization_or_body
+parse.unexpected_token
+semantic.ambiguous_member 'malformed'
+semantic.unresolved_name 'T'
+semantic.unresolved_name 'T'
+semantic.unresolved_name 'myFeature'
+semantic.unresolved_name 'myFeature'
+semantic.unresolved_name 'T'
+semantic.unresolved_name 'T'
+semantic.unresolved_name 'T'
+semantic.unresolved_name 'T'
+~~~
 # FORMAT
 ~~~sysml
 package FeatureAdvancedCoverage {
@@ -151,61 +172,29 @@ package FeatureAdvancedCoverage {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))) (name "FeatureAdvancedCoverage") (declared-name "FeatureAdvancedCoverage")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::C"))) (name "C") (declared-name "C"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::C#import"))) (name "C") (declared-name "C"))
-        (element (kind "package") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::MyPackage"))) (name "MyPackage") (declared-name "MyPackage"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::_Safety"))) (name "Safety") (declared-name "Safety"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::fConj"))) (name "fConj") (declared-name "fConj"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::fIn"))) (name "fIn") (declared-name "fIn"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::fOut"))) (name "fOut") (declared-name "fOut"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::w"))) (name "w") (declared-name "w"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::x"))) (name "x") (declared-name "x"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::y"))) (name "y") (declared-name "y"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::z"))) (name "z") (declared-name "z"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::z1"))) (name "z1") (declared-name "z1"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "ae02cf1e5293606f98a8b70268bc44312106b6e80ab94846e5af31b68ffc0455") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))) (kind "package") (name "FeatureAdvancedCoverage") (declared-name "FeatureAdvancedCoverage") (range (start (line 0) (character 0)) (end (line 0) (character 566))))
+    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::C"))) (kind "classifier decl") (name "C") (declared-name "C") (range (start (line 19) (character 4)) (end (line 19) (character 121))) (parent (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))))
+    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::C#import"))) (kind "import") (name "C") (declared-name "C") (range (start (line 28) (character 4)) (end (line 28) (character 17))) (parent (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))) (authored (membership (kind Import) (import (reference "C") (origin Import) (shape Membership) (recursive true)) (import-range (start (line 28) (character 11)) (end (line 28) (character 12))))))
+    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::MyPackage"))) (kind "package") (name "MyPackage") (declared-name "MyPackage") (range (start (line 4) (character 4)) (end (line 4) (character 28))) (parent (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))))
+    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::_Safety"))) (kind "metadata keyword") (name "Safety") (declared-name "Safety") (range (start (line 17) (character 4)) (end (line 17) (character 12))) (parent (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))))
+    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::fConj"))) (kind "feature decl") (name "fConj") (declared-name "fConj") (range (start (line 10) (character 4)) (end (line 10) (character 33))) (parent (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))))
+    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::fIn"))) (kind "feature decl") (name "fIn") (declared-name "fIn") (range (start (line 6) (character 4)) (end (line 6) (character 53))) (parent (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))))
+    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::fOut"))) (kind "feature decl") (name "fOut") (declared-name "fOut") (range (start (line 9) (character 4)) (end (line 9) (character 23))) (parent (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))))
+    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::w"))) (kind "feature decl") (name "w") (declared-name "w") (range (start (line 15) (character 4)) (end (line 15) (character 34))) (parent (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))))
+    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::x"))) (kind "feature decl") (name "x") (declared-name "x") (range (start (line 12) (character 4)) (end (line 12) (character 32))) (parent (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))))
+    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::y"))) (kind "feature decl") (name "y") (declared-name "y") (range (start (line 13) (character 4)) (end (line 13) (character 35))) (parent (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))))
+    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::z"))) (kind "feature decl") (name "z") (declared-name "z") (range (start (line 14) (character 4)) (end (line 14) (character 28))) (parent (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))))
+    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::z1"))) (kind "feature decl") (name "z1") (declared-name "z1") (range (start (line 17) (character 12)) (end (line 17) (character 27))) (parent (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "FeatureAdvancedCoverage::C#import"))) (kind membershipImport) (ordinal 0)) (authored-target "C") (range (start (line 28) (character 11)) (end (line 28) (character 12))) (outcome (status resolved) (target (node (document "d0") (qualified-name "FeatureAdvancedCoverage::C")))))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "FeatureAdvancedCoverage::_Safety"))) (to (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "FeatureAdvancedCoverage::_Safety"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/coverage_features_advanced.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 1 4) (end 1 48))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 17 4) (end 17 12))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_package_body_element")
-        (source "sysml")
-        (range (start 25 4) (end 25 44))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

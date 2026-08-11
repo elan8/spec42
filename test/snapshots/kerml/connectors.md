@@ -39,6 +39,15 @@ package Connectors {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "connectors.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -108,6 +117,14 @@ CloseCurly,EndOfFile,
         (connector_end)
         (connector_end)))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package Connectors {
@@ -144,39 +161,20 @@ package Connectors {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Connectors"))) (name "Connectors") (declared-name "Connectors")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Connectors::A"))) (name "A") (declared-name "A"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Connectors::B"))) (name "B") (declared-name "B"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1abfbd474987d8a5beaeb9a1f6dc96b1f219375bf11126d32974ab2caa045a5c") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Connectors"))) (kind "package") (name "Connectors") (declared-name "Connectors") (range (start (line 0) (character 0)) (end (line 0) (character 546))))
+    (element (id (node (document "d0") (qualified-name "Connectors::A"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 2) (character 1)) (end (line 2) (character 440))) (parent (node (document "d0") (qualified-name "Connectors"))))
+    (element (id (node (document "d0") (qualified-name "Connectors::B"))) (kind "classifier decl") (name "B") (declared-name "B") (range (start (line 28) (character 1)) (end (line 28) (character 78))) (parent (node (document "d0") (qualified-name "Connectors"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/connectors.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

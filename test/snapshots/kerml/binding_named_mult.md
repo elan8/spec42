@@ -12,13 +12,20 @@ package BindingNamedMult {
     binding [0..1] a = b;
 }
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "binding_named_mult.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 1 4) (end 1 145))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -46,6 +53,14 @@ CloseCurly,EndOfFile,
       (connector_end)
       (connector_end))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package BindingNamedMult {
@@ -58,30 +73,16 @@ package BindingNamedMult {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "BindingNamedMult"))) (name "BindingNamedMult") (declared-name "BindingNamedMult"))
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "c19d09b917a9aad797689f27a33ff41d7e2969aa9acccdf089bad70b6a552f3b") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "BindingNamedMult"))) (kind "package") (name "BindingNamedMult") (declared-name "BindingNamedMult") (range (start (line 0) (character 0)) (end (line 0) (character 173))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/binding_named_mult.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 1 4) (end 1 145))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

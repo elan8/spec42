@@ -43,25 +43,38 @@ standard library package Calculations {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Action'
-semantic.unresolved_name 'Evaluation'
-semantic.unresolved_name 'Action::self'
-semantic.unresolved_name 'Evaluation::self'
-semantic.unresolved_name 'subactions'
-semantic.unresolved_name 'actions'
-semantic.unresolved_name 'evaluations'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Action'
-semantic.unresolved_name 'Evaluation'
-semantic.unresolved_name 'Action::self'
-semantic.unresolved_name 'Evaluation::self'
-semantic.unresolved_name 'subactions'
-semantic.unresolved_name 'actions'
-semantic.unresolved_name 'evaluations'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "calculations.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 16) (end 8 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 16) (end 9 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 16) (end 10 32))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -103,6 +116,26 @@ CloseCurly,EndOfFile,
         (documentation)))
     (calc_usage abstract 'calculations' : 'Calculation' multiplicity :> 'actions', 'evaluations' nonunique
       (documentation))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Action'
+semantic.unresolved_name 'Evaluation'
+semantic.unresolved_name 'Action::self'
+semantic.unresolved_name 'Evaluation::self'
+semantic.unresolved_name 'subactions'
+semantic.unresolved_name 'actions'
+semantic.unresolved_name 'evaluations'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Action'
+semantic.unresolved_name 'Evaluation'
+semantic.unresolved_name 'Action::self'
+semantic.unresolved_name 'Evaluation::self'
+semantic.unresolved_name 'subactions'
+semantic.unresolved_name 'actions'
+semantic.unresolved_name 'evaluations'
 ~~~
 # FORMAT
 ~~~sysml
@@ -147,84 +180,37 @@ standard library package Calculations {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Calculations"))) (name "Calculations") (declared-name "Calculations")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Calculations::Action"))) (name "Action") (declared-name "Action"))
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "Calculations::Calculation"))) (name "Calculation") (declared-name "Calculation") (declared (own-expression (expression (kind "featureReference") (reference "ref")))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference")))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Calculations::Calculation::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Calculations::Calculation")))))
-            (element (kind "calc") (id (node (document "d0") (qualified-name "Calculations::Calculation::self"))) (name "self") (declared-name "self") (effective (featuring-type (node (document "d0") (qualified-name "Calculations::Calculation")))))
-            (element (kind "calc") (id (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations"))) (name "subcalculations") (declared-name "subcalculations") (effective (featuring-type (node (document "d0") (qualified-name "Calculations::Calculation"))))
-              (contains
-                (element (kind "documentation") (id (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Calculations::Calculation")))))
-              )
-            )
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "Calculations::Evaluation"))) (name "Evaluation") (declared-name "Evaluation"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "Calculations::_documentation"))) (name ""))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Calculations::actions"))) (name "actions") (declared-name "actions"))
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "Calculations::calculations"))) (name "calculations") (declared-name "calculations")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Calculations::calculations::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Calculations::calculations")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "Calculations::evaluations"))) (name "evaluations") (declared-name "evaluations"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d14beef72f9d6704e6e3b6726548c32b369bb4ecb82e6405e56950f3cb94e285") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Calculations"))) (kind "package") (name "Calculations") (declared-name "Calculations") (range (start (line 0) (character 0)) (end (line 0) (character 990))))
+    (element (id (node (document "d0") (qualified-name "Calculations::Action"))) (kind "import") (name "Action") (declared-name "Action") (range (start (line 9) (character 1)) (end (line 9) (character 32))) (parent (node (document "d0") (qualified-name "Calculations"))) (authored (membership (kind Import) (visibility "private") (import (reference "Actions::Action") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 9) (character 16)) (end (line 9) (character 31))))))
+    (element (id (node (document "d0") (qualified-name "Calculations::Calculation"))) (kind "calc def") (name "Calculation") (declared-name "Calculation") (range (start (line 12) (character 1)) (end (line 12) (character 493))) (parent (node (document "d0") (qualified-name "Calculations"))))
+    (element (id (node (document "d0") (qualified-name "Calculations::Calculation::_documentation"))) (kind "documentation") (name "") (range (start (line 12) (character 1)) (end (line 12) (character 493))) (parent (node (document "d0") (qualified-name "Calculations::Calculation"))))
+    (element (id (node (document "d0") (qualified-name "Calculations::Calculation::self"))) (kind "calc") (name "self") (declared-name "self") (range (start (line 19) (character 6)) (end (line 19) (character 64))) (parent (node (document "d0") (qualified-name "Calculations::Calculation"))) (authored (membership (kind Feature)) (relationships (typing (reference "Calculation") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations"))) (kind "calc") (name "subcalculations") (declared-name "subcalculations") (range (start (line 21) (character 2)) (end (line 21) (character 162))) (parent (node (document "d0") (qualified-name "Calculations::Calculation"))) (authored (membership (kind Feature)) (relationships (typing (reference "Calculation") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations::_documentation"))) (kind "documentation") (name "") (range (start (line 21) (character 2)) (end (line 21) (character 162))) (parent (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations"))))
+    (element (id (node (document "d0") (qualified-name "Calculations::Evaluation"))) (kind "import") (name "Evaluation") (declared-name "Evaluation") (range (start (line 7) (character 1)) (end (line 7) (character 41))) (parent (node (document "d0") (qualified-name "Calculations"))) (authored (membership (kind Import) (visibility "private") (import (reference "Performances::Evaluation") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 40))))))
+    (element (id (node (document "d0") (qualified-name "Calculations::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 990))) (parent (node (document "d0") (qualified-name "Calculations"))))
+    (element (id (node (document "d0") (qualified-name "Calculations::actions"))) (kind "import") (name "actions") (declared-name "actions") (range (start (line 10) (character 1)) (end (line 10) (character 33))) (parent (node (document "d0") (qualified-name "Calculations"))) (authored (membership (kind Import) (visibility "private") (import (reference "Actions::actions") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 10) (character 16)) (end (line 10) (character 32))))))
+    (element (id (node (document "d0") (qualified-name "Calculations::calculations"))) (kind "calc def") (name "calculations") (declared-name "calculations") (range (start (line 30) (character 1)) (end (line 30) (character 167))) (parent (node (document "d0") (qualified-name "Calculations"))))
+    (element (id (node (document "d0") (qualified-name "Calculations::calculations::_documentation"))) (kind "documentation") (name "") (range (start (line 30) (character 1)) (end (line 30) (character 167))) (parent (node (document "d0") (qualified-name "Calculations::calculations"))))
+    (element (id (node (document "d0") (qualified-name "Calculations::evaluations"))) (kind "import") (name "evaluations") (declared-name "evaluations") (range (start (line 8) (character 1)) (end (line 8) (character 42))) (parent (node (document "d0") (qualified-name "Calculations"))) (authored (membership (kind Import) (visibility "private") (import (reference "Performances::evaluations") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 41))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Calculations::Action"))) (kind membershipImport) (ordinal 0)) (authored-target "Actions::Action") (range (start (line 9) (character 16)) (end (line 9) (character 31))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Calculations::Calculation::self"))) (kind featureTyping) (ordinal 0)) (authored-target "Calculation") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Calculations::Calculation")))))
+    (reference (id (source (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations"))) (kind featureTyping) (ordinal 0)) (authored-target "Calculation") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Calculations::Calculation")))))
+    (reference (id (source (node (document "d0") (qualified-name "Calculations::Evaluation"))) (kind membershipImport) (ordinal 0)) (authored-target "Performances::Evaluation") (range (start (line 7) (character 16)) (end (line 7) (character 40))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Calculations::actions"))) (kind membershipImport) (ordinal 0)) (authored-target "Actions::actions") (range (start (line 10) (character 16)) (end (line 10) (character 32))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Calculations::evaluations"))) (kind membershipImport) (ordinal 0)) (authored-target "Performances::evaluations") (range (start (line 8) (character 16)) (end (line 8) (character 41))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Calculations::Calculation::_documentation"))) (to (node (document "d0") (qualified-name "Calculations::Calculation"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations::_documentation"))) (to (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Calculations::_documentation"))) (to (node (document "d0") (qualified-name "Calculations"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Calculations::calculations::_documentation"))) (to (node (document "d0") (qualified-name "Calculations::calculations"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Calculations::Calculation::self"))) (to (node (document "d0") (qualified-name "Calculations::Calculation"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations"))) (to (node (document "d0") (qualified-name "Calculations::Calculation"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Calculations::Calculation::self"))) (target (node (document "d0") (qualified-name "Calculations::Calculation"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Calculations::Calculation::self"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations"))) (target (node (document "d0") (qualified-name "Calculations::Calculation"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Calculations::Calculation"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Calculations::Calculation::self"))) (status missing-prerequisite) (target "Calculations::calculations"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations"))) (status missing-prerequisite) (target "Calculations::calculations"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Calculations::calculations"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/calculations.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 16) (end 7 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 16) (end 8 41))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 9 16) (end 9 31))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 10 16) (end 10 32))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "Calculations::Calculation")) (expression (status "unresolved") (error "expression has an unresolved reference")))
   )
 )
 ~~~

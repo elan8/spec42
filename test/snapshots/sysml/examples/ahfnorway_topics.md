@@ -166,6 +166,111 @@ package AHFNorway {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "ahfnorway_topics.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 5 16) (end 5 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 16) (end 6 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 16) (end 8 28))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 10 10) (end 10 200))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 18 32) (end 18 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_annotation_syntax")
+        (source "sysml")
+        (range (start 21 2) (end 21 148))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_annotation_syntax")
+        (source "sysml")
+        (range (start 27 2) (end 27 137))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 36 24) (end 36 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 37 25) (end 37 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 38 32) (end 38 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 39 35) (end 39 47))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 40 26) (end 40 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 43 29) (end 43 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 44 31) (end 44 43))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 46 10) (end 46 3522))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -439,6 +544,82 @@ CloseCurly,EndOfFile,
     (line_comment))
   (malformed))
 ~~~
+# EXPECTED
+~~~
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.unexpected_token
+semantic.duplicate_name 'Publ'
+semantic.unresolved_name 'serviceDefinition'
+semantic.unresolved_name 'intrfce_protocol'
+semantic.unresolved_name 'serviceURL'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'ArrowheadCore'
+semantic.unresolved_name 'ServiceDiscoveryDD'
+semantic.unresolved_name 'ServiceDiscoveryDD'
+semantic.unresolved_name 'systemname'
+semantic.unresolved_name 'address'
+semantic.unresolved_name 'portno'
+semantic.unresolved_name 'ServiceDiscoveryDD'
+semantic.unresolved_name 'ServiceDiscoveryDD'
+semantic.unresolved_name 'systemname'
+semantic.unresolved_name 'address'
+semantic.unresolved_name 'portno'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'ServiceMethod'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'ServiceDiscovery'
+semantic.unresolved_name 'ServiceDiscovery'
+semantic.unresolved_name 'systemname'
+semantic.unresolved_name 'address'
+semantic.unresolved_name 'portno'
+~~~
+# PROBLEMS
+~~~
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.unexpected_token
+semantic.duplicate_name 'Publ'
+semantic.unresolved_name 'serviceDefinition'
+semantic.unresolved_name 'intrfce_protocol'
+semantic.unresolved_name 'serviceURL'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'ArrowheadCore'
+semantic.unresolved_name 'ServiceDiscoveryDD'
+semantic.unresolved_name 'ServiceDiscoveryDD'
+semantic.unresolved_name 'systemname'
+semantic.unresolved_name 'address'
+semantic.unresolved_name 'portno'
+semantic.unresolved_name 'ServiceDiscoveryDD'
+semantic.unresolved_name 'ServiceDiscoveryDD'
+semantic.unresolved_name 'systemname'
+semantic.unresolved_name 'address'
+semantic.unresolved_name 'portno'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'ServiceMethod'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'ServiceDiscovery'
+semantic.unresolved_name 'ServiceDiscovery'
+semantic.unresolved_name 'systemname'
+semantic.unresolved_name 'address'
+semantic.unresolved_name 'portno'
+~~~
 # FORMAT
 ~~~sysml
 package AHFNorway {
@@ -603,265 +784,55 @@ package AHFNorway {
 }
 
 ~~~
-# EXPECTED
-~~~
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.unexpected_token
-semantic.duplicate_name 'Publ'
-semantic.unresolved_name 'serviceDefinition'
-semantic.unresolved_name 'intrfce_protocol'
-semantic.unresolved_name 'serviceURL'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'ArrowheadCore'
-semantic.unresolved_name 'ServiceDiscoveryDD'
-semantic.unresolved_name 'ServiceDiscoveryDD'
-semantic.unresolved_name 'systemname'
-semantic.unresolved_name 'address'
-semantic.unresolved_name 'portno'
-semantic.unresolved_name 'ServiceDiscoveryDD'
-semantic.unresolved_name 'ServiceDiscoveryDD'
-semantic.unresolved_name 'systemname'
-semantic.unresolved_name 'address'
-semantic.unresolved_name 'portno'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'ServiceMethod'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'ServiceDiscovery'
-semantic.unresolved_name 'ServiceDiscovery'
-semantic.unresolved_name 'systemname'
-semantic.unresolved_name 'address'
-semantic.unresolved_name 'portno'
-~~~
-# PROBLEMS
-~~~
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-parse.unexpected_token
-semantic.duplicate_name 'Publ'
-semantic.unresolved_name 'serviceDefinition'
-semantic.unresolved_name 'intrfce_protocol'
-semantic.unresolved_name 'serviceURL'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'ArrowheadCore'
-semantic.unresolved_name 'ServiceDiscoveryDD'
-semantic.unresolved_name 'ServiceDiscoveryDD'
-semantic.unresolved_name 'systemname'
-semantic.unresolved_name 'address'
-semantic.unresolved_name 'portno'
-semantic.unresolved_name 'ServiceDiscoveryDD'
-semantic.unresolved_name 'ServiceDiscoveryDD'
-semantic.unresolved_name 'systemname'
-semantic.unresolved_name 'address'
-semantic.unresolved_name 'portno'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'ServiceMethod'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'ServiceDiscovery'
-semantic.unresolved_name 'ServiceDiscovery'
-semantic.unresolved_name 'systemname'
-semantic.unresolved_name 'address'
-semantic.unresolved_name 'portno'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "AHFNorway"))) (name "AHFNorway") (declared-name "AHFNorway")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "AHFNorway::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "AHFNorway::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "AHFNorway::*#import2"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "AHFNorway::AHFCoreLib"))) (name "AHFCoreLib") (declared-name "AHFCoreLib"))
-        (element (kind "port def") (id (node (document "d0") (qualified-name "AHFNorway::APIS_DD"))) (name "APIS_DD") (declared-name "APIS_DD")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "AHFNorway::APIS_DD::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "AHFNorway::APIS_DD")))))
-            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "AHFNorway::APIS_DD::~APIS_DD"))) (name "~APIS_DD") (declared-name "~APIS_DD") (effective (featuring-type (node (document "d0") (qualified-name "AHFNorway::APIS_DD")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "AHFNorway::CallGiveItems"))) (name "CallGiveItems") (declared-name "CallGiveItems") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFNorway::CallGiveItems::itms"))) (name "itms") (declared-name "itms") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFNorway::CallGiveItems")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "AHFNorway::Publish"))) (name "Publish") (declared-name "Publish") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFNorway::Publish::nametopic"))) (name "nametopic") (declared-name "nametopic") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFNorway::Publish")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "AHFNorway::ResultGiveItems"))) (name "ResultGiveItems") (declared-name "ResultGiveItems") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFNorway::ResultGiveItems::ack"))) (name "ack") (declared-name "ack") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFNorway::ResultGiveItems")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "AHFNorway::Return_Ack"))) (name "Return_Ack") (declared-name "Return_Ack") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFNorway::Return_Ack::ack"))) (name "ack") (declared-name "ack") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFNorway::Return_Ack")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "AHFNorway::Return_AllItems"))) (name "Return_AllItems") (declared-name "Return_AllItems") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFNorway::Return_AllItems::itms"))) (name "itms") (declared-name "itms") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFNorway::Return_AllItems")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "AHFNorway::Subscribe"))) (name "Subscribe") (declared-name "Subscribe") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFNorway::Subscribe::nametopic"))) (name "nametopic") (declared-name "nametopic") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFNorway::Subscribe")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "AHFNorway::Subscribe_giveItems"))) (name "Subscribe_giveItems") (declared-name "Subscribe_giveItems") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFNorway::Subscribe_giveItems::itms"))) (name "itms") (declared-name "itms") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFNorway::Subscribe_giveItems")))))
-          )
-        )
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "AHFNorway::_clouddd"))) (name "clouddd") (declared-name "clouddd"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "AHFNorway::_documentation"))) (name ""))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "AHFNorway::_service"))) (name "service") (declared-name "service"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "AHFNorway::_servicedd"))) (name "servicedd") (declared-name "servicedd"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "42e20024d54142a4f27de56a00faa2f7b576558e305168bc725b507cb7db738a") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "AHFNorway"))) (kind "package") (name "AHFNorway") (declared-name "AHFNorway") (range (start (line 0) (character 0)) (end (line 0) (character 4943))))
+    (element (id (node (document "d0") (qualified-name "AHFNorway::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 5) (character 1)) (end (line 5) (character 33))) (parent (node (document "d0") (qualified-name "AHFNorway"))) (authored (membership (kind Import) (visibility "private") (import (reference "AHFProfileLib::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 5) (character 16)) (end (line 5) (character 29))))))
+    (element (id (node (document "d0") (qualified-name "AHFNorway::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 6) (character 1)) (end (line 6) (character 38))) (parent (node (document "d0") (qualified-name "AHFNorway"))) (authored (membership (kind Import) (visibility "private") (import (reference "AHFProfileMetadata::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 34))))))
+    (element (id (node (document "d0") (qualified-name "AHFNorway::*#import2"))) (kind "import") (name "*") (declared-name "*") (range (start (line 8) (character 1)) (end (line 8) (character 32))) (parent (node (document "d0") (qualified-name "AHFNorway"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "AHFNorway::AHFCoreLib"))) (kind "import") (name "AHFCoreLib") (declared-name "AHFCoreLib") (range (start (line 7) (character 1)) (end (line 7) (character 31))) (parent (node (document "d0") (qualified-name "AHFNorway"))) (authored (membership (kind Import) (visibility "private") (import (reference "AHFCoreLib") (origin Import) (shape Membership) (recursive true)) (import-range (start (line 7) (character 16)) (end (line 7) (character 26))))))
+    (element (id (node (document "d0") (qualified-name "AHFNorway::APIS_DD"))) (kind "port def") (name "APIS_DD") (declared-name "APIS_DD") (range (start (line 18) (character 12)) (end (line 18) (character 407))) (parent (node (document "d0") (qualified-name "AHFNorway"))) (authored (membership (kind Owning)) (relationships (specializes (reference "APISService") (range (start (line 18) (character 32)) (end (line 18) (character 43)))))))
+    (element (id (node (document "d0") (qualified-name "AHFNorway::APIS_DD::_documentation"))) (kind "documentation") (name "") (range (start (line 18) (character 12)) (end (line 18) (character 407))) (parent (node (document "d0") (qualified-name "AHFNorway::APIS_DD"))))
+    (element (id (node (document "d0") (qualified-name "AHFNorway::APIS_DD::~APIS_DD"))) (kind "conjugated port definition") (name "~APIS_DD") (declared-name "~APIS_DD") (range (start (line 18) (character 12)) (end (line 18) (character 407))) (parent (node (document "d0") (qualified-name "AHFNorway::APIS_DD"))))
+    (element (id (node (document "d0") (qualified-name "AHFNorway::CallGiveItems"))) (kind "attribute def") (name "CallGiveItems") (declared-name "CallGiveItems") (range (start (line 43) (character 1)) (end (line 43) (character 43))) (parent (node (document "d0") (qualified-name "AHFNorway"))))
+    (element (id (node (document "d0") (qualified-name "AHFNorway::CallGiveItems::itms"))) (kind "attribute") (name "itms") (declared-name "itms") (range (start (line 43) (character 29)) (end (line 43) (character 41))) (parent (node (document "d0") (qualified-name "AHFNorway::CallGiveItems"))) (authored (membership (kind Feature)) (relationships (typing (reference "String") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AHFNorway::Publish"))) (kind "attribute def") (name "Publish") (declared-name "Publish") (range (start (line 36) (character 1)) (end (line 36) (character 42))) (parent (node (document "d0") (qualified-name "AHFNorway"))))
+    (element (id (node (document "d0") (qualified-name "AHFNorway::Publish::nametopic"))) (kind "attribute") (name "nametopic") (declared-name "nametopic") (range (start (line 36) (character 24)) (end (line 36) (character 41))) (parent (node (document "d0") (qualified-name "AHFNorway::Publish"))) (authored (membership (kind Feature)) (relationships (typing (reference "String") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AHFNorway::ResultGiveItems"))) (kind "attribute def") (name "ResultGiveItems") (declared-name "ResultGiveItems") (range (start (line 44) (character 1)) (end (line 44) (character 44))) (parent (node (document "d0") (qualified-name "AHFNorway"))))
+    (element (id (node (document "d0") (qualified-name "AHFNorway::ResultGiveItems::ack"))) (kind "attribute") (name "ack") (declared-name "ack") (range (start (line 44) (character 31)) (end (line 44) (character 43))) (parent (node (document "d0") (qualified-name "AHFNorway::ResultGiveItems"))) (authored (membership (kind Feature)) (relationships (typing (reference "Boolean") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AHFNorway::Return_Ack"))) (kind "attribute def") (name "Return_Ack") (declared-name "Return_Ack") (range (start (line 40) (character 1)) (end (line 40) (character 39))) (parent (node (document "d0") (qualified-name "AHFNorway"))))
+    (element (id (node (document "d0") (qualified-name "AHFNorway::Return_Ack::ack"))) (kind "attribute") (name "ack") (declared-name "ack") (range (start (line 40) (character 26)) (end (line 40) (character 38))) (parent (node (document "d0") (qualified-name "AHFNorway::Return_Ack"))) (authored (membership (kind Feature)) (relationships (typing (reference "Boolean") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AHFNorway::Return_AllItems"))) (kind "attribute def") (name "Return_AllItems") (declared-name "Return_AllItems") (range (start (line 38) (character 1)) (end (line 38) (character 45))) (parent (node (document "d0") (qualified-name "AHFNorway"))))
+    (element (id (node (document "d0") (qualified-name "AHFNorway::Return_AllItems::itms"))) (kind "attribute") (name "itms") (declared-name "itms") (range (start (line 38) (character 32)) (end (line 38) (character 44))) (parent (node (document "d0") (qualified-name "AHFNorway::Return_AllItems"))) (authored (membership (kind Feature)) (relationships (typing (reference "String") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AHFNorway::Subscribe"))) (kind "attribute def") (name "Subscribe") (declared-name "Subscribe") (range (start (line 37) (character 1)) (end (line 37) (character 43))) (parent (node (document "d0") (qualified-name "AHFNorway"))))
+    (element (id (node (document "d0") (qualified-name "AHFNorway::Subscribe::nametopic"))) (kind "attribute") (name "nametopic") (declared-name "nametopic") (range (start (line 37) (character 25)) (end (line 37) (character 42))) (parent (node (document "d0") (qualified-name "AHFNorway::Subscribe"))) (authored (membership (kind Feature)) (relationships (typing (reference "String") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AHFNorway::Subscribe_giveItems"))) (kind "attribute def") (name "Subscribe_giveItems") (declared-name "Subscribe_giveItems") (range (start (line 39) (character 1)) (end (line 39) (character 48))) (parent (node (document "d0") (qualified-name "AHFNorway"))))
+    (element (id (node (document "d0") (qualified-name "AHFNorway::Subscribe_giveItems::itms"))) (kind "attribute") (name "itms") (declared-name "itms") (range (start (line 39) (character 35)) (end (line 39) (character 47))) (parent (node (document "d0") (qualified-name "AHFNorway::Subscribe_giveItems"))) (authored (membership (kind Feature)) (relationships (typing (reference "String") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AHFNorway::_clouddd"))) (kind "metadata keyword") (name "clouddd") (declared-name "clouddd") (range (start (line 46) (character 1)) (end (line 46) (character 10))) (parent (node (document "d0") (qualified-name "AHFNorway"))))
+    (element (id (node (document "d0") (qualified-name "AHFNorway::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 4943))) (parent (node (document "d0") (qualified-name "AHFNorway"))))
+    (element (id (node (document "d0") (qualified-name "AHFNorway::_service"))) (kind "metadata keyword") (name "service") (declared-name "service") (range (start (line 10) (character 1)) (end (line 10) (character 10))) (parent (node (document "d0") (qualified-name "AHFNorway"))))
+    (element (id (node (document "d0") (qualified-name "AHFNorway::_servicedd"))) (kind "metadata keyword") (name "servicedd") (declared-name "servicedd") (range (start (line 18) (character 1)) (end (line 18) (character 12))) (parent (node (document "d0") (qualified-name "AHFNorway"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "AHFNorway::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "AHFProfileLib::*") (range (start (line 5) (character 16)) (end (line 5) (character 29))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AHFNorway::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "AHFProfileMetadata::*") (range (start (line 6) (character 16)) (end (line 6) (character 34))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AHFNorway::*#import2"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (range (start (line 8) (character 16)) (end (line 8) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AHFNorway::AHFCoreLib"))) (kind membershipImport) (ordinal 0)) (authored-target "AHFCoreLib") (range (start (line 7) (character 16)) (end (line 7) (character 26))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AHFNorway::APIS_DD"))) (kind specialization) (ordinal 0)) (authored-target "APISService") (range (start (line 18) (character 32)) (end (line 18) (character 43))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AHFNorway::CallGiveItems::itms"))) (kind featureTyping) (ordinal 0)) (authored-target "String") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AHFNorway::Publish::nametopic"))) (kind featureTyping) (ordinal 0)) (authored-target "String") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AHFNorway::ResultGiveItems::ack"))) (kind featureTyping) (ordinal 0)) (authored-target "Boolean") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AHFNorway::Return_Ack::ack"))) (kind featureTyping) (ordinal 0)) (authored-target "Boolean") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AHFNorway::Return_AllItems::itms"))) (kind featureTyping) (ordinal 0)) (authored-target "String") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AHFNorway::Subscribe::nametopic"))) (kind featureTyping) (ordinal 0)) (authored-target "String") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AHFNorway::Subscribe_giveItems::itms"))) (kind featureTyping) (ordinal 0)) (authored-target "String") (range none) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "AHFNorway::APIS_DD::_documentation"))) (to (node (document "d0") (qualified-name "AHFNorway::APIS_DD"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "AHFNorway::_clouddd"))) (to (node (document "d0") (qualified-name "AHFNorway"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "AHFNorway::_documentation"))) (to (node (document "d0") (qualified-name "AHFNorway"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "AHFNorway::_service"))) (to (node (document "d0") (qualified-name "AHFNorway"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "AHFNorway::_servicedd"))) (to (node (document "d0") (qualified-name "AHFNorway"))) (provenance authored))
-    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "AHFNorway::APIS_DD::~APIS_DD"))) (to (node (document "d0") (qualified-name "AHFNorway::APIS_DD"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AHFNorway::APIS_DD"))) (status missing-prerequisite) (target "Ports::Port"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AHFNorway::APIS_DD::~APIS_DD"))) (status missing-prerequisite) (target "Ports::Port"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AHFNorway::CallGiveItems"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AHFNorway::CallGiveItems::itms"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AHFNorway::Publish"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AHFNorway::Publish::nametopic"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AHFNorway::ResultGiveItems"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AHFNorway::ResultGiveItems::ack"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AHFNorway::Return_Ack"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AHFNorway::Return_Ack::ack"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AHFNorway::Return_AllItems"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AHFNorway::Return_AllItems::itms"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AHFNorway::Subscribe"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AHFNorway::Subscribe::nametopic"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AHFNorway::Subscribe_giveItems"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AHFNorway::Subscribe_giveItems::itms"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AHFNorway::_clouddd"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AHFNorway::_service"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AHFNorway::_servicedd"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/ahfnorway_topics.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 5 16) (end 5 29))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 6 16) (end 6 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 16) (end 7 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 16) (end 8 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 10 1) (end 10 10))
-      )
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 10 10) (end 10 200))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 18 1) (end 18 12))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 18 12) (end 18 407))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_annotation_syntax")
-        (source "sysml")
-        (range (start 21 2) (end 21 148))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_annotation_syntax")
-        (source "sysml")
-        (range (start 27 2) (end 27 137))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 40 26) (end 40 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 44 31) (end 44 43))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 46 1) (end 46 10))
-      )
-      (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 46 10) (end 46 3522))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

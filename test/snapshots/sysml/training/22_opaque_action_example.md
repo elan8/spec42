@@ -25,6 +25,39 @@ package 'Opaque Action Example' {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "22_opaque_action_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 3 2) (end 3 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 3 20) (end 3 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 7 2) (end 7 25))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 8 2) (end 8 145))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -47,6 +80,14 @@ CloseCurly,EndOfFile,
     (action_def 'UpdateSensors'
       (default_ref_usage in 'sensors' : 'Sensor' multiplicity)
       (textual_rep language '"Alf"'))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'ScalarValues::Boolean'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'ScalarValues::Boolean'
 ~~~
 # FORMAT
 ~~~sysml
@@ -71,70 +112,25 @@ package 'Opaque Action Example' {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'ScalarValues::Boolean'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'ScalarValues::Boolean'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Opaque Action Example"))) (name "Opaque Action Example") (declared-name "Opaque Action Example")
-      (contains
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Opaque Action Example::Sensor"))) (name "Sensor") (declared-name "Sensor") (declared)
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Opaque Action Example::Sensor::ready"))) (name "ready") (declared-name "ready") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Opaque Action Example::Sensor")))))
-          )
-        )
-        (element (kind "action def") (id (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors"))) (name "UpdateSensors") (declared-name "UpdateSensors")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors::sensors"))) (name "sensors") (declared-name "sensors") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors")))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "e845d88e7e23eda9800245b748ec7fe58eace2b5f312ceb1ce1730976287ab9f") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Opaque Action Example"))) (kind "package") (name "Opaque Action Example") (declared-name "Opaque Action Example") (range (start (line 0) (character 0)) (end (line 0) (character 307))))
+    (element (id (node (document "d0") (qualified-name "Opaque Action Example::Sensor"))) (kind "part def") (name "Sensor") (declared-name "Sensor") (range (start (line 2) (character 1)) (end (line 2) (character 64))) (parent (node (document "d0") (qualified-name "Opaque Action Example"))))
+    (element (id (node (document "d0") (qualified-name "Opaque Action Example::Sensor::ready"))) (kind "attribute") (name "ready") (declared-name "ready") (range (start (line 3) (character 2)) (end (line 3) (character 42))) (parent (node (document "d0") (qualified-name "Opaque Action Example::Sensor"))) (authored (membership (kind Feature)) (relationships (typing (reference "Boolean") (range none)) (typing (reference "ScalarValues::Boolean") (range (start (line 3) (character 20)) (end (line 3) (character 41)))))))
+    (element (id (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors"))) (kind "action def") (name "UpdateSensors") (declared-name "UpdateSensors") (range (start (line 6) (character 1)) (end (line 6) (character 200))) (parent (node (document "d0") (qualified-name "Opaque Action Example"))))
+    (element (id (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors::sensors"))) (kind "in out parameter") (name "sensors") (declared-name "sensors") (range (start (line 7) (character 2)) (end (line 7) (character 25))) (parent (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors"))) (authored (relationships (typing (reference "sensors : Sensor[*]") (range none)))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Opaque Action Example::Sensor::ready"))) (kind featureTyping) (ordinal 0)) (authored-target "Boolean") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Opaque Action Example::Sensor::ready"))) (kind featureTyping) (ordinal 1)) (authored-target "ScalarValues::Boolean") (range (start (line 3) (character 20)) (end (line 3) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors::sensors"))) (kind featureTyping) (ordinal 0)) (authored-target "sensors : Sensor[*]") (range none) (outcome (status unresolved)))
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Opaque Action Example::Sensor"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Opaque Action Example::Sensor::ready"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors"))) (status missing-prerequisite) (target "Actions::Action"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/22_opaque_action_example.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 3 2) (end 3 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 7 2) (end 7 25))
-      )
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 8 2) (end 8 145))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

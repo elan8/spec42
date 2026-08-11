@@ -204,6 +204,51 @@ package ChangingFeatureValuesExecution {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "a_3_8_changing_feature_values.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 16) (end 6 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 71))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 75 16) (end 75 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 77 16) (end 77 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 78 16) (end 78 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 79 16) (end 79 71))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -519,6 +564,146 @@ CloseCurly,EndOfFile,
       (feature_def 'oaSiD' value chains 'objectToFinish.afterShip.isDry')
       (feature_def 'oaSiS' value chains 'objectToFinish.afterShip.isShipped'))))
 ~~~
+# EXPECTED
+~~~
+parse.expected_keyword_to
+parse.expected_keyword_to
+parse.expected_keyword_to
+semantic.ambiguous_member 'malformed'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'FeatureWritePerformance'
+semantic.unresolved_name 'onOccurrence'
+semantic.unresolved_name 'startingAt'
+semantic.unresolved_name 'accessedFeature'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'replacementValues'
+semantic.unresolved_name 'FeatureWritePerformance'
+semantic.unresolved_name 'onOccurrence'
+semantic.unresolved_name 'startingAt'
+semantic.unresolved_name 'accessedFeature'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'replacementValues'
+semantic.unresolved_name 'FeatureWritePerformance'
+semantic.unresolved_name 'onOccurrence'
+semantic.unresolved_name 'startingAt'
+semantic.unresolved_name 'accessedFeature'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'replacementValues'
+semantic.unresolved_name 'FeatureWritePerformance'
+semantic.unresolved_name 'onOccurrence'
+semantic.unresolved_name 'startingAt'
+semantic.unresolved_name 'accessedFeature'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'replacementValues'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'FeatureWritePerformance'
+semantic.unresolved_name 'onOccurrence'
+semantic.unresolved_name 'HappensBefore'
+semantic.unresolved_name 'earlierOccurrence'
+semantic.unresolved_name 'laterOccurrence'
+semantic.unresolved_name 'HappensBefore'
+semantic.unresolved_name 'earlierOccurrence'
+semantic.unresolved_name 'laterOccurrence'
+semantic.unresolved_name 'HappensBefore'
+semantic.unresolved_name 'earlierOccurrence'
+semantic.unresolved_name 'laterOccurrence'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'objectToFinish::beforePaint::startShot::timeCoincidentOccurrences'
+semantic.unresolved_name 'objectToFinish::beforePaint::immediateSuccessors'
+semantic.unresolved_name 'objectToFinish::whilePainting::startShot::timeCoincidentOccurrences'
+semantic.unresolved_name 'painting'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'objectToFinish::whilePainting::immediateSuccessors'
+semantic.unresolved_name 'objectToFinish::afterPaint::startShot::timeCoincidentOccurrences'
+semantic.unresolved_name 'painted'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'objectToFinish::afterPaint::immediateSuccessors'
+semantic.unresolved_name 'objectToFinish::afterDry::startShot::timeCoincidentOccurrences'
+semantic.unresolved_name 'dried'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'objectToFinish::afterDry::immediateSuccessors'
+semantic.unresolved_name 'objectToFinish::afterShip::startShot::timeCoincidentOccurrences'
+semantic.unresolved_name 'shipped'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'objectToFinish::afterShip::timeCoincidentOccurrences'
+~~~
+# PROBLEMS
+~~~
+parse.expected_keyword_to
+parse.expected_keyword_to
+parse.expected_keyword_to
+semantic.ambiguous_member 'malformed'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'FeatureWritePerformance'
+semantic.unresolved_name 'onOccurrence'
+semantic.unresolved_name 'startingAt'
+semantic.unresolved_name 'accessedFeature'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'replacementValues'
+semantic.unresolved_name 'FeatureWritePerformance'
+semantic.unresolved_name 'onOccurrence'
+semantic.unresolved_name 'startingAt'
+semantic.unresolved_name 'accessedFeature'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'replacementValues'
+semantic.unresolved_name 'FeatureWritePerformance'
+semantic.unresolved_name 'onOccurrence'
+semantic.unresolved_name 'startingAt'
+semantic.unresolved_name 'accessedFeature'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'replacementValues'
+semantic.unresolved_name 'FeatureWritePerformance'
+semantic.unresolved_name 'onOccurrence'
+semantic.unresolved_name 'startingAt'
+semantic.unresolved_name 'accessedFeature'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'replacementValues'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'timeSlices'
+semantic.unresolved_name 'FeatureWritePerformance'
+semantic.unresolved_name 'onOccurrence'
+semantic.unresolved_name 'HappensBefore'
+semantic.unresolved_name 'earlierOccurrence'
+semantic.unresolved_name 'laterOccurrence'
+semantic.unresolved_name 'HappensBefore'
+semantic.unresolved_name 'earlierOccurrence'
+semantic.unresolved_name 'laterOccurrence'
+semantic.unresolved_name 'HappensBefore'
+semantic.unresolved_name 'earlierOccurrence'
+semantic.unresolved_name 'laterOccurrence'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'objectToFinish::beforePaint::startShot::timeCoincidentOccurrences'
+semantic.unresolved_name 'objectToFinish::beforePaint::immediateSuccessors'
+semantic.unresolved_name 'objectToFinish::whilePainting::startShot::timeCoincidentOccurrences'
+semantic.unresolved_name 'painting'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'objectToFinish::whilePainting::immediateSuccessors'
+semantic.unresolved_name 'objectToFinish::afterPaint::startShot::timeCoincidentOccurrences'
+semantic.unresolved_name 'painted'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'objectToFinish::afterPaint::immediateSuccessors'
+semantic.unresolved_name 'objectToFinish::afterDry::startShot::timeCoincidentOccurrences'
+semantic.unresolved_name 'dried'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'objectToFinish::afterDry::immediateSuccessors'
+semantic.unresolved_name 'objectToFinish::afterShip::startShot::timeCoincidentOccurrences'
+semantic.unresolved_name 'shipped'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'objectToFinish::afterShip::timeCoincidentOccurrences'
+~~~
 # FORMAT
 ~~~sysml
 
@@ -720,325 +905,60 @@ package ChangingFeatureValuesExecution {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-parse.expected_keyword_to
-parse.expected_keyword_to
-parse.expected_keyword_to
-semantic.ambiguous_member 'malformed'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'FeatureWritePerformance'
-semantic.unresolved_name 'onOccurrence'
-semantic.unresolved_name 'startingAt'
-semantic.unresolved_name 'accessedFeature'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'replacementValues'
-semantic.unresolved_name 'FeatureWritePerformance'
-semantic.unresolved_name 'onOccurrence'
-semantic.unresolved_name 'startingAt'
-semantic.unresolved_name 'accessedFeature'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'replacementValues'
-semantic.unresolved_name 'FeatureWritePerformance'
-semantic.unresolved_name 'onOccurrence'
-semantic.unresolved_name 'startingAt'
-semantic.unresolved_name 'accessedFeature'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'replacementValues'
-semantic.unresolved_name 'FeatureWritePerformance'
-semantic.unresolved_name 'onOccurrence'
-semantic.unresolved_name 'startingAt'
-semantic.unresolved_name 'accessedFeature'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'replacementValues'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'FeatureWritePerformance'
-semantic.unresolved_name 'onOccurrence'
-semantic.unresolved_name 'HappensBefore'
-semantic.unresolved_name 'earlierOccurrence'
-semantic.unresolved_name 'laterOccurrence'
-semantic.unresolved_name 'HappensBefore'
-semantic.unresolved_name 'earlierOccurrence'
-semantic.unresolved_name 'laterOccurrence'
-semantic.unresolved_name 'HappensBefore'
-semantic.unresolved_name 'earlierOccurrence'
-semantic.unresolved_name 'laterOccurrence'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'objectToFinish::beforePaint::startShot::timeCoincidentOccurrences'
-semantic.unresolved_name 'objectToFinish::beforePaint::immediateSuccessors'
-semantic.unresolved_name 'objectToFinish::whilePainting::startShot::timeCoincidentOccurrences'
-semantic.unresolved_name 'painting'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'objectToFinish::whilePainting::immediateSuccessors'
-semantic.unresolved_name 'objectToFinish::afterPaint::startShot::timeCoincidentOccurrences'
-semantic.unresolved_name 'painted'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'objectToFinish::afterPaint::immediateSuccessors'
-semantic.unresolved_name 'objectToFinish::afterDry::startShot::timeCoincidentOccurrences'
-semantic.unresolved_name 'dried'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'objectToFinish::afterDry::immediateSuccessors'
-semantic.unresolved_name 'objectToFinish::afterShip::startShot::timeCoincidentOccurrences'
-semantic.unresolved_name 'shipped'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'objectToFinish::afterShip::timeCoincidentOccurrences'
-~~~
-# PROBLEMS
-~~~
-parse.expected_keyword_to
-parse.expected_keyword_to
-parse.expected_keyword_to
-semantic.ambiguous_member 'malformed'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'FeatureWritePerformance'
-semantic.unresolved_name 'onOccurrence'
-semantic.unresolved_name 'startingAt'
-semantic.unresolved_name 'accessedFeature'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'replacementValues'
-semantic.unresolved_name 'FeatureWritePerformance'
-semantic.unresolved_name 'onOccurrence'
-semantic.unresolved_name 'startingAt'
-semantic.unresolved_name 'accessedFeature'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'replacementValues'
-semantic.unresolved_name 'FeatureWritePerformance'
-semantic.unresolved_name 'onOccurrence'
-semantic.unresolved_name 'startingAt'
-semantic.unresolved_name 'accessedFeature'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'replacementValues'
-semantic.unresolved_name 'FeatureWritePerformance'
-semantic.unresolved_name 'onOccurrence'
-semantic.unresolved_name 'startingAt'
-semantic.unresolved_name 'accessedFeature'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'replacementValues'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'FeatureWritePerformance'
-semantic.unresolved_name 'onOccurrence'
-semantic.unresolved_name 'HappensBefore'
-semantic.unresolved_name 'earlierOccurrence'
-semantic.unresolved_name 'laterOccurrence'
-semantic.unresolved_name 'HappensBefore'
-semantic.unresolved_name 'earlierOccurrence'
-semantic.unresolved_name 'laterOccurrence'
-semantic.unresolved_name 'HappensBefore'
-semantic.unresolved_name 'earlierOccurrence'
-semantic.unresolved_name 'laterOccurrence'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'objectToFinish::beforePaint::startShot::timeCoincidentOccurrences'
-semantic.unresolved_name 'objectToFinish::beforePaint::immediateSuccessors'
-semantic.unresolved_name 'objectToFinish::whilePainting::startShot::timeCoincidentOccurrences'
-semantic.unresolved_name 'painting'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'objectToFinish::whilePainting::immediateSuccessors'
-semantic.unresolved_name 'objectToFinish::afterPaint::startShot::timeCoincidentOccurrences'
-semantic.unresolved_name 'painted'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'objectToFinish::afterPaint::immediateSuccessors'
-semantic.unresolved_name 'objectToFinish::afterDry::startShot::timeCoincidentOccurrences'
-semantic.unresolved_name 'dried'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'objectToFinish::afterDry::immediateSuccessors'
-semantic.unresolved_name 'objectToFinish::afterShip::startShot::timeCoincidentOccurrences'
-semantic.unresolved_name 'shipped'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'objectToFinish::afterShip::timeCoincidentOccurrences'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))) (name "ChangingFeatureValuesExecution") (declared-name "ChangingFeatureValuesExecution")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::FeatureWritePerformance"))) (name "FeatureWritePerformance") (declared-name "FeatureWritePerformance"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::HappensBefore"))) (name "HappensBefore") (declared-name "HappensBefore"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyDry"))) (name "MyDry") (declared-name "MyDry"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyDry_Before_Ship_Link"))) (name "MyDry_Before_Ship_Link") (declared-name "MyDry_Before_Ship_Link"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyManufacture"))) (name "MyManufacture") (declared-name "MyManufacture"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyPaint"))) (name "MyPaint") (declared-name "MyPaint"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyPaint_Before_Dry_Link"))) (name "MyPaint_Before_Dry_Link") (declared-name "MyPaint_Before_Dry_Link"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyPaintingFW_Before_PaintFW_Link"))) (name "MyPaintingFW_Before_PaintFW_Link") (declared-name "MyPaintingFW_Before_PaintFW_Link"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyProduct"))) (name "MyProduct") (declared-name "MyProduct"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyProductFeatureWrite"))) (name "MyProductFeatureWrite") (declared-name "MyProductFeatureWrite"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyShip"))) (name "MyShip") (declared-name "MyShip"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::PaintedMyProductFeatureWrite"))) (name "PaintedMyProductFeatureWrite") (declared-name "PaintedMyProductFeatureWrite"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::PaintingMyProductFeatureWrite"))) (name "PaintingMyProductFeatureWrite") (declared-name "PaintingMyProductFeatureWrite"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::ProductTimeSlice"))) (name "ProductTimeSlice") (declared-name "ProductTimeSlice"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword2"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword3"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword4"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword5"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword6"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword7"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword8"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword9"))) (name "atom") (declared-name "atom"))
-      )
-    )
-    (element (kind "package") (id (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted"))) (name "ChangingFeatureValuesModelToBeExecuted") (declared-name "ChangingFeatureValuesModelToBeExecuted")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted::Boolean"))) (name "Boolean") (declared-name "Boolean"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted::Dry"))) (name "Dry") (declared-name "Dry"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted::FeatureWritePerformance"))) (name "FeatureWritePerformance") (declared-name "FeatureWritePerformance"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted::Manufacture"))) (name "Manufacture") (declared-name "Manufacture"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted::Paint"))) (name "Paint") (declared-name "Paint"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted::Product"))) (name "Product") (declared-name "Product"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted::Ship"))) (name "Ship") (declared-name "Ship"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "4f8ae1b84db3a050ce1fb3943b9591371be51c75899e6a6468b05fe32edad38b") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))) (kind "package") (name "ChangingFeatureValuesExecution") (declared-name "ChangingFeatureValuesExecution") (range (start (line 70) (character 0)) (end (line 70) (character 4855))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 75) (character 1)) (end (line 75) (character 25))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))) (authored (membership (kind Import) (visibility "private") (import (reference "Atoms::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 75) (character 16)) (end (line 75) (character 21))))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 76) (character 1)) (end (line 76) (character 58))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))) (authored (membership (kind Import) (visibility "private") (import (reference "ChangingFeatureValuesModelToBeExecuted::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 76) (character 16)) (end (line 76) (character 54))))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::FeatureWritePerformance"))) (kind "import") (name "FeatureWritePerformance") (declared-name "FeatureWritePerformance") (range (start (line 79) (character 1)) (end (line 79) (character 72))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))) (authored (membership (kind Import) (visibility "private") (import (reference "FeatureReferencingPerformances::FeatureWritePerformance") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 79) (character 16)) (end (line 79) (character 71))))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::HappensBefore"))) (kind "import") (name "HappensBefore") (declared-name "HappensBefore") (range (start (line 78) (character 1)) (end (line 78) (character 43))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::HappensBefore") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 78) (character 16)) (end (line 78) (character 42))))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyDry"))) (kind "kermlDecl") (name "MyDry") (declared-name "MyDry") (range (start (line 122) (character 1)) (end (line 122) (character 169))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyDry_Before_Ship_Link"))) (kind "kermlDecl") (name "MyDry_Before_Ship_Link") (declared-name "MyDry_Before_Ship_Link") (range (start (line 141) (character 1)) (end (line 141) (character 161))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyManufacture"))) (kind "kermlDecl") (name "MyManufacture") (declared-name "MyManufacture") (range (start (line 146) (character 1)) (end (line 146) (character 2451))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyPaint"))) (kind "kermlDecl") (name "MyPaint") (declared-name "MyPaint") (range (start (line 110) (character 1)) (end (line 110) (character 369))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyPaint_Before_Dry_Link"))) (kind "kermlDecl") (name "MyPaint_Before_Dry_Link") (declared-name "MyPaint_Before_Dry_Link") (range (start (line 129) (character 1)) (end (line 129) (character 163))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyPaintingFW_Before_PaintFW_Link"))) (kind "kermlDecl") (name "MyPaintingFW_Before_PaintFW_Link") (declared-name "MyPaintingFW_Before_PaintFW_Link") (range (start (line 105) (character 1)) (end (line 105) (character 217))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyProduct"))) (kind "classifier decl") (name "MyProduct") (declared-name "MyProduct") (range (start (line 88) (character 1)) (end (line 88) (character 365))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyProductFeatureWrite"))) (kind "kermlDecl") (name "MyProductFeatureWrite") (declared-name "MyProductFeatureWrite") (range (start (line 96) (character 1)) (end (line 96) (character 113))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyShip"))) (kind "kermlDecl") (name "MyShip") (declared-name "MyShip") (range (start (line 134) (character 1)) (end (line 134) (character 174))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::Occurrence"))) (kind "import") (name "Occurrence") (declared-name "Occurrence") (range (start (line 77) (character 1)) (end (line 77) (character 40))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::Occurrence") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 77) (character 16)) (end (line 77) (character 39))))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::PaintedMyProductFeatureWrite"))) (kind "kermlDecl") (name "PaintedMyProductFeatureWrite") (declared-name "PaintedMyProductFeatureWrite") (range (start (line 103) (character 1)) (end (line 103) (character 73))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::PaintingMyProductFeatureWrite"))) (kind "kermlDecl") (name "PaintingMyProductFeatureWrite") (declared-name "PaintingMyProductFeatureWrite") (range (start (line 101) (character 1)) (end (line 101) (character 74))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::ProductTimeSlice"))) (kind "classifier decl") (name "ProductTimeSlice") (declared-name "ProductTimeSlice") (range (start (line 81) (character 1)) (end (line 81) (character 138))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 87) (character 1)) (end (line 87) (character 8))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 100) (character 1)) (end (line 100) (character 8))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword2"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 102) (character 1)) (end (line 102) (character 8))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword3"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 104) (character 1)) (end (line 104) (character 8))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword4"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 109) (character 1)) (end (line 109) (character 8))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword5"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 121) (character 1)) (end (line 121) (character 8))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword6"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 128) (character 1)) (end (line 128) (character 8))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword7"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 133) (character 1)) (end (line 133) (character 8))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword8"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 140) (character 1)) (end (line 140) (character 8))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword9"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 145) (character 1)) (end (line 145) (character 8))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted"))) (kind "package") (name "ChangingFeatureValuesModelToBeExecuted") (declared-name "ChangingFeatureValuesModelToBeExecuted") (range (start (line 1) (character 0)) (end (line 1) (character 1984))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted::Boolean"))) (kind "import") (name "Boolean") (declared-name "Boolean") (range (start (line 6) (character 1)) (end (line 6) (character 38))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Boolean") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted::Dry"))) (kind "kermlDecl") (name "Dry") (declared-name "Dry") (range (start (line 49) (character 1)) (end (line 49) (character 302))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted::FeatureWritePerformance"))) (kind "import") (name "FeatureWritePerformance") (declared-name "FeatureWritePerformance") (range (start (line 7) (character 1)) (end (line 7) (character 72))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted"))) (authored (membership (kind Import) (visibility "private") (import (reference "FeatureReferencingPerformances::FeatureWritePerformance") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 71))))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted::Manufacture"))) (kind "kermlDecl") (name "Manufacture") (declared-name "Manufacture") (range (start (line 9) (character 1)) (end (line 9) (character 392))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted::Paint"))) (kind "kermlDecl") (name "Paint") (declared-name "Paint") (range (start (line 30) (character 1)) (end (line 30) (character 630))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted::Product"))) (kind "classifier decl") (name "Product") (declared-name "Product") (range (start (line 24) (character 1)) (end (line 24) (character 159))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted"))))
+    (element (id (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted::Ship"))) (kind "kermlDecl") (name "Ship") (declared-name "Ship") (range (start (line 59) (character 1)) (end (line 59) (character 313))) (parent (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Atoms::*") (range (start (line 75) (character 16)) (end (line 75) (character 21))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "ChangingFeatureValuesModelToBeExecuted::*") (range (start (line 76) (character 16)) (end (line 76) (character 54))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted")))))
+    (reference (id (source (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::FeatureWritePerformance"))) (kind membershipImport) (ordinal 0)) (authored-target "FeatureReferencingPerformances::FeatureWritePerformance") (range (start (line 79) (character 16)) (end (line 79) (character 71))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::HappensBefore"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::HappensBefore") (range (start (line 78) (character 16)) (end (line 78) (character 42))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::Occurrence"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::Occurrence") (range (start (line 77) (character 16)) (end (line 77) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted::Boolean"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Boolean") (range (start (line 6) (character 16)) (end (line 6) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted::FeatureWritePerformance"))) (kind membershipImport) (ordinal 0)) (authored-target "FeatureReferencingPerformances::FeatureWritePerformance") (range (start (line 7) (character 16)) (end (line 7) (character 71))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom"))) (to (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword"))) (to (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword2"))) (to (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword3"))) (to (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword4"))) (to (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword5"))) (to (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword6"))) (to (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword7"))) (to (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword8"))) (to (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword9"))) (to (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword2"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword3"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword4"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword5"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword6"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword7"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword8"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword9"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/a_3_8_changing_feature_values.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 6 16) (end 6 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 16) (end 7 71))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 75 16) (end 75 21))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 77 16) (end 77 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 78 16) (end 78 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 87 1) (end 87 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 100 1) (end 100 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 100 1) (end 100 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 102 1) (end 102 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 104 1) (end 104 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 109 1) (end 109 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 121 1) (end 121 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 128 1) (end 128 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 133 1) (end 133 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 140 1) (end 140 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 145 1) (end 145 8))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

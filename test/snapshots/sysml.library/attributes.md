@@ -28,13 +28,26 @@ standard library package Attributes {
     }
 }
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "attributes.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 19) (end 6 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 19) (end 7 35))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -61,6 +74,14 @@ CloseCurly,EndOfFile,
       (documentation))
     (alias_member 'attributeValues' for 'dataValues'
       (documentation))))
+~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
 ~~~
 # FORMAT
 ~~~sysml
@@ -90,45 +111,23 @@ standard library package Attributes {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Attributes"))) (name "Attributes") (declared-name "Attributes")
-      (contains
-        (element (kind "alias") (id (node (document "d0") (qualified-name "Attributes::AttributeValue"))) (name "AttributeValue") (declared-name "AttributeValue"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Attributes::DataValue"))) (name "DataValue") (declared-name "DataValue"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "Attributes::_documentation"))) (name ""))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "Attributes::attributeValues"))) (name "attributeValues") (declared-name "attributeValues"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Attributes::dataValues"))) (name "dataValues") (declared-name "dataValues"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ef7b847c049139dd812770246d5ed1849f148354b0507eb02942a811060b0f68") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Attributes"))) (kind "package") (name "Attributes") (declared-name "Attributes") (range (start (line 0) (character 0)) (end (line 0) (character 651))))
+    (element (id (node (document "d0") (qualified-name "Attributes::AttributeValue"))) (kind "alias") (name "AttributeValue") (declared-name "AttributeValue") (range (start (line 9) (character 4)) (end (line 9) (character 271))) (parent (node (document "d0") (qualified-name "Attributes"))))
+    (element (id (node (document "d0") (qualified-name "Attributes::DataValue"))) (kind "import") (name "DataValue") (declared-name "DataValue") (range (start (line 6) (character 4)) (end (line 6) (character 35))) (parent (node (document "d0") (qualified-name "Attributes"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::DataValue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 6) (character 19)) (end (line 6) (character 34))))))
+    (element (id (node (document "d0") (qualified-name "Attributes::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 651))) (parent (node (document "d0") (qualified-name "Attributes"))))
+    (element (id (node (document "d0") (qualified-name "Attributes::attributeValues"))) (kind "alias") (name "attributeValues") (declared-name "attributeValues") (range (start (line 16) (character 4)) (end (line 16) (character 135))) (parent (node (document "d0") (qualified-name "Attributes"))))
+    (element (id (node (document "d0") (qualified-name "Attributes::dataValues"))) (kind "import") (name "dataValues") (declared-name "dataValues") (range (start (line 7) (character 4)) (end (line 7) (character 36))) (parent (node (document "d0") (qualified-name "Attributes"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::dataValues") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 19)) (end (line 7) (character 35))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Attributes::DataValue"))) (kind membershipImport) (ordinal 0)) (authored-target "Base::DataValue") (range (start (line 6) (character 19)) (end (line 6) (character 34))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Attributes::dataValues"))) (kind membershipImport) (ordinal 0)) (authored-target "Base::dataValues") (range (start (line 7) (character 19)) (end (line 7) (character 35))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Attributes::_documentation"))) (to (node (document "d0") (qualified-name "Attributes"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/attributes.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 6 19) (end 6 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 19) (end 7 35))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

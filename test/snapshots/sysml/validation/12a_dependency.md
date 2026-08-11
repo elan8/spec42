@@ -22,6 +22,15 @@ package '12a-Dependency' {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "12a_dependency.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -50,6 +59,14 @@ CloseCurly,EndOfFile,
     (attribute_usage 'z')
     (dependency from 'z' to 'x', 'y')))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package '12a-Dependency' {
@@ -70,61 +87,27 @@ package '12a-Dependency' {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "12a-Dependency"))) (name "12a-Dependency") (declared-name "12a-Dependency")
-      (contains
-        (element (kind "package") (id (node (document "d0") (qualified-name "12a-Dependency::Application Layer"))) (name "Application Layer") (declared-name "Application Layer"))
-        (element (kind "package") (id (node (document "d0") (qualified-name "12a-Dependency::Data Layer"))) (name "Data Layer") (declared-name "Data Layer"))
-        (element (kind "package") (id (node (document "d0") (qualified-name "12a-Dependency::Service Layer"))) (name "Service Layer") (declared-name "Service Layer"))
-        (element (kind "dependency") (id (node (document "d0") (qualified-name "12a-Dependency::Use"))) (name "Use") (declared-name "Use"))
-        (element (kind "dependency") (id (node (document "d0") (qualified-name "12a-Dependency::dependency"))) (name "dependency") (declared-name "dependency"))
-        (element (kind "dependency") (id (node (document "d0") (qualified-name "12a-Dependency::dependency#dependency"))) (name "dependency") (declared-name "dependency"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "12a-Dependency::x"))) (name "x") (declared-name "x") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "12a-Dependency::y"))) (name "y") (declared-name "y") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "12a-Dependency::z"))) (name "z") (declared-name "z") (declared (properties (ordered false) (unique true))))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b10ecec8da6bd229fece92c53284df6b38e00bcfe8c6d728d96d20d780c8d822") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "12a-Dependency"))) (kind "package") (name "12a-Dependency") (declared-name "12a-Dependency") (range (start (line 0) (character 0)) (end (line 0) (character 293))))
+    (element (id (node (document "d0") (qualified-name "12a-Dependency::Application Layer"))) (kind "package") (name "Application Layer") (declared-name "Application Layer") (range (start (line 2) (character 1)) (end (line 2) (character 29))) (parent (node (document "d0") (qualified-name "12a-Dependency"))))
+    (element (id (node (document "d0") (qualified-name "12a-Dependency::Data Layer"))) (kind "package") (name "Data Layer") (declared-name "Data Layer") (range (start (line 4) (character 1)) (end (line 4) (character 22))) (parent (node (document "d0") (qualified-name "12a-Dependency"))))
+    (element (id (node (document "d0") (qualified-name "12a-Dependency::Service Layer"))) (kind "package") (name "Service Layer") (declared-name "Service Layer") (range (start (line 3) (character 1)) (end (line 3) (character 25))) (parent (node (document "d0") (qualified-name "12a-Dependency"))))
+    (element (id (node (document "d0") (qualified-name "12a-Dependency::Use"))) (kind "dependency") (name "Use") (declared-name "Use") (range (start (line 6) (character 1)) (end (line 6) (character 60))) (parent (node (document "d0") (qualified-name "12a-Dependency"))))
+    (element (id (node (document "d0") (qualified-name "12a-Dependency::dependency"))) (kind "dependency") (name "dependency") (declared-name "dependency") (range (start (line 7) (character 1)) (end (line 7) (character 49))) (parent (node (document "d0") (qualified-name "12a-Dependency"))))
+    (element (id (node (document "d0") (qualified-name "12a-Dependency::dependency#dependency"))) (kind "dependency") (name "dependency") (declared-name "dependency") (range (start (line 13) (character 1)) (end (line 13) (character 22))) (parent (node (document "d0") (qualified-name "12a-Dependency"))))
+    (element (id (node (document "d0") (qualified-name "12a-Dependency::x"))) (kind "attribute def") (name "x") (declared-name "x") (range (start (line 9) (character 1)) (end (line 9) (character 13))) (parent (node (document "d0") (qualified-name "12a-Dependency"))))
+    (element (id (node (document "d0") (qualified-name "12a-Dependency::y"))) (kind "attribute def") (name "y") (declared-name "y") (range (start (line 10) (character 1)) (end (line 10) (character 13))) (parent (node (document "d0") (qualified-name "12a-Dependency"))))
+    (element (id (node (document "d0") (qualified-name "12a-Dependency::z"))) (kind "attribute def") (name "z") (declared-name "z") (range (start (line 11) (character 1)) (end (line 11) (character 13))) (parent (node (document "d0") (qualified-name "12a-Dependency"))))
+  )
+  (references
   )
   (relationships
-    (dependency (status resolved) (from (node (document "d0") (qualified-name "12a-Dependency::Application Layer"))) (to (node (document "d0") (qualified-name "12a-Dependency::Service Layer"))) (provenance authored))
-    (dependency (status resolved) (from (node (document "d0") (qualified-name "12a-Dependency::Service Layer"))) (to (node (document "d0") (qualified-name "12a-Dependency::Data Layer"))) (provenance authored))
-    (dependency (status resolved) (from (node (document "d0") (qualified-name "12a-Dependency::z"))) (to (node (document "d0") (qualified-name "12a-Dependency::x"))) (provenance authored))
-    (dependency (status resolved) (from (node (document "d0") (qualified-name "12a-Dependency::z"))) (to (node (document "d0") (qualified-name "12a-Dependency::y"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "12a-Dependency::x"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "12a-Dependency::y"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "12a-Dependency::z"))) (status missing-prerequisite) (target "Base::DataValue"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/validation/12a_dependency.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 13 1) (end 13 22))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

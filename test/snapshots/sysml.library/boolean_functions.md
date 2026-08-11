@@ -28,6 +28,69 @@ standard library package BooleanFunctions {
 }
 	
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "boolean_functions.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 15) (end 7 27))
+      )
+    )
+  )
+)
+~~~
+# TOKENS
+~~~zig
+KwStandard,KwLibrary,KwPackage,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+KwPublic,KwImport,Ident,ColonColon,Star,Semicolon,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,Ident,KwSpecializes,Ident,ColonColon,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+CloseCurly,
+EndOfFile,
+~~~
+# AST
+~~~
+(root
+  (standard_library_package_def 'BooleanFunctions'
+    (documentation)
+    (import_decl public 'ScalarValues::*')
+    (function_def
+      (feature_def in 'x' : 'Boolean' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Boolean' multiplicity)
+      (feature_def in 'y' : 'Boolean' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Boolean' multiplicity)
+      (feature_def in 'y' : 'Boolean' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Boolean' multiplicity)
+      (feature_def in 'y' : 'Boolean' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Boolean' multiplicity)
+      (feature_def in 'y' : 'Boolean' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Boolean' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'String' multiplicity)
+      (return_member))))
+~~~
 # EXPECTED
 ~~~
 semantic.unresolved_name 'ScalarFunctions::not'
@@ -82,54 +145,6 @@ semantic.unresolved_name 'String'
 semantic.unresolved_name 'String'
 semantic.unresolved_name 'Boolean'
 ~~~
-# TOKENS
-~~~zig
-KwStandard,KwLibrary,KwPackage,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-KwPublic,KwImport,Ident,ColonColon,Star,Semicolon,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,Ident,KwSpecializes,Ident,ColonColon,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-CloseCurly,
-EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (standard_library_package_def 'BooleanFunctions'
-    (documentation)
-    (import_decl public 'ScalarValues::*')
-    (function_def
-      (feature_def in 'x' : 'Boolean' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Boolean' multiplicity)
-      (feature_def in 'y' : 'Boolean' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Boolean' multiplicity)
-      (feature_def in 'y' : 'Boolean' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Boolean' multiplicity)
-      (feature_def in 'y' : 'Boolean' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Boolean' multiplicity)
-      (feature_def in 'y' : 'Boolean' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Boolean' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'String' multiplicity)
-      (return_member))))
-~~~
 # FORMAT
 ~~~sysml
 standard library package BooleanFunctions {
@@ -157,49 +172,26 @@ standard library package BooleanFunctions {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "BooleanFunctions"))) (name "BooleanFunctions") (declared-name "BooleanFunctions")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "BooleanFunctions::*"))) (name "*") (declared-name "*"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BooleanFunctions::ToBoolean"))) (name "ToBoolean") (declared-name "ToBoolean"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BooleanFunctions::ToString"))) (name "ToString") (declared-name "ToString"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "BooleanFunctions::_documentation"))) (name ""))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BooleanFunctions::function"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BooleanFunctions::function#kermlDecl"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BooleanFunctions::function#kermlDecl2"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BooleanFunctions::function#kermlDecl3"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BooleanFunctions::function#kermlDecl4"))) (name "function") (declared-name "function"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "307406046d5d9631aa1fa4fb1a0588faf5ef04355f17541fd5842282b65e6ed5") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "BooleanFunctions"))) (kind "package") (name "BooleanFunctions") (declared-name "BooleanFunctions") (range (start (line 0) (character 0)) (end (line 0) (character 959))))
+    (element (id (node (document "d0") (qualified-name "BooleanFunctions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 7) (character 1)) (end (line 7) (character 31))) (parent (node (document "d0") (qualified-name "BooleanFunctions"))) (authored (membership (kind Import) (visibility "public") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 7) (character 15)) (end (line 7) (character 27))))))
+    (element (id (node (document "d0") (qualified-name "BooleanFunctions::ToBoolean"))) (kind "kermlDecl") (name "ToBoolean") (declared-name "ToBoolean") (range (start (line 18) (character 1)) (end (line 18) (character 61))) (parent (node (document "d0") (qualified-name "BooleanFunctions"))))
+    (element (id (node (document "d0") (qualified-name "BooleanFunctions::ToString"))) (kind "kermlDecl") (name "ToString") (declared-name "ToString") (range (start (line 17) (character 1)) (end (line 17) (character 96))) (parent (node (document "d0") (qualified-name "BooleanFunctions"))))
+    (element (id (node (document "d0") (qualified-name "BooleanFunctions::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 959))) (parent (node (document "d0") (qualified-name "BooleanFunctions"))))
+    (element (id (node (document "d0") (qualified-name "BooleanFunctions::function"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 9) (character 1)) (end (line 9) (character 93))) (parent (node (document "d0") (qualified-name "BooleanFunctions"))))
+    (element (id (node (document "d0") (qualified-name "BooleanFunctions::function#kermlDecl"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 10) (character 1)) (end (line 10) (character 111))) (parent (node (document "d0") (qualified-name "BooleanFunctions"))))
+    (element (id (node (document "d0") (qualified-name "BooleanFunctions::function#kermlDecl2"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 12) (character 1)) (end (line 12) (character 107))) (parent (node (document "d0") (qualified-name "BooleanFunctions"))))
+    (element (id (node (document "d0") (qualified-name "BooleanFunctions::function#kermlDecl3"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 13) (character 1)) (end (line 13) (character 107))) (parent (node (document "d0") (qualified-name "BooleanFunctions"))))
+    (element (id (node (document "d0") (qualified-name "BooleanFunctions::function#kermlDecl4"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 15) (character 1)) (end (line 15) (character 113))) (parent (node (document "d0") (qualified-name "BooleanFunctions"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "BooleanFunctions::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (range (start (line 7) (character 15)) (end (line 7) (character 27))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "BooleanFunctions::_documentation"))) (to (node (document "d0") (qualified-name "BooleanFunctions"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/boolean_functions.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 15) (end 7 27))
-      )
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 10 1) (end 10 111))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

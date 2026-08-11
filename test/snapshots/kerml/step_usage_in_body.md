@@ -10,13 +10,14 @@ state def SD {
     step s2 subsets step;
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'step'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'step'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "step_usage_in_body.md"
+    (diagnostics
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -32,6 +33,14 @@ CloseCurly,EndOfFile,
     (step_usage)
     (step_usage)))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'step'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'step'
+~~~
 # FORMAT
 ~~~sysml
 state def SD {
@@ -42,27 +51,16 @@ state def SD {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "state def") (id (node (document "d0") (qualified-name "SD"))) (name "SD") (declared-name "SD"))
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "18405fb042ce249758988cca0c9bba5c5cf09b1dfad245cedf22394ad2179d46") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "SD"))) (kind "state def") (name "SD") (declared-name "SD") (range (start (line 0) (character 0)) (end (line 0) (character 54))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SD"))) (status missing-prerequisite) (target "States::StateAction"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/step_usage_in_body.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

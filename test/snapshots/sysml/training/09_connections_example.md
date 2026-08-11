@@ -48,6 +48,27 @@ package 'Connections Example' {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "09_connections_example.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "missing_semicolon")
+        (source "sysml")
+        (range (start 28 3) (end 28 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 28 3) (end 28 34))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -124,6 +145,14 @@ CloseCurly,EndOfFile,
         (connector_end)
         (connector_end)))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package 'Connections Example' {
@@ -170,128 +199,71 @@ package 'Connections Example' {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Connections Example"))) (name "Connections Example") (declared-name "Connections Example")
-      (contains
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Connections Example::Hub"))) (name "Hub") (declared-name "Hub") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Connections Example::LugBoltJoint"))) (name "LugBoltJoint") (declared-name "LugBoltJoint") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Connections Example::LugBoltMountingHole"))) (name "LugBoltMountingHole") (declared-name "LugBoltMountingHole") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Connections Example::LugBoltThreadableHole"))) (name "LugBoltThreadableHole") (declared-name "LugBoltThreadableHole") (declared))
-        (element (kind "connection def") (id (node (document "d0") (qualified-name "Connections Example::PressureSeat"))) (name "PressureSeat") (declared-name "PressureSeat")
-          (contains
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "Connections Example::PressureSeat::bead"))) (name "bead") (declared-name "bead") (declared (properties (end true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Connections Example::PressureSeat")))))
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "Connections Example::PressureSeat::mountingRim"))) (name "mountingRim") (declared-name "mountingRim") (declared (properties (end true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Connections Example::PressureSeat")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Connections Example::Tire"))) (name "Tire") (declared-name "Tire") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Connections Example::TireBead"))) (name "TireBead") (declared-name "TireBead") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Connections Example::TireMountingRim"))) (name "TireMountingRim") (declared-name "TireMountingRim") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Connections Example::Wheel"))) (name "Wheel") (declared-name "Wheel") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Connections Example::WheelAssembly"))) (name "WheelAssembly") (declared-name "WheelAssembly") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Connections Example::WheelHubAssembly"))) (name "WheelHubAssembly") (declared-name "WheelHubAssembly") (declared))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly"))) (name "wheelHubAssembly") (declared-name "wheelHubAssembly") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::hub"))) (name "hub") (declared-name "hub") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Connections Example::WheelHubAssembly"))))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::hub::h"))) (name "h") (declared-name "h") (declared (properties (ordered false)) (multiplicity (lower 5) (upper 5) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Connections Example::Hub")))))
-              )
-            )
-            (element (kind "part") (id (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::lugBoltJoints"))) (name "lugBoltJoints") (declared-name "lugBoltJoints") (declared (properties (ordered false)) (multiplicity (lower 0) (upper 5) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Connections Example::WheelHubAssembly")))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel"))) (name "wheel") (declared-name "wheel") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Connections Example::WheelHubAssembly"))))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::t"))) (name "t") (declared-name "t") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Connections Example::WheelAssembly"))))
-                  (contains
-                    (element (kind "part") (id (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::t::bead"))) (name "bead") (declared-name "bead") (declared (properties (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Connections Example::Tire")))))
-                  )
-                )
-                (element (kind "part") (id (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w"))) (name "w") (declared-name "w") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Connections Example::WheelAssembly"))))
-                  (contains
-                    (element (kind "part") (id (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w::mountingHoles"))) (name "mountingHoles") (declared-name "mountingHoles") (declared (properties (ordered false)) (multiplicity (lower 5) (upper 5) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Connections Example::Wheel")))))
-                    (element (kind "part") (id (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w::rim"))) (name "rim") (declared-name "rim") (declared (properties (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Connections Example::Wheel")))))
-                  )
-                )
-              )
-            )
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "639eb31ff8a448d3ac4ba8b676849d92d512953c85ca4c618dcbe31de4fbd05e") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Connections Example"))) (kind "package") (name "Connections Example") (declared-name "Connections Example") (range (start (line 0) (character 0)) (end (line 0) (character 974))))
+    (element (id (node (document "d0") (qualified-name "Connections Example::Hub"))) (kind "part def") (name "Hub") (declared-name "Hub") (range (start (line 9) (character 1)) (end (line 9) (character 14))) (parent (node (document "d0") (qualified-name "Connections Example"))))
+    (element (id (node (document "d0") (qualified-name "Connections Example::LugBoltJoint"))) (kind "part def") (name "LugBoltJoint") (declared-name "LugBoltJoint") (range (start (line 11) (character 1)) (end (line 11) (character 23))) (parent (node (document "d0") (qualified-name "Connections Example"))))
+    (element (id (node (document "d0") (qualified-name "Connections Example::LugBoltMountingHole"))) (kind "part def") (name "LugBoltMountingHole") (declared-name "LugBoltMountingHole") (range (start (line 8) (character 1)) (end (line 8) (character 30))) (parent (node (document "d0") (qualified-name "Connections Example"))))
+    (element (id (node (document "d0") (qualified-name "Connections Example::LugBoltThreadableHole"))) (kind "part def") (name "LugBoltThreadableHole") (declared-name "LugBoltThreadableHole") (range (start (line 10) (character 1)) (end (line 10) (character 32))) (parent (node (document "d0") (qualified-name "Connections Example"))))
+    (element (id (node (document "d0") (qualified-name "Connections Example::PressureSeat"))) (kind "connection def") (name "PressureSeat") (declared-name "PressureSeat") (range (start (line 13) (character 1)) (end (line 13) (character 111))) (parent (node (document "d0") (qualified-name "Connections Example"))))
+    (element (id (node (document "d0") (qualified-name "Connections Example::PressureSeat::bead"))) (kind "interface end") (name "bead") (declared-name "bead") (range (start (line 14) (character 2)) (end (line 14) (character 31))) (parent (node (document "d0") (qualified-name "Connections Example::PressureSeat"))) (authored (relationships (typing (reference "TireBead") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Connections Example::PressureSeat::mountingRim"))) (kind "interface end") (name "mountingRim") (declared-name "mountingRim") (range (start (line 15) (character 2)) (end (line 15) (character 45))) (parent (node (document "d0") (qualified-name "Connections Example::PressureSeat"))) (authored (relationships (typing (reference "TireMountingRim") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Connections Example::Tire"))) (kind "part def") (name "Tire") (declared-name "Tire") (range (start (line 4) (character 1)) (end (line 4) (character 15))) (parent (node (document "d0") (qualified-name "Connections Example"))))
+    (element (id (node (document "d0") (qualified-name "Connections Example::TireBead"))) (kind "part def") (name "TireBead") (declared-name "TireBead") (range (start (line 5) (character 1)) (end (line 5) (character 19))) (parent (node (document "d0") (qualified-name "Connections Example"))))
+    (element (id (node (document "d0") (qualified-name "Connections Example::TireMountingRim"))) (kind "part def") (name "TireMountingRim") (declared-name "TireMountingRim") (range (start (line 7) (character 1)) (end (line 7) (character 26))) (parent (node (document "d0") (qualified-name "Connections Example"))))
+    (element (id (node (document "d0") (qualified-name "Connections Example::Wheel"))) (kind "part def") (name "Wheel") (declared-name "Wheel") (range (start (line 6) (character 1)) (end (line 6) (character 16))) (parent (node (document "d0") (qualified-name "Connections Example"))))
+    (element (id (node (document "d0") (qualified-name "Connections Example::WheelAssembly"))) (kind "part def") (name "WheelAssembly") (declared-name "WheelAssembly") (range (start (line 3) (character 1)) (end (line 3) (character 24))) (parent (node (document "d0") (qualified-name "Connections Example"))))
+    (element (id (node (document "d0") (qualified-name "Connections Example::WheelHubAssembly"))) (kind "part def") (name "WheelHubAssembly") (declared-name "WheelHubAssembly") (range (start (line 2) (character 1)) (end (line 2) (character 27))) (parent (node (document "d0") (qualified-name "Connections Example"))))
+    (element (id (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly"))) (kind "part") (name "wheelHubAssembly") (declared-name "wheelHubAssembly") (range (start (line 18) (character 1)) (end (line 18) (character 584))) (parent (node (document "d0") (qualified-name "Connections Example"))) (authored (membership (kind Feature)) (relationships (typing (reference "WheelHubAssembly") (range (start (line 18) (character 25)) (end (line 18) (character 41)))))))
+    (element (id (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::hub"))) (kind "part") (name "hub") (declared-name "hub") (range (start (line 34) (character 2)) (end (line 34) (character 63))) (parent (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly"))) (authored (membership (kind Feature)) (relationships (typing (reference "Hub") (range (start (line 34) (character 13)) (end (line 34) (character 16)))))))
+    (element (id (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::hub::h"))) (kind "part") (name "h") (declared-name "h") (range (start (line 35) (character 3)) (end (line 35) (character 37))) (parent (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::hub"))) (authored (membership (kind Feature)) (relationships (typing (reference "LugBoltThreadableHole") (range (start (line 35) (character 12)) (end (line 35) (character 33)))))))
+    (element (id (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::lugBoltJoints"))) (kind "part") (name "lugBoltJoints") (declared-name "lugBoltJoints") (range (start (line 33) (character 2)) (end (line 33) (character 42))) (parent (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly"))) (authored (membership (kind Feature)) (relationships (typing (reference "LugBoltJoint") (range (start (line 33) (character 23)) (end (line 33) (character 35)))))))
+    (element (id (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel"))) (kind "part") (name "wheel") (declared-name "wheel") (range (start (line 20) (character 2)) (end (line 20) (character 318))) (parent (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly"))) (authored (membership (kind Feature)) (relationships (typing (reference "WheelAssembly") (range (start (line 20) (character 15)) (end (line 20) (character 28)))))))
+    (element (id (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::t"))) (kind "part") (name "t") (declared-name "t") (range (start (line 21) (character 3)) (end (line 21) (character 58))) (parent (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel"))) (authored (membership (kind Feature)) (relationships (typing (reference "Tire") (range (start (line 21) (character 12)) (end (line 21) (character 16)))))))
+    (element (id (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::t::bead"))) (kind "part") (name "bead") (declared-name "bead") (range (start (line 22) (character 4)) (end (line 22) (character 28))) (parent (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::t"))) (authored (membership (kind Feature)) (relationships (typing (reference "TireBead") (range (start (line 22) (character 16)) (end (line 22) (character 24)))))))
+    (element (id (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w"))) (kind "part") (name "w") (declared-name "w") (range (start (line 24) (character 3)) (end (line 24) (character 110))) (parent (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel"))) (authored (membership (kind Feature)) (relationships (typing (reference "Wheel") (range (start (line 24) (character 11)) (end (line 24) (character 16)))))))
+    (element (id (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w::mountingHoles"))) (kind "part") (name "mountingHoles") (declared-name "mountingHoles") (range (start (line 26) (character 4)) (end (line 26) (character 48))) (parent (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w"))) (authored (membership (kind Feature)) (relationships (typing (reference "LugBoltMountingHole") (range (start (line 26) (character 25)) (end (line 26) (character 44)))))))
+    (element (id (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w::rim"))) (kind "part") (name "rim") (declared-name "rim") (range (start (line 25) (character 4)) (end (line 25) (character 34))) (parent (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w"))) (authored (membership (kind Feature)) (relationships (typing (reference "TireMountingRim") (range (start (line 25) (character 15)) (end (line 25) (character 30)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Connections Example::PressureSeat::bead"))) (kind featureTyping) (ordinal 0)) (authored-target "TireBead") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Connections Example::TireBead")))))
+    (reference (id (source (node (document "d0") (qualified-name "Connections Example::PressureSeat::mountingRim"))) (kind featureTyping) (ordinal 0)) (authored-target "TireMountingRim") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Connections Example::TireMountingRim")))))
+    (reference (id (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly"))) (kind featureTyping) (ordinal 0)) (authored-target "WheelHubAssembly") (range (start (line 18) (character 25)) (end (line 18) (character 41))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Connections Example::WheelHubAssembly")))))
+    (reference (id (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly"))) (kind connectionSource) (ordinal 0)) (authored-target "lugBoltJoints") (range (start (line 37) (character 16)) (end (line 37) (character 30))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::lugBoltJoints")))))
+    (reference (id (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly"))) (kind connectionSource) (ordinal 1)) (authored-target "lugBoltJoints") (range (start (line 38) (character 16)) (end (line 38) (character 30))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::lugBoltJoints")))))
+    (reference (id (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly"))) (kind connectionTarget) (ordinal 0)) (authored-target "wheel::w::mountingHoles") (range (start (line 37) (character 38)) (end (line 37) (character 59))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w::mountingHoles")))))
+    (reference (id (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly"))) (kind connectionTarget) (ordinal 1)) (authored-target "hub::h") (range (start (line 38) (character 38)) (end (line 38) (character 43))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::hub::h")))))
+    (reference (id (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::hub"))) (kind featureTyping) (ordinal 0)) (authored-target "Hub") (range (start (line 34) (character 13)) (end (line 34) (character 16))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Connections Example::Hub")))))
+    (reference (id (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::hub::h"))) (kind featureTyping) (ordinal 0)) (authored-target "LugBoltThreadableHole") (range (start (line 35) (character 12)) (end (line 35) (character 33))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Connections Example::LugBoltThreadableHole")))))
+    (reference (id (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::lugBoltJoints"))) (kind featureTyping) (ordinal 0)) (authored-target "LugBoltJoint") (range (start (line 33) (character 23)) (end (line 33) (character 35))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Connections Example::LugBoltJoint")))))
+    (reference (id (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel"))) (kind featureTyping) (ordinal 0)) (authored-target "WheelAssembly") (range (start (line 20) (character 15)) (end (line 20) (character 28))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Connections Example::WheelAssembly")))))
+    (reference (id (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::t"))) (kind featureTyping) (ordinal 0)) (authored-target "Tire") (range (start (line 21) (character 12)) (end (line 21) (character 16))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Connections Example::Tire")))))
+    (reference (id (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::t::bead"))) (kind featureTyping) (ordinal 0)) (authored-target "TireBead") (range (start (line 22) (character 16)) (end (line 22) (character 24))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Connections Example::TireBead")))))
+    (reference (id (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w"))) (kind featureTyping) (ordinal 0)) (authored-target "Wheel") (range (start (line 24) (character 11)) (end (line 24) (character 16))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Connections Example::Wheel")))))
+    (reference (id (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w::mountingHoles"))) (kind featureTyping) (ordinal 0)) (authored-target "LugBoltMountingHole") (range (start (line 26) (character 25)) (end (line 26) (character 44))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Connections Example::LugBoltMountingHole")))))
+    (reference (id (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w::rim"))) (kind featureTyping) (ordinal 0)) (authored-target "TireMountingRim") (range (start (line 25) (character 15)) (end (line 25) (character 30))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Connections Example::TireMountingRim")))))
   )
   (relationships
-    (connection (status resolved) (from (node (document "d0") (qualified-name "Connections Example::TireBead"))) (to (node (document "d0") (qualified-name "Connections Example::TireMountingRim"))) (provenance authored))
-    (connection (status resolved) (from (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::lugBoltJoints"))) (to (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::hub::h"))) (connect (source-expression "lugBoltJoints") (target-expression "hub::h") (container-prefix "Connections Example::wheelHubAssembly")) (provenance authored))
-    (connection (status resolved) (from (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::lugBoltJoints"))) (to (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w::mountingHoles"))) (connect (source-expression "lugBoltJoints") (target-expression "wheel::w::mountingHoles") (container-prefix "Connections Example::wheelHubAssembly")) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Connections Example::PressureSeat::bead"))) (to (node (document "d0") (qualified-name "Connections Example::TireBead"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Connections Example::PressureSeat::mountingRim"))) (to (node (document "d0") (qualified-name "Connections Example::TireMountingRim"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly"))) (to (node (document "d0") (qualified-name "Connections Example::WheelHubAssembly"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::hub"))) (to (node (document "d0") (qualified-name "Connections Example::Hub"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::hub::h"))) (to (node (document "d0") (qualified-name "Connections Example::LugBoltThreadableHole"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::lugBoltJoints"))) (to (node (document "d0") (qualified-name "Connections Example::LugBoltJoint"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel"))) (to (node (document "d0") (qualified-name "Connections Example::WheelAssembly"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::t"))) (to (node (document "d0") (qualified-name "Connections Example::Tire"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::t::bead"))) (to (node (document "d0") (qualified-name "Connections Example::TireBead"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w"))) (to (node (document "d0") (qualified-name "Connections Example::Wheel"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w::mountingHoles"))) (to (node (document "d0") (qualified-name "Connections Example::LugBoltMountingHole"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w::rim"))) (to (node (document "d0") (qualified-name "Connections Example::TireMountingRim"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Connections Example::PressureSeat::bead"))) (target (node (document "d0") (qualified-name "Connections Example::TireBead"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Connections Example::PressureSeat::bead"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Connections Example::PressureSeat::mountingRim"))) (target (node (document "d0") (qualified-name "Connections Example::TireMountingRim"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Connections Example::PressureSeat::mountingRim"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly"))) (target (node (document "d0") (qualified-name "Connections Example::WheelHubAssembly"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::hub"))) (target (node (document "d0") (qualified-name "Connections Example::Hub"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::hub"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::hub::h"))) (target (node (document "d0") (qualified-name "Connections Example::LugBoltThreadableHole"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::hub::h"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::lugBoltJoints"))) (target (node (document "d0") (qualified-name "Connections Example::LugBoltJoint"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::lugBoltJoints"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind connection) (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::lugBoltJoints"))) (target (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::hub::h"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly"))) (kind connectionSource) (ordinal 1)) (expression (kind connection) (source "lugBoltJoints") (target "hub::h") (source-range (start (line 38) (character 16)) (end (line 38) (character 30))) (target-range (start (line 38) (character 38)) (end (line 38) (character 43)))))
+    (relationship (kind connection) (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::lugBoltJoints"))) (target (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w::mountingHoles"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly"))) (kind connectionSource) (ordinal 0)) (expression (kind connection) (source "lugBoltJoints") (target "wheel::w::mountingHoles") (source-range (start (line 37) (character 16)) (end (line 37) (character 30))) (target-range (start (line 37) (character 38)) (end (line 37) (character 59)))))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel"))) (target (node (document "d0") (qualified-name "Connections Example::WheelAssembly"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::t"))) (target (node (document "d0") (qualified-name "Connections Example::Tire"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::t"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::t::bead"))) (target (node (document "d0") (qualified-name "Connections Example::TireBead"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::t::bead"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w"))) (target (node (document "d0") (qualified-name "Connections Example::Wheel"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w::mountingHoles"))) (target (node (document "d0") (qualified-name "Connections Example::LugBoltMountingHole"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w::mountingHoles"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w::rim"))) (target (node (document "d0") (qualified-name "Connections Example::TireMountingRim"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w::rim"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Connections Example::Hub"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Connections Example::LugBoltJoint"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Connections Example::LugBoltMountingHole"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Connections Example::LugBoltThreadableHole"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Connections Example::PressureSeat"))) (status missing-prerequisite) (target "Connections::Connection"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Connections Example::Tire"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Connections Example::TireBead"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Connections Example::TireMountingRim"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Connections Example::Wheel"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Connections Example::WheelAssembly"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Connections Example::WheelHubAssembly"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::hub"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::hub::h"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::lugBoltJoints"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::t"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::t::bead"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w::mountingHoles"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Connections Example::wheelHubAssembly::wheel::w::rim"))) (status missing-prerequisite) (target "Parts::parts"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/09_connections_example.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "missing_semicolon")
-        (source "sysml")
-        (range (start 28 3) (end 28 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 28 3) (end 28 34))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

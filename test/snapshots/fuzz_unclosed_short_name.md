@@ -14,17 +14,14 @@ package ion {
   }
 }
 ~~~
-# EXPECTED
-~~~
-parse.expected_usage_declaration
-semantic.duplicate_name 'A'
-semantic.ambiguous_member 'A'
-~~~
-# PROBLEMS
-~~~
-parse.expected_usage_declaration
-semantic.duplicate_name 'A'
-semantic.ambiguous_member 'A'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz_unclosed_short_name.md"
+    (diagnostics
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -45,6 +42,18 @@ CloseCurly,EndOfFile,
     (class_def 'A'
       (feature_def in #'su' 'f'))))
 ~~~
+# EXPECTED
+~~~
+parse.expected_usage_declaration
+semantic.duplicate_name 'A'
+semantic.ambiguous_member 'A'
+~~~
+# PROBLEMS
+~~~
+parse.expected_usage_declaration
+semantic.duplicate_name 'A'
+semantic.ambiguous_member 'A'
+~~~
 # FORMAT
 ~~~sysml
 package ion {
@@ -58,35 +67,18 @@ package ion {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ion"))) (name "ion") (declared-name "ion")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ion::A"))) (name "A") (declared-name "A"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ion::A#classifier_decl"))) (name "A") (declared-name "A"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6f0cfc58889cc520cc0acaf3e9a0d5df9664402d52925df6ab57f1595c1d7949") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ion"))) (kind "package") (name "ion") (declared-name "ion") (range (start (line 0) (character 0)) (end (line 0) (character 68))))
+    (element (id (node (document "d0") (qualified-name "ion::A"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 1) (character 2)) (end (line 1) (character 25))) (parent (node (document "d0") (qualified-name "ion"))))
+    (element (id (node (document "d0") (qualified-name "ion::A#classifier_decl"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 5) (character 2)) (end (line 5) (character 25))) (parent (node (document "d0") (qualified-name "ion"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "fuzz_unclosed_short_name.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 5 2) (end 5 25))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

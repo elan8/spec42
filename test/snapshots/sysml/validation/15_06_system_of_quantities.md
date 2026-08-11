@@ -46,6 +46,21 @@ package '15_06-System of Quantities' {
 	  */
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "15_06_system_of_quantities.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 19) (end 1 22))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -61,6 +76,14 @@ CloseCurly,EndOfFile,
     (import_decl private 'ISQ::*')
     (comment)
     (comment)))
+~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
 ~~~
 # FORMAT
 ~~~sysml
@@ -106,44 +129,20 @@ package '15_06-System of Quantities' {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "15_06-System of Quantities"))) (name "15_06-System of Quantities") (declared-name "15_06-System of Quantities")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "15_06-System of Quantities::*"))) (name "*") (declared-name "*"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b84b14eae59877a1b64c2ae03ea1a739688c3264416c7db3519c66b43ea46ef2") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "15_06-System of Quantities"))) (kind "package") (name "15_06-System of Quantities") (declared-name "15_06-System of Quantities") (range (start (line 0) (character 0)) (end (line 0) (character 2784))))
+    (element (id (node (document "d0") (qualified-name "15_06-System of Quantities::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 4)) (end (line 1) (character 26))) (parent (node (document "d0") (qualified-name "15_06-System of Quantities"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 19)) (end (line 1) (character 22))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "15_06-System of Quantities::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ISQ::*") (range (start (line 1) (character 19)) (end (line 1) (character 22))) (outcome (status unresolved)))
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/validation/15_06_system_of_quantities.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 19) (end 1 22))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

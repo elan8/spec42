@@ -35,6 +35,15 @@ package 'Parts Example-1' {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "07_parts_example_1.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -77,6 +86,14 @@ CloseCurly,EndOfFile,
       (part_usage :>> 'eng'
         (part_usage :>> 'cyl' multiplicity)))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package 'Parts Example-1' {
@@ -110,99 +127,45 @@ package 'Parts Example-1' {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Parts Example-1"))) (name "Parts Example-1") (declared-name "Parts Example-1")
-      (contains
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Parts Example-1::Cylinder"))) (name "Cylinder") (declared-name "Cylinder") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Parts Example-1::Engine"))) (name "Engine") (declared-name "Engine") (declared)
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-1::Engine::cyl"))) (name "cyl") (declared-name "cyl") (declared (properties (ordered false)) (multiplicity (lower 4) (upper 6) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Parts Example-1::Engine")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Parts Example-1::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-1::Vehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Parts Example-1::Vehicle")))))
-          )
-        )
-        (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-1::bigVehicle"))) (name "bigVehicle") (declared-name "bigVehicle") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-1::bigVehicle::eng"))) (name "eng") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Parts Example-1::Vehicle"))))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-1::bigVehicle::eng::cyl"))) (name "cyl") (declared (properties (ordered false)) (multiplicity (lower 6) (upper 6) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Parts Example-1::Vehicle")))))
-              )
-            )
-          )
-        )
-        (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-1::smallVehicle"))) (name "smallVehicle") (declared-name "smallVehicle") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-1::smallVehicle::eng"))) (name "eng") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Parts Example-1::Vehicle"))))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-1::smallVehicle::eng::cyl"))) (name "cyl") (declared (properties (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Parts Example-1::Vehicle")))))
-              )
-            )
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "cdaa1fac596a42b0d4ad7c59a38132047755cc824347896661b41a002390942a") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Parts Example-1"))) (kind "package") (name "Parts Example-1") (declared-name "Parts Example-1") (range (start (line 0) (character 0)) (end (line 0) (character 359))))
+    (element (id (node (document "d0") (qualified-name "Parts Example-1::Cylinder"))) (kind "part def") (name "Cylinder") (declared-name "Cylinder") (range (start (line 12) (character 1)) (end (line 12) (character 19))) (parent (node (document "d0") (qualified-name "Parts Example-1"))))
+    (element (id (node (document "d0") (qualified-name "Parts Example-1::Engine"))) (kind "part def") (name "Engine") (declared-name "Engine") (range (start (line 8) (character 1)) (end (line 8) (character 50))) (parent (node (document "d0") (qualified-name "Parts Example-1"))))
+    (element (id (node (document "d0") (qualified-name "Parts Example-1::Engine::cyl"))) (kind "part") (name "cyl") (declared-name "cyl") (range (start (line 9) (character 2)) (end (line 9) (character 28))) (parent (node (document "d0") (qualified-name "Parts Example-1::Engine"))) (authored (membership (kind Feature)) (relationships (typing (reference "Cylinder") (range (start (line 9) (character 13)) (end (line 9) (character 21)))))))
+    (element (id (node (document "d0") (qualified-name "Parts Example-1::Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (range (start (line 4) (character 1)) (end (line 4) (character 43))) (parent (node (document "d0") (qualified-name "Parts Example-1"))))
+    (element (id (node (document "d0") (qualified-name "Parts Example-1::Vehicle::eng"))) (kind "part") (name "eng") (declared-name "eng") (range (start (line 5) (character 2)) (end (line 5) (character 20))) (parent (node (document "d0") (qualified-name "Parts Example-1::Vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Engine") (range (start (line 5) (character 13)) (end (line 5) (character 19)))))))
+    (element (id (node (document "d0") (qualified-name "Parts Example-1::bigVehicle"))) (kind "part") (name "bigVehicle") (declared-name "bigVehicle") (range (start (line 22) (character 1)) (end (line 22) (character 84))) (parent (node (document "d0") (qualified-name "Parts Example-1"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle") (range (start (line 22) (character 19)) (end (line 22) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "Parts Example-1::bigVehicle::eng"))) (kind "part") (name "eng") (range (start (line 23) (character 2)) (end (line 23) (character 52))) (parent (node (document "d0") (qualified-name "Parts Example-1::bigVehicle"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "eng") (range (start (line 23) (character 17)) (end (line 23) (character 20)))))))
+    (element (id (node (document "d0") (qualified-name "Parts Example-1::bigVehicle::eng::cyl"))) (kind "part") (name "cyl") (range (start (line 24) (character 3)) (end (line 24) (character 25))) (parent (node (document "d0") (qualified-name "Parts Example-1::bigVehicle::eng"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "cyl") (range (start (line 24) (character 18)) (end (line 24) (character 21)))))))
+    (element (id (node (document "d0") (qualified-name "Parts Example-1::smallVehicle"))) (kind "part") (name "smallVehicle") (declared-name "smallVehicle") (range (start (line 16) (character 1)) (end (line 16) (character 86))) (parent (node (document "d0") (qualified-name "Parts Example-1"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle") (range (start (line 16) (character 21)) (end (line 16) (character 28)))))))
+    (element (id (node (document "d0") (qualified-name "Parts Example-1::smallVehicle::eng"))) (kind "part") (name "eng") (range (start (line 17) (character 2)) (end (line 17) (character 52))) (parent (node (document "d0") (qualified-name "Parts Example-1::smallVehicle"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "eng") (range (start (line 17) (character 17)) (end (line 17) (character 20)))))))
+    (element (id (node (document "d0") (qualified-name "Parts Example-1::smallVehicle::eng::cyl"))) (kind "part") (name "cyl") (range (start (line 18) (character 3)) (end (line 18) (character 25))) (parent (node (document "d0") (qualified-name "Parts Example-1::smallVehicle::eng"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "cyl") (range (start (line 18) (character 18)) (end (line 18) (character 21)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Parts Example-1::Engine::cyl"))) (kind featureTyping) (ordinal 0)) (authored-target "Cylinder") (range (start (line 9) (character 13)) (end (line 9) (character 21))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Parts Example-1::Cylinder")))))
+    (reference (id (source (node (document "d0") (qualified-name "Parts Example-1::Vehicle::eng"))) (kind featureTyping) (ordinal 0)) (authored-target "Engine") (range (start (line 5) (character 13)) (end (line 5) (character 19))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Parts Example-1::Engine")))))
+    (reference (id (source (node (document "d0") (qualified-name "Parts Example-1::bigVehicle"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (range (start (line 22) (character 19)) (end (line 22) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Parts Example-1::Vehicle")))))
+    (reference (id (source (node (document "d0") (qualified-name "Parts Example-1::bigVehicle::eng"))) (kind redefinition) (ordinal 0)) (authored-target "eng") (range (start (line 23) (character 17)) (end (line 23) (character 20))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Parts Example-1::bigVehicle::eng")))))
+    (reference (id (source (node (document "d0") (qualified-name "Parts Example-1::bigVehicle::eng::cyl"))) (kind redefinition) (ordinal 0)) (authored-target "cyl") (range (start (line 24) (character 18)) (end (line 24) (character 21))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Parts Example-1::bigVehicle::eng::cyl")))))
+    (reference (id (source (node (document "d0") (qualified-name "Parts Example-1::smallVehicle"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (range (start (line 16) (character 21)) (end (line 16) (character 28))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Parts Example-1::Vehicle")))))
+    (reference (id (source (node (document "d0") (qualified-name "Parts Example-1::smallVehicle::eng"))) (kind redefinition) (ordinal 0)) (authored-target "eng") (range (start (line 17) (character 17)) (end (line 17) (character 20))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Parts Example-1::smallVehicle::eng")))))
+    (reference (id (source (node (document "d0") (qualified-name "Parts Example-1::smallVehicle::eng::cyl"))) (kind redefinition) (ordinal 0)) (authored-target "cyl") (range (start (line 18) (character 18)) (end (line 18) (character 21))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Parts Example-1::smallVehicle::eng::cyl")))))
   )
   (relationships
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Parts Example-1::bigVehicle::eng"))) (to (node (document "d0") (qualified-name "Parts Example-1::Vehicle::eng"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Parts Example-1::bigVehicle::eng::cyl"))) (to (node (document "d0") (qualified-name "Parts Example-1::Engine::cyl"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Parts Example-1::smallVehicle::eng"))) (to (node (document "d0") (qualified-name "Parts Example-1::Vehicle::eng"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Parts Example-1::smallVehicle::eng::cyl"))) (to (node (document "d0") (qualified-name "Parts Example-1::Engine::cyl"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Parts Example-1::Engine::cyl"))) (to (node (document "d0") (qualified-name "Parts Example-1::Cylinder"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Parts Example-1::Vehicle::eng"))) (to (node (document "d0") (qualified-name "Parts Example-1::Engine"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Parts Example-1::bigVehicle"))) (to (node (document "d0") (qualified-name "Parts Example-1::Vehicle"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Parts Example-1::smallVehicle"))) (to (node (document "d0") (qualified-name "Parts Example-1::Vehicle"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Parts Example-1::Engine::cyl"))) (target (node (document "d0") (qualified-name "Parts Example-1::Cylinder"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Parts Example-1::Engine::cyl"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Parts Example-1::Vehicle::eng"))) (target (node (document "d0") (qualified-name "Parts Example-1::Engine"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Parts Example-1::Vehicle::eng"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Parts Example-1::bigVehicle"))) (target (node (document "d0") (qualified-name "Parts Example-1::Vehicle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Parts Example-1::bigVehicle"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Parts Example-1::bigVehicle::eng"))) (target (node (document "d0") (qualified-name "Parts Example-1::bigVehicle::eng"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Parts Example-1::bigVehicle::eng"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Parts Example-1::bigVehicle::eng::cyl"))) (target (node (document "d0") (qualified-name "Parts Example-1::bigVehicle::eng::cyl"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Parts Example-1::bigVehicle::eng::cyl"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Parts Example-1::smallVehicle"))) (target (node (document "d0") (qualified-name "Parts Example-1::Vehicle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Parts Example-1::smallVehicle"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Parts Example-1::smallVehicle::eng"))) (target (node (document "d0") (qualified-name "Parts Example-1::smallVehicle::eng"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Parts Example-1::smallVehicle::eng"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Parts Example-1::smallVehicle::eng::cyl"))) (target (node (document "d0") (qualified-name "Parts Example-1::smallVehicle::eng::cyl"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Parts Example-1::smallVehicle::eng::cyl"))) (kind redefinition) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Parts Example-1::Cylinder"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Parts Example-1::Engine"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Parts Example-1::Engine::cyl"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Parts Example-1::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Parts Example-1::Vehicle::eng"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Parts Example-1::bigVehicle"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Parts Example-1::bigVehicle::eng"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Parts Example-1::bigVehicle::eng::cyl"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Parts Example-1::smallVehicle"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Parts Example-1::smallVehicle::eng"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Parts Example-1::smallVehicle::eng::cyl"))) (status missing-prerequisite) (target "Parts::parts"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/07_parts_example_1.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "redefinition_featuring_type_incompatible")
-        (source "semantic")
-        (range (start 18 3) (end 18 25))
-      )
-      (diagnostic
-        (severity error)
-        (code "redefinition_featuring_type_incompatible")
-        (source "semantic")
-        (range (start 24 3) (end 24 25))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

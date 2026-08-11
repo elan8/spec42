@@ -40,17 +40,38 @@ standard library package AnalysisTooling {
 	
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'String'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'String'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "analysis_tooling.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 16 2) (end 16 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 17 2) (end 17 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 30 2) (end 30 26))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -84,6 +105,18 @@ CloseCurly,EndOfFile,
     (metadata_def 'ToolVariable'
       (documentation)
       (attribute_usage 'name' : 'String'))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'String'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'String'
 ~~~
 # FORMAT
 ~~~sysml
@@ -125,58 +158,29 @@ standard library package AnalysisTooling {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "AnalysisTooling"))) (name "AnalysisTooling") (declared-name "AnalysisTooling")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisTooling::*"))) (name "*") (declared-name "*"))
-        (element (kind "metadata def") (id (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution"))) (name "ToolExecution") (declared-name "ToolExecution")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution::toolName"))) (name "toolName") (declared-name "toolName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution::uri"))) (name "uri") (declared-name "uri") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution")))))
-          )
-        )
-        (element (kind "metadata def") (id (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable"))) (name "ToolVariable") (declared-name "ToolVariable")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable::name"))) (name "name") (declared-name "name") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable")))))
-          )
-        )
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "AnalysisTooling::_documentation"))) (name ""))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6b92d65dc2eb417ba407dbbcd02dd587e3b7a117b64973afb7069bc58ac02099") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "AnalysisTooling"))) (kind "package") (name "AnalysisTooling") (declared-name "AnalysisTooling") (range (start (line 0) (character 0)) (end (line 0) (character 798))))
+    (element (id (node (document "d0") (qualified-name "AnalysisTooling::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 7) (character 1)) (end (line 7) (character 32))) (parent (node (document "d0") (qualified-name "AnalysisTooling"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution"))) (kind "metadata def") (name "ToolExecution") (declared-name "ToolExecution") (range (start (line 9) (character 1)) (end (line 9) (character 224))) (parent (node (document "d0") (qualified-name "AnalysisTooling"))))
+    (element (id (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution::_documentation"))) (kind "documentation") (name "") (range (start (line 9) (character 1)) (end (line 9) (character 224))) (parent (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution"))))
+    (element (id (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution::toolName"))) (kind "attribute") (name "toolName") (declared-name "toolName") (range (start (line 16) (character 2)) (end (line 16) (character 30))) (parent (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution"))) (authored (membership (kind Feature)) (relationships (typing (reference "String") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution::uri"))) (kind "attribute") (name "uri") (declared-name "uri") (range (start (line 17) (character 2)) (end (line 17) (character 25))) (parent (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution"))) (authored (membership (kind Feature)) (relationships (typing (reference "String") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable"))) (kind "metadata def") (name "ToolVariable") (declared-name "ToolVariable") (range (start (line 20) (character 1)) (end (line 20) (character 369))) (parent (node (document "d0") (qualified-name "AnalysisTooling"))))
+    (element (id (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable::_documentation"))) (kind "documentation") (name "") (range (start (line 20) (character 1)) (end (line 20) (character 369))) (parent (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable"))))
+    (element (id (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable::name"))) (kind "attribute") (name "name") (declared-name "name") (range (start (line 30) (character 2)) (end (line 30) (character 26))) (parent (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable"))) (authored (membership (kind Feature)) (relationships (typing (reference "String") (range none)))))
+    (element (id (node (document "d0") (qualified-name "AnalysisTooling::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 798))) (parent (node (document "d0") (qualified-name "AnalysisTooling"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisTooling::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (range (start (line 7) (character 16)) (end (line 7) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution::toolName"))) (kind featureTyping) (ordinal 0)) (authored-target "String") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution::uri"))) (kind featureTyping) (ordinal 0)) (authored-target "String") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable::name"))) (kind featureTyping) (ordinal 0)) (authored-target "String") (range none) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisTooling::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisTooling"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution::toolName"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution::uri"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable::name"))) (status missing-prerequisite) (target "Base::dataValues"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/analysis_tooling.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 16) (end 7 28))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

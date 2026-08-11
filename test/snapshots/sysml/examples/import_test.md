@@ -24,6 +24,51 @@ package ImportTest {
     }
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "import_test.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 20) (end 2 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 3 20) (end 3 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 4 20) (end 4 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 5 19) (end 5 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 23) (end 10 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 13 27) (end 13 30))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -60,6 +105,14 @@ CloseCurly,EndOfFile,
         (package_def 'Pkg211'
           (part_def 'P211' :> 'P12'))))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package ImportTest {
@@ -82,96 +135,35 @@ package ImportTest {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ImportTest"))) (name "ImportTest") (declared-name "ImportTest")
-      (contains
-        (element (kind "package") (id (node (document "d0") (qualified-name "ImportTest::Pkg1"))) (name "Pkg1") (declared-name "Pkg1")
-          (contains
-            (element (kind "import") (id (node (document "d0") (qualified-name "ImportTest::Pkg1::*"))) (name "*") (declared-name "*"))
-            (element (kind "import") (id (node (document "d0") (qualified-name "ImportTest::Pkg1::*#import"))) (name "*") (declared-name "*"))
-            (element (kind "part def") (id (node (document "d0") (qualified-name "ImportTest::Pkg1::P12"))) (name "P12") (declared-name "P12") (declared))
-            (element (kind "import") (id (node (document "d0") (qualified-name "ImportTest::Pkg1::P211"))) (name "P211") (declared-name "P211"))
-            (element (kind "part") (id (node (document "d0") (qualified-name "ImportTest::Pkg1::p11"))) (name "p11") (declared-name "p11") (declared (properties (ordered false))))
-          )
-        )
-        (element (kind "package") (id (node (document "d0") (qualified-name "ImportTest::Pkg2"))) (name "Pkg2") (declared-name "Pkg2")
-          (contains
-            (element (kind "import") (id (node (document "d0") (qualified-name "ImportTest::Pkg2::*"))) (name "*") (declared-name "*"))
-            (element (kind "package") (id (node (document "d0") (qualified-name "ImportTest::Pkg2::Pkg21"))) (name "Pkg21") (declared-name "Pkg21")
-              (contains
-                (element (kind "package") (id (node (document "d0") (qualified-name "ImportTest::Pkg2::Pkg21::Pkg211"))) (name "Pkg211") (declared-name "Pkg211")
-                  (contains
-                    (element (kind "part def") (id (node (document "d0") (qualified-name "ImportTest::Pkg2::Pkg21::Pkg211::P211"))) (name "P211") (declared-name "P211") (declared))
-                  )
-                )
-              )
-            )
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "960ac6c14c91fb3ed81156173668a8a1ed0c2e79738395308fb31dc5303979bc") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ImportTest"))) (kind "package") (name "ImportTest") (declared-name "ImportTest") (range (start (line 0) (character 0)) (end (line 0) (character 381))))
+    (element (id (node (document "d0") (qualified-name "ImportTest::Pkg1"))) (kind "package") (name "Pkg1") (declared-name "Pkg1") (range (start (line 1) (character 4)) (end (line 1) (character 197))) (parent (node (document "d0") (qualified-name "ImportTest"))))
+    (element (id (node (document "d0") (qualified-name "ImportTest::Pkg1::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 3) (character 5)) (end (line 3) (character 35))) (parent (node (document "d0") (qualified-name "ImportTest::Pkg1"))) (authored (membership (kind Import) (visibility "private") (import (reference "Pkg2::Pkg21::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 3) (character 20)) (end (line 3) (character 31))))))
+    (element (id (node (document "d0") (qualified-name "ImportTest::Pkg1::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 4) (character 5)) (end (line 4) (character 34))) (parent (node (document "d0") (qualified-name "ImportTest::Pkg1"))) (authored (membership (kind Import) (visibility "private") (import (reference "Pkg211::*") (origin Import) (shape Namespace) (recursive true)) (import-range (start (line 4) (character 20)) (end (line 4) (character 26))))))
+    (element (id (node (document "d0") (qualified-name "ImportTest::Pkg1::P12"))) (kind "part def") (name "P12") (declared-name "P12") (range (start (line 6) (character 8)) (end (line 6) (character 21))) (parent (node (document "d0") (qualified-name "ImportTest::Pkg1"))))
+    (element (id (node (document "d0") (qualified-name "ImportTest::Pkg1::P211"))) (kind "import") (name "P211") (declared-name "P211") (range (start (line 2) (character 5)) (end (line 2) (character 46))) (parent (node (document "d0") (qualified-name "ImportTest::Pkg1"))) (authored (membership (kind Import) (visibility "private") (import (reference "Pkg2::Pkg21::Pkg211::P211") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 2) (character 20)) (end (line 2) (character 45))))))
+    (element (id (node (document "d0") (qualified-name "ImportTest::Pkg1::p11"))) (kind "part") (name "p11") (declared-name "p11") (range (start (line 5) (character 8)) (end (line 5) (character 32))) (parent (node (document "d0") (qualified-name "ImportTest::Pkg1"))) (authored (membership (kind Feature)) (relationships (typing (reference "Pkg211::P211") (range (start (line 5) (character 19)) (end (line 5) (character 31)))))))
+    (element (id (node (document "d0") (qualified-name "ImportTest::Pkg2"))) (kind "package") (name "Pkg2") (declared-name "Pkg2") (range (start (line 9) (character 4)) (end (line 9) (character 159))) (parent (node (document "d0") (qualified-name "ImportTest"))))
+    (element (id (node (document "d0") (qualified-name "ImportTest::Pkg2::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 10) (character 8)) (end (line 10) (character 31))) (parent (node (document "d0") (qualified-name "ImportTest::Pkg2"))) (authored (membership (kind Import) (visibility "private") (import (reference "Pkg1::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 10) (character 23)) (end (line 10) (character 27))))))
+    (element (id (node (document "d0") (qualified-name "ImportTest::Pkg2::Pkg21"))) (kind "package") (name "Pkg21") (declared-name "Pkg21") (range (start (line 11) (character 8)) (end (line 11) (character 102))) (parent (node (document "d0") (qualified-name "ImportTest::Pkg2"))))
+    (element (id (node (document "d0") (qualified-name "ImportTest::Pkg2::Pkg21::Pkg211"))) (kind "package") (name "Pkg211") (declared-name "Pkg211") (range (start (line 12) (character 9)) (end (line 12) (character 68))) (parent (node (document "d0") (qualified-name "ImportTest::Pkg2::Pkg21"))))
+    (element (id (node (document "d0") (qualified-name "ImportTest::Pkg2::Pkg21::Pkg211::P211"))) (kind "part def") (name "P211") (declared-name "P211") (range (start (line 13) (character 10)) (end (line 13) (character 31))) (parent (node (document "d0") (qualified-name "ImportTest::Pkg2::Pkg21::Pkg211"))) (authored (membership (kind Owning)) (relationships (specializes (reference "P12") (range (start (line 13) (character 27)) (end (line 13) (character 30)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "ImportTest::Pkg1::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Pkg2::Pkg21::*") (range (start (line 3) (character 20)) (end (line 3) (character 31))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ImportTest::Pkg1::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "Pkg211::*") (range (start (line 4) (character 20)) (end (line 4) (character 26))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ImportTest::Pkg1::P211"))) (kind membershipImport) (ordinal 0)) (authored-target "Pkg2::Pkg21::Pkg211::P211") (range (start (line 2) (character 20)) (end (line 2) (character 45))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ImportTest::Pkg1::p11"))) (kind featureTyping) (ordinal 0)) (authored-target "Pkg211::P211") (range (start (line 5) (character 19)) (end (line 5) (character 31))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ImportTest::Pkg2::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Pkg1::*") (range (start (line 10) (character 23)) (end (line 10) (character 27))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ImportTest::Pkg2::Pkg21::Pkg211::P211"))) (kind specialization) (ordinal 0)) (authored-target "P12") (range (start (line 13) (character 27)) (end (line 13) (character 30))) (outcome (status unresolved)))
   )
   (relationships
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "ImportTest::Pkg2::Pkg21::Pkg211::P211"))) (to (node (document "d0") (qualified-name "ImportTest::Pkg1::P12"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ImportTest::Pkg1::P12"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ImportTest::Pkg1::p11"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ImportTest::Pkg2::Pkg21::Pkg211::P211"))) (status missing-prerequisite) (target "Parts::Part"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/import_test.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 20) (end 2 45))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 3 20) (end 3 31))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 4 20) (end 4 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "invalid_qualified_name_segment")
-        (source "semantic")
-        (range (start 5 19) (end 5 31))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 10 23) (end 10 27))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

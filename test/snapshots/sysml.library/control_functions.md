@@ -123,129 +123,44 @@ standard library package ControlFunctions {
 	
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'ScalarValue'
-semantic.unresolved_name 'ScalarValue'
-semantic.unresolved_name 'ScalarValue'
-semantic.unresolved_name 'ScalarValue'
-semantic.unresolved_name 'ScalarValue'
-semantic.unresolved_name 'ScalarValue'
-semantic.unresolved_name 'ScalarValue'
-semantic.unresolved_name 'ScalarValue'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'ScalarValue'
-semantic.unresolved_name 'ScalarValue'
-semantic.unresolved_name 'ScalarValue'
-semantic.unresolved_name 'ScalarValue'
-semantic.unresolved_name 'ScalarValue'
-semantic.unresolved_name 'ScalarValue'
-semantic.unresolved_name 'ScalarValue'
-semantic.unresolved_name 'ScalarValue'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "control_functions.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 16) (end 8 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 16) (end 9 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 16) (end 10 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 11 16) (end 11 36))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -449,6 +364,130 @@ CloseCurly,EndOfFile,
         (return_member))
       (return_member))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+~~~
 # FORMAT
 ~~~sysml
 standard library package ControlFunctions {
@@ -571,93 +610,44 @@ standard library package ControlFunctions {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ControlFunctions"))) (name "ControlFunctions") (declared-name "ControlFunctions")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "ControlFunctions::Anything"))) (name "Anything") (declared-name "Anything"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ControlFunctions::Boolean"))) (name "Boolean") (declared-name "Boolean"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ControlFunctions::ScalarValue"))) (name "ScalarValue") (declared-name "ScalarValue"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "ControlFunctions::_documentation"))) (name ""))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::allTrue"))) (name "allTrue") (declared-name "allTrue"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::anyTrue"))) (name "anyTrue") (declared-name "anyTrue"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::collect"))) (name "collect") (declared-name "collect"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::exists"))) (name "exists") (declared-name "exists"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::forAll"))) (name "forAll") (declared-name "forAll"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::function"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::function#kermlDecl"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::function#kermlDecl2"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::function#kermlDecl3"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::in"))) (name "in") (declared-name "in"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::in#kermlDecl"))) (name "in") (declared-name "in"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ControlFunctions::max"))) (name "max") (declared-name "max"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::maximize"))) (name "maximize") (declared-name "maximize"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ControlFunctions::min"))) (name "min") (declared-name "min"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::minimize"))) (name "minimize") (declared-name "minimize"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::reduce"))) (name "reduce") (declared-name "reduce"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::reject"))) (name "reject") (declared-name "reject"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::select"))) (name "select") (declared-name "select"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::selectOne"))) (name "selectOne") (declared-name "selectOne"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "231a5f41df5179fef72f9eb08568eb0ac512377736711e3b6b2e9aab43ecaeec") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ControlFunctions"))) (kind "package") (name "ControlFunctions") (declared-name "ControlFunctions") (range (start (line 0) (character 0)) (end (line 0) (character 3603))))
+    (element (id (node (document "d0") (qualified-name "ControlFunctions::Anything"))) (kind "import") (name "Anything") (declared-name "Anything") (range (start (line 7) (character 1)) (end (line 7) (character 31))) (parent (node (document "d0") (qualified-name "ControlFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::Anything") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 30))))))
+    (element (id (node (document "d0") (qualified-name "ControlFunctions::Boolean"))) (kind "import") (name "Boolean") (declared-name "Boolean") (range (start (line 9) (character 1)) (end (line 9) (character 38))) (parent (node (document "d0") (qualified-name "ControlFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Boolean") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 9) (character 16)) (end (line 9) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "ControlFunctions::ScalarValue"))) (kind "import") (name "ScalarValue") (declared-name "ScalarValue") (range (start (line 8) (character 1)) (end (line 8) (character 42))) (parent (node (document "d0") (qualified-name "ControlFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::ScalarValue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 41))))))
+    (element (id (node (document "d0") (qualified-name "ControlFunctions::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 3603))) (parent (node (document "d0") (qualified-name "ControlFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ControlFunctions::allTrue"))) (kind "kermlDecl") (name "allTrue") (declared-name "allTrue") (range (start (line 94) (character 1)) (end (line 94) (character 109))) (parent (node (document "d0") (qualified-name "ControlFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ControlFunctions::anyTrue"))) (kind "kermlDecl") (name "anyTrue") (declared-name "anyTrue") (range (start (line 99) (character 1)) (end (line 99) (character 108))) (parent (node (document "d0") (qualified-name "ControlFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ControlFunctions::collect"))) (kind "kermlDecl") (name "collect") (declared-name "collect") (range (start (line 52) (character 1)) (end (line 52) (character 224))) (parent (node (document "d0") (qualified-name "ControlFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ControlFunctions::exists"))) (kind "kermlDecl") (name "exists") (declared-name "exists") (range (start (line 88) (character 1)) (end (line 88) (character 177))) (parent (node (document "d0") (qualified-name "ControlFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ControlFunctions::forAll"))) (kind "kermlDecl") (name "forAll") (declared-name "forAll") (range (start (line 82) (character 1)) (end (line 82) (character 178))) (parent (node (document "d0") (qualified-name "ControlFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ControlFunctions::function"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 13) (character 1)) (end (line 13) (character 202))) (parent (node (document "d0") (qualified-name "ControlFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ControlFunctions::function#kermlDecl"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 21) (character 1)) (end (line 21) (character 243))) (parent (node (document "d0") (qualified-name "ControlFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ControlFunctions::function#kermlDecl2"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 28) (character 1)) (end (line 28) (character 199))) (parent (node (document "d0") (qualified-name "ControlFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ControlFunctions::function#kermlDecl3"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 34) (character 1)) (end (line 34) (character 125))) (parent (node (document "d0") (qualified-name "ControlFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ControlFunctions::in"))) (kind "kermlDecl") (name "in") (declared-name "in") (range (start (line 40) (character 1)) (end (line 40) (character 123))) (parent (node (document "d0") (qualified-name "ControlFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ControlFunctions::in#kermlDecl"))) (kind "kermlDecl") (name "in") (declared-name "in") (range (start (line 46) (character 1)) (end (line 46) (character 128))) (parent (node (document "d0") (qualified-name "ControlFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ControlFunctions::max"))) (kind "import") (name "max") (declared-name "max") (range (start (line 11) (character 1)) (end (line 11) (character 37))) (parent (node (document "d0") (qualified-name "ControlFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarFunctions::max") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 11) (character 16)) (end (line 11) (character 36))))))
+    (element (id (node (document "d0") (qualified-name "ControlFunctions::maximize"))) (kind "kermlDecl") (name "maximize") (declared-name "maximize") (range (start (line 110) (character 1)) (end (line 110) (character 209))) (parent (node (document "d0") (qualified-name "ControlFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ControlFunctions::min"))) (kind "import") (name "min") (declared-name "min") (range (start (line 10) (character 1)) (end (line 10) (character 37))) (parent (node (document "d0") (qualified-name "ControlFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarFunctions::min") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 10) (character 16)) (end (line 10) (character 36))))))
+    (element (id (node (document "d0") (qualified-name "ControlFunctions::minimize"))) (kind "kermlDecl") (name "minimize") (declared-name "minimize") (range (start (line 104) (character 1)) (end (line 104) (character 211))) (parent (node (document "d0") (qualified-name "ControlFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ControlFunctions::reduce"))) (kind "kermlDecl") (name "reduce") (declared-name "reduce") (range (start (line 76) (character 1)) (end (line 76) (character 231))) (parent (node (document "d0") (qualified-name "ControlFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ControlFunctions::reject"))) (kind "kermlDecl") (name "reject") (declared-name "reject") (range (start (line 70) (character 1)) (end (line 70) (character 203))) (parent (node (document "d0") (qualified-name "ControlFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ControlFunctions::select"))) (kind "kermlDecl") (name "select") (declared-name "select") (range (start (line 58) (character 1)) (end (line 58) (character 204))) (parent (node (document "d0") (qualified-name "ControlFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ControlFunctions::selectOne"))) (kind "kermlDecl") (name "selectOne") (declared-name "selectOne") (range (start (line 64) (character 1)) (end (line 64) (character 226))) (parent (node (document "d0") (qualified-name "ControlFunctions"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "ControlFunctions::Anything"))) (kind membershipImport) (ordinal 0)) (authored-target "Base::Anything") (range (start (line 7) (character 16)) (end (line 7) (character 30))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ControlFunctions::Boolean"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Boolean") (range (start (line 9) (character 16)) (end (line 9) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ControlFunctions::ScalarValue"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::ScalarValue") (range (start (line 8) (character 16)) (end (line 8) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ControlFunctions::max"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarFunctions::max") (range (start (line 11) (character 16)) (end (line 11) (character 36))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ControlFunctions::min"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarFunctions::min") (range (start (line 10) (character 16)) (end (line 10) (character 36))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ControlFunctions::_documentation"))) (to (node (document "d0") (qualified-name "ControlFunctions"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/control_functions.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 16) (end 7 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 16) (end 8 41))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 9 16) (end 9 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 10 16) (end 10 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 11 16) (end 11 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 21 1) (end 21 243))
-      )
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 46 1) (end 46 128))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

@@ -9,13 +9,14 @@ package P {
     feature g featured by c = 42;
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'c'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'c'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz_featured_by_value.md"
+    (diagnostics
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -29,6 +30,14 @@ CloseCurly,EndOfFile,
   (package_def 'P'
     (feature_def 'g' value featured by 'c')))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'c'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'c'
+~~~
 # FORMAT
 ~~~sysml
 package P {
@@ -38,28 +47,17 @@ package P {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "P"))) (name "P") (declared-name "P")
-      (contains
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "P::g"))) (name "g") (declared-name "g"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a028bb4efb42e1f7b094d4943aa6b1638442821faada43694ab06f4db26026f6") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P") (range (start (line 0) (character 0)) (end (line 0) (character 47))))
+    (element (id (node (document "d0") (qualified-name "P::g"))) (kind "feature decl") (name "g") (declared-name "g") (range (start (line 1) (character 4)) (end (line 1) (character 33))) (parent (node (document "d0") (qualified-name "P"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "fuzz/fuzz_featured_by_value.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

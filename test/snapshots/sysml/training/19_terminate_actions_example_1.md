@@ -34,6 +34,51 @@ package 'Terminate Actions Example-1' {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "19_terminate_actions_example_1.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 7 1) (end 7 337))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 8 2) (end 8 14))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 14 2) (end 14 126))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_action_body_element")
+        (source "sysml")
+        (range (start 15 3) (end 15 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 15 3) (end 15 43))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -87,6 +132,20 @@ CloseCurly,EndOfFile,
       (action_usage 'stop')
       (terminate_node))))
 ~~~
+# EXPECTED
+~~~
+semantic.duplicate_name 'performCriticalActivity'
+semantic.duplicate_name 'waitForTimeOut'
+semantic.duplicate_name 'stop'
+semantic.duplicate_name 'stop'
+~~~
+# PROBLEMS
+~~~
+semantic.duplicate_name 'performCriticalActivity'
+semantic.duplicate_name 'waitForTimeOut'
+semantic.duplicate_name 'stop'
+semantic.duplicate_name 'stop'
+~~~
 # FORMAT
 ~~~sysml
 package 'Terminate Actions Example-1' {
@@ -119,118 +178,38 @@ package 'Terminate Actions Example-1' {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.duplicate_name 'performCriticalActivity'
-semantic.duplicate_name 'waitForTimeOut'
-semantic.duplicate_name 'stop'
-semantic.duplicate_name 'stop'
-~~~
-# PROBLEMS
-~~~
-semantic.duplicate_name 'performCriticalActivity'
-semantic.duplicate_name 'waitForTimeOut'
-semantic.duplicate_name 'stop'
-semantic.duplicate_name 'stop'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Terminate Actions Example-1"))) (name "Terminate Actions Example-1") (declared-name "Terminate Actions Example-1")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Terminate Actions Example-1::Boolean"))) (name "Boolean") (declared-name "Boolean"))
-        (element (kind "action def") (id (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (name "MonitoredActivity") (declared-name "MonitoredActivity")
-          (contains
-            (element (kind "initial") (id (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::_initial"))) (name "_initial") (effective (featuring-type (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity")))))
-            (element (kind "terminate") (id (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::_terminate"))) (name "terminate") (declared-name "terminate") (effective (featuring-type (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity")))))
-            (element (kind "action") (id (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity"))) (name "performCriticalActivity") (declared-name "performCriticalActivity") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity")))))
-            (element (kind "action") (id (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::stop"))) (name "stop") (declared-name "stop") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity")))))
-            (element (kind "action") (id (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::waitForTimeOut"))) (name "waitForTimeOut") (declared-name "waitForTimeOut") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity")))))
-          )
-        )
-        (element (kind "action") (id (node (document "d0") (qualified-name "Terminate Actions Example-1::criticalActivity"))) (name "criticalActivity") (declared-name "criticalActivity") (declared))
-        (element (kind "action") (id (node (document "d0") (qualified-name "Terminate Actions Example-1::monitorCriticalActivity"))) (name "monitorCriticalActivity") (declared-name "monitorCriticalActivity") (declared))
-        (element (kind "action") (id (node (document "d0") (qualified-name "Terminate Actions Example-1::waitForTimeOut"))) (name "waitForTimeOut") (declared-name "waitForTimeOut") (declared))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "d06db9fd7b0d32f268eddc2e363fac699864f7443a31712d41b01be9ab782052") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Terminate Actions Example-1"))) (kind "package") (name "Terminate Actions Example-1") (declared-name "Terminate Actions Example-1") (range (start (line 0) (character 0)) (end (line 0) (character 505))))
+    (element (id (node (document "d0") (qualified-name "Terminate Actions Example-1::Boolean"))) (kind "import") (name "Boolean") (declared-name "Boolean") (range (start (line 1) (character 1)) (end (line 1) (character 38))) (parent (node (document "d0") (qualified-name "Terminate Actions Example-1"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Boolean") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (kind "action def") (name "MonitoredActivity") (declared-name "MonitoredActivity") (range (start (line 7) (character 1)) (end (line 7) (character 337))) (parent (node (document "d0") (qualified-name "Terminate Actions Example-1"))) (authored (membership (kind Owning)) (relationships (flow (reference "Terminate Actions Example-1::MonitoredActivity::fork") (range none)) (perform (reference "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity") (range none)) (perform (reference "Terminate Actions Example-1::MonitoredActivity::waitForTimeOut") (range none)) (perform (reference "Terminate Actions Example-1::MonitoredActivity::stop") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::_initial"))) (kind "initial") (name "_initial") (range (start (line 8) (character 2)) (end (line 8) (character 14))) (parent (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (authored (relationships (flow (reference "Terminate Actions Example-1::MonitoredActivity::start") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::_terminate"))) (kind "terminate") (name "terminate") (declared-name "terminate") (range (start (line 25) (character 14)) (end (line 25) (character 24))) (parent (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))))
+    (element (id (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity"))) (kind "action") (name "performCriticalActivity") (declared-name "performCriticalActivity") (range (start (line 14) (character 2)) (end (line 14) (character 126))) (parent (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (authored (membership (kind Feature)) (relationships (flow (reference "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity::terminate") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::stop"))) (kind "action") (name "stop") (declared-name "stop") (range (start (line 25) (character 2)) (end (line 25) (character 14))) (parent (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))))
+    (element (id (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::waitForTimeOut"))) (kind "action") (name "waitForTimeOut") (declared-name "waitForTimeOut") (range (start (line 22) (character 2)) (end (line 22) (character 24))) (parent (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))))
+    (element (id (node (document "d0") (qualified-name "Terminate Actions Example-1::criticalActivity"))) (kind "action") (name "criticalActivity") (declared-name "criticalActivity") (range (start (line 4) (character 1)) (end (line 4) (character 25))) (parent (node (document "d0") (qualified-name "Terminate Actions Example-1"))))
+    (element (id (node (document "d0") (qualified-name "Terminate Actions Example-1::monitorCriticalActivity"))) (kind "action") (name "monitorCriticalActivity") (declared-name "monitorCriticalActivity") (range (start (line 3) (character 1)) (end (line 3) (character 32))) (parent (node (document "d0") (qualified-name "Terminate Actions Example-1"))))
+    (element (id (node (document "d0") (qualified-name "Terminate Actions Example-1::waitForTimeOut"))) (kind "action") (name "waitForTimeOut") (declared-name "waitForTimeOut") (range (start (line 5) (character 1)) (end (line 5) (character 23))) (parent (node (document "d0") (qualified-name "Terminate Actions Example-1"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Terminate Actions Example-1::Boolean"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Boolean") (range (start (line 1) (character 16)) (end (line 1) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (kind flowSource) (ordinal 0)) (authored-target "Terminate Actions Example-1::MonitoredActivity::fork") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (kind performSource) (ordinal 0)) (authored-target "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity")))))
+    (reference (id (source (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (kind performSource) (ordinal 1)) (authored-target "Terminate Actions Example-1::MonitoredActivity::waitForTimeOut") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::waitForTimeOut")))))
+    (reference (id (source (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (kind performSource) (ordinal 2)) (authored-target "Terminate Actions Example-1::MonitoredActivity::stop") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::stop")))))
+    (reference (id (source (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::_initial"))) (kind flowSource) (ordinal 0)) (authored-target "Terminate Actions Example-1::MonitoredActivity::start") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity"))) (kind flowSource) (ordinal 0)) (authored-target "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity::terminate") (range none) (outcome (status unresolved)))
   )
   (relationships
-    (flow (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::waitForTimeOut"))) (provenance authored))
-    (flow (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::stop"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::stop"))) (provenance authored))
-    (flow (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::waitForTimeOut"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::stop"))) (provenance authored))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity"))) (provenance authored))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::stop"))) (provenance authored))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::waitForTimeOut"))) (provenance authored))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (target (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (kind performSource) (ordinal 0)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (target (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::stop"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (kind performSource) (ordinal 2)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (target (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::waitForTimeOut"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (kind performSource) (ordinal 1)))
   )
-  (pending-relationships
-    (flow (status pending) (document "d0") (source-qualified "Terminate Actions Example-1::MonitoredActivity") (target-qualified "Terminate Actions Example-1::MonitoredActivity::fork"))
-    (flow (status pending) (document "d0") (source-qualified "Terminate Actions Example-1::MonitoredActivity::_initial") (target-qualified "Terminate Actions Example-1::MonitoredActivity::start"))
-    (flow (status pending) (document "d0") (source-qualified "Terminate Actions Example-1::MonitoredActivity::fork") (target-qualified "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity"))
-    (flow (status pending) (document "d0") (source-qualified "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity") (target-qualified "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity::terminate"))
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (status missing-prerequisite) (target "Actions::Action"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::_terminate"))) (status missing-prerequisite) (target "Actions::terminateActions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::stop"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::waitForTimeOut"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Terminate Actions Example-1::criticalActivity"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Terminate Actions Example-1::monitorCriticalActivity"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Terminate Actions Example-1::waitForTimeOut"))) (status missing-prerequisite) (target "Actions::actions"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/19_terminate_actions_example_1.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_relationship")
-        (source "semantic")
-        (range (start 0 0) (end 0 0))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_relationship")
-        (source "semantic")
-        (range (start 0 0) (end 0 0))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_relationship")
-        (source "semantic")
-        (range (start 0 0) (end 0 0))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_relationship")
-        (source "semantic")
-        (range (start 0 0) (end 0 0))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 37))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_action_body_element")
-        (source "sysml")
-        (range (start 15 3) (end 15 43))
-      )
-      (diagnostic
-        (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 15 3) (end 15 43))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

@@ -57,6 +57,69 @@ package '1d-Parts Tree with Reference' {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "1d_parts_tree_with_reference.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 11 17) (end 11 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 15 21) (end 15 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 16 20) (end 16 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "connection_context_invalid")
+        (source "semantic")
+        (range (start 26 8) (end 26 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 33 22) (end 33 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 34 20) (end 34 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 35 25) (end 35 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 38 18) (end 38 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 39 25) (end 39 39))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -118,6 +181,14 @@ CloseCurly,EndOfFile,
           (ref_usage ref 'trailerCoupler' : 'TrailerCoupler' value
             (comment)))))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package '1d-Parts Tree with Reference' {
@@ -173,99 +244,48 @@ package '1d-Parts Tree with Reference' {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference"))) (name "1d-Parts Tree with Reference") (declared-name "1d-Parts Tree with Reference")
-      (contains
-        (element (kind "package") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions"))) (name "Definitions") (declared-name "Definitions")
-          (contains
-            (element (kind "part def") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::HitchBall"))) (name "HitchBall") (declared-name "HitchBall") (declared))
-            (element (kind "part def") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::Trailer"))) (name "Trailer") (declared-name "Trailer") (declared))
-            (element (kind "part def") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::TrailerCoupler"))) (name "TrailerCoupler") (declared-name "TrailerCoupler") (declared))
-            (element (kind "part def") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::TrailerHitch"))) (name "TrailerHitch") (declared-name "TrailerHitch") (declared))
-            (element (kind "part def") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
-          )
-        )
-        (element (kind "package") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages"))) (name "Usages") (declared-name "Usages")
-          (contains
-            (element (kind "import") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::*"))) (name "*") (declared-name "*"))
-            (element (kind "part") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system"))) (name "vehicle_trailer_system") (declared-name "vehicle_trailer_system") (declared (properties (ordered false)))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1"))) (name "trailer1") (declared-name "trailer1") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-                  (contains
-                    (element (kind "ref") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1::trailerCoupler"))) (name "trailerCoupler") (declared-name "trailerCoupler") (declared (properties (composite false) (reference true)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "trailerCoupler") (children (expression (kind "featureReference") (reference "trailerHitch")))))) (effective (featuring-type (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::Trailer"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1::trailerCoupler"))) (role feature-value))) (evaluation (expression (status "incomplete") (error "expression is incomplete"))))
-                  )
-                )
-                (element (kind "part") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch"))) (name "trailerHitch") (declared-name "trailerHitch") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-                  (contains
-                    (element (kind "part") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch::hitchBall"))) (name "hitchBall") (declared-name "hitchBall") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::TrailerHitch")))))
-                    (element (kind "part") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch::trailerCoupler"))) (name "trailerCoupler") (declared-name "trailerCoupler") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::TrailerHitch")))))
-                  )
-                )
-                (element (kind "part") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::vehicle1_c1"))) (name "vehicle1_c1") (declared-name "vehicle1_c1") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-                  (contains
-                    (element (kind "ref") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::vehicle1_c1::hitchBall"))) (name "hitchBall") (declared-name "hitchBall") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::Vehicle")))))
-                  )
-                )
-              )
-            )
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ff85251c3b36478ad625ee2e31ba96ca436db11c23024960db63580d7058456c") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference"))) (kind "package") (name "1d-Parts Tree with Reference") (declared-name "1d-Parts Tree with Reference") (range (start (line 0) (character 0)) (end (line 0) (character 1344))))
+    (element (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions"))) (kind "package") (name "Definitions") (declared-name "Definitions") (range (start (line 2) (character 1)) (end (line 2) (character 139))) (parent (node (document "d0") (qualified-name "1d-Parts Tree with Reference"))))
+    (element (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::HitchBall"))) (kind "part def") (name "HitchBall") (declared-name "HitchBall") (range (start (line 6) (character 2)) (end (line 6) (character 21))) (parent (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions"))))
+    (element (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::Trailer"))) (kind "part def") (name "Trailer") (declared-name "Trailer") (range (start (line 4) (character 2)) (end (line 4) (character 19))) (parent (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions"))))
+    (element (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::TrailerCoupler"))) (kind "part def") (name "TrailerCoupler") (declared-name "TrailerCoupler") (range (start (line 7) (character 2)) (end (line 7) (character 26))) (parent (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions"))))
+    (element (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::TrailerHitch"))) (kind "part def") (name "TrailerHitch") (declared-name "TrailerHitch") (range (start (line 5) (character 2)) (end (line 5) (character 24))) (parent (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions"))))
+    (element (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (range (start (line 3) (character 2)) (end (line 3) (character 19))) (parent (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions"))))
+    (element (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages"))) (kind "package") (name "Usages") (declared-name "Usages") (range (start (line 10) (character 1)) (end (line 10) (character 1157))) (parent (node (document "d0") (qualified-name "1d-Parts Tree with Reference"))))
+    (element (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 11) (character 2)) (end (line 11) (character 32))) (parent (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages"))) (authored (membership (kind Import) (visibility "private") (import (reference "Definitions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 11) (character 17)) (end (line 11) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system"))) (kind "part") (name "vehicle_trailer_system") (declared-name "vehicle_trailer_system") (range (start (line 13) (character 2)) (end (line 13) (character 1100))) (parent (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages"))))
+    (element (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1"))) (kind "part") (name "trailer1") (declared-name "trailer1") (range (start (line 38) (character 3)) (end (line 38) (character 396))) (parent (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system"))) (authored (membership (kind Feature)) (relationships (typing (reference "Trailer") (range (start (line 38) (character 18)) (end (line 38) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1::trailerCoupler"))) (kind "ref") (name "trailerCoupler") (declared-name "trailerCoupler") (range (start (line 39) (character 4)) (end (line 39) (character 363))) (parent (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1"))) (authored (membership (kind Feature)) (relationships (typing (reference "TrailerCoupler") (range (start (line 39) (character 25)) (end (line 39) (character 39)))) (reference (reference "trailerHitch.trailerCoupler") (range none)))))
+    (element (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch"))) (kind "part") (name "trailerHitch") (declared-name "trailerHitch") (range (start (line 33) (character 3)) (end (line 33) (character 117))) (parent (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system"))) (authored (membership (kind Feature)) (relationships (typing (reference "TrailerHitch") (range (start (line 33) (character 22)) (end (line 33) (character 34)))))))
+    (element (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch::hitchBall"))) (kind "part") (name "hitchBall") (declared-name "hitchBall") (range (start (line 34) (character 4)) (end (line 34) (character 30))) (parent (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch"))) (authored (membership (kind Feature)) (relationships (typing (reference "HitchBall") (range (start (line 34) (character 20)) (end (line 34) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch::trailerCoupler"))) (kind "part") (name "trailerCoupler") (declared-name "trailerCoupler") (range (start (line 35) (character 4)) (end (line 35) (character 40))) (parent (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch"))) (authored (membership (kind Feature)) (relationships (typing (reference "TrailerCoupler") (range (start (line 35) (character 25)) (end (line 35) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::vehicle1_c1"))) (kind "part") (name "vehicle1_c1") (declared-name "vehicle1_c1") (range (start (line 15) (character 3)) (end (line 15) (character 331))) (parent (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle") (range (start (line 15) (character 21)) (end (line 15) (character 28)))))))
+    (element (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::vehicle1_c1::hitchBall"))) (kind "ref") (name "hitchBall") (declared-name "hitchBall") (range (start (line 16) (character 4)) (end (line 16) (character 295))) (parent (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::vehicle1_c1"))) (authored (membership (kind Feature)) (relationships (typing (reference "HitchBall") (range (start (line 16) (character 20)) (end (line 16) (character 29)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Definitions::*") (range (start (line 11) (character 17)) (end (line 11) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system"))) (kind bindSource) (ordinal 0)) (authored-target "vehicle1_c1::hitchBall") (range (start (line 26) (character 8)) (end (line 26) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::vehicle1_c1::hitchBall")))))
+    (reference (id (source (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system"))) (kind bindTarget) (ordinal 0)) (authored-target "trailerHitch::hitchBall") (range (start (line 26) (character 32)) (end (line 26) (character 54))) (outcome (status resolved) (target (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch::hitchBall")))))
+    (reference (id (source (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1"))) (kind featureTyping) (ordinal 0)) (authored-target "Trailer") (range (start (line 38) (character 18)) (end (line 38) (character 25))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1::trailerCoupler"))) (kind featureTyping) (ordinal 0)) (authored-target "TrailerCoupler") (range (start (line 39) (character 25)) (end (line 39) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1::trailerCoupler"))) (kind referenceSource) (ordinal 0)) (authored-target "trailerHitch.trailerCoupler") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch::trailerCoupler")))))
+    (reference (id (source (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch"))) (kind featureTyping) (ordinal 0)) (authored-target "TrailerHitch") (range (start (line 33) (character 22)) (end (line 33) (character 34))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch::hitchBall"))) (kind featureTyping) (ordinal 0)) (authored-target "HitchBall") (range (start (line 34) (character 20)) (end (line 34) (character 29))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch::trailerCoupler"))) (kind featureTyping) (ordinal 0)) (authored-target "TrailerCoupler") (range (start (line 35) (character 25)) (end (line 35) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::vehicle1_c1"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (range (start (line 15) (character 21)) (end (line 15) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::vehicle1_c1::hitchBall"))) (kind featureTyping) (ordinal 0)) (authored-target "HitchBall") (range (start (line 16) (character 20)) (end (line 16) (character 29))) (outcome (status unresolved)))
   )
   (relationships
-    (bind (status resolved) (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::vehicle1_c1::hitchBall"))) (to (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch::hitchBall"))) (connect (source-expression "vehicle1_c1::hitchBall") (target-expression "trailerHitch::hitchBall") (container-prefix "1d-Parts Tree with Reference::Usages::vehicle_trailer_system")) (provenance authored))
-    (reference (status resolved) (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1::trailerCoupler"))) (to (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch::trailerCoupler"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1"))) (to (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::Trailer"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1::trailerCoupler"))) (to (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::TrailerCoupler"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch"))) (to (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::TrailerHitch"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch::hitchBall"))) (to (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::HitchBall"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch::trailerCoupler"))) (to (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::TrailerCoupler"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::vehicle1_c1"))) (to (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::Vehicle"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::vehicle1_c1::hitchBall"))) (to (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::HitchBall"))) (provenance authored))
+    (relationship (kind reference) (source (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1::trailerCoupler"))) (target (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch::trailerCoupler"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1::trailerCoupler"))) (kind referenceSource) (ordinal 0)))
+    (relationship (kind bind) (source (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::vehicle1_c1::hitchBall"))) (target (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch::hitchBall"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system"))) (kind bindSource) (ordinal 0)) (expression (kind bind) (source "vehicle1_c1::hitchBall") (target "trailerHitch::hitchBall") (source-range (start (line 26) (character 8)) (end (line 26) (character 29))) (target-range (start (line 26) (character 32)) (end (line 26) (character 54)))))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::HitchBall"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::Trailer"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::TrailerCoupler"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::TrailerHitch"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch::hitchBall"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch::trailerCoupler"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::vehicle1_c1"))) (status missing-prerequisite) (target "Parts::parts"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/validation/1d_parts_tree_with_reference.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 11 17) (end 11 28))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1::trailerCoupler")) (expression (status "incomplete") (error "expression is incomplete")))
   )
 )
 ~~~

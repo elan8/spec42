@@ -13,13 +13,14 @@ package P {
     }
 }
 ~~~
-# EXPECTED
-~~~
-semantic.duplicate_name 'off'
-~~~
-# PROBLEMS
-~~~
-semantic.duplicate_name 'off'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz_transition_no_then.md"
+    (diagnostics
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -42,6 +43,14 @@ CloseCurly,EndOfFile,
       (state_usage 'off')
       (transition_usage 't'))))
 ~~~
+# EXPECTED
+~~~
+semantic.duplicate_name 'off'
+~~~
+# PROBLEMS
+~~~
+semantic.duplicate_name 'off'
+~~~
 # FORMAT
 ~~~sysml
 package P {
@@ -55,45 +64,21 @@ package P {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "P"))) (name "P") (declared-name "P")
-      (contains
-        (element (kind "state def") (id (node (document "d0") (qualified-name "P::S"))) (name "S") (declared-name "S")
-          (contains
-            (element (kind "action") (id (node (document "d0") (qualified-name "P::S::_entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "P::S")))))
-            (element (kind "state") (id (node (document "d0") (qualified-name "P::S::off"))) (name "off") (declared-name "off") (effective (featuring-type (node (document "d0") (qualified-name "P::S")))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c9d158ddee56903139662f78118aa86d215a71662e1d36970d515089e4e22b59") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P") (range (start (line 0) (character 0)) (end (line 0) (character 130))))
+    (element (id (node (document "d0") (qualified-name "P::S"))) (kind "state def") (name "S") (declared-name "S") (range (start (line 1) (character 4)) (end (line 1) (character 116))) (parent (node (document "d0") (qualified-name "P"))) (authored (membership (kind Owning)) (relationships (initial-state (reference "P::S::off") (range none)))))
+    (element (id (node (document "d0") (qualified-name "P::S::_entry"))) (kind "action") (name "entry") (declared-name "entry") (range (start (line 2) (character 8)) (end (line 2) (character 14))) (parent (node (document "d0") (qualified-name "P::S"))))
+    (element (id (node (document "d0") (qualified-name "P::S::off"))) (kind "state") (name "off") (declared-name "off") (range (start (line 3) (character 8)) (end (line 3) (character 18))) (parent (node (document "d0") (qualified-name "P::S"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "P::S"))) (kind initialStateSource) (ordinal 0)) (authored-target "P::S::off") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "P::S::off")))))
   )
   (relationships
-    (initialState (status resolved) (from (node (document "d0") (qualified-name "P::S"))) (to (node (document "d0") (qualified-name "P::S::off"))) (provenance authored))
+    (relationship (kind initialState) (source (node (document "d0") (qualified-name "P::S"))) (target (node (document "d0") (qualified-name "P::S::off"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "P::S"))) (kind initialStateSource) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "P::S"))) (status missing-prerequisite) (target "States::StateAction"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "P::S::_entry"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "P::S::off"))) (status missing-prerequisite) (target "States::stateActions"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "fuzz/fuzz_transition_no_then.md"
-    (diagnostics
-      (diagnostic
-        (severity information)
-        (code "missing_final_state")
-        (source "semantic")
-        (range (start 1 4) (end 1 116))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

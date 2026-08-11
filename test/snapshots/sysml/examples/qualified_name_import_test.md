@@ -19,6 +19,27 @@ package QualifiedNameImportTest {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "qualified_name_import_test.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 17) (end 6 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 10 10) (end 10 16))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -48,6 +69,14 @@ CloseCurly,EndOfFile,
       (line_comment)
       (part_usage 'x' : 'P2a::A'))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package QualifiedNameImportTest {
@@ -65,69 +94,26 @@ package QualifiedNameImportTest {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "QualifiedNameImportTest"))) (name "QualifiedNameImportTest") (declared-name "QualifiedNameImportTest")
-      (contains
-        (element (kind "package") (id (node (document "d0") (qualified-name "QualifiedNameImportTest::P1"))) (name "P1") (declared-name "P1")
-          (contains
-            (element (kind "part def") (id (node (document "d0") (qualified-name "QualifiedNameImportTest::P1::A"))) (name "A") (declared-name "A") (declared))
-          )
-        )
-        (element (kind "package") (id (node (document "d0") (qualified-name "QualifiedNameImportTest::P2"))) (name "P2") (declared-name "P2")
-          (contains
-            (element (kind "package") (id (node (document "d0") (qualified-name "QualifiedNameImportTest::P2::P2a"))) (name "P2a") (declared-name "P2a")
-              (contains
-                (element (kind "import") (id (node (document "d0") (qualified-name "QualifiedNameImportTest::P2::P2a::*"))) (name "*") (declared-name "*"))
-              )
-            )
-            (element (kind "part") (id (node (document "d0") (qualified-name "QualifiedNameImportTest::P2::x"))) (name "x") (declared-name "x") (declared (properties (ordered false))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f6b7be6558e2fe4d23cd265cd8aba5758c2f64411ea90187fc41429fe0a90992") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "QualifiedNameImportTest"))) (kind "package") (name "QualifiedNameImportTest") (declared-name "QualifiedNameImportTest") (range (start (line 0) (character 0)) (end (line 0) (character 230))))
+    (element (id (node (document "d0") (qualified-name "QualifiedNameImportTest::P1"))) (kind "package") (name "P1") (declared-name "P1") (range (start (line 1) (character 1)) (end (line 1) (character 30))) (parent (node (document "d0") (qualified-name "QualifiedNameImportTest"))))
+    (element (id (node (document "d0") (qualified-name "QualifiedNameImportTest::P1::A"))) (kind "part def") (name "A") (declared-name "A") (range (start (line 2) (character 2)) (end (line 2) (character 13))) (parent (node (document "d0") (qualified-name "QualifiedNameImportTest::P1"))))
+    (element (id (node (document "d0") (qualified-name "QualifiedNameImportTest::P2"))) (kind "package") (name "P2") (declared-name "P2") (range (start (line 4) (character 1)) (end (line 4) (character 163))) (parent (node (document "d0") (qualified-name "QualifiedNameImportTest"))))
+    (element (id (node (document "d0") (qualified-name "QualifiedNameImportTest::P2::P2a"))) (kind "package") (name "P2a") (declared-name "P2a") (range (start (line 5) (character 2)) (end (line 5) (character 43))) (parent (node (document "d0") (qualified-name "QualifiedNameImportTest::P2"))))
+    (element (id (node (document "d0") (qualified-name "QualifiedNameImportTest::P2::P2a::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 6) (character 3)) (end (line 6) (character 23))) (parent (node (document "d0") (qualified-name "QualifiedNameImportTest::P2::P2a"))) (authored (membership (kind Import) (visibility "public") (import (reference "P1::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 6) (character 17)) (end (line 6) (character 19))))))
+    (element (id (node (document "d0") (qualified-name "QualifiedNameImportTest::P2::x"))) (kind "part") (name "x") (declared-name "x") (range (start (line 10) (character 2)) (end (line 10) (character 17))) (parent (node (document "d0") (qualified-name "QualifiedNameImportTest::P2"))) (authored (membership (kind Feature)) (relationships (typing (reference "P2a::A") (range (start (line 10) (character 10)) (end (line 10) (character 16)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "QualifiedNameImportTest::P2::P2a::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "P1::*") (range (start (line 6) (character 17)) (end (line 6) (character 19))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "QualifiedNameImportTest::P2::x"))) (kind featureTyping) (ordinal 0)) (authored-target "P2a::A") (range (start (line 10) (character 10)) (end (line 10) (character 16))) (outcome (status unresolved)))
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "QualifiedNameImportTest::P2::x"))) (to (node (document "d0") (qualified-name "QualifiedNameImportTest::P1::A"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "QualifiedNameImportTest::P1::A"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "QualifiedNameImportTest::P2::x"))) (status missing-prerequisite) (target "Parts::parts"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/qualified_name_import_test.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 6 17) (end 6 19))
-      )
-      (diagnostic
-        (severity warning)
-        (code "invalid_qualified_name_segment")
-        (source "semantic")
-        (range (start 10 10) (end 10 16))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

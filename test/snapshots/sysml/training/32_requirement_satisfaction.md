@@ -33,6 +33,75 @@ package 'Requirement Satisfaction' {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "32_requirement_satisfaction.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 8 19) (end 8 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 11 2) (end 11 119))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 11 18) (end 11 24))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_part_usage_body_element")
+        (source "sysml")
+        (range (start 19 2) (end 19 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 21 10) (end 21 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 21 34) (end 21 48))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 22 10) (end 22 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 22 33) (end 22 57))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -74,6 +143,20 @@ CloseCurly,EndOfFile,
       (sysml_decl 'vehicleSpecification')
       (sysml_decl 'engineSpecification'))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'Engine'
+semantic.unresolved_name 'clutchPort'
+semantic.unresolved_name 'generateTorque'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'Engine'
+semantic.unresolved_name 'clutchPort'
+semantic.unresolved_name 'generateTorque'
+~~~
 # FORMAT
 ~~~sysml
 package 'Requirement Satisfaction' {
@@ -105,133 +188,43 @@ package 'Requirement Satisfaction' {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'Engine'
-semantic.unresolved_name 'clutchPort'
-semantic.unresolved_name 'generateTorque'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'Engine'
-semantic.unresolved_name 'clutchPort'
-semantic.unresolved_name 'generateTorque'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Requirement Satisfaction"))) (name "Requirement Satisfaction") (declared-name "Requirement Satisfaction")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Requirement Satisfaction::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Requirement Satisfaction::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context"))) (name "Vehicle c1 Design Context") (declared-name "Vehicle c1 Design Context") (declared (properties (ordered false))))
-        (element (kind "action") (id (node (document "d0") (qualified-name "Requirement Satisfaction::provide power"))) (name "provide power") (declared-name "provide power") (declared)
-          (contains
-            (element (kind "action") (id (node (document "d0") (qualified-name "Requirement Satisfaction::provide power::generate torque"))) (name "generate torque") (declared-name "generate torque") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
-          )
-        )
-        (element (kind "part") (id (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1"))) (name "vehicle_c1") (declared-name "vehicle_c1") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1"))) (name "engine_v1") (declared-name "engine_v1") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "port") (id (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1::clutchPort"))) (name "clutchPort") (declared-name "clutchPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-                (element (kind "action") (id (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1::provide power.generate torque"))) (name "provide power.generate torque") (declared-name "provide power.generate torque"))
-              )
-            )
-            (element (kind "action") (id (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::provide power"))) (name "provide power") (declared-name "provide power"))
-          )
-        )
-      )
-    )
-    (element (kind "diagnostic") (id (node (document "d0") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context::unresolved_satisfy_source"))) (name "unresolved_satisfy_source") (declared-name "unresolved_satisfy_source"))
-    (element (kind "diagnostic") (id (node (document "d0") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context::unresolved_satisfy_source#diagnostic"))) (name "unresolved_satisfy_source") (declared-name "unresolved_satisfy_source"))
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "ccd9c64986e8023dacd5aec94e79f6e0a005b1e49462fc0da0f3eb6dde2ff41d") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Requirement Satisfaction"))) (kind "package") (name "Requirement Satisfaction") (declared-name "Requirement Satisfaction") (range (start (line 0) (character 0)) (end (line 0) (character 568))))
+    (element (id (node (document "d0") (qualified-name "Requirement Satisfaction::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 45))) (parent (node (document "d0") (qualified-name "Requirement Satisfaction"))) (authored (membership (kind Import) (visibility "private") (import (reference "Requirement Definitions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 41))))))
+    (element (id (node (document "d0") (qualified-name "Requirement Satisfaction::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 40))) (parent (node (document "d0") (qualified-name "Requirement Satisfaction"))) (authored (membership (kind Import) (visibility "private") (import (reference "Requirement Groups::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 36))))))
+    (element (id (node (document "d0") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context"))) (kind "part") (name "Vehicle c1 Design Context") (declared-name "Vehicle c1 Design Context") (range (start (line 17) (character 1)) (end (line 17) (character 190))) (parent (node (document "d0") (qualified-name "Requirement Satisfaction"))))
+    (element (id (node (document "d0") (qualified-name "Requirement Satisfaction::provide power"))) (kind "action") (name "provide power") (declared-name "provide power") (range (start (line 4) (character 1)) (end (line 4) (character 59))) (parent (node (document "d0") (qualified-name "Requirement Satisfaction"))) (authored (membership (kind Feature)) (relationships (perform (reference "Requirement Satisfaction::provide power::generate torque") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Requirement Satisfaction::provide power::generate torque"))) (kind "action") (name "generate torque") (declared-name "generate torque") (range (start (line 5) (character 2)) (end (line 5) (character 30))) (parent (node (document "d0") (qualified-name "Requirement Satisfaction::provide power"))))
+    (element (id (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1"))) (kind "part") (name "vehicle_c1") (declared-name "vehicle_c1") (range (start (line 8) (character 1)) (end (line 8) (character 183))) (parent (node (document "d0") (qualified-name "Requirement Satisfaction"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle") (range (start (line 8) (character 19)) (end (line 8) (character 26)))) (perform (reference "Requirement Satisfaction::vehicle_c1::provide power") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1"))) (kind "part") (name "engine_v1") (declared-name "engine_v1") (range (start (line 11) (character 2)) (end (line 11) (character 119))) (parent (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1"))) (authored (membership (kind Feature)) (relationships (typing (reference "Engine") (range (start (line 11) (character 18)) (end (line 11) (character 24)))) (perform (reference "Requirement Satisfaction::vehicle_c1::engine_v1::provide power::generate torque") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1::clutchPort"))) (kind "port") (name "clutchPort") (declared-name "clutchPort") (range (start (line 12) (character 3)) (end (line 12) (character 23))) (parent (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "clutchPort") (range (start (line 12) (character 12)) (end (line 12) (character 22)))))))
+    (element (id (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1::provide power.generate torque"))) (kind "action") (name "provide power.generate torque") (declared-name "provide power.generate torque") (range (start (line 13) (character 3)) (end (line 13) (character 64))) (parent (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1"))))
+    (element (id (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::provide power"))) (kind "action") (name "provide power") (declared-name "provide power") (range (start (line 9) (character 2)) (end (line 9) (character 26))) (parent (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Requirement Satisfaction::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Requirement Definitions::*") (range (start (line 1) (character 16)) (end (line 1) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Requirement Satisfaction::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "Requirement Groups::*") (range (start (line 2) (character 16)) (end (line 2) (character 36))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context"))) (kind satisfySource) (ordinal 0)) (authored-target "vehicleSpecification") (range (start (line 21) (character 10)) (end (line 21) (character 30))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context"))) (kind satisfySource) (ordinal 1)) (authored-target "engineSpecification") (range (start (line 22) (character 10)) (end (line 22) (character 29))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context"))) (kind satisfyTarget) (ordinal 0)) (authored-target "vehicle_design") (range (start (line 21) (character 34)) (end (line 21) (character 48))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context"))) (kind satisfyTarget) (ordinal 1)) (authored-target "vehicle_design::engine_v1") (range (start (line 22) (character 33)) (end (line 22) (character 57))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Requirement Satisfaction::provide power"))) (kind performSource) (ordinal 0)) (authored-target "Requirement Satisfaction::provide power::generate torque") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Requirement Satisfaction::provide power::generate torque")))))
+    (reference (id (source (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (range (start (line 8) (character 19)) (end (line 8) (character 26))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1"))) (kind performSource) (ordinal 0)) (authored-target "Requirement Satisfaction::vehicle_c1::provide power") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::provide power")))))
+    (reference (id (source (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1"))) (kind featureTyping) (ordinal 0)) (authored-target "Engine") (range (start (line 11) (character 18)) (end (line 11) (character 24))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1"))) (kind performSource) (ordinal 0)) (authored-target "Requirement Satisfaction::vehicle_c1::engine_v1::provide power::generate torque") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1::clutchPort"))) (kind redefinition) (ordinal 0)) (authored-target "clutchPort") (range (start (line 12) (character 12)) (end (line 12) (character 22))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1::clutchPort")))))
   )
   (relationships
-    (perform (status resolved) (from (node (document "d0") (qualified-name "Requirement Satisfaction::provide power"))) (to (node (document "d0") (qualified-name "Requirement Satisfaction::provide power::generate torque"))) (provenance authored))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1"))) (to (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::provide power"))) (provenance authored))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "Requirement Satisfaction::provide power"))) (target (node (document "d0") (qualified-name "Requirement Satisfaction::provide power::generate torque"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Requirement Satisfaction::provide power"))) (kind performSource) (ordinal 0)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1"))) (target (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::provide power"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1"))) (kind performSource) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1::clutchPort"))) (target (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1::clutchPort"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1::clutchPort"))) (kind redefinition) (ordinal 0)))
   )
-  (pending-relationships
-    (perform (status pending) (document "d0") (source-qualified "Requirement Satisfaction::vehicle_c1::engine_v1") (target-qualified "Requirement Satisfaction::vehicle_c1::engine_v1::provide power::generate torque"))
-  )
-  (pending-expression-relationships
-    (satisfy (status pending-expression) (document "d0") (source-expression "engineSpecification") (target-expression "vehicle_design::engine_v1") (container-prefix "Requirement Satisfaction::Vehicle c1 Design Context"))
-    (satisfy (status pending-expression) (document "d0") (source-expression "vehicleSpecification") (target-expression "vehicle_design") (container-prefix "Requirement Satisfaction::Vehicle c1 Design Context"))
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Satisfaction::provide power"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Satisfaction::provide power::generate torque"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1::clutchPort"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1::provide power.generate torque"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::provide power"))) (status missing-prerequisite) (target "Actions::actions"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/32_requirement_satisfaction.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_relationship")
-        (source "semantic")
-        (range (start 0 0) (end 0 0))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 41))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 16) (end 2 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 8 19) (end 8 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 11 18) (end 11 24))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 12 3) (end 12 23))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_part_usage_body_element")
-        (source "sysml")
-        (range (start 19 2) (end 19 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_satisfy_source")
-        (source "semantic")
-        (range (start 21 10) (end 21 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_satisfy_source")
-        (source "semantic")
-        (range (start 22 10) (end 22 29))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

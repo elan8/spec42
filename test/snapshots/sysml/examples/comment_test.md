@@ -50,6 +50,27 @@ package CommentTest {
 	part def A;
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "comment_test.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 24 1) (end 24 92))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_package_body_element")
+        (source "sysml")
+        (range (start 31 1) (end 31 55))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 RegularComment,
@@ -99,6 +120,14 @@ CloseCurly,EndOfFile,
     (comment)
     (part_def 'A')))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 /* AAA */
@@ -147,60 +176,21 @@ package CommentTest {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "CommentTest"))) (name "CommentTest") (declared-name "CommentTest")
-      (contains
-        (element (kind "part def") (id (node (document "d0") (qualified-name "CommentTest::A"))) (name "A") (declared-name "A") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "CommentTest::C"))) (name "C") (declared-name "C") (declared)
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "CommentTest::C::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "CommentTest::C")))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "075246e4956b56dc1cc8aa6bbcc26230ed0a074c393aea129c9c68548b7f4b32") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "CommentTest"))) (kind "package") (name "CommentTest") (declared-name "CommentTest") (range (start (line 2) (character 0)) (end (line 2) (character 685))))
+    (element (id (node (document "d0") (qualified-name "CommentTest::A"))) (kind "part def") (name "A") (declared-name "A") (range (start (line 42) (character 1)) (end (line 42) (character 12))) (parent (node (document "d0") (qualified-name "CommentTest"))))
+    (element (id (node (document "d0") (qualified-name "CommentTest::C"))) (kind "part def") (name "C") (declared-name "C") (range (start (line 36) (character 1)) (end (line 36) (character 161))) (parent (node (document "d0") (qualified-name "CommentTest"))))
+    (element (id (node (document "d0") (qualified-name "CommentTest::C::_documentation"))) (kind "documentation") (name "") (range (start (line 36) (character 1)) (end (line 36) (character 161))) (parent (node (document "d0") (qualified-name "CommentTest::C"))))
+  )
+  (references
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "CommentTest::C::_documentation"))) (to (node (document "d0") (qualified-name "CommentTest::C"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CommentTest::A"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CommentTest::C"))) (status missing-prerequisite) (target "Parts::Part"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/comment_test.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 24 1) (end 24 92))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_package_body_element")
-        (source "sysml")
-        (range (start 31 1) (end 31 55))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

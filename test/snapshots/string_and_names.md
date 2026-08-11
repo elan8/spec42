@@ -9,41 +9,6 @@ semantic_graph_skip_reason=parser recovery for non-empty source produced no type
 ~~~sysml
 "hello" 'world name' "with\nescapes"
 ~~~
-# TOKENS
-~~~zig
-StringValue,UnrestrictedName,StringValue,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (malformed))
-~~~
-# FORMAT
-~~~sysml
-"hello" 'world name' "with\nescapes"
-
-~~~
-# EXPECTED
-~~~
-parse.unexpected_token
-~~~
-# PROBLEMS
-~~~
-parse.unexpected_token
-~~~
-# SMG
-~~~
-(semantic-graph
-  (containment
-  )
-  (relationships
-  )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
@@ -56,6 +21,42 @@ parse.unexpected_token
         (range (start 0 0) (end 0 36))
       )
     )
+  )
+)
+~~~
+# TOKENS
+~~~zig
+StringValue,UnrestrictedName,StringValue,EndOfFile,
+~~~
+# AST
+~~~
+(root
+  (malformed))
+~~~
+# EXPECTED
+~~~
+parse.unexpected_token
+~~~
+# PROBLEMS
+~~~
+parse.unexpected_token
+~~~
+# FORMAT
+~~~sysml
+"hello" 'world name' "with\nescapes"
+
+~~~
+# SMG
+~~~
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "4eff7c1da024728e78f3f9dc96027d991683b523e94e50f9e79f5a8680faead6") (contract-version "canonical-resolution-v1"))
+  (structure
+  )
+  (references
+  )
+  (relationships
+  )
+  (evaluation
   )
 )
 ~~~

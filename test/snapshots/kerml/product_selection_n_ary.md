@@ -133,6 +133,15 @@ package ProductSelection_N_ary {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "product_selection_n_ary.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -340,6 +349,48 @@ CloseCurly,EndOfFile,
       (malformed)
       (malformed))))
 ~~~
+# EXPECTED
+~~~
+parse.expected_keyword_to
+parse.expected_keyword_to
+semantic.ambiguous_member 'malformed'
+semantic.unresolved_name 'Links::Link'
+semantic.unresolved_name 'cart::product_account::inCart'
+semantic.unresolved_name 'Product_Account'
+semantic.unresolved_name 'selectedProduct::cart_account::selectedProducts'
+semantic.unresolved_name 'Cart_Account'
+semantic.unresolved_name 'account::cart_product::withAccount'
+semantic.unresolved_name 'Cart_Product'
+semantic.unresolved_name 'cart::product_account1::inCart1'
+semantic.unresolved_name 'Product_Account1'
+semantic.unresolved_name 'Product_Account'
+semantic.unresolved_name 'selectedProduct::cart_account1::selectedProduct1'
+semantic.unresolved_name 'Cart_Account1'
+semantic.unresolved_name 'Cart_Account'
+semantic.unresolved_name 'account::cart_product1::withAccount1'
+semantic.unresolved_name 'Cart_Product'
+~~~
+# PROBLEMS
+~~~
+parse.expected_keyword_to
+parse.expected_keyword_to
+semantic.ambiguous_member 'malformed'
+semantic.unresolved_name 'Links::Link'
+semantic.unresolved_name 'cart::product_account::inCart'
+semantic.unresolved_name 'Product_Account'
+semantic.unresolved_name 'selectedProduct::cart_account::selectedProducts'
+semantic.unresolved_name 'Cart_Account'
+semantic.unresolved_name 'account::cart_product::withAccount'
+semantic.unresolved_name 'Cart_Product'
+semantic.unresolved_name 'cart::product_account1::inCart1'
+semantic.unresolved_name 'Product_Account1'
+semantic.unresolved_name 'Product_Account'
+semantic.unresolved_name 'selectedProduct::cart_account1::selectedProduct1'
+semantic.unresolved_name 'Cart_Account1'
+semantic.unresolved_name 'Cart_Account'
+semantic.unresolved_name 'account::cart_product1::withAccount1'
+semantic.unresolved_name 'Cart_Product'
+~~~
 # FORMAT
 ~~~sysml
 package ProductSelection_N_ary {
@@ -470,83 +521,30 @@ package ProductSelection_N_ary {
 	
 }
 ~~~
-# EXPECTED
-~~~
-parse.expected_keyword_to
-parse.expected_keyword_to
-semantic.ambiguous_member 'malformed'
-semantic.unresolved_name 'Links::Link'
-semantic.unresolved_name 'cart::product_account::inCart'
-semantic.unresolved_name 'Product_Account'
-semantic.unresolved_name 'selectedProduct::cart_account::selectedProducts'
-semantic.unresolved_name 'Cart_Account'
-semantic.unresolved_name 'account::cart_product::withAccount'
-semantic.unresolved_name 'Cart_Product'
-semantic.unresolved_name 'cart::product_account1::inCart1'
-semantic.unresolved_name 'Product_Account1'
-semantic.unresolved_name 'Product_Account'
-semantic.unresolved_name 'selectedProduct::cart_account1::selectedProduct1'
-semantic.unresolved_name 'Cart_Account1'
-semantic.unresolved_name 'Cart_Account'
-semantic.unresolved_name 'account::cart_product1::withAccount1'
-semantic.unresolved_name 'Cart_Product'
-~~~
-# PROBLEMS
-~~~
-parse.expected_keyword_to
-parse.expected_keyword_to
-semantic.ambiguous_member 'malformed'
-semantic.unresolved_name 'Links::Link'
-semantic.unresolved_name 'cart::product_account::inCart'
-semantic.unresolved_name 'Product_Account'
-semantic.unresolved_name 'selectedProduct::cart_account::selectedProducts'
-semantic.unresolved_name 'Cart_Account'
-semantic.unresolved_name 'account::cart_product::withAccount'
-semantic.unresolved_name 'Cart_Product'
-semantic.unresolved_name 'cart::product_account1::inCart1'
-semantic.unresolved_name 'Product_Account1'
-semantic.unresolved_name 'Product_Account'
-semantic.unresolved_name 'selectedProduct::cart_account1::selectedProduct1'
-semantic.unresolved_name 'Cart_Account1'
-semantic.unresolved_name 'Cart_Account'
-semantic.unresolved_name 'account::cart_product1::withAccount1'
-semantic.unresolved_name 'Cart_Product'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ProductSelection_N_ary"))) (name "ProductSelection_N_ary") (declared-name "ProductSelection_N_ary")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ProductSelection_N_ary::Account"))) (name "Account") (declared-name "Account"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ProductSelection_N_ary::OnlineCustomer"))) (name "OnlineCustomer") (declared-name "OnlineCustomer"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ProductSelection_N_ary::Product"))) (name "Product") (declared-name "Product"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_N_ary::ProductSelection"))) (name "ProductSelection") (declared-name "ProductSelection"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_N_ary::ProductSelection1"))) (name "ProductSelection1") (declared-name "ProductSelection1"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_N_ary::ProductSelection2"))) (name "ProductSelection2") (declared-name "ProductSelection2"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_N_ary::ProductSelection3"))) (name "ProductSelection3") (declared-name "ProductSelection3"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ProductSelection_N_ary::ShoppingCart"))) (name "ShoppingCart") (declared-name "ShoppingCart"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_N_ary::SingleProductSelection"))) (name "SingleProductSelection") (declared-name "SingleProductSelection"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_N_ary::SingleProductSelection1"))) (name "SingleProductSelection1") (declared-name "SingleProductSelection1"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_N_ary::SingleProductSelection2"))) (name "SingleProductSelection2") (declared-name "SingleProductSelection2"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_N_ary::SingleProductSelection3"))) (name "SingleProductSelection3") (declared-name "SingleProductSelection3"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "33f0d3e283498d5b0c5928de80cdbdfee8bf12104ba447db9a33483f47884aa4") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary"))) (kind "package") (name "ProductSelection_N_ary") (declared-name "ProductSelection_N_ary") (range (start (line 0) (character 0)) (end (line 0) (character 4894))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary::Account"))) (kind "classifier decl") (name "Account") (declared-name "Account") (range (start (line 4) (character 1)) (end (line 4) (character 15))) (parent (node (document "d0") (qualified-name "ProductSelection_N_ary"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary::OnlineCustomer"))) (kind "classifier decl") (name "OnlineCustomer") (declared-name "OnlineCustomer") (range (start (line 116) (character 1)) (end (line 116) (character 284))) (parent (node (document "d0") (qualified-name "ProductSelection_N_ary"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary::Product"))) (kind "classifier decl") (name "Product") (declared-name "Product") (range (start (line 3) (character 1)) (end (line 3) (character 15))) (parent (node (document "d0") (qualified-name "ProductSelection_N_ary"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary::ProductSelection"))) (kind "kermlDecl") (name "ProductSelection") (declared-name "ProductSelection") (range (start (line 7) (character 1)) (end (line 7) (character 165))) (parent (node (document "d0") (qualified-name "ProductSelection_N_ary"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary::ProductSelection1"))) (kind "kermlDecl") (name "ProductSelection1") (declared-name "ProductSelection1") (range (start (line 14) (character 1)) (end (line 14) (character 199))) (parent (node (document "d0") (qualified-name "ProductSelection_N_ary"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary::ProductSelection2"))) (kind "kermlDecl") (name "ProductSelection2") (declared-name "ProductSelection2") (range (start (line 21) (character 1)) (end (line 21) (character 340))) (parent (node (document "d0") (qualified-name "ProductSelection_N_ary"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary::ProductSelection3"))) (kind "kermlDecl") (name "ProductSelection3") (declared-name "ProductSelection3") (range (start (line 35) (character 1)) (end (line 35) (character 1373))) (parent (node (document "d0") (qualified-name "ProductSelection_N_ary"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary::ShoppingCart"))) (kind "classifier decl") (name "ShoppingCart") (declared-name "ShoppingCart") (range (start (line 2) (character 1)) (end (line 2) (character 20))) (parent (node (document "d0") (qualified-name "ProductSelection_N_ary"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary::SingleProductSelection"))) (kind "kermlDecl") (name "SingleProductSelection") (declared-name "SingleProductSelection") (range (start (line 65) (character 1)) (end (line 65) (character 200))) (parent (node (document "d0") (qualified-name "ProductSelection_N_ary"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary::SingleProductSelection1"))) (kind "kermlDecl") (name "SingleProductSelection1") (declared-name "SingleProductSelection1") (range (start (line 71) (character 1)) (end (line 71) (character 240))) (parent (node (document "d0") (qualified-name "ProductSelection_N_ary"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary::SingleProductSelection2"))) (kind "kermlDecl") (name "SingleProductSelection2") (declared-name "SingleProductSelection2") (range (start (line 77) (character 1)) (end (line 77) (character 388))) (parent (node (document "d0") (qualified-name "ProductSelection_N_ary"))))
+    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary::SingleProductSelection3"))) (kind "kermlDecl") (name "SingleProductSelection3") (declared-name "SingleProductSelection3") (range (start (line 89) (character 1)) (end (line 89) (character 1277))) (parent (node (document "d0") (qualified-name "ProductSelection_N_ary"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/product_selection_n_ary.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

@@ -45,25 +45,50 @@ part def Vehicle {
     variant part optionB;
 }
 ~~~
-# EXPECTED
-~~~
-semantic.feature_typing_kind_mismatch
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Integer'
-~~~
-# PROBLEMS
-~~~
-semantic.feature_typing_kind_mismatch
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Integer'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "coverage_sysml_usages.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 8 4) (end 8 113))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 12 4) (end 12 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 12 4) (end 12 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 12 21) (end 12 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 13 4) (end 13 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 13 27) (end 13 34))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -135,6 +160,26 @@ CloseCurly,EndOfFile,
     (variant_usage
       (part_usage 'optionB'))))
 ~~~
+# EXPECTED
+~~~
+semantic.feature_typing_kind_mismatch
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Integer'
+~~~
+# PROBLEMS
+~~~
+semantic.feature_typing_kind_mismatch
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Integer'
+~~~
 # FORMAT
 ~~~sysml
 part def Sensor;
@@ -180,104 +225,57 @@ part def Vehicle {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "part def") (id (node (document "d0") (qualified-name "Color"))) (name "Color") (declared-name "Color") (declared))
-    (element (kind "part def") (id (node (document "d0") (qualified-name "DataPort"))) (name "DataPort") (declared-name "DataPort") (declared))
-    (element (kind "part def") (id (node (document "d0") (qualified-name "Engine"))) (name "Engine") (declared-name "Engine") (declared))
-    (element (kind "enum def") (id (node (document "d0") (qualified-name "Priority"))) (name "Priority") (declared-name "Priority"))
-    (element (kind "part def") (id (node (document "d0") (qualified-name "Sensor"))) (name "Sensor") (declared-name "Sensor") (declared))
-    (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
-      (contains
-        (element (kind "opaque member") (id (node (document "d0") (qualified-name "Vehicle::attribute"))) (name "attribute") (declared-name "attribute") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
-        (element (kind "enumeration") (id (node (document "d0") (qualified-name "Vehicle::color"))) (name "color") (declared-name "color") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
-        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Vehicle::event1"))) (name "event1") (declared-name "event1") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
-        (element (kind "opaque member") (id (node (document "d0") (qualified-name "Vehicle::item"))) (name "item") (declared-name "item") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
-        (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "integerLiteral") (literal (integer 100))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Vehicle"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Vehicle::mass"))) (role feature-value))) (evaluation (expression (status "ok") (value (integer 100)))))
-        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Vehicle::nextEvent"))) (name "nextEvent") (declared-name "nextEvent") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle::optionA"))) (name "optionA") (declared-name "optionA") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle::optionB"))) (name "optionB") (declared-name "optionB") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
-        (element (kind "port") (id (node (document "d0") (qualified-name "Vehicle::out1"))) (name "out1") (declared-name "out1") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
-        (element (kind "item") (id (node (document "d0") (qualified-name "Vehicle::payload"))) (name "payload") (declared-name "payload") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
-        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Vehicle::person1"))) (name "person1") (declared-name "person1") (declared (properties (individual true))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
-        (element (kind "ref") (id (node (document "d0") (qualified-name "Vehicle::r1"))) (name "r1") (declared-name "r1") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
-        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Vehicle::refEvent"))) (name "refEvent") (declared-name "refEvent") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
-        (element (kind "ref") (id (node (document "d0") (qualified-name "Vehicle::refPart"))) (name "refPart") (declared-name "refPart") (declared (properties (composite false) (reference true) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
-        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Vehicle::s1"))) (name "s1") (declared-name "s1") (declared (properties (portion true) (portion-kind "snapshot"))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
-        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Vehicle::startEvent"))) (name "startEvent") (declared-name "startEvent") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
-        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Vehicle::ts1"))) (name "ts1") (declared-name "ts1") (declared (properties (portion true) (portion-kind "timeslice"))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
-        (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle::weights"))) (name "weights") (declared-name "weights") (declared (properties (ordered false) (unique true)) (multiplicity (lower 3) (upper 3) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
-      )
-    )
-    (element (kind "part def") (id (node (document "d0") (qualified-name "Widget"))) (name "Widget") (declared-name "Widget") (declared))
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "6f305ae01e9d38619a2b458312c47ef6da906c7d52d9ac34e0e5636ddb58d95d") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Color"))) (kind "part def") (name "Color") (declared-name "Color") (range (start (line 4) (character 0)) (end (line 4) (character 15))))
+    (element (id (node (document "d0") (qualified-name "DataPort"))) (kind "part def") (name "DataPort") (declared-name "DataPort") (range (start (line 2) (character 0)) (end (line 2) (character 18))))
+    (element (id (node (document "d0") (qualified-name "Engine"))) (kind "part def") (name "Engine") (declared-name "Engine") (range (start (line 1) (character 0)) (end (line 1) (character 16))))
+    (element (id (node (document "d0") (qualified-name "Priority"))) (kind "enum def") (name "Priority") (declared-name "Priority") (range (start (line 5) (character 0)) (end (line 5) (character 73))))
+    (element (id (node (document "d0") (qualified-name "Sensor"))) (kind "part def") (name "Sensor") (declared-name "Sensor") (range (start (line 0) (character 0)) (end (line 0) (character 16))))
+    (element (id (node (document "d0") (qualified-name "Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (range (start (line 7) (character 0)) (end (line 7) (character 655))))
+    (element (id (node (document "d0") (qualified-name "Vehicle::attribute"))) (kind "opaque member") (name "attribute") (declared-name "attribute") (range (start (line 29) (character 4)) (end (line 29) (character 36))) (parent (node (document "d0") (qualified-name "Vehicle"))))
+    (element (id (node (document "d0") (qualified-name "Vehicle::color"))) (kind "enumeration") (name "color") (declared-name "color") (range (start (line 15) (character 4)) (end (line 15) (character 23))) (parent (node (document "d0") (qualified-name "Vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Color") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Vehicle::event1"))) (kind "occurrence") (name "event1") (declared-name "event1") (range (start (line 17) (character 15)) (end (line 17) (character 22))) (parent (node (document "d0") (qualified-name "Vehicle"))))
+    (element (id (node (document "d0") (qualified-name "Vehicle::item"))) (kind "opaque member") (name "item") (declared-name "item") (range (start (line 30) (character 4)) (end (line 30) (character 30))) (parent (node (document "d0") (qualified-name "Vehicle"))))
+    (element (id (node (document "d0") (qualified-name "Vehicle::mass"))) (kind "attribute") (name "mass") (declared-name "mass") (range (start (line 12) (character 4)) (end (line 12) (character 35))) (parent (node (document "d0") (qualified-name "Vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Integer") (range none)) (typing (reference "Integer") (range (start (line 12) (character 21)) (end (line 12) (character 28)))))))
+    (element (id (node (document "d0") (qualified-name "Vehicle::nextEvent"))) (kind "occurrence") (name "nextEvent") (declared-name "nextEvent") (range (start (line 34) (character 26)) (end (line 34) (character 36))) (parent (node (document "d0") (qualified-name "Vehicle"))))
+    (element (id (node (document "d0") (qualified-name "Vehicle::optionA"))) (kind "part") (name "optionA") (declared-name "optionA") (range (start (line 36) (character 12)) (end (line 36) (character 25))) (parent (node (document "d0") (qualified-name "Vehicle"))))
+    (element (id (node (document "d0") (qualified-name "Vehicle::optionB"))) (kind "part") (name "optionB") (declared-name "optionB") (range (start (line 37) (character 12)) (end (line 37) (character 25))) (parent (node (document "d0") (qualified-name "Vehicle"))))
+    (element (id (node (document "d0") (qualified-name "Vehicle::out1"))) (kind "port") (name "out1") (declared-name "out1") (range (start (line 21) (character 4)) (end (line 21) (character 25))) (parent (node (document "d0") (qualified-name "Vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "DataPort") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Vehicle::payload"))) (kind "item") (name "payload") (declared-name "payload") (range (start (line 20) (character 4)) (end (line 20) (character 26))) (parent (node (document "d0") (qualified-name "Vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Widget") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Vehicle::person1"))) (kind "occurrence") (name "person1") (declared-name "person1") (range (start (line 18) (character 15)) (end (line 18) (character 32))) (parent (node (document "d0") (qualified-name "Vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Sensor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Vehicle::r1"))) (kind "ref") (name "r1") (declared-name "r1") (range (start (line 28) (character 4)) (end (line 28) (character 20))) (parent (node (document "d0") (qualified-name "Vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Sensor") (range (start (line 28) (character 13)) (end (line 28) (character 19)))))))
+    (element (id (node (document "d0") (qualified-name "Vehicle::refEvent"))) (kind "occurrence") (name "refEvent") (declared-name "refEvent") (range (start (line 32) (character 25)) (end (line 32) (character 34))) (parent (node (document "d0") (qualified-name "Vehicle"))))
+    (element (id (node (document "d0") (qualified-name "Vehicle::refPart"))) (kind "ref") (name "refPart") (declared-name "refPart") (range (start (line 31) (character 4)) (end (line 31) (character 30))) (parent (node (document "d0") (qualified-name "Vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Engine") (range (start (line 31) (character 23)) (end (line 31) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "Vehicle::s1"))) (kind "occurrence") (name "s1") (declared-name "s1") (range (start (line 25) (character 13)) (end (line 25) (character 16))) (parent (node (document "d0") (qualified-name "Vehicle"))))
+    (element (id (node (document "d0") (qualified-name "Vehicle::startEvent"))) (kind "occurrence") (name "startEvent") (declared-name "startEvent") (range (start (line 23) (character 21)) (end (line 23) (character 32))) (parent (node (document "d0") (qualified-name "Vehicle"))))
+    (element (id (node (document "d0") (qualified-name "Vehicle::ts1"))) (kind "occurrence") (name "ts1") (declared-name "ts1") (range (start (line 26) (character 14)) (end (line 26) (character 18))) (parent (node (document "d0") (qualified-name "Vehicle"))))
+    (element (id (node (document "d0") (qualified-name "Vehicle::weights"))) (kind "attribute") (name "weights") (declared-name "weights") (range (start (line 13) (character 4)) (end (line 13) (character 35))) (parent (node (document "d0") (qualified-name "Vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Integer") (range none)) (typing (reference "Integer") (range (start (line 13) (character 27)) (end (line 13) (character 34)))))))
+    (element (id (node (document "d0") (qualified-name "Widget"))) (kind "part def") (name "Widget") (declared-name "Widget") (range (start (line 3) (character 0)) (end (line 3) (character 16))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle::color"))) (kind featureTyping) (ordinal 0)) (authored-target "Color") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Color")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle::mass"))) (kind featureTyping) (ordinal 0)) (authored-target "Integer") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle::mass"))) (kind featureTyping) (ordinal 1)) (authored-target "Integer") (range (start (line 12) (character 21)) (end (line 12) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle::out1"))) (kind featureTyping) (ordinal 0)) (authored-target "DataPort") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "DataPort")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle::payload"))) (kind featureTyping) (ordinal 0)) (authored-target "Widget") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Widget")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle::person1"))) (kind featureTyping) (ordinal 0)) (authored-target "Sensor") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Sensor")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle::r1"))) (kind featureTyping) (ordinal 0)) (authored-target "Sensor") (range (start (line 28) (character 13)) (end (line 28) (character 19))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Sensor")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle::refPart"))) (kind featureTyping) (ordinal 0)) (authored-target "Engine") (range (start (line 31) (character 23)) (end (line 31) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Engine")))))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle::weights"))) (kind featureTyping) (ordinal 0)) (authored-target "Integer") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Vehicle::weights"))) (kind featureTyping) (ordinal 1)) (authored-target "Integer") (range (start (line 13) (character 27)) (end (line 13) (character 34))) (outcome (status unresolved)))
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle::color"))) (to (node (document "d0") (qualified-name "Color"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle::out1"))) (to (node (document "d0") (qualified-name "DataPort"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle::payload"))) (to (node (document "d0") (qualified-name "Widget"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle::person1"))) (to (node (document "d0") (qualified-name "Sensor"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle::r1"))) (to (node (document "d0") (qualified-name "Sensor"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle::refPart"))) (to (node (document "d0") (qualified-name "Engine"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Vehicle::color"))) (target (node (document "d0") (qualified-name "Color"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle::color"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Vehicle::out1"))) (target (node (document "d0") (qualified-name "DataPort"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle::out1"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Vehicle::payload"))) (target (node (document "d0") (qualified-name "Widget"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle::payload"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Vehicle::person1"))) (target (node (document "d0") (qualified-name "Sensor"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle::person1"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Vehicle::r1"))) (target (node (document "d0") (qualified-name "Sensor"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle::r1"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Vehicle::refPart"))) (target (node (document "d0") (qualified-name "Engine"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Vehicle::refPart"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Color"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DataPort"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Engine"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Priority"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Sensor"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle::color"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle::event1"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle::mass"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle::nextEvent"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle::optionA"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle::optionB"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle::out1"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle::payload"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle::person1"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle::refEvent"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle::s1"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle::startEvent"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle::ts1"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle::weights"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Widget"))) (status missing-prerequisite) (target "Parts::Part"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/coverage_sysml_usages.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 8 4) (end 8 113))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 12 4) (end 12 35))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 13 4) (end 13 35))
-      )
-      (diagnostic
-        (severity warning)
-        (code "incompatible_type_kind")
-        (source "semantic")
-        (range (start 21 4) (end 21 25))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "Vehicle::mass")) (expression (status "ok") (value (integer 100))))
   )
 )
 ~~~

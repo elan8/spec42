@@ -12,13 +12,26 @@ in send// nd port for HTT3prin  pq  for y  // nd port for HTT3prin items { }
   send pq   }
 }
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz_crash_send_comment_payload.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_action_body_element")
+        (source "sysml")
+        (range (start 2 4) (end 2 87))
+      )
+      (diagnostic
+        (severity error)
+        (code "missing_semicolon")
+        (source "sysml")
+        (range (start 4 2) (end 4 12))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -38,6 +51,14 @@ CloseCurly,EndOfFile,
       (send_node)
       (send_node))))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package P {
@@ -50,43 +71,17 @@ package P {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "P"))) (name "P") (declared-name "P")
-      (contains
-        (element (kind "action def") (id (node (document "d0") (qualified-name "P::A"))) (name "A") (declared-name "A"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "b22d3e1144f64cd9f2aa462a24262ec8b3e2e3e164eade10f37b677646cf7eb5") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P") (range (start (line 0) (character 0)) (end (line 0) (character 127))))
+    (element (id (node (document "d0") (qualified-name "P::A"))) (kind "action def") (name "A") (declared-name "A") (range (start (line 1) (character 0)) (end (line 1) (character 113))) (parent (node (document "d0") (qualified-name "P"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "P::A"))) (status missing-prerequisite) (target "Actions::Action"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "fuzz_crash_send_comment_payload.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "recovered_action_body_element")
-        (source "sysml")
-        (range (start 2 4) (end 2 87))
-      )
-      (diagnostic
-        (severity error)
-        (code "missing_semicolon")
-        (source "sysml")
-        (range (start 4 2) (end 4 12))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

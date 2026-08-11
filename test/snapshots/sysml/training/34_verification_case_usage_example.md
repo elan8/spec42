@@ -58,6 +58,63 @@ package 'Verification Case Usage Example' {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "34_verification_case_usage_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 54))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 6 26) (end 6 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 10 1) (end 10 96))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 17 2) (end 17 248))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 31 32) (end 31 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 32 32) (end 32 39))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 36 3) (end 36 134))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 44 3) (end 44 134))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -135,6 +192,30 @@ CloseCurly,EndOfFile,
             (individual_usage in individual :>> 'testVehicle' : 'TestVehicle2'
               (default_ref_usage :>> 'mass' value))))))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'VehicleMassTest'
+semantic.unresolved_name 'vehicleMassTest::collectData'
+semantic.unresolved_name 'testVehicle'
+semantic.unresolved_name 'massMeasured'
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'mass'
+semantic.unresolved_name 'mass'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'VehicleMassTest'
+semantic.unresolved_name 'vehicleMassTest::collectData'
+semantic.unresolved_name 'testVehicle'
+semantic.unresolved_name 'massMeasured'
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'mass'
+semantic.unresolved_name 'mass'
+~~~
 # FORMAT
 ~~~sysml
 package 'Verification Case Usage Example' {
@@ -190,153 +271,51 @@ package 'Verification Case Usage Example' {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'VehicleMassTest'
-semantic.unresolved_name 'vehicleMassTest::collectData'
-semantic.unresolved_name 'testVehicle'
-semantic.unresolved_name 'massMeasured'
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'mass'
-semantic.unresolved_name 'mass'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'VehicleMassTest'
-semantic.unresolved_name 'vehicleMassTest::collectData'
-semantic.unresolved_name 'testVehicle'
-semantic.unresolved_name 'massMeasured'
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'mass'
-semantic.unresolved_name 'mass'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Verification Case Usage Example"))) (name "Verification Case Usage Example") (declared-name "Verification Case Usage Example")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Verification Case Usage Example::*"))) (name "*") (declared-name "*"))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Verification Case Usage Example::MassVerificationSystem"))) (name "MassVerificationSystem") (declared-name "MassVerificationSystem") (declared))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Verification Case Usage Example::Scale"))) (name "Scale") (declared-name "Scale") (declared))
-        (element (kind "individual def") (id (node (document "d0") (qualified-name "Verification Case Usage Example::TestSystem"))) (name "TestSystem") (declared-name "TestSystem"))
-        (element (kind "individual def") (id (node (document "d0") (qualified-name "Verification Case Usage Example::TestVehicle1"))) (name "TestVehicle1") (declared-name "TestVehicle1"))
-        (element (kind "individual def") (id (node (document "d0") (qualified-name "Verification Case Usage Example::TestVehicle2"))) (name "TestVehicle2") (declared-name "TestVehicle2"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem"))) (name "massVerificationSystem") (declared-name "massVerificationSystem") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem::scale"))) (name "scale") (declared-name "scale") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Verification Case Usage Example::MassVerificationSystem"))))
-              (contains
-                (element (kind "action") (id (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem::scale::vehicleMassTest.collectData"))) (name "vehicleMassTest.collectData") (declared-name "vehicleMassTest.collectData") (effective (featuring-type (node (document "d0") (qualified-name "Verification Case Usage Example::Scale")))))
-              )
-            )
-            (element (kind "action") (id (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem::vehicleMassTest"))) (name "vehicleMassTest") (declared-name "vehicleMassTest") (effective (featuring-type (node (document "d0") (qualified-name "Verification Case Usage Example::MassVerificationSystem")))))
-          )
-        )
-        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Verification Case Usage Example::testSystem"))) (name "testSystem") (declared-name "testSystem") (declared (properties (individual true)))
-          (contains
-            (element (kind "occurrence") (id (node (document "d0") (qualified-name "Verification Case Usage Example::testSystem::test1"))) (name "test1") (declared-name "test1") (declared (properties (portion true) (portion-kind "timeslice"))) (effective (implied-feature-ownership (composite true) (reference false))))
-            (element (kind "occurrence") (id (node (document "d0") (qualified-name "Verification Case Usage Example::testSystem::test2"))) (name "test2") (declared-name "test2") (declared (properties (portion true) (portion-kind "timeslice"))) (effective (implied-feature-ownership (composite true) (reference false))))
-          )
-        )
-        (element (kind "verification") (id (node (document "d0") (qualified-name "Verification Case Usage Example::vehicleMassTest"))) (name "vehicleMassTest") (declared-name "vehicleMassTest"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Verification Case Usage Example::vehicleTestConfig"))) (name "vehicleTestConfig") (declared-name "vehicleTestConfig") (declared (properties (ordered false))))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "c0e71e47de4f50e78b72bd7d68997bfac954265f6f31f0f44518b38b9ef85226") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Verification Case Usage Example"))) (kind "package") (name "Verification Case Usage Example") (declared-name "Verification Case Usage Example") (range (start (line 0) (character 0)) (end (line 0) (character 1177))))
+    (element (id (node (document "d0") (qualified-name "Verification Case Usage Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 58))) (parent (node (document "d0") (qualified-name "Verification Case Usage Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "Verification Case Definition Example::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 54))))))
+    (element (id (node (document "d0") (qualified-name "Verification Case Usage Example::MassVerificationSystem"))) (kind "part def") (name "MassVerificationSystem") (declared-name "MassVerificationSystem") (range (start (line 3) (character 1)) (end (line 3) (character 33))) (parent (node (document "d0") (qualified-name "Verification Case Usage Example"))))
+    (element (id (node (document "d0") (qualified-name "Verification Case Usage Example::Scale"))) (kind "part def") (name "Scale") (declared-name "Scale") (range (start (line 4) (character 1)) (end (line 4) (character 16))) (parent (node (document "d0") (qualified-name "Verification Case Usage Example"))))
+    (element (id (node (document "d0") (qualified-name "Verification Case Usage Example::TestSystem"))) (kind "individual def") (name "TestSystem") (declared-name "TestSystem") (range (start (line 29) (character 1)) (end (line 29) (character 53))) (parent (node (document "d0") (qualified-name "Verification Case Usage Example"))) (authored (membership (kind Owning)) (relationships (specializes (reference "MassVerificationSystem") (range (start (line 29) (character 30)) (end (line 29) (character 52)))))))
+    (element (id (node (document "d0") (qualified-name "Verification Case Usage Example::TestVehicle1"))) (kind "individual def") (name "TestVehicle1") (declared-name "TestVehicle1") (range (start (line 31) (character 1)) (end (line 31) (character 40))) (parent (node (document "d0") (qualified-name "Verification Case Usage Example"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Vehicle") (range (start (line 31) (character 32)) (end (line 31) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "Verification Case Usage Example::TestVehicle2"))) (kind "individual def") (name "TestVehicle2") (declared-name "TestVehicle2") (range (start (line 32) (character 1)) (end (line 32) (character 40))) (parent (node (document "d0") (qualified-name "Verification Case Usage Example"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Vehicle") (range (start (line 32) (character 32)) (end (line 32) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem"))) (kind "part") (name "massVerificationSystem") (declared-name "massVerificationSystem") (range (start (line 14) (character 1)) (end (line 14) (character 337))) (parent (node (document "d0") (qualified-name "Verification Case Usage Example"))) (authored (membership (kind Feature)) (relationships (typing (reference "MassVerificationSystem") (range (start (line 14) (character 31)) (end (line 14) (character 53)))) (perform (reference "Verification Case Usage Example::massVerificationSystem::vehicleMassTest") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem::scale"))) (kind "part") (name "scale") (declared-name "scale") (range (start (line 17) (character 2)) (end (line 17) (character 248))) (parent (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem"))) (authored (membership (kind Feature)) (relationships (typing (reference "Scale") (range (start (line 17) (character 15)) (end (line 17) (character 20)))) (perform (reference "Verification Case Usage Example::massVerificationSystem::scale::vehicleMassTest::collectData") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem::scale::vehicleMassTest.collectData"))) (kind "action") (name "vehicleMassTest.collectData") (declared-name "vehicleMassTest.collectData") (range (start (line 18) (character 3)) (end (line 18) (character 221))) (parent (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem::scale"))))
+    (element (id (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem::vehicleMassTest"))) (kind "action") (name "vehicleMassTest") (declared-name "vehicleMassTest") (range (start (line 15) (character 2)) (end (line 15) (character 26))) (parent (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem"))))
+    (element (id (node (document "d0") (qualified-name "Verification Case Usage Example::testSystem"))) (kind "occurrence") (name "testSystem") (declared-name "testSystem") (range (start (line 34) (character 12)) (end (line 34) (character 386))) (parent (node (document "d0") (qualified-name "Verification Case Usage Example"))) (authored (membership (kind Feature)) (relationships (typing (reference "TestSystem") (range none)) (subsetting (reference "massVerificationSystem") (range (start (line 34) (character 39)) (end (line 34) (character 61)))))))
+    (element (id (node (document "d0") (qualified-name "Verification Case Usage Example::testSystem::test1"))) (kind "occurrence") (name "test1") (declared-name "test1") (range (start (line 35) (character 12)) (end (line 35) (character 155))) (parent (node (document "d0") (qualified-name "Verification Case Usage Example::testSystem"))))
+    (element (id (node (document "d0") (qualified-name "Verification Case Usage Example::testSystem::test2"))) (kind "occurrence") (name "test2") (declared-name "test2") (range (start (line 43) (character 17)) (end (line 43) (character 160))) (parent (node (document "d0") (qualified-name "Verification Case Usage Example::testSystem"))))
+    (element (id (node (document "d0") (qualified-name "Verification Case Usage Example::vehicleMassTest"))) (kind "verification") (name "vehicleMassTest") (declared-name "vehicleMassTest") (range (start (line 10) (character 1)) (end (line 10) (character 96))) (parent (node (document "d0") (qualified-name "Verification Case Usage Example"))) (authored (membership (kind Feature)) (relationships (typing (reference "VehicleMassTest") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Verification Case Usage Example::vehicleTestConfig"))) (kind "part") (name "vehicleTestConfig") (declared-name "vehicleTestConfig") (range (start (line 6) (character 1)) (end (line 6) (character 47))) (parent (node (document "d0") (qualified-name "Verification Case Usage Example"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle") (range (start (line 6) (character 26)) (end (line 6) (character 33)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Verification Case Usage Example::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Verification Case Definition Example::*") (range (start (line 1) (character 16)) (end (line 1) (character 54))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Verification Case Usage Example::TestSystem"))) (kind specialization) (ordinal 0)) (authored-target "MassVerificationSystem") (range (start (line 29) (character 30)) (end (line 29) (character 52))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Verification Case Usage Example::MassVerificationSystem")))))
+    (reference (id (source (node (document "d0") (qualified-name "Verification Case Usage Example::TestVehicle1"))) (kind specialization) (ordinal 0)) (authored-target "Vehicle") (range (start (line 31) (character 32)) (end (line 31) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Verification Case Usage Example::TestVehicle2"))) (kind specialization) (ordinal 0)) (authored-target "Vehicle") (range (start (line 32) (character 32)) (end (line 32) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem"))) (kind featureTyping) (ordinal 0)) (authored-target "MassVerificationSystem") (range (start (line 14) (character 31)) (end (line 14) (character 53))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Verification Case Usage Example::MassVerificationSystem")))))
+    (reference (id (source (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem"))) (kind performSource) (ordinal 0)) (authored-target "Verification Case Usage Example::massVerificationSystem::vehicleMassTest") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem::vehicleMassTest")))))
+    (reference (id (source (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem::scale"))) (kind featureTyping) (ordinal 0)) (authored-target "Scale") (range (start (line 17) (character 15)) (end (line 17) (character 20))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Verification Case Usage Example::Scale")))))
+    (reference (id (source (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem::scale"))) (kind performSource) (ordinal 0)) (authored-target "Verification Case Usage Example::massVerificationSystem::scale::vehicleMassTest::collectData") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Verification Case Usage Example::testSystem"))) (kind featureTyping) (ordinal 0)) (authored-target "TestSystem") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Verification Case Usage Example::TestSystem")))))
+    (reference (id (source (node (document "d0") (qualified-name "Verification Case Usage Example::testSystem"))) (kind subsetting) (ordinal 0)) (authored-target "massVerificationSystem") (range (start (line 34) (character 39)) (end (line 34) (character 61))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem")))))
+    (reference (id (source (node (document "d0") (qualified-name "Verification Case Usage Example::vehicleMassTest"))) (kind featureTyping) (ordinal 0)) (authored-target "VehicleMassTest") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Verification Case Usage Example::vehicleTestConfig"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (range (start (line 6) (character 26)) (end (line 6) (character 33))) (outcome (status unresolved)))
   )
   (relationships
-    (perform (status resolved) (from (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem"))) (to (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem::vehicleMassTest"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "Verification Case Usage Example::TestSystem"))) (to (node (document "d0") (qualified-name "Verification Case Usage Example::MassVerificationSystem"))) (provenance authored))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Verification Case Usage Example::testSystem"))) (to (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem"))) (to (node (document "d0") (qualified-name "Verification Case Usage Example::MassVerificationSystem"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem::scale"))) (to (node (document "d0") (qualified-name "Verification Case Usage Example::Scale"))) (provenance authored))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Verification Case Usage Example::TestSystem"))) (target (node (document "d0") (qualified-name "Verification Case Usage Example::MassVerificationSystem"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Verification Case Usage Example::TestSystem"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem"))) (target (node (document "d0") (qualified-name "Verification Case Usage Example::MassVerificationSystem"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem"))) (target (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem::vehicleMassTest"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem"))) (kind performSource) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem::scale"))) (target (node (document "d0") (qualified-name "Verification Case Usage Example::Scale"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem::scale"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Verification Case Usage Example::testSystem"))) (target (node (document "d0") (qualified-name "Verification Case Usage Example::TestSystem"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Verification Case Usage Example::testSystem"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "d0") (qualified-name "Verification Case Usage Example::testSystem"))) (target (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Verification Case Usage Example::testSystem"))) (kind subsetting) (ordinal 0)))
   )
-  (pending-relationships
-    (perform (status pending) (document "d0") (source-qualified "Verification Case Usage Example::massVerificationSystem::scale") (target-qualified "Verification Case Usage Example::massVerificationSystem::scale::vehicleMassTest::collectData"))
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Verification Case Usage Example::MassVerificationSystem"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Verification Case Usage Example::Scale"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Verification Case Usage Example::TestSystem"))) (status missing-prerequisite) (target "Occurrences::Life"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Verification Case Usage Example::TestVehicle1"))) (status missing-prerequisite) (target "Occurrences::Life"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Verification Case Usage Example::TestVehicle2"))) (status missing-prerequisite) (target "Occurrences::Life"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem::scale"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem::scale::vehicleMassTest.collectData"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem::vehicleMassTest"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Verification Case Usage Example::testSystem"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Verification Case Usage Example::testSystem::test1"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Verification Case Usage Example::testSystem::test2"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Verification Case Usage Example::vehicleMassTest"))) (status missing-prerequisite) (target "VerificationCases::verificationCases"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Verification Case Usage Example::vehicleTestConfig"))) (status missing-prerequisite) (target "Parts::parts"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/34_verification_case_usage_example.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_relationship")
-        (source "semantic")
-        (range (start 0 0) (end 0 0))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 54))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 6 26) (end 6 33))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 10 1) (end 10 96))
-      )
-      (diagnostic
-        (severity warning)
-        (code "incompatible_specializes_kind")
-        (source "semantic")
-        (range (start 29 1) (end 29 53))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 31 1) (end 31 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 32 1) (end 32 40))
-      )
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 36 3) (end 36 134))
-      )
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 44 3) (end 44 134))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

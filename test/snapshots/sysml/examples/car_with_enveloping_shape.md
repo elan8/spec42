@@ -23,6 +23,27 @@ package CarWithEnvelopingShape {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "car_with_enveloping_shape.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 22))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -52,6 +73,22 @@ CloseCurly,EndOfFile,
         (default_ref_usage :>> 'width' value)
         (default_ref_usage :>> 'height' value)))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Box'
+semantic.unresolved_name 'boundingShapes'
+semantic.unresolved_name 'length'
+semantic.unresolved_name 'width'
+semantic.unresolved_name 'height'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Box'
+semantic.unresolved_name 'boundingShapes'
+semantic.unresolved_name 'length'
+semantic.unresolved_name 'width'
+semantic.unresolved_name 'height'
+~~~
 # FORMAT
 ~~~sysml
 package CarWithEnvelopingShape {
@@ -73,121 +110,36 @@ package CarWithEnvelopingShape {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Box'
-semantic.unresolved_name 'boundingShapes'
-semantic.unresolved_name 'length'
-semantic.unresolved_name 'width'
-semantic.unresolved_name 'height'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Box'
-semantic.unresolved_name 'boundingShapes'
-semantic.unresolved_name 'length'
-semantic.unresolved_name 'width'
-semantic.unresolved_name 'height'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "CarWithEnvelopingShape"))) (name "CarWithEnvelopingShape") (declared-name "CarWithEnvelopingShape")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "CarWithEnvelopingShape::Box"))) (name "Box") (declared-name "Box"))
-        (element (kind "part def") (id (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car"))) (name "Car") (declared-name "Car") (declared)
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car")))))
-            (element (kind "item") (id (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox"))) (name "boundingBox") (declared-name "boundingBox") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car"))))
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::height"))) (name "height") (declared-name "height") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car")))))
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::length"))) (name "length") (declared-name "length") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car")))))
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::width"))) (name "width") (declared-name "width") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car")))))
-              )
-            )
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "CarWithEnvelopingShape::mm"))) (name "mm") (declared-name "mm"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f5a81d6c2ff18c11006cc0a145d5b535e4db5dd8ea4ba74a9064435bcf104e34") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "CarWithEnvelopingShape"))) (kind "package") (name "CarWithEnvelopingShape") (declared-name "CarWithEnvelopingShape") (range (start (line 0) (character 0)) (end (line 0) (character 330))))
+    (element (id (node (document "d0") (qualified-name "CarWithEnvelopingShape::Box"))) (kind "import") (name "Box") (declared-name "Box") (range (start (line 1) (character 1)) (end (line 1) (character 32))) (parent (node (document "d0") (qualified-name "CarWithEnvelopingShape"))) (authored (membership (kind Import) (visibility "private") (import (reference "ShapeItems::Box") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 31))))))
+    (element (id (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car"))) (kind "part def") (name "Car") (declared-name "Car") (range (start (line 4) (character 1)) (end (line 4) (character 237))) (parent (node (document "d0") (qualified-name "CarWithEnvelopingShape"))))
+    (element (id (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::_documentation"))) (kind "documentation") (name "") (range (start (line 4) (character 1)) (end (line 4) (character 237))) (parent (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car"))))
+    (element (id (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox"))) (kind "item") (name "boundingBox") (declared-name "boundingBox") (range (start (line 10) (character 2)) (end (line 10) (character 133))) (parent (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car"))) (authored (membership (kind Feature)) (relationships (typing (reference "Box") (range none)))))
+    (element (id (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::height"))) (kind "attribute") (name "height") (declared-name "height") (range (start (line 13) (character 3)) (end (line 13) (character 26))) (parent (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "height") (range (start (line 13) (character 3)) (end (line 13) (character 13)))))))
+    (element (id (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::length"))) (kind "attribute") (name "length") (declared-name "length") (range (start (line 11) (character 3)) (end (line 11) (character 26))) (parent (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "length") (range (start (line 11) (character 3)) (end (line 11) (character 13)))))))
+    (element (id (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::width"))) (kind "attribute") (name "width") (declared-name "width") (range (start (line 12) (character 3)) (end (line 12) (character 26))) (parent (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "width") (range (start (line 12) (character 3)) (end (line 12) (character 12)))))))
+    (element (id (node (document "d0") (qualified-name "CarWithEnvelopingShape::mm"))) (kind "import") (name "mm") (declared-name "mm") (range (start (line 2) (character 1)) (end (line 2) (character 23))) (parent (node (document "d0") (qualified-name "CarWithEnvelopingShape"))) (authored (membership (kind Import) (visibility "private") (import (reference "SI::mm") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 22))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "CarWithEnvelopingShape::Box"))) (kind membershipImport) (ordinal 0)) (authored-target "ShapeItems::Box") (range (start (line 1) (character 16)) (end (line 1) (character 31))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox"))) (kind featureTyping) (ordinal 0)) (authored-target "Box") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "CarWithEnvelopingShape::Box")))))
+    (reference (id (source (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::height"))) (kind redefinition) (ordinal 0)) (authored-target "height") (range (start (line 13) (character 3)) (end (line 13) (character 13))) (outcome (status resolved) (target (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::height")))))
+    (reference (id (source (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::length"))) (kind redefinition) (ordinal 0)) (authored-target "length") (range (start (line 11) (character 3)) (end (line 11) (character 13))) (outcome (status resolved) (target (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::length")))))
+    (reference (id (source (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::width"))) (kind redefinition) (ordinal 0)) (authored-target "width") (range (start (line 12) (character 3)) (end (line 12) (character 12))) (outcome (status resolved) (target (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::width")))))
+    (reference (id (source (node (document "d0") (qualified-name "CarWithEnvelopingShape::mm"))) (kind membershipImport) (ordinal 0)) (authored-target "SI::mm") (range (start (line 2) (character 16)) (end (line 2) (character 22))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::_documentation"))) (to (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox"))) (target (node (document "d0") (qualified-name "CarWithEnvelopingShape::Box"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::height"))) (target (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::height"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::height"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::length"))) (target (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::length"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::length"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::width"))) (target (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::width"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::width"))) (kind redefinition) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox"))) (status missing-prerequisite) (target "Items::items"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::height"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::length"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::width"))) (status missing-prerequisite) (target "Base::dataValues"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/examples/car_with_enveloping_shape.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 1 16) (end 1 31))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 2 16) (end 2 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 10 2) (end 10 133))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unknown_unit_symbol")
-        (source "semantic")
-        (range (start 11 3) (end 11 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 11 3) (end 11 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unknown_unit_symbol")
-        (source "semantic")
-        (range (start 12 3) (end 12 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 12 3) (end 12 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unknown_unit_symbol")
-        (source "semantic")
-        (range (start 13 3) (end 13 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 13 3) (end 13 26))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

@@ -11,46 +11,6 @@ alias Foo for Bar {
     doc /* unclosed comment
 }
 ~~~
-# TOKENS
-~~~zig
-KwAlias,Ident,KwFor,Ident,OpenCurly,
-KwDoc,MalformedRegularComment,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (alias_member 'Foo' for 'Bar'
-    (documentation)))
-~~~
-# FORMAT
-~~~sysml
-alias Foo for Bar {
-    doc /* unclosed comment
-}
-~~~
-# EXPECTED
-~~~
-tokenize.UnclosedRegularComment
-parse.expected_close_curly
-~~~
-# PROBLEMS
-~~~
-tokenize.UnclosedRegularComment
-parse.expected_close_curly
-~~~
-# SMG
-~~~
-(semantic-graph
-  (containment
-  )
-  (relationships
-  )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
@@ -75,6 +35,47 @@ parse.expected_close_curly
         (range (start 2 0) (end 2 1))
       )
     )
+  )
+)
+~~~
+# TOKENS
+~~~zig
+KwAlias,Ident,KwFor,Ident,OpenCurly,
+KwDoc,MalformedRegularComment,EndOfFile,
+~~~
+# AST
+~~~
+(root
+  (alias_member 'Foo' for 'Bar'
+    (documentation)))
+~~~
+# EXPECTED
+~~~
+tokenize.UnclosedRegularComment
+parse.expected_close_curly
+~~~
+# PROBLEMS
+~~~
+tokenize.UnclosedRegularComment
+parse.expected_close_curly
+~~~
+# FORMAT
+~~~sysml
+alias Foo for Bar {
+    doc /* unclosed comment
+}
+~~~
+# SMG
+~~~
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "b98bf4b3cf95c8d75123ce2be6913783c39b32a8390936da5ec4b5aa78e7ebf8") (contract-version "canonical-resolution-v1"))
+  (structure
+  )
+  (references
+  )
+  (relationships
+  )
+  (evaluation
   )
 )
 ~~~

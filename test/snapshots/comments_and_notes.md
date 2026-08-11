@@ -10,43 +10,6 @@ semantic_graph_skip_reason=parser recovery for non-empty source produced no type
 x /* comment */ // note
 y
 ~~~
-# TOKENS
-~~~zig
-Ident,RegularComment,LineComment,
-Ident,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (malformed))
-~~~
-# FORMAT
-~~~sysml
-x /* comment */ // note
-y
-
-~~~
-# EXPECTED
-~~~
-parse.unexpected_token
-~~~
-# PROBLEMS
-~~~
-parse.unexpected_token
-~~~
-# SMG
-~~~
-(semantic-graph
-  (containment
-  )
-  (relationships
-  )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
@@ -65,6 +28,44 @@ parse.unexpected_token
         (range (start 1 0) (end 1 1))
       )
     )
+  )
+)
+~~~
+# TOKENS
+~~~zig
+Ident,RegularComment,LineComment,
+Ident,EndOfFile,
+~~~
+# AST
+~~~
+(root
+  (malformed))
+~~~
+# EXPECTED
+~~~
+parse.unexpected_token
+~~~
+# PROBLEMS
+~~~
+parse.unexpected_token
+~~~
+# FORMAT
+~~~sysml
+x /* comment */ // note
+y
+
+~~~
+# SMG
+~~~
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "6d575d6005859261ad81038f2378e4277aeb265cae8f4725455dcc00b15fee0a") (contract-version "canonical-resolution-v1"))
+  (structure
+  )
+  (references
+  )
+  (relationships
+  )
+  (evaluation
   )
 )
 ~~~

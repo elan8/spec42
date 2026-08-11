@@ -11,19 +11,14 @@ step s1 subsets step;
 feature f1 redefines step;
 feature f2 subsets do, step;
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'step'
-semantic.unresolved_name 'step'
-semantic.unresolved_name 'do'
-semantic.unresolved_name 'step'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'step'
-semantic.unresolved_name 'step'
-semantic.unresolved_name 'do'
-semantic.unresolved_name 'step'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "subsets_keyword_names.md"
+    (diagnostics
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -38,6 +33,20 @@ KwFeature,Ident,KwSubsets,KwDo,Comma,KwStep,Semicolon,EndOfFile,
   (feature_def 'f1' :>> 'step')
   (feature_def 'f2' :> 'do', 'step'))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'step'
+semantic.unresolved_name 'step'
+semantic.unresolved_name 'do'
+semantic.unresolved_name 'step'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'step'
+semantic.unresolved_name 'step'
+semantic.unresolved_name 'do'
+semantic.unresolved_name 'step'
+~~~
 # FORMAT
 ~~~sysml
 step s1 subsets step;
@@ -47,23 +56,15 @@ feature f2 subsets do, step;
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "25b4fb7754582a135721818142d5794223c6f8718c01479243e74337bfbc5b8c") (contract-version "canonical-resolution-v1"))
+  (structure
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/subsets_keyword_names.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

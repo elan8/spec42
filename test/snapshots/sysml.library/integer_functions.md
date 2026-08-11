@@ -49,6 +49,139 @@ standard library package IntegerFunctions {
 	}
 }	
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "integer_functions.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 15) (end 7 27))
+      )
+    )
+  )
+)
+~~~
+# TOKENS
+~~~zig
+KwStandard,KwLibrary,KwPackage,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+KwPublic,KwImport,Ident,ColonColon,Star,Semicolon,
+KwFunction,Ident,KwSpecializes,Ident,ColonColon,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,Ident,KwSpecializes,Ident,ColonColon,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,Ident,KwSpecializes,Ident,ColonColon,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,Semicolon,CloseCurly,
+KwFunction,Ident,KwSpecializes,Ident,ColonColon,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,Ident,KwSpecializes,Ident,ColonColon,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,Semicolon,
+KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,KwDefault,Ident,ColonColon,Ident,OpenParen,Ident,Comma,DecimalValue,CloseParen,Semicolon,
+CloseCurly,
+KwFunction,Ident,KwSpecializes,Ident,ColonColon,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,Semicolon,
+KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,KwDefault,Ident,ColonColon,Ident,OpenParen,Ident,Comma,DecimalValue,CloseParen,Semicolon,
+CloseCurly,
+CloseCurly,EndOfFile,
+~~~
+# AST
+~~~
+(root
+  (standard_library_package_def 'IntegerFunctions'
+    (documentation)
+    (import_decl public 'ScalarValues::*')
+    (function_def
+      (feature_def in 'x' : 'Integer' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Integer' multiplicity)
+      (feature_def in 'y' : 'Integer' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Integer' multiplicity)
+      (feature_def in 'y' : 'Integer' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Integer' multiplicity)
+      (feature_def in 'y' : 'Integer' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Integer' multiplicity)
+      (feature_def in 'y' : 'Integer' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Integer' multiplicity)
+      (feature_def in 'y' : 'Natural' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Integer' multiplicity)
+      (feature_def in 'y' : 'Natural' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Integer' multiplicity)
+      (feature_def in 'y' : 'Integer' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Integer' multiplicity)
+      (feature_def in 'y' : 'Integer' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Integer' multiplicity)
+      (feature_def in 'y' : 'Integer' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Integer' multiplicity)
+      (feature_def in 'y' : 'Integer' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Integer' multiplicity)
+      (feature_def in 'y' : 'Integer' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Integer' multiplicity)
+      (feature_def in 'y' : 'Integer' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Integer' multiplicity)
+      (feature_def in 'y' : 'Integer' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Integer' multiplicity)
+      (feature_def in 'y' : 'Integer' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'lower' : 'Integer' multiplicity)
+      (feature_def in 'upper' : 'Integer' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Integer' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Integer' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'String' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'collection' : 'Integer' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'collection' : 'Integer' multiplicity)
+      (return_member))))
+~~~
 # EXPECTED
 ~~~
 semantic.unresolved_name 'RationalFunctions::abs'
@@ -207,124 +340,6 @@ semantic.unresolved_name 'RationalFunctions::product'
 semantic.unresolved_name 'Integer'
 semantic.unresolved_name 'Integer'
 ~~~
-# TOKENS
-~~~zig
-KwStandard,KwLibrary,KwPackage,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-KwPublic,KwImport,Ident,ColonColon,Star,Semicolon,
-KwFunction,Ident,KwSpecializes,Ident,ColonColon,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,Ident,KwSpecializes,Ident,ColonColon,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,Ident,KwSpecializes,Ident,ColonColon,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,Semicolon,CloseCurly,
-KwFunction,Ident,KwSpecializes,Ident,ColonColon,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,Ident,KwSpecializes,Ident,ColonColon,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,Semicolon,
-KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,KwDefault,Ident,ColonColon,Ident,OpenParen,Ident,Comma,DecimalValue,CloseParen,Semicolon,
-CloseCurly,
-KwFunction,Ident,KwSpecializes,Ident,ColonColon,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,Semicolon,
-KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,KwDefault,Ident,ColonColon,Ident,OpenParen,Ident,Comma,DecimalValue,CloseParen,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (standard_library_package_def 'IntegerFunctions'
-    (documentation)
-    (import_decl public 'ScalarValues::*')
-    (function_def
-      (feature_def in 'x' : 'Integer' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Integer' multiplicity)
-      (feature_def in 'y' : 'Integer' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Integer' multiplicity)
-      (feature_def in 'y' : 'Integer' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Integer' multiplicity)
-      (feature_def in 'y' : 'Integer' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Integer' multiplicity)
-      (feature_def in 'y' : 'Integer' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Integer' multiplicity)
-      (feature_def in 'y' : 'Natural' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Integer' multiplicity)
-      (feature_def in 'y' : 'Natural' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Integer' multiplicity)
-      (feature_def in 'y' : 'Integer' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Integer' multiplicity)
-      (feature_def in 'y' : 'Integer' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Integer' multiplicity)
-      (feature_def in 'y' : 'Integer' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Integer' multiplicity)
-      (feature_def in 'y' : 'Integer' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Integer' multiplicity)
-      (feature_def in 'y' : 'Integer' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Integer' multiplicity)
-      (feature_def in 'y' : 'Integer' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Integer' multiplicity)
-      (feature_def in 'y' : 'Integer' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Integer' multiplicity)
-      (feature_def in 'y' : 'Integer' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'lower' : 'Integer' multiplicity)
-      (feature_def in 'upper' : 'Integer' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Integer' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Integer' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'String' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'collection' : 'Integer' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'collection' : 'Integer' multiplicity)
-      (return_member))))
-~~~
 # FORMAT
 ~~~sysml
 standard library package IntegerFunctions {
@@ -373,63 +388,40 @@ standard library package IntegerFunctions {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "IntegerFunctions"))) (name "IntegerFunctions") (declared-name "IntegerFunctions")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "IntegerFunctions::*"))) (name "*") (declared-name "*"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::ToInteger"))) (name "ToInteger") (declared-name "ToInteger"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::ToNatural"))) (name "ToNatural") (declared-name "ToNatural"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::ToString"))) (name "ToString") (declared-name "ToString"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "IntegerFunctions::_documentation"))) (name ""))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::abs"))) (name "abs") (declared-name "abs"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl10"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl11"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl12"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl2"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl3"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl4"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl5"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl6"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl7"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl8"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl9"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::max"))) (name "max") (declared-name "max"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::min"))) (name "min") (declared-name "min"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::product"))) (name "product") (declared-name "product"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::sum"))) (name "sum") (declared-name "sum"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b5c11f39cbd8fa106b8d616e7c6a2a911b25b190982a5cae7f58f0a66326c8a5") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "IntegerFunctions"))) (kind "package") (name "IntegerFunctions") (declared-name "IntegerFunctions") (range (start (line 0) (character 0)) (end (line 0) (character 2575))))
+    (element (id (node (document "d0") (qualified-name "IntegerFunctions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 7) (character 1)) (end (line 7) (character 31))) (parent (node (document "d0") (qualified-name "IntegerFunctions"))) (authored (membership (kind Import) (visibility "public") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 7) (character 15)) (end (line 7) (character 27))))))
+    (element (id (node (document "d0") (qualified-name "IntegerFunctions::ToInteger"))) (kind "kermlDecl") (name "ToInteger") (declared-name "ToInteger") (range (start (line 33) (character 1)) (end (line 33) (character 61))) (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
+    (element (id (node (document "d0") (qualified-name "IntegerFunctions::ToNatural"))) (kind "kermlDecl") (name "ToNatural") (declared-name "ToNatural") (range (start (line 32) (character 1)) (end (line 32) (character 62))) (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
+    (element (id (node (document "d0") (qualified-name "IntegerFunctions::ToString"))) (kind "kermlDecl") (name "ToString") (declared-name "ToString") (range (start (line 31) (character 1)) (end (line 31) (character 100))) (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
+    (element (id (node (document "d0") (qualified-name "IntegerFunctions::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 2575))) (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
+    (element (id (node (document "d0") (qualified-name "IntegerFunctions::abs"))) (kind "kermlDecl") (name "abs") (declared-name "abs") (range (start (line 9) (character 1)) (end (line 9) (character 91))) (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
+    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 11) (character 1)) (end (line 11) (character 112))) (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
+    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 12) (character 1)) (end (line 12) (character 112))) (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
+    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl10"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 22) (character 1)) (end (line 22) (character 111))) (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
+    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl11"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 27) (character 1)) (end (line 27) (character 113))) (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
+    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl12"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 29) (character 1)) (end (line 29) (character 120))) (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
+    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl2"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 13) (character 1)) (end (line 13) (character 109))) (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
+    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl3"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 14) (character 1)) (end (line 14) (character 110))) (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
+    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl4"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 15) (character 1)) (end (line 15) (character 111))) (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
+    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl5"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 16) (character 1)) (end (line 16) (character 109))) (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
+    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl6"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 17) (character 1)) (end (line 17) (character 110))) (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
+    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl7"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 19) (character 1)) (end (line 19) (character 109))) (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
+    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl8"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 20) (character 1)) (end (line 20) (character 109))) (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
+    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl9"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 21) (character 1)) (end (line 21) (character 111))) (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
+    (element (id (node (document "d0") (qualified-name "IntegerFunctions::max"))) (kind "kermlDecl") (name "max") (declared-name "max") (range (start (line 24) (character 1)) (end (line 24) (character 109))) (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
+    (element (id (node (document "d0") (qualified-name "IntegerFunctions::min"))) (kind "kermlDecl") (name "min") (declared-name "min") (range (start (line 25) (character 1)) (end (line 25) (character 109))) (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
+    (element (id (node (document "d0") (qualified-name "IntegerFunctions::product"))) (kind "kermlDecl") (name "product") (declared-name "product") (range (start (line 39) (character 1)) (end (line 39) (character 166))) (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
+    (element (id (node (document "d0") (qualified-name "IntegerFunctions::sum"))) (kind "kermlDecl") (name "sum") (declared-name "sum") (range (start (line 35) (character 1)) (end (line 35) (character 155))) (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "IntegerFunctions::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (range (start (line 7) (character 15)) (end (line 7) (character 27))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "IntegerFunctions::_documentation"))) (to (node (document "d0") (qualified-name "IntegerFunctions"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/integer_functions.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 15) (end 7 27))
-      )
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 12 1) (end 12 112))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

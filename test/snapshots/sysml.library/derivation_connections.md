@@ -69,15 +69,26 @@ standard library package DerivationConnections {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'participant'
-semantic.unresolved_name 'participant'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'participant'
-semantic.unresolved_name 'participant'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "derivation_connections.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 16) (end 6 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 41))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -152,6 +163,16 @@ CloseCurly,EndOfFile,
     (connection_usage 'Derivation' 'derivations' multiplicity
       (documentation))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'participant'
+semantic.unresolved_name 'participant'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'participant'
+semantic.unresolved_name 'participant'
+~~~
 # FORMAT
 ~~~sysml
 standard library package DerivationConnections {
@@ -221,94 +242,37 @@ standard library package DerivationConnections {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "DerivationConnections"))) (name "DerivationConnections") (declared-name "DerivationConnections")
-      (contains
-        (element (kind "connection def") (id (node (document "d0") (qualified-name "DerivationConnections::Derivation"))) (name "Derivation") (declared-name "Derivation")
-          (contains
-            (element (kind "ref") (id (node (document "d0") (qualified-name "DerivationConnections::Derivation::"))) (name "") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "DerivationConnections::Derivation")))))
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "DerivationConnections::Derivation::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "DerivationConnections::Derivation")))))
-            (element (kind "ref") (id (node (document "d0") (qualified-name "DerivationConnections::Derivation::originalRequirement"))) (name "originalRequirement") (declared-name "originalRequirement") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "DerivationConnections::Derivation")))))
-          )
-        )
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "DerivationConnections::_documentation"))) (name ""))
-        (element (kind "import") (id (node (document "d0") (qualified-name "DerivationConnections::allTrue"))) (name "allTrue") (declared-name "allTrue"))
-        (element (kind "connection def") (id (node (document "d0") (qualified-name "DerivationConnections::derivations"))) (name "derivations") (declared-name "derivations")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "DerivationConnections::derivations::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "DerivationConnections::derivations")))))
-          )
-        )
-        (element (kind "requirement") (id (node (document "d0") (qualified-name "DerivationConnections::derivedRequirements"))) (name "derivedRequirements") (declared-name "derivedRequirements")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "DerivationConnections::derivedRequirements::_documentation"))) (name ""))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "DerivationConnections::excludes"))) (name "excludes") (declared-name "excludes"))
-        (element (kind "requirement") (id (node (document "d0") (qualified-name "DerivationConnections::originalRequirements"))) (name "originalRequirements") (declared-name "originalRequirements")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "DerivationConnections::originalRequirements::_documentation"))) (name ""))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "611d215ab8d62953985fc4984f21868670fd1bf2f2aa097751704ec59bad1ad0") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "DerivationConnections"))) (kind "package") (name "DerivationConnections") (declared-name "DerivationConnections") (range (start (line 0) (character 0)) (end (line 0) (character 2305))))
+    (element (id (node (document "d0") (qualified-name "DerivationConnections::Derivation"))) (kind "connection def") (name "Derivation") (declared-name "Derivation") (range (start (line 16) (character 1)) (end (line 16) (character 1660))) (parent (node (document "d0") (qualified-name "DerivationConnections"))))
+    (element (id (node (document "d0") (qualified-name "DerivationConnections::Derivation::"))) (kind "ref") (name "") (range (start (line 38) (character 2)) (end (line 38) (character 158))) (parent (node (document "d0") (qualified-name "DerivationConnections::Derivation"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "derivedRequirements") (range (start (line 38) (character 22)) (end (line 38) (character 41)))))))
+    (element (id (node (document "d0") (qualified-name "DerivationConnections::Derivation::_documentation"))) (kind "documentation") (name "") (range (start (line 16) (character 1)) (end (line 16) (character 1660))) (parent (node (document "d0") (qualified-name "DerivationConnections::Derivation"))))
+    (element (id (node (document "d0") (qualified-name "DerivationConnections::Derivation::originalRequirement"))) (kind "ref") (name "originalRequirement") (declared-name "originalRequirement") (range (start (line 35) (character 2)) (end (line 35) (character 132))) (parent (node (document "d0") (qualified-name "DerivationConnections::Derivation"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "originalRequirements") (range (start (line 35) (character 45)) (end (line 35) (character 65)))))))
+    (element (id (node (document "d0") (qualified-name "DerivationConnections::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 2305))) (parent (node (document "d0") (qualified-name "DerivationConnections"))))
+    (element (id (node (document "d0") (qualified-name "DerivationConnections::allTrue"))) (kind "import") (name "allTrue") (declared-name "allTrue") (range (start (line 7) (character 1)) (end (line 7) (character 42))) (parent (node (document "d0") (qualified-name "DerivationConnections"))) (authored (membership (kind Import) (visibility "private") (import (reference "ControlFunctions::allTrue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 41))))))
+    (element (id (node (document "d0") (qualified-name "DerivationConnections::derivations"))) (kind "connection def") (name "derivations") (declared-name "derivations") (range (start (line 59) (character 1)) (end (line 59) (character 131))) (parent (node (document "d0") (qualified-name "DerivationConnections"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Derivation") (range (start (line 0) (character 0)) (end (line 0) (character 10)))))))
+    (element (id (node (document "d0") (qualified-name "DerivationConnections::derivations::_documentation"))) (kind "documentation") (name "") (range (start (line 59) (character 1)) (end (line 59) (character 131))) (parent (node (document "d0") (qualified-name "DerivationConnections::derivations"))))
+    (element (id (node (document "d0") (qualified-name "DerivationConnections::derivedRequirements"))) (kind "requirement") (name "derivedRequirements") (declared-name "derivedRequirements") (range (start (line 12) (character 1)) (end (line 12) (character 127))) (parent (node (document "d0") (qualified-name "DerivationConnections"))))
+    (element (id (node (document "d0") (qualified-name "DerivationConnections::derivedRequirements::_documentation"))) (kind "documentation") (name "") (range (start (line 12) (character 1)) (end (line 12) (character 127))) (parent (node (document "d0") (qualified-name "DerivationConnections::derivedRequirements"))))
+    (element (id (node (document "d0") (qualified-name "DerivationConnections::excludes"))) (kind "import") (name "excludes") (declared-name "excludes") (range (start (line 6) (character 1)) (end (line 6) (character 44))) (parent (node (document "d0") (qualified-name "DerivationConnections"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::excludes") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 43))))))
+    (element (id (node (document "d0") (qualified-name "DerivationConnections::originalRequirements"))) (kind "requirement") (name "originalRequirements") (declared-name "originalRequirements") (range (start (line 9) (character 1)) (end (line 9) (character 131))) (parent (node (document "d0") (qualified-name "DerivationConnections"))))
+    (element (id (node (document "d0") (qualified-name "DerivationConnections::originalRequirements::_documentation"))) (kind "documentation") (name "") (range (start (line 9) (character 1)) (end (line 9) (character 131))) (parent (node (document "d0") (qualified-name "DerivationConnections::originalRequirements"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "DerivationConnections::Derivation::"))) (kind redefinition) (ordinal 0)) (authored-target "derivedRequirements") (range (start (line 38) (character 22)) (end (line 38) (character 41))) (outcome (status resolved) (target (node (document "d0") (qualified-name "DerivationConnections::derivedRequirements")))))
+    (reference (id (source (node (document "d0") (qualified-name "DerivationConnections::Derivation::originalRequirement"))) (kind redefinition) (ordinal 0)) (authored-target "originalRequirements") (range (start (line 35) (character 45)) (end (line 35) (character 65))) (outcome (status resolved) (target (node (document "d0") (qualified-name "DerivationConnections::originalRequirements")))))
+    (reference (id (source (node (document "d0") (qualified-name "DerivationConnections::allTrue"))) (kind membershipImport) (ordinal 0)) (authored-target "ControlFunctions::allTrue") (range (start (line 7) (character 16)) (end (line 7) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "DerivationConnections::derivations"))) (kind specialization) (ordinal 0)) (authored-target "Derivation") (range (start (line 0) (character 0)) (end (line 0) (character 10))) (outcome (status resolved) (target (node (document "d0") (qualified-name "DerivationConnections::Derivation")))))
+    (reference (id (source (node (document "d0") (qualified-name "DerivationConnections::excludes"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::excludes") (range (start (line 6) (character 16)) (end (line 6) (character 43))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "DerivationConnections::Derivation::_documentation"))) (to (node (document "d0") (qualified-name "DerivationConnections::Derivation"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "DerivationConnections::_documentation"))) (to (node (document "d0") (qualified-name "DerivationConnections"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "DerivationConnections::derivations::_documentation"))) (to (node (document "d0") (qualified-name "DerivationConnections::derivations"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "DerivationConnections::derivedRequirements::_documentation"))) (to (node (document "d0") (qualified-name "DerivationConnections::derivedRequirements"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "DerivationConnections::originalRequirements::_documentation"))) (to (node (document "d0") (qualified-name "DerivationConnections::originalRequirements"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "DerivationConnections::derivations"))) (to (node (document "d0") (qualified-name "DerivationConnections::Derivation"))) (provenance authored))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "DerivationConnections::Derivation::"))) (target (node (document "d0") (qualified-name "DerivationConnections::derivedRequirements"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "DerivationConnections::Derivation::"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "DerivationConnections::Derivation::originalRequirement"))) (target (node (document "d0") (qualified-name "DerivationConnections::originalRequirements"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "DerivationConnections::Derivation::originalRequirement"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "DerivationConnections::derivations"))) (target (node (document "d0") (qualified-name "DerivationConnections::Derivation"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "DerivationConnections::derivations"))) (kind specialization) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DerivationConnections::Derivation"))) (status missing-prerequisite) (target "Connections::Connection"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DerivationConnections::derivations"))) (status missing-prerequisite) (target "Connections::Connection"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DerivationConnections::derivedRequirements"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DerivationConnections::originalRequirements"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/derivation_connections.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 6 16) (end 6 43))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 16) (end 7 41))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 35 2) (end 35 132))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 38 2) (end 38 158))
-      )
-      (diagnostic
-        (severity warning)
-        (code "incompatible_specializes_kind")
-        (source "semantic")
-        (range (start 59 1) (end 59 131))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

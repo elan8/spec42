@@ -38,6 +38,81 @@ package 'Metadata Example-1' {
 	
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "39_metadata_example_1.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "ambiguous_reference")
+        (source "semantic")
+        (range (start 4 2) (end 4 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 4 2) (end 4 46))
+      )
+      (diagnostic
+        (severity error)
+        (code "ambiguous_reference")
+        (source "semantic")
+        (range (start 5 2) (end 5 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 5 2) (end 5 41))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 19 3) (end 19 14))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 20 3) (end 20 20))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 21 3) (end 21 21))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 22 3) (end 22 21))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 25 3) (end 25 13))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 26 3) (end 26 15))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 27 3) (end 27 21))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -89,6 +164,20 @@ CloseCurly,EndOfFile,
         (part_usage 'bumper')
         (part_usage 'keylessEntry')))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'annotatedElement'
+semantic.unresolved_name 'SysML::PartDefinition'
+semantic.unresolved_name 'annotatedElement'
+semantic.unresolved_name 'SysML::PartUsage'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'annotatedElement'
+semantic.unresolved_name 'SysML::PartDefinition'
+semantic.unresolved_name 'annotatedElement'
+semantic.unresolved_name 'SysML::PartUsage'
+~~~
 # FORMAT
 ~~~sysml
 package 'Metadata Example-1' {
@@ -125,163 +214,38 @@ package 'Metadata Example-1' {
 }
 
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'annotatedElement'
-semantic.unresolved_name 'SysML::PartDefinition'
-semantic.unresolved_name 'annotatedElement'
-semantic.unresolved_name 'SysML::PartUsage'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'annotatedElement'
-semantic.unresolved_name 'SysML::PartDefinition'
-semantic.unresolved_name 'annotatedElement'
-semantic.unresolved_name 'SysML::PartUsage'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Metadata Example-1"))) (name "Metadata Example-1") (declared-name "Metadata Example-1")
-      (contains
-        (element (kind "metadata def") (id (node (document "d0") (qualified-name "Metadata Example-1::SafetyFeature"))) (name "SafetyFeature") (declared-name "SafetyFeature"))
-        (element (kind "metadata usage") (id (node (document "d0") (qualified-name "Metadata Example-1::SafetyFeature#metadata_usage"))) (name "SafetyFeature") (declared-name "SafetyFeature"))
-        (element (kind "metadata def") (id (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature"))) (name "SecurityFeature") (declared-name "SecurityFeature")
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (name "annotatedElement") (declared-name "annotatedElement") (effective (featuring-type (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement#attribute"))) (name "annotatedElement") (declared-name "annotatedElement") (effective (featuring-type (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature")))))
-          )
-        )
-        (element (kind "metadata usage") (id (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature#metadata_usage"))) (name "SecurityFeature") (declared-name "SecurityFeature"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::bodyAssy"))) (name "bodyAssy") (declared-name "bodyAssy") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::bodyAssy::body"))) (name "body") (declared-name "body") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-                (element (kind "part") (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::bodyAssy::bumper"))) (name "bumper") (declared-name "bumper") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-                (element (kind "part") (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::bodyAssy::keylessEntry"))) (name "keylessEntry") (declared-name "keylessEntry") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-              )
-            )
-            (element (kind "part") (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior"))) (name "interior") (declared-name "interior") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior::alarm"))) (name "alarm") (declared-name "alarm") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-                (element (kind "part") (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior::driverAirBag"))) (name "driverAirBag") (declared-name "driverAirBag") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-                (element (kind "part") (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior::frontSeat"))) (name "frontSeat") (declared-name "frontSeat") (declared (properties (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false))))
-                (element (kind "part") (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior::seatBelt"))) (name "seatBelt") (declared-name "seatBelt") (declared (properties (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false))))
-              )
-            )
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1db35a69c812579da884a2d242fe58830c695790769bbf7aaa455caf26322828") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Metadata Example-1"))) (kind "package") (name "Metadata Example-1") (declared-name "Metadata Example-1") (range (start (line 0) (character 0)) (end (line 0) (character 612))))
+    (element (id (node (document "d0") (qualified-name "Metadata Example-1::SafetyFeature"))) (kind "metadata def") (name "SafetyFeature") (declared-name "SafetyFeature") (range (start (line 2) (character 1)) (end (line 2) (character 28))) (parent (node (document "d0") (qualified-name "Metadata Example-1"))))
+    (element (id (node (document "d0") (qualified-name "Metadata Example-1::SafetyFeature#metadata_usage"))) (kind "metadata usage") (name "SafetyFeature") (declared-name "SafetyFeature") (range (start (line 8) (character 1)) (end (line 8) (character 125))) (parent (node (document "d0") (qualified-name "Metadata Example-1"))))
+    (element (id (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature"))) (kind "metadata def") (name "SecurityFeature") (declared-name "SecurityFeature") (range (start (line 3) (character 1)) (end (line 3) (character 123))) (parent (node (document "d0") (qualified-name "Metadata Example-1"))))
+    (element (id (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature#metadata_usage"))) (kind "metadata usage") (name "SecurityFeature") (declared-name "SecurityFeature") (range (start (line 13) (character 1)) (end (line 13) (character 94))) (parent (node (document "d0") (qualified-name "Metadata Example-1"))))
+    (element (id (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (kind "attribute") (name "annotatedElement") (declared-name "annotatedElement") (range (start (line 4) (character 2)) (end (line 4) (character 46))) (parent (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature"))) (authored (membership (kind Feature)) (relationships (typing (reference "PartDefinition") (range none)) (subsetting (reference "annotatedElement") (range (start (line 4) (character 2)) (end (line 4) (character 21)))))))
+    (element (id (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement#attribute"))) (kind "attribute") (name "annotatedElement") (declared-name "annotatedElement") (range (start (line 5) (character 2)) (end (line 5) (character 41))) (parent (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature"))) (authored (membership (kind Feature)) (relationships (typing (reference "PartUsage") (range none)) (subsetting (reference "annotatedElement") (range (start (line 5) (character 2)) (end (line 5) (character 21)))))))
+    (element (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle"))) (kind "part") (name "vehicle") (declared-name "vehicle") (range (start (line 17) (character 1)) (end (line 17) (character 194))) (parent (node (document "d0") (qualified-name "Metadata Example-1"))))
+    (element (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::bodyAssy"))) (kind "part") (name "bodyAssy") (declared-name "bodyAssy") (range (start (line 24) (character 2)) (end (line 24) (character 73))) (parent (node (document "d0") (qualified-name "Metadata Example-1::vehicle"))))
+    (element (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::bodyAssy::body"))) (kind "part") (name "body") (declared-name "body") (range (start (line 25) (character 3)) (end (line 25) (character 13))) (parent (node (document "d0") (qualified-name "Metadata Example-1::vehicle::bodyAssy"))))
+    (element (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::bodyAssy::bumper"))) (kind "part") (name "bumper") (declared-name "bumper") (range (start (line 26) (character 3)) (end (line 26) (character 15))) (parent (node (document "d0") (qualified-name "Metadata Example-1::vehicle::bodyAssy"))))
+    (element (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::bodyAssy::keylessEntry"))) (kind "part") (name "keylessEntry") (declared-name "keylessEntry") (range (start (line 27) (character 3)) (end (line 27) (character 21))) (parent (node (document "d0") (qualified-name "Metadata Example-1::vehicle::bodyAssy"))))
+    (element (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior"))) (kind "part") (name "interior") (declared-name "interior") (range (start (line 18) (character 2)) (end (line 18) (character 101))) (parent (node (document "d0") (qualified-name "Metadata Example-1::vehicle"))))
+    (element (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior::alarm"))) (kind "part") (name "alarm") (declared-name "alarm") (range (start (line 19) (character 3)) (end (line 19) (character 14))) (parent (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior"))))
+    (element (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior::driverAirBag"))) (kind "part") (name "driverAirBag") (declared-name "driverAirBag") (range (start (line 22) (character 3)) (end (line 22) (character 21))) (parent (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior"))))
+    (element (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior::frontSeat"))) (kind "part") (name "frontSeat") (declared-name "frontSeat") (range (start (line 21) (character 3)) (end (line 21) (character 21))) (parent (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior"))))
+    (element (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior::seatBelt"))) (kind "part") (name "seatBelt") (declared-name "seatBelt") (range (start (line 20) (character 3)) (end (line 20) (character 20))) (parent (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (kind featureTyping) (ordinal 0)) (authored-target "PartDefinition") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (kind subsetting) (ordinal 0)) (authored-target "annotatedElement") (range (start (line 4) (character 2)) (end (line 4) (character 21))) (outcome (status ambiguous) (candidates (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement")) (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement#attribute")))))
+    (reference (id (source (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement#attribute"))) (kind featureTyping) (ordinal 0)) (authored-target "PartUsage") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement#attribute"))) (kind subsetting) (ordinal 0)) (authored-target "annotatedElement") (range (start (line 5) (character 2)) (end (line 5) (character 21))) (outcome (status ambiguous) (candidates (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement")) (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement#attribute")))))
   )
   (relationships
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (to (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement#attribute"))) (provenance authored))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement#attribute"))) (to (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::SafetyFeature"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::SafetyFeature#metadata_usage"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature#metadata_usage"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement#attribute"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::vehicle"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::vehicle::bodyAssy"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::vehicle::bodyAssy::body"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::vehicle::bodyAssy::bumper"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::vehicle::bodyAssy::keylessEntry"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior::alarm"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior::driverAirBag"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior::frontSeat"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior::seatBelt"))) (status missing-prerequisite) (target "Parts::parts"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/training/39_metadata_example_1.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "metadata_about_unresolved")
-        (source "semantic")
-        (range (start 8 1) (end 8 125))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_about_unresolved")
-        (source "semantic")
-        (range (start 8 1) (end 8 125))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_about_unresolved")
-        (source "semantic")
-        (range (start 8 1) (end 8 125))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_about_unresolved")
-        (source "semantic")
-        (range (start 13 1) (end 13 94))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_about_unresolved")
-        (source "semantic")
-        (range (start 13 1) (end 13 94))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 19 3) (end 19 14))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 20 3) (end 20 20))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 21 3) (end 21 21))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 22 3) (end 22 21))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 25 3) (end 25 13))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 26 3) (end 26 15))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 27 3) (end 27 21))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

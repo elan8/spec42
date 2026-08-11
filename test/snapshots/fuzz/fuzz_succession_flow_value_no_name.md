@@ -14,19 +14,14 @@ package P {
     }
 }
 ~~~
-# EXPECTED
-~~~
-semantic.duplicate_name 'a1'
-semantic.ambiguous_member 'a1'
-semantic.invalid_connection_end_count
-semantic.unresolved_name 'Action1'
-~~~
-# PROBLEMS
-~~~
-semantic.duplicate_name 'a1'
-semantic.ambiguous_member 'a1'
-semantic.invalid_connection_end_count
-semantic.unresolved_name 'Action1'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz_succession_flow_value_no_name.md"
+    (diagnostics
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -53,6 +48,20 @@ CloseCurly,EndOfFile,
         (connector_end)
         (connector_end)))))
 ~~~
+# EXPECTED
+~~~
+semantic.duplicate_name 'a1'
+semantic.ambiguous_member 'a1'
+semantic.invalid_connection_end_count
+semantic.unresolved_name 'Action1'
+~~~
+# PROBLEMS
+~~~
+semantic.duplicate_name 'a1'
+semantic.ambiguous_member 'a1'
+semantic.invalid_connection_end_count
+semantic.unresolved_name 'Action1'
+~~~
 # FORMAT
 ~~~sysml
 package P {
@@ -67,28 +76,17 @@ package P {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "P"))) (name "P") (declared-name "P")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "P::Container"))) (name "Container") (declared-name "Container"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "0cf8a1cd4c7c5431c8fee449a79eb6f5fca9c3ae9f93567d501fb798970fac05") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P") (range (start (line 0) (character 0)) (end (line 0) (character 172))))
+    (element (id (node (document "d0") (qualified-name "P::Container"))) (kind "classifier decl") (name "Container") (declared-name "Container") (range (start (line 1) (character 4)) (end (line 1) (character 158))) (parent (node (document "d0") (qualified-name "P"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "fuzz/fuzz_succession_flow_value_no_name.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

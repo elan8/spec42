@@ -22,6 +22,21 @@ package Classifiers {
 	classifier F unions A unions B;
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "classifiers.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 4 1) (end 4 319))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -53,6 +68,14 @@ CloseCurly,EndOfFile,
     (classifier_def 'E' :> 'C' intersects 'A', 'B')
     (classifier_def 'F' unions 'A' unions 'B')))
 ~~~
+# EXPECTED
+~~~
+parse.unexpected_token
+~~~
+# PROBLEMS
+~~~
+parse.unexpected_token
+~~~
 # FORMAT
 ~~~sysml
 package Classifiers {
@@ -73,45 +96,20 @@ package Classifiers {
 }
 
 ~~~
-# EXPECTED
-~~~
-parse.unexpected_token
-~~~
-# PROBLEMS
-~~~
-parse.unexpected_token
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Classifiers"))) (name "Classifiers") (declared-name "Classifiers")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Classifiers::A"))) (name "A") (declared-name "A"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Classifiers::B"))) (name "B") (declared-name "B"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "2373c1638d17a8133b46ae178f8ffcb0e034a289fa6de195e32d83adcced3016") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Classifiers"))) (kind "package") (name "Classifiers") (declared-name "Classifiers") (range (start (line 0) (character 0)) (end (line 0) (character 374))))
+    (element (id (node (document "d0") (qualified-name "Classifiers::A"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 1) (character 1)) (end (line 1) (character 14))) (parent (node (document "d0") (qualified-name "Classifiers"))))
+    (element (id (node (document "d0") (qualified-name "Classifiers::B"))) (kind "classifier decl") (name "B") (declared-name "B") (range (start (line 2) (character 1)) (end (line 2) (character 14))) (parent (node (document "d0") (qualified-name "Classifiers"))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/classifiers.md"
-    (diagnostics
-      (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 4 1) (end 4 319))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

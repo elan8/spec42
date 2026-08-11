@@ -85,6 +85,51 @@ package '7a1-Variant Configuration - General Concept-a' {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "7a1_variant_configuration_general_concept_a.md"
+    (diagnostics
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 5 1) (end 5 12))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 6 1) (end 6 12))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 10 1) (end 10 12))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 18 1) (end 18 12))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 52 16) (end 52 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 52 44) (end 52 63))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,UnrestrictedName,OpenCurly,
@@ -213,6 +258,16 @@ CloseCurly,EndOfFile,
         (part_usage :>> 'part5'
           (malformed))))))
 ~~~
+# EXPECTED
+~~~
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+~~~
+# PROBLEMS
+~~~
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+~~~
 # FORMAT
 ~~~sysml
 package '7a1-Variant Configuration - General Concept-a' {
@@ -296,319 +351,118 @@ package '7a1-Variant Configuration - General Concept-a' {
 }
 
 ~~~
-# EXPECTED
-~~~
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-~~~
-# PROBLEMS
-~~~
-parse.expected_semicolon_or_body
-parse.expected_semicolon_or_body
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a"))) (name "7a1-Variant Configuration - General Concept-a") (declared-name "7a1-Variant Configuration - General Concept-a")
-      (contains
-        (element (kind "part def") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA"))) (name "SubsystemA") (declared-name "SubsystemA") (declared (properties (abstract true)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA::part3"))) (name "part3") (declared (properties (abstract true) (ordered false)) (multiplicity (lower 0) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA")))))
-          )
-        )
-        (element (kind "part def") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB"))) (name "SubsystemB") (declared-name "SubsystemB") (declared (properties (abstract true)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB::part5"))) (name "part5") (declared (properties (abstract true) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB")))))
-          )
-        )
-        (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB"))) (name "VehicleConfigB") (declared-name "VehicleConfigB") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemA"))) (name "subsystemA") (declared (properties (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "subsystemA::subsystem2")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemA"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB"))) (name "subsystemB") (declared (properties (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "subsystemB::subsystem4")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference")))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB::part5"))) (name "part5") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-                  (contains
-                    (element (kind "action") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB::part5::"))) (name ""))
-                  )
-                )
-              )
-            )
-          )
-        )
-        (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig"))) (name "anyVehicleConfig") (declared-name "anyVehicleConfig") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA"))) (name "subsystemA") (declared-name "subsystemA") (declared (properties (variation true) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1"))) (name "subsystem1") (declared-name "subsystem1") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA"))))
-                  (contains
-                    (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1::part1"))) (name "part1") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA")))))
-                    (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1::part2"))) (name "part2") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA")))))
-                  )
-                )
-                (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2"))) (name "subsystem2") (declared-name "subsystem2") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA"))))
-                  (contains
-                    (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2::part2"))) (name "part2") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA")))))
-                    (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2::part3"))) (name "part3") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA")))))
-                  )
-                )
-              )
-            )
-            (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB"))) (name "subsystemB") (declared-name "subsystemB") (declared (properties (variation true) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3"))) (name "subsystem3") (declared-name "subsystem3") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB"))))
-                  (contains
-                    (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3::part4"))) (name "part4") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB")))))
-                    (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3::part5"))) (name "part5") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB")))))
-                  )
-                )
-                (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4"))) (name "subsystem4") (declared-name "subsystem4") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB"))))
-                  (contains
-                    (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4::part5"))) (name "part5") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB")))))
-                    (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4::part6"))) (name "part6") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB")))))
-                  )
-                )
-              )
-            )
-          )
-        )
-        (element (kind "action") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::doX"))) (name "doX") (declared-name "doX") (declared))
-        (element (kind "action") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::doY"))) (name "doY") (declared-name "doY") (declared))
-        (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part1"))) (name "part1") (declared-name "part1") (declared (properties (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part2"))) (name "part2") (declared-name "part2") (declared (properties (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part3"))) (name "part3") (declared-name "part3") (declared (properties (ordered false)))
-          (contains
-            (element (kind "port") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part3::p1"))) (name "p1") (declared-name "p1") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-          )
-        )
-        (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part4"))) (name "part4") (declared-name "part4") (declared (properties (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part5"))) (name "part5") (declared-name "part5") (declared (properties (ordered false)))
-          (contains
-            (element (kind "action") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part5::doXorY"))) (name "doXorY") (declared-name "doXorY"))
-            (element (kind "port") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part5::p2"))) (name "p2") (declared-name "p2") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
-          )
-        )
-        (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part6"))) (name "part6") (declared-name "part6") (declared (properties (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA"))) (name "vehicleConfigA") (declared-name "vehicleConfigA") (declared (properties (ordered false)))
-          (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemA"))) (name "subsystemA") (declared (properties (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "subsystemA::subsystem1")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemA"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB"))) (name "subsystemB") (declared (properties (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "subsystemB::subsystem3")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference")))
-              (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB::part5"))) (name "part5") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
-                  (contains
-                    (element (kind "action") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB::part5::"))) (name ""))
-                  )
-                )
-              )
-            )
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "df5a2cc991e75c9ce7c15f7a228fa29ee276a6d85ab3a426109584b67588521b") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a"))) (kind "package") (name "7a1-Variant Configuration - General Concept-a") (declared-name "7a1-Variant Configuration - General Concept-a") (range (start (line 0) (character 0)) (end (line 0) (character 1531))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA"))) (kind "part def") (name "SubsystemA") (declared-name "SubsystemA") (range (start (line 20) (character 1)) (end (line 20) (character 67))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a"))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA::part3"))) (kind "part") (name "part3") (range (start (line 21) (character 2)) (end (line 21) (character 32))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "part3") (range (start (line 21) (character 20)) (end (line 21) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB"))) (kind "part def") (name "SubsystemB") (declared-name "SubsystemB") (range (start (line 24) (character 1)) (end (line 24) (character 66))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a"))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB::part5"))) (kind "part") (name "part5") (range (start (line 25) (character 2)) (end (line 25) (character 29))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "part5") (range (start (line 25) (character 20)) (end (line 25) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB"))) (kind "part") (name "VehicleConfigB") (declared-name "VehicleConfigB") (range (start (line 70) (character 1)) (end (line 70) (character 208))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "anyVehicleConfig") (range (start (line 70) (character 24)) (end (line 70) (character 40)))))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemA"))) (kind "part") (name "subsystemA") (range (start (line 71) (character 2)) (end (line 71) (character 47))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "subsystemA") (range (start (line 71) (character 11)) (end (line 71) (character 21)))))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB"))) (kind "part") (name "subsystemB") (range (start (line 72) (character 2)) (end (line 72) (character 114))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "subsystemB") (range (start (line 72) (character 11)) (end (line 72) (character 21)))))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB::part5"))) (kind "part") (name "part5") (range (start (line 73) (character 3)) (end (line 73) (character 61))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "part5") (range (start (line 73) (character 12)) (end (line 73) (character 17)))) (perform (reference "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB::part5::") (range none)))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB::part5::"))) (kind "action") (name "") (range (start (line 74) (character 4)) (end (line 74) (character 36))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB::part5"))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig"))) (kind "part") (name "anyVehicleConfig") (declared-name "anyVehicleConfig") (range (start (line 28) (character 1)) (end (line 28) (character 680))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a"))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA"))) (kind "part") (name "subsystemA") (declared-name "subsystemA") (range (start (line 30) (character 2)) (end (line 30) (character 232))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig"))) (authored (membership (kind Feature)) (relationships (typing (reference "SubsystemA") (range (start (line 30) (character 30)) (end (line 30) (character 40)))))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1"))) (kind "part") (name "subsystem1") (declared-name "subsystem1") (range (start (line 31) (character 11)) (end (line 31) (character 92))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA"))) (authored (membership (kind Feature)) (relationships (typing (reference "SubsystemA") (range (start (line 31) (character 29)) (end (line 31) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1::part1"))) (kind "part") (name "part1") (range (start (line 32) (character 4)) (end (line 32) (character 22))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "part1") (range (start (line 32) (character 13)) (end (line 32) (character 18)))))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1::part2"))) (kind "part") (name "part2") (range (start (line 33) (character 4)) (end (line 33) (character 22))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "part2") (range (start (line 33) (character 13)) (end (line 33) (character 18)))))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2"))) (kind "part") (name "subsystem2") (declared-name "subsystem2") (range (start (line 35) (character 11)) (end (line 35) (character 92))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA"))) (authored (membership (kind Feature)) (relationships (typing (reference "SubsystemA") (range (start (line 35) (character 29)) (end (line 35) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2::part2"))) (kind "part") (name "part2") (range (start (line 36) (character 4)) (end (line 36) (character 22))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "part2") (range (start (line 36) (character 13)) (end (line 36) (character 18)))))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2::part3"))) (kind "part") (name "part3") (range (start (line 37) (character 4)) (end (line 37) (character 22))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "part3") (range (start (line 37) (character 13)) (end (line 37) (character 18)))))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB"))) (kind "part") (name "subsystemB") (declared-name "subsystemB") (range (start (line 41) (character 2)) (end (line 41) (character 232))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig"))) (authored (membership (kind Feature)) (relationships (typing (reference "SubsystemB") (range (start (line 41) (character 30)) (end (line 41) (character 40)))))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3"))) (kind "part") (name "subsystem3") (declared-name "subsystem3") (range (start (line 42) (character 11)) (end (line 42) (character 92))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB"))) (authored (membership (kind Feature)) (relationships (typing (reference "SubsystemB") (range (start (line 42) (character 29)) (end (line 42) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3::part4"))) (kind "part") (name "part4") (range (start (line 43) (character 4)) (end (line 43) (character 22))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "part4") (range (start (line 43) (character 13)) (end (line 43) (character 18)))))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3::part5"))) (kind "part") (name "part5") (range (start (line 44) (character 4)) (end (line 44) (character 22))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "part5") (range (start (line 44) (character 13)) (end (line 44) (character 18)))))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4"))) (kind "part") (name "subsystem4") (declared-name "subsystem4") (range (start (line 46) (character 11)) (end (line 46) (character 92))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB"))) (authored (membership (kind Feature)) (relationships (typing (reference "SubsystemB") (range (start (line 46) (character 29)) (end (line 46) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4::part5"))) (kind "part") (name "part5") (range (start (line 47) (character 4)) (end (line 47) (character 22))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "part5") (range (start (line 47) (character 13)) (end (line 47) (character 18)))))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4::part6"))) (kind "part") (name "part6") (range (start (line 48) (character 4)) (end (line 48) (character 22))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "part6") (range (start (line 48) (character 13)) (end (line 48) (character 18)))))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::doX"))) (kind "action") (name "doX") (declared-name "doX") (range (start (line 2) (character 1)) (end (line 2) (character 12))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a"))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::doY"))) (kind "action") (name "doY") (declared-name "doY") (range (start (line 3) (character 1)) (end (line 3) (character 12))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a"))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part1"))) (kind "part") (name "part1") (declared-name "part1") (range (start (line 5) (character 1)) (end (line 5) (character 12))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a"))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part2"))) (kind "part") (name "part2") (declared-name "part2") (range (start (line 6) (character 1)) (end (line 6) (character 12))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a"))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part3"))) (kind "part") (name "part3") (declared-name "part3") (range (start (line 7) (character 1)) (end (line 7) (character 27))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a"))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part3::p1"))) (kind "port") (name "p1") (declared-name "p1") (range (start (line 8) (character 2)) (end (line 8) (character 10))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part3"))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part4"))) (kind "part") (name "part4") (declared-name "part4") (range (start (line 10) (character 1)) (end (line 10) (character 12))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a"))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part5"))) (kind "part") (name "part5") (declared-name "part5") (range (start (line 11) (character 1)) (end (line 11) (character 115))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a"))) (authored (membership (kind Feature)) (relationships (perform (reference "7a1-Variant Configuration - General Concept-a::part5::doXorY") (range none)))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part5::doXorY"))) (kind "action") (name "doXorY") (declared-name "doXorY") (range (start (line 13) (character 2)) (end (line 13) (character 87))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part5"))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part5::p2"))) (kind "port") (name "p2") (declared-name "p2") (range (start (line 12) (character 2)) (end (line 12) (character 10))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part5"))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part6"))) (kind "part") (name "part6") (declared-name "part6") (range (start (line 18) (character 1)) (end (line 18) (character 12))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a"))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA"))) (kind "part") (name "vehicleConfigA") (declared-name "vehicleConfigA") (range (start (line 61) (character 1)) (end (line 61) (character 210))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "anyVehicleConfig") (range (start (line 61) (character 24)) (end (line 61) (character 40)))))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemA"))) (kind "part") (name "subsystemA") (range (start (line 62) (character 2)) (end (line 62) (character 47))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "subsystemA") (range (start (line 62) (character 11)) (end (line 62) (character 21)))))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB"))) (kind "part") (name "subsystemB") (range (start (line 63) (character 2)) (end (line 63) (character 114))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "subsystemB") (range (start (line 63) (character 11)) (end (line 63) (character 21)))))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB::part5"))) (kind "part") (name "part5") (range (start (line 64) (character 3)) (end (line 64) (character 61))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "part5") (range (start (line 64) (character 12)) (end (line 64) (character 17)))) (perform (reference "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB::part5::") (range none)))))
+    (element (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB::part5::"))) (kind "action") (name "") (range (start (line 65) (character 4)) (end (line 65) (character 36))) (parent (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB::part5"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA::part3"))) (kind redefinition) (ordinal 0)) (authored-target "part3") (range (start (line 21) (character 20)) (end (line 21) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA::part3")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB::part5"))) (kind redefinition) (ordinal 0)) (authored-target "part5") (range (start (line 25) (character 20)) (end (line 25) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB::part5")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB"))) (kind subsetting) (ordinal 0)) (authored-target "anyVehicleConfig") (range (start (line 70) (character 24)) (end (line 70) (character 40))) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemA"))) (kind redefinition) (ordinal 0)) (authored-target "subsystemA") (range (start (line 71) (character 11)) (end (line 71) (character 21))) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemA")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB"))) (kind redefinition) (ordinal 0)) (authored-target "subsystemB") (range (start (line 72) (character 11)) (end (line 72) (character 21))) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB::part5"))) (kind redefinition) (ordinal 0)) (authored-target "part5") (range (start (line 73) (character 12)) (end (line 73) (character 17))) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB::part5")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB::part5"))) (kind performSource) (ordinal 0)) (authored-target "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB::part5::") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB::part5::")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig"))) (kind connectionSource) (ordinal 0)) (authored-target "subsystemA::part3::p1") (range (start (line 52) (character 16)) (end (line 52) (character 36))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig"))) (kind connectionTarget) (ordinal 0)) (authored-target "subsystemB::part5::p2") (range (start (line 52) (character 44)) (end (line 52) (character 63))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA"))) (kind featureTyping) (ordinal 0)) (authored-target "SubsystemA") (range (start (line 30) (character 30)) (end (line 30) (character 40))) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1"))) (kind featureTyping) (ordinal 0)) (authored-target "SubsystemA") (range (start (line 31) (character 29)) (end (line 31) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1::part1"))) (kind redefinition) (ordinal 0)) (authored-target "part1") (range (start (line 32) (character 13)) (end (line 32) (character 18))) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1::part1")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1::part2"))) (kind redefinition) (ordinal 0)) (authored-target "part2") (range (start (line 33) (character 13)) (end (line 33) (character 18))) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1::part2")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2"))) (kind featureTyping) (ordinal 0)) (authored-target "SubsystemA") (range (start (line 35) (character 29)) (end (line 35) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2::part2"))) (kind redefinition) (ordinal 0)) (authored-target "part2") (range (start (line 36) (character 13)) (end (line 36) (character 18))) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2::part2")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2::part3"))) (kind redefinition) (ordinal 0)) (authored-target "part3") (range (start (line 37) (character 13)) (end (line 37) (character 18))) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2::part3")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB"))) (kind featureTyping) (ordinal 0)) (authored-target "SubsystemB") (range (start (line 41) (character 30)) (end (line 41) (character 40))) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3"))) (kind featureTyping) (ordinal 0)) (authored-target "SubsystemB") (range (start (line 42) (character 29)) (end (line 42) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3::part4"))) (kind redefinition) (ordinal 0)) (authored-target "part4") (range (start (line 43) (character 13)) (end (line 43) (character 18))) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3::part4")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3::part5"))) (kind redefinition) (ordinal 0)) (authored-target "part5") (range (start (line 44) (character 13)) (end (line 44) (character 18))) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3::part5")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4"))) (kind featureTyping) (ordinal 0)) (authored-target "SubsystemB") (range (start (line 46) (character 29)) (end (line 46) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4::part5"))) (kind redefinition) (ordinal 0)) (authored-target "part5") (range (start (line 47) (character 13)) (end (line 47) (character 18))) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4::part5")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4::part6"))) (kind redefinition) (ordinal 0)) (authored-target "part6") (range (start (line 48) (character 13)) (end (line 48) (character 18))) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4::part6")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part5"))) (kind performSource) (ordinal 0)) (authored-target "7a1-Variant Configuration - General Concept-a::part5::doXorY") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part5::doXorY")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA"))) (kind subsetting) (ordinal 0)) (authored-target "anyVehicleConfig") (range (start (line 61) (character 24)) (end (line 61) (character 40))) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemA"))) (kind redefinition) (ordinal 0)) (authored-target "subsystemA") (range (start (line 62) (character 11)) (end (line 62) (character 21))) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemA")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB"))) (kind redefinition) (ordinal 0)) (authored-target "subsystemB") (range (start (line 63) (character 11)) (end (line 63) (character 21))) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB::part5"))) (kind redefinition) (ordinal 0)) (authored-target "part5") (range (start (line 64) (character 12)) (end (line 64) (character 17))) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB::part5")))))
+    (reference (id (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB::part5"))) (kind performSource) (ordinal 0)) (authored-target "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB::part5::") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB::part5::")))))
   )
   (relationships
-    (perform (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB::part5"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB::part5::"))) (provenance authored))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part5"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part5::doXorY"))) (provenance authored))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB::part5"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB::part5::"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2::part3"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA::part3"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3::part5"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB::part5"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4::part5"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB::part5"))) (provenance authored))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig"))) (provenance authored))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB"))) (provenance authored))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA::part3"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA::part3"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA::part3"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB::part5"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB::part5"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB::part5"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemA"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemA"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemA"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB::part5"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB::part5"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB::part5"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB::part5"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB::part5::"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB::part5"))) (kind performSource) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1::part1"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1::part1"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1::part1"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1::part2"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1::part2"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1::part2"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2::part2"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2::part2"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2::part2"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2::part3"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2::part3"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2::part3"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3::part4"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3::part4"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3::part4"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3::part5"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3::part5"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3::part5"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4::part5"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4::part5"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4::part5"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4::part6"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4::part6"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4::part6"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part5"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part5::doXorY"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part5"))) (kind performSource) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemA"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemA"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemA"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB::part5"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB::part5"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB::part5"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind perform) (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB::part5"))) (target (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB::part5::"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB::part5"))) (kind performSource) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-    (connection (status pending-expression) (document "d0") (source-expression "subsystemA::part3::p1") (target-expression "subsystemB::part5::p2") (container-prefix "7a1-Variant Configuration - General Concept-a::anyVehicleConfig"))
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA::part3"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB::part5"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemA"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB::part5"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB::part5::"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1::part1"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1::part2"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2::part2"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2::part3"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3::part4"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3::part5"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4::part5"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4::part6"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::doX"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::doY"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part1"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part2"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part3"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part3::p1"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part4"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part5"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part5::doXorY"))) (status missing-prerequisite) (target "Actions::actions"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part5::p2"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part6"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemA"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB::part5"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB::part5::"))) (status missing-prerequisite) (target "Actions::actions"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml/validation/7a1_variant_configuration_general_concept_a.md"
-    (diagnostics
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 5 1) (end 5 12))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 6 1) (end 6 12))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 8 2) (end 8 10))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 10 1) (end 10 12))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 12 2) (end 12 10))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 18 1) (end 18 12))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 21 2) (end 21 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 25 2) (end 25 29))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 32 4) (end 32 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 33 4) (end 33 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 36 4) (end 36 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 43 4) (end 43 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 48 4) (end 48 22))
-      )
-      (diagnostic
-        (severity error)
-        (code "unresolved_pending_expression_relationship")
-        (source "semantic")
-        (range (start 52 16) (end 52 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_connection_segment")
-        (source "semantic")
-        (range (start 52 16) (end 52 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_connection_segment")
-        (source "semantic")
-        (range (start 52 16) (end 52 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 62 2) (end 62 47))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 63 2) (end 63 114))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 64 3) (end 64 61))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 71 2) (end 71 47))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 72 2) (end 72 114))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 73 3) (end 73 61))
-      )
-    )
+  (evaluation
+    (node (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemA")) (expression (status "unresolved") (error "expression has an unresolved reference")))
+    (node (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB")) (expression (status "unresolved") (error "expression has an unresolved reference")))
+    (node (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemA")) (expression (status "unresolved") (error "expression has an unresolved reference")))
+    (node (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB")) (expression (status "unresolved") (error "expression has an unresolved reference")))
   )
 )
 ~~~

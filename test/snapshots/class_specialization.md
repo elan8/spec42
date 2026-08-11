@@ -9,6 +9,15 @@ semantic_graph_skip_reason=standalone KerML class declarations are opaque parser
 ~~~sysml
 class B :> A { }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "class_specialization.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwClass,Ident,ColonGt,Ident,OpenCurly,CloseCurly,EndOfFile,
@@ -18,11 +27,6 @@ KwClass,Ident,ColonGt,Ident,OpenCurly,CloseCurly,EndOfFile,
 (root
   (class_def 'B' :> 'A'))
 ~~~
-# FORMAT
-~~~sysml
-class B :> A { }
-
-~~~
 # EXPECTED
 ~~~
 semantic.unresolved_name 'A'
@@ -31,25 +35,22 @@ semantic.unresolved_name 'A'
 ~~~
 semantic.unresolved_name 'A'
 ~~~
+# FORMAT
+~~~sysml
+class B :> A { }
+
+~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "43a40b329340bbf64d912a20cb4e102781a4354371841bc4005998a9f152b0e8") (contract-version "canonical-resolution-v1"))
+  (structure
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "class_specialization.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

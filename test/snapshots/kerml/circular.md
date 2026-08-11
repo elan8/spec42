@@ -18,6 +18,15 @@ package Circular {
 	feature z :> y;
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "circular.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -45,6 +54,14 @@ CloseCurly,EndOfFile,
     (feature_def 'y' :> 'x')
     (feature_def 'z' :> 'y')))
 ~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ~~~sysml
 package Circular {
@@ -61,48 +78,27 @@ package Circular {
 }
 
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Circular"))) (name "Circular") (declared-name "Circular")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Circular::A"))) (name "A") (declared-name "A"))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "Circular::Circ"))) (name "Circ") (declared-name "Circ"))
-        (element (kind "package") (id (node (document "d0") (qualified-name "Circular::P"))) (name "P") (declared-name "P")
-          (contains
-            (element (kind "import") (id (node (document "d0") (qualified-name "Circular::P::*"))) (name "*") (declared-name "*"))
-          )
-        )
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Circular::a"))) (name "a") (declared-name "a"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Circular::x"))) (name "x") (declared-name "x"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Circular::y"))) (name "y") (declared-name "y"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Circular::z"))) (name "z") (declared-name "z"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "0121c73578e5552590447a9c5e00f78b6fd636348691aed1ce316dd4551b0967") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Circular"))) (kind "package") (name "Circular") (declared-name "Circular") (range (start (line 0) (character 0)) (end (line 0) (character 172))))
+    (element (id (node (document "d0") (qualified-name "Circular::A"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 1) (character 1)) (end (line 1) (character 12))) (parent (node (document "d0") (qualified-name "Circular"))))
+    (element (id (node (document "d0") (qualified-name "Circular::Circ"))) (kind "alias") (name "Circ") (declared-name "Circ") (range (start (line 3) (character 1)) (end (line 3) (character 25))) (parent (node (document "d0") (qualified-name "Circular"))))
+    (element (id (node (document "d0") (qualified-name "Circular::P"))) (kind "package") (name "P") (declared-name "P") (range (start (line 4) (character 1)) (end (line 4) (character 44))) (parent (node (document "d0") (qualified-name "Circular"))))
+    (element (id (node (document "d0") (qualified-name "Circular::P::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 5) (character 2)) (end (line 5) (character 28))) (parent (node (document "d0") (qualified-name "Circular::P"))) (authored (membership (kind Import) (visibility "public") (import (reference "Circular::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 5) (character 16)) (end (line 5) (character 24))))))
+    (element (id (node (document "d0") (qualified-name "Circular::a"))) (kind "feature decl") (name "a") (declared-name "a") (range (start (line 2) (character 1)) (end (line 2) (character 14))) (parent (node (document "d0") (qualified-name "Circular"))))
+    (element (id (node (document "d0") (qualified-name "Circular::x"))) (kind "feature decl") (name "x") (declared-name "x") (range (start (line 8) (character 1)) (end (line 8) (character 16))) (parent (node (document "d0") (qualified-name "Circular"))))
+    (element (id (node (document "d0") (qualified-name "Circular::y"))) (kind "feature decl") (name "y") (declared-name "y") (range (start (line 9) (character 1)) (end (line 9) (character 16))) (parent (node (document "d0") (qualified-name "Circular"))))
+    (element (id (node (document "d0") (qualified-name "Circular::z"))) (kind "feature decl") (name "z") (declared-name "z") (range (start (line 10) (character 1)) (end (line 10) (character 16))) (parent (node (document "d0") (qualified-name "Circular"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Circular::P::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Circular::*") (range (start (line 5) (character 16)) (end (line 5) (character 24))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Circular")))))
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/circular.md"
-    (diagnostics
-    )
+  (evaluation
   )
 )
 ~~~

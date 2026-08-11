@@ -65,6 +65,45 @@ package OneToUnrestrictedConnectorsExecution {
 	}
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "a_3_4_one_to_unrestricted_connectors.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 16) (end 6 60))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 26 16) (end 26 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 28 16) (end 28 56))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 29 16) (end 29 56))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 30 16) (end 30 55))
+      )
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPackage,Ident,OpenCurly,
@@ -154,6 +193,22 @@ CloseCurly,EndOfFile,
         (connector_end)
         (connector_end)))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'MyBikeFork1'
+semantic.unresolved_name 'MyBikeFork1'
+semantic.unresolved_name 'MyBikeFork'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'BikeFork'
+semantic.unresolved_name 'MyBikeFork1'
+semantic.unresolved_name 'MyBikeFork1'
+semantic.unresolved_name 'MyBikeFork'
+~~~
 # FORMAT
 ~~~sysml
 
@@ -216,148 +271,46 @@ package OneToUnrestrictedConnectorsExecution {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'MyBikeFork1'
-semantic.unresolved_name 'MyBikeFork1'
-semantic.unresolved_name 'MyBikeFork'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'BikeFork'
-semantic.unresolved_name 'MyBikeFork1'
-semantic.unresolved_name 'MyBikeFork1'
-semantic.unresolved_name 'MyBikeFork'
-~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))) (name "OneToUnrestrictedConnectorsExecution") (declared-name "OneToUnrestrictedConnectorsExecution")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBike"))) (name "MyBike") (declared-name "MyBike"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket"))) (name "MyBikeBasket") (declared-name "MyBikeBasket"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket1"))) (name "MyBikeBasket1") (declared-name "MyBikeBasket1"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket1_Fork1_BBF_Link"))) (name "MyBikeBasket1_Fork1_BBF_Link") (declared-name "MyBikeBasket1_Fork1_BBF_Link"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket2"))) (name "MyBikeBasket2") (declared-name "MyBikeBasket2"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket2_Fork1_BBF_Link"))) (name "MyBikeBasket2_Fork1_BBF_Link") (declared-name "MyBikeBasket2_Fork1_BBF_Link"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket_Fork_BBF_Link"))) (name "MyBikeBasket_Fork_BBF_Link") (declared-name "MyBikeBasket_Fork_BBF_Link"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeFork"))) (name "MyBikeFork") (declared-name "MyBikeFork"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeFork1"))) (name "MyBikeFork1") (declared-name "MyBikeFork1"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeFork2"))) (name "MyBikeFork2") (declared-name "MyBikeFork2"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom#metadata_keyword"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom#metadata_keyword2"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom#metadata_keyword3"))) (name "atom") (declared-name "atom"))
-        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom#metadata_keyword4"))) (name "atom") (declared-name "atom"))
-      )
-    )
-    (element (kind "package") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted"))) (name "OneToUnrestrictedConnectorsModelToBeExecuted") (declared-name "OneToUnrestrictedConnectorsModelToBeExecuted")
-      (contains
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle"))) (name "Bicycle") (declared-name "Bicycle"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasket"))) (name "BikeBasket") (declared-name "BikeBasket"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed"))) (name "BikeBasketFixed") (declared-name "BikeBasketFixed"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeFork"))) (name "BikeFork") (declared-name "BikeFork"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e6c7304c008da73f3666c7775d3b842c07a155df5ef5e8cb0506c32aa7d2a252") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))) (kind "package") (name "OneToUnrestrictedConnectorsExecution") (declared-name "OneToUnrestrictedConnectorsExecution") (range (start (line 21) (character 0)) (end (line 21) (character 1209))))
+    (element (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 26) (character 1)) (end (line 26) (character 25))) (parent (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))) (authored (membership (kind Import) (visibility "private") (import (reference "Atoms::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 26) (character 16)) (end (line 26) (character 21))))))
+    (element (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 27) (character 1)) (end (line 27) (character 64))) (parent (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))) (authored (membership (kind Import) (visibility "private") (import (reference "OneToUnrestrictedConnectorsModelToBeExecuted::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 27) (character 16)) (end (line 27) (character 60))))))
+    (element (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBike"))) (kind "classifier decl") (name "MyBike") (declared-name "MyBike") (range (start (line 53) (character 1)) (end (line 53) (character 244))) (parent (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket"))) (kind "classifier decl") (name "MyBikeBasket") (declared-name "MyBikeBasket") (range (start (line 37) (character 1)) (end (line 37) (character 61))) (parent (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket1"))) (kind "classifier decl") (name "MyBikeBasket1") (declared-name "MyBikeBasket1") (range (start (line 33) (character 1)) (end (line 33) (character 49))) (parent (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket1_Fork1_BBF_Link"))) (kind "kermlDecl") (name "MyBikeBasket1_Fork1_BBF_Link") (declared-name "MyBikeBasket1_Fork1_BBF_Link") (range (start (line 40) (character 1)) (end (line 40) (character 163))) (parent (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket2"))) (kind "classifier decl") (name "MyBikeBasket2") (declared-name "MyBikeBasket2") (range (start (line 35) (character 1)) (end (line 35) (character 49))) (parent (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket2_Fork1_BBF_Link"))) (kind "kermlDecl") (name "MyBikeBasket2_Fork1_BBF_Link") (declared-name "MyBikeBasket2_Fork1_BBF_Link") (range (start (line 45) (character 1)) (end (line 45) (character 163))) (parent (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket_Fork_BBF_Link"))) (kind "classifier decl") (name "MyBikeBasket_Fork_BBF_Link") (declared-name "MyBikeBasket_Fork_BBF_Link") (range (start (line 50) (character 1)) (end (line 50) (character 105))) (parent (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeFork"))) (kind "import") (name "MyBikeFork") (declared-name "MyBikeFork") (range (start (line 30) (character 1)) (end (line 30) (character 56))) (parent (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))) (authored (membership (kind Import) (visibility "private") (import (reference "OneToOneConnectorsExecution::MyBikeFork") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 30) (character 16)) (end (line 30) (character 55))))))
+    (element (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeFork1"))) (kind "import") (name "MyBikeFork1") (declared-name "MyBikeFork1") (range (start (line 28) (character 1)) (end (line 28) (character 57))) (parent (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))) (authored (membership (kind Import) (visibility "private") (import (reference "OneToOneConnectorsExecution::MyBikeFork1") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 28) (character 16)) (end (line 28) (character 56))))))
+    (element (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeFork2"))) (kind "import") (name "MyBikeFork2") (declared-name "MyBikeFork2") (range (start (line 29) (character 1)) (end (line 29) (character 57))) (parent (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))) (authored (membership (kind Import) (visibility "private") (import (reference "OneToOneConnectorsExecution::MyBikeFork2") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 29) (character 16)) (end (line 29) (character 56))))))
+    (element (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 32) (character 1)) (end (line 32) (character 8))) (parent (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom#metadata_keyword"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 34) (character 1)) (end (line 34) (character 8))) (parent (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom#metadata_keyword2"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 39) (character 1)) (end (line 39) (character 8))) (parent (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom#metadata_keyword3"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 44) (character 1)) (end (line 44) (character 8))) (parent (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom#metadata_keyword4"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (range (start (line 52) (character 1)) (end (line 52) (character 8))) (parent (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))))
+    (element (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted"))) (kind "package") (name "OneToUnrestrictedConnectorsModelToBeExecuted") (declared-name "OneToUnrestrictedConnectorsModelToBeExecuted") (range (start (line 1) (character 0)) (end (line 1) (character 434))))
+    (element (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle"))) (kind "classifier decl") (name "Bicycle") (declared-name "Bicycle") (range (start (line 8) (character 1)) (end (line 8) (character 176))) (parent (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted"))))
+    (element (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasket"))) (kind "classifier decl") (name "BikeBasket") (declared-name "BikeBasket") (range (start (line 13) (character 1)) (end (line 13) (character 23))) (parent (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted"))))
+    (element (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed"))) (kind "kermlDecl") (name "BikeBasketFixed") (declared-name "BikeBasketFixed") (range (start (line 15) (character 1)) (end (line 15) (character 96))) (parent (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted"))))
+    (element (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeFork"))) (kind "import") (name "BikeFork") (declared-name "BikeFork") (range (start (line 6) (character 1)) (end (line 6) (character 61))) (parent (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted"))) (authored (membership (kind Import) (visibility "private") (import (reference "WithoutConnectorsModelToBeExecuted::BikeFork") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 60))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Atoms::*") (range (start (line 26) (character 16)) (end (line 26) (character 21))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "OneToUnrestrictedConnectorsModelToBeExecuted::*") (range (start (line 27) (character 16)) (end (line 27) (character 60))) (outcome (status resolved) (target (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted")))))
+    (reference (id (source (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeFork"))) (kind membershipImport) (ordinal 0)) (authored-target "OneToOneConnectorsExecution::MyBikeFork") (range (start (line 30) (character 16)) (end (line 30) (character 55))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeFork1"))) (kind membershipImport) (ordinal 0)) (authored-target "OneToOneConnectorsExecution::MyBikeFork1") (range (start (line 28) (character 16)) (end (line 28) (character 56))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeFork2"))) (kind membershipImport) (ordinal 0)) (authored-target "OneToOneConnectorsExecution::MyBikeFork2") (range (start (line 29) (character 16)) (end (line 29) (character 56))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeFork"))) (kind membershipImport) (ordinal 0)) (authored-target "WithoutConnectorsModelToBeExecuted::BikeFork") (range (start (line 6) (character 16)) (end (line 6) (character 60))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom"))) (to (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom#metadata_keyword"))) (to (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom#metadata_keyword2"))) (to (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom#metadata_keyword3"))) (to (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom#metadata_keyword4"))) (to (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom#metadata_keyword"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom#metadata_keyword2"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom#metadata_keyword3"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom#metadata_keyword4"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "kerml/a_3_4_one_to_unrestricted_connectors.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 6 16) (end 6 60))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 26 16) (end 26 21))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 28 16) (end 28 56))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 29 16) (end 29 56))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 30 16) (end 30 55))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 32 1) (end 32 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 34 1) (end 34 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 34 1) (end 34 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 39 1) (end 39 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 44 1) (end 44 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 52 1) (end 52 8))
-      )
-    )
+  (evaluation
   )
 )
 ~~~
