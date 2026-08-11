@@ -187,8 +187,9 @@ fn regenerate_snapshot(fixture: &str, path: &Path, strategy: Strategy) -> Result
         .ok_or_else(|| format!("{}: missing SOURCE/SMG section", path.display()))?;
     let fixture = replace_or_insert_section(&fixture, "DIAGNOSTICS", &diagnostics)
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
-    replace_or_insert_full_section(&fixture, "FORMAT", &format)
-        .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))
+    let fixture = replace_or_insert_full_section(&fixture, "FORMAT", &format)
+        .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
+    Ok(canonicalize_sections(&fixture))
 }
 
 fn render_semantic_model(model: &SemanticModel) -> Result<String, String> {
@@ -316,16 +317,81 @@ fn replace_or_insert_full_section(fixture: &str, name: &str, replacement: &str) 
             .map_or(fixture.len(), |index| content_start + index);
         let mut updated = String::with_capacity(fixture.len() + replacement.len());
         updated.push_str(&fixture[..content_start]);
-        updated.push_str(replacement.trim_end_matches('\n'));
+        // Keep the formatter's canonical trailing newline. Dropping it makes update/check
+        // alternate forever for a snapshot whose FORMAT section is last in the file.
+        updated.push_str(replacement);
         updated.push_str(&fixture[end..]);
         return Some(updated);
     }
-    let section = format!("\n# {name}\n{replacement}");
+    let section = format!("\n# {name}\n{}", replacement.trim_end_matches('\n'));
     let mut updated = String::with_capacity(fixture.len() + section.len());
     updated.push_str(fixture.trim_end());
     updated.push_str(&section);
     updated.push('\n');
     Some(updated)
+}
+
+/// Canonical top-level Markdown order. SOURCE is authored; all other sections are either owned
+/// by this runner or preserved evidence. Reordering is part of update/check so a fixture cannot
+/// silently acquire a second section layout over time.
+const SECTION_ORDER: &[&str] = &[
+    "META",
+    "SOURCE",
+    "DIAGNOSTICS",
+    "TOKENS",
+    "AST",
+    "EXPECTED",
+    "PROBLEMS",
+    "FORMAT",
+    "SMG",
+];
+
+fn canonicalize_sections(fixture: &str) -> String {
+    let mut sections = Vec::<(&str, &str, usize)>::new();
+    let mut marker = None;
+    for (offset, line) in fixture.split_inclusive('\n').scan(0usize, |offset, line| {
+        let start = *offset;
+        *offset += line.len();
+        Some((start, line))
+    }) {
+        let name = line
+            .strip_prefix("# ")
+            .and_then(|line| line.strip_suffix('\n'));
+        if name.is_some_and(|name| SECTION_ORDER.contains(&name)) {
+            if let Some((previous_name, previous_start)) = marker.take() {
+                sections.push((
+                    previous_name,
+                    &fixture[previous_start..offset],
+                    previous_start,
+                ));
+            }
+            marker = Some((name.expect("section name"), offset));
+        }
+    }
+    if let Some((previous_name, previous_start)) = marker {
+        sections.push((previous_name, &fixture[previous_start..], previous_start));
+    }
+    if sections.len() < 2 {
+        return fixture.to_string();
+    }
+    let prefix_end = sections[0].2;
+    let prefix = &fixture[..prefix_end];
+    sections.sort_by_key(|(name, _, original)| {
+        (
+            SECTION_ORDER
+                .iter()
+                .position(|candidate| candidate == name)
+                .unwrap_or(SECTION_ORDER.len()),
+            *original,
+        )
+    });
+    let mut output = String::with_capacity(fixture.len());
+    output.push_str(prefix);
+    for (_, body, _) in sections {
+        output.push_str(body.trim_end_matches('\n'));
+        output.push('\n');
+    }
+    output
 }
 
 fn replace_section(fixture: &str, name: &str, replacement: &str) -> Option<String> {
@@ -385,5 +451,32 @@ mod tests {
         let updated = replace_section(fixture, "SMG", "new").unwrap();
         assert!(updated.contains("# SMG\n~~~sexpr\nnew\n~~~"));
         assert!(updated.contains("# DIAGNOSTICS\n~~~sexpr\nkeep\n~~~"));
+    }
+
+    #[test]
+    fn inserting_owned_sections_is_idempotent() {
+        let fixture = "# META\n~~~ini\ntype=file\n~~~\n# SOURCE\n~~~sysml\npackage A {}\n~~~\n";
+        let first = replace_or_insert_section(fixture, "SMG", "model").unwrap();
+        let first = replace_or_insert_section(&first, "DIAGNOSTICS", "diagnostics").unwrap();
+        let first =
+            replace_or_insert_full_section(&first, "FORMAT", "~~~sysml\npackage A {}\n~~~\n")
+                .unwrap();
+        let second = replace_or_insert_section(&first, "SMG", "model").unwrap();
+        let second = replace_or_insert_section(&second, "DIAGNOSTICS", "diagnostics").unwrap();
+        let second =
+            replace_or_insert_full_section(&second, "FORMAT", "~~~sysml\npackage A {}\n~~~\n")
+                .unwrap();
+        assert_eq!(first, second);
+    }
+
+    #[test]
+    fn canonicalizes_shuffled_top_level_sections() {
+        let fixture = "# SMG\nold\n# SOURCE\n~~~sysml\npackage A {}\n~~~\n# META\nmeta\n# DIAGNOSTICS\ndiag\n";
+        let canonical = canonicalize_sections(fixture);
+        assert_eq!(
+            canonical,
+            "# META\nmeta\n# SOURCE\n~~~sysml\npackage A {}\n~~~\n# DIAGNOSTICS\ndiag\n# SMG\nold\n"
+        );
+        assert_eq!(canonicalize_sections(&canonical), canonical);
     }
 }

@@ -19,6 +19,39 @@ package Usage {
     part v : Vehicle;
 }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "Definitions.sysml"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 2 8) (end 2 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 2 25) (end 2 43))
+      )
+    )
+  )
+  (document "Usage.sysml"
+    (diagnostics
+    )
+  )
+)
+~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
 # FORMAT
 ## Definitions.sysml
 ~~~sysml
@@ -36,14 +69,6 @@ package Usage {
     part v : Vehicle;
 }
 
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
 ~~~
 # SMG
 ~~~
@@ -67,31 +92,6 @@ NIL
     (relationship (kind typing) (source (node (document "d1") (qualified-name "Usage::v"))) (target (node (document "d0") (qualified-name "Definitions::Vehicle"))) (provenance authored) (authored-reference (source (node (document "d1") (qualified-name "Usage::v"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "Definitions.sysml"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 2 8) (end 2 44))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 2 25) (end 2 43))
-      )
-    )
-  )
-  (document "Usage.sysml"
-    (diagnostics
-    )
   )
 )
 ~~~

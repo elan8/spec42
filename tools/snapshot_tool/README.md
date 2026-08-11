@@ -6,9 +6,14 @@ command-line runner, not a Rust integration test and not an `insta` assertion la
 Each Markdown file is a test case. The runner reads its `# SOURCE` section, builds the immutable
 `SemanticModel`, and rewrites the owned `SMG`, `DIAGNOSTICS`, and `FORMAT` sections. It never
 exposes graph nodes, resolution indexes, or fact collections to the caller; the semantic owner
-streams its canonical debug S-expression into an internal buffer owned by the harness. Diagnostics
-are collected by `sysml_diagnostics` from the same published model and `ResolutionView`; the
+streams its canonical debug S-expression through the caller-provided writer. Diagnostics are
+collected by `sysml_diagnostics` from category-owned projections of the same published model; the
 runner never rebuilds a mutable graph for validation.
+
+The canonical top-level section order is `META`, `SOURCE`, `DIAGNOSTICS`, `TOKENS`, `AST`,
+`EXPECTED`, `PROBLEMS`, `FORMAT`, `SMG`. `SOURCE` is authored; generated sections are rewritten
+to this order with one final newline. Unknown or future sections should be added to the explicit
+ordering table before they become part of the corpus contract.
 
 Run it from the repository root:
 
