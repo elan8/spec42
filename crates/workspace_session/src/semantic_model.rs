@@ -7,7 +7,10 @@
 
 use std::sync::Arc;
 
-use workspace::{SemanticCompleteness, SemanticModel, SemanticModelIdentity, WorkspaceSession};
+use workspace::{
+    SemanticBuildRequest, SemanticCompleteness, SemanticModel, SemanticModelIdentity,
+    SessionLifecycle, WorkspaceSession,
+};
 
 use crate::{MutatePanicked, Mutation, SessionActor, SnapshotHandle, TracksRelink};
 
@@ -115,11 +118,16 @@ impl SemanticModelSession {
         }
     }
 
-    /// Schedules a whole-model build against `identity`, superseding any older build.
+    /// Schedules a whole-model build against an immutable request, superseding any older build.
+    ///
+    /// The token identity is derived from `request` inside this method.  Callers cannot provide a
+    /// separate identity that accidentally disagrees with the source, construction, evaluation,
+    /// or configuration inputs used by the build.
     pub async fn begin_build(
         &self,
-        identity: SemanticModelIdentity,
+        request: &SemanticBuildRequest,
     ) -> Result<SemanticBuildToken, MutatePanicked> {
+        let identity = request.identity();
         self.actor
             .mutate(move |state| SemanticBuildToken {
                 relink: state.session.schedule_relink(),
@@ -146,24 +154,24 @@ impl SemanticModelSession {
 
                 let outcome = match result {
                     Err(SemanticBuildFailureKind::Failed) => {
-                        state.session.commit_relink(&token.relink);
+                        assert!(state.session.commit_relink(&token.relink));
                         SemanticPublicationOutcome::DiscardedFailed
                     }
                     Err(SemanticBuildFailureKind::Cancelled) => {
-                        state.session.commit_relink(&token.relink);
+                        assert!(state.session.commit_relink(&token.relink));
                         SemanticPublicationOutcome::DiscardedCancelled
                     }
                     Ok(model) if model.completeness() != SemanticCompleteness::Complete => {
-                        state.session.commit_relink(&token.relink);
+                        assert!(state.session.commit_relink(&token.relink));
                         SemanticPublicationOutcome::DiscardedIncomplete
                     }
                     Ok(model) if model.identity() != &token.identity => {
-                        state.session.commit_relink(&token.relink);
+                        assert!(state.session.commit_relink(&token.relink));
                         SemanticPublicationOutcome::DiscardedIdentityMismatch
                     }
                     Ok(model) => {
                         state.model = model;
-                        state.session.commit_relink(&token.relink);
+                        assert!(state.session.commit_relink(&token.relink));
                         SemanticPublicationOutcome::Published
                     }
                 };
@@ -171,6 +179,11 @@ impl SemanticModelSession {
             })
             .await
             .map(|outcome| outcome.value)
+    }
+
+    /// Returns the owner lifecycle associated with the current publication.
+    pub fn lifecycle(&self) -> SessionLifecycle {
+        self.snapshot.current().session.lifecycle()
     }
 }
 
