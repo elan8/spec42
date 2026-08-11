@@ -124,17 +124,7 @@ copy or extend them, but do not broaden an unrelated change solely to remove the
 ## Evidence and verification
 
 - The standalone snapshot tool is the primary end-to-end integration test for the compiler
-  pipeline. Snapshot `SOURCE` sections are authored inputs; the tool regenerates the canonical
-  parser, semantic-model, diagnostics, and formatter sections, and `git diff` is the review and
-  acceptance surface. The Markdown sections themselves use the snapshot tool's one canonical
-  sequence, beginning `META`, `SOURCE`, and `DIAGNOSTICS`; update mode rewrites noncanonical section
-  order. Content within generated sections also has owner-defined canonical ordering independent of
-  traversal, construction strategy, hash iteration, or cache state. Do not replace this coverage
-  with substring assertions, presentation-format snapshots, or ad hoc Rust test harnesses.
-- Run focused owning-layer tests while implementing, then run the snapshot tool in update mode and
-  inspect every generated change before accepting it. Check mode must pass with a clean worktree;
-  never hand-edit generated snapshot sections or accept bulk changes without classifying semantic
-  and diagnostic differences.
+  pipeline; regenerate and review its checked-in snapshots for pipeline behavior changes.
 - Specification and conformance claims require traceable normative evidence plus executable tests.
   Unsupported coverage stays visible; it does not disappear behind omission or optimistic labels.
 - For behavior changes and bug fixes, add the narrowest regression test at the owning layer, then
