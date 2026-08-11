@@ -1069,6 +1069,11 @@ impl SemanticGraphData {
         self.iter_nodes().map(|(_, node)| node.clone()).collect()
     }
 
+    /// Internal publication support for deterministic model diagnostics.
+    pub(crate) fn semantic_node_refs(&self) -> Vec<&SemanticNode> {
+        self.iter_nodes().map(|(_, node)| node).collect()
+    }
+
     /// Returns a stable snapshot of all graph edges for crate-private semantic phases.
     #[cfg(test)]
     pub(crate) fn semantic_edges(&self) -> Vec<(NodeId, NodeId, SemanticEdge)> {
