@@ -817,6 +817,22 @@ mod tests {
     }
 
     #[test]
+    fn cyclic_public_reexports_do_not_create_a_candidate_or_hang() {
+        let model = build(
+            "package A { public import B::*; }
+             package B { public import A::*; }
+             package C { import A::*; part p : Missing; }",
+        );
+        let fact = model
+            .resolution()
+            .facts()
+            .iter()
+            .find(|fact| fact.reference.kind == ReferenceKind::FeatureTyping)
+            .expect("typing fact");
+        assert!(matches!(fact.outcome, ResolutionOutcome::Unresolved));
+    }
+
+    #[test]
     fn resolution_bound_reports_failure_without_publishing() {
         let snapshot = ImmutableSourceSnapshot::new(vec![document(
             "memory://test/a.sysml",
