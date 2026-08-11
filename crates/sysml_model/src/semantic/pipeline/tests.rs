@@ -1162,3 +1162,238 @@ fn whole_parallel_and_incremental_builds_agree_on_cross_document_edge_ownership(
         );
     }
 }
+
+// --- B4: `SemanticPublication` phase/completeness/storage-eligibility ---
+//
+// Covers `ROUNDTRIP_SEMGRAPH_PREREQS.md` B4's required tests: phase monotonicity, completeness
+// distinctions, the unresolved/ambiguous-does-not-mean-incomplete rule, root-digest agreement
+// with the built sources, and whole/parallel/incremental agreement on phase/completeness/root
+// digest.
+
+mod publication_tests {
+    use super::*;
+    use crate::semantic::publication::{SemanticCompleteness, SemanticPhase};
+    use source_identity::{ContentDigest, SourceManifestBuilder, SourceManifestEntry, SourceRole};
+
+    /// Recomputes the root digest the same way `pipeline::root_digest_for` does, from a raw
+    /// document list -- an independent oracle so the test doesn't just call the function under
+    /// test on itself.
+    fn expected_root_digest(documents: &[SysmlDocument]) -> source_identity::RootDigest {
+        let mut builder = SourceManifestBuilder::new();
+        for document in documents {
+            let role = match document.source_kind {
+                SysmlDocumentSourceKind::Workspace => SourceRole::Workspace,
+                SysmlDocumentSourceKind::StandardLibrary => SourceRole::StandardLibrary,
+                SysmlDocumentSourceKind::Library => SourceRole::Library,
+                SysmlDocumentSourceKind::External => SourceRole::External,
+            };
+            builder.push_workspace_entry(SourceManifestEntry {
+                uri: document.uri.to_string(),
+                path_hint: document.path_hint.clone(),
+                role,
+                content_digest: document
+                    .content_digest
+                    .unwrap_or_else(|| ContentDigest::of_bytes(document.content.as_bytes())),
+                byte_len: document.content.len() as u64,
+                library_root_slot: None,
+                relative_path: None,
+            });
+        }
+        builder.build().root_digest()
+    }
+
+    #[test]
+    fn full_build_reaches_settled_evaluated_and_is_storage_eligible() {
+        let documents = vec![memory_doc(
+            "settled.sysml",
+            "package Demo { part def Engine; part motor : Engine; }",
+        )];
+        let (graph, _) = build_and_link_graph(&documents).expect("build");
+        assert_eq!(graph.publication.phase(), SemanticPhase::SettledEvaluated);
+        assert_eq!(
+            graph.publication.completeness(),
+            SemanticCompleteness::Complete
+        );
+        assert_eq!(
+            graph.evaluation_publication,
+            EvaluationPublicationState::Complete
+        );
+        assert!(graph.is_storage_eligible());
+    }
+
+    #[test]
+    fn build_stopped_at_linking_reports_structurally_linked_and_is_not_storage_eligible() {
+        let uri = memory_doc("linked_only.sysml", "package Demo { part def Engine; }").uri;
+        let parsed = sysml_v2_parser::parse("package Demo { part def Engine; }").expect("parse");
+        let mut graph = SemanticGraph::new();
+        // `evaluate: false` stops at the structural-linking barrier -- never reaches
+        // SettledEvaluated, and must never claim storage eligibility.
+        patch_graph_for_document(&mut graph, &uri, Some(&parsed), false);
+        finalize_workspace_graph(&mut graph);
+        assert_eq!(graph.publication.phase(), SemanticPhase::StructurallyLinked);
+        assert!(!graph.is_storage_eligible());
+
+        // Now actually cross the evaluation barrier and confirm it becomes eligible.
+        evaluate_workspace_graph(&mut graph);
+        assert_eq!(graph.publication.phase(), SemanticPhase::SettledEvaluated);
+    }
+
+    #[test]
+    fn editor_recovery_input_produces_editor_recovery_completeness_and_is_not_storage_eligible() {
+        // Missing closing brace forces `parse_for_editor` recovery.
+        let documents = vec![memory_doc(
+            "broken.sysml",
+            "package Demo { part def Engine;",
+        )];
+        let (graph, _) = build_and_link_graph(&documents).expect("build");
+        assert_eq!(graph.publication.phase(), SemanticPhase::SettledEvaluated);
+        assert_eq!(
+            graph.publication.completeness(),
+            SemanticCompleteness::EditorRecovery
+        );
+        assert!(!graph.is_storage_eligible());
+    }
+
+    #[test]
+    fn partial_cancelled_and_failed_completeness_are_distinct_and_none_are_storage_eligible() {
+        let root = source_identity::RootDigest::from_digest(
+            source_identity::Blake3Digest::from_bytes([7u8; 32]),
+        );
+        for completeness in [
+            SemanticCompleteness::Partial,
+            SemanticCompleteness::Cancelled,
+            SemanticCompleteness::Failed,
+            SemanticCompleteness::Unsupported,
+        ] {
+            let mut publication =
+                crate::semantic::publication::SemanticPublication::new(root, completeness);
+            publication.advance_phase(SemanticPhase::SettledEvaluated);
+            assert_eq!(publication.completeness(), completeness);
+            assert!(!publication.is_storage_eligible());
+        }
+        // And they are pairwise distinct.
+        let all = [
+            SemanticCompleteness::Complete,
+            SemanticCompleteness::EditorRecovery,
+            SemanticCompleteness::Unsupported,
+            SemanticCompleteness::Partial,
+            SemanticCompleteness::Cancelled,
+            SemanticCompleteness::Failed,
+        ];
+        for (i, a) in all.iter().enumerate() {
+            for (j, b) in all.iter().enumerate() {
+                assert_eq!(i == j, a == b);
+            }
+        }
+    }
+
+    /// The easiest thing to get backwards, per both design documents: an explicit unresolved
+    /// semantic relationship in a settled graph is a complete, correctly settled fact -- not
+    /// evidence of an incomplete build. This must remain storage-eligible.
+    #[test]
+    fn settled_graph_with_unresolved_type_reference_is_complete_and_storage_eligible() {
+        let documents = vec![memory_doc(
+            "unresolved.sysml",
+            "package Demo { part x : DoesNotExist; }",
+        )];
+        let (graph, _) = build_and_link_graph(&documents).expect("build");
+        // The reference to `DoesNotExist` never resolves to a Typing edge -- an explicit
+        // unresolved outcome, not a build failure (`unresolved_type_reference` is exactly the
+        // diagnostic this state drives in `sysml_diagnostics`).
+        assert!(
+            !edge_triples(&graph).iter().any(|(source, _, kind)| {
+                source == "Demo::x" && kind == RelationshipKind::Typing.as_str()
+            }),
+            "fixture must actually leave an unresolved type reference"
+        );
+        assert_eq!(graph.publication.phase(), SemanticPhase::SettledEvaluated);
+        assert_eq!(
+            graph.publication.completeness(),
+            SemanticCompleteness::Complete
+        );
+        assert!(
+            graph.is_storage_eligible(),
+            "an explicit unresolved relationship must not disqualify storage eligibility"
+        );
+    }
+
+    #[test]
+    fn root_digest_matches_built_sources_and_changes_with_a_source_byte() {
+        let documents = vec![memory_doc(
+            "digest.sysml",
+            "package Demo { part def Engine; }",
+        )];
+        let (graph, _) = build_and_link_graph(&documents).expect("build");
+        assert_eq!(
+            graph.publication.root_digest(),
+            expected_root_digest(&documents)
+        );
+
+        let mut changed = documents.clone();
+        changed[0].content = "package Demo { part def Motor; }".to_string();
+        let (changed_graph, _) = build_and_link_graph(&changed).expect("build changed");
+        assert_ne!(
+            graph.publication.root_digest(),
+            changed_graph.publication.root_digest()
+        );
+        assert_eq!(
+            changed_graph.publication.root_digest(),
+            expected_root_digest(&changed)
+        );
+    }
+
+    #[test]
+    fn whole_parallel_and_incremental_builds_agree_on_publication() {
+        let (a_uri, a_doc, b_uri, b_doc) = two_file_typing_fixture();
+        let documents = vec![a_doc.clone(), b_doc.clone()];
+
+        let (whole_graph, _) = build_and_link_graph(&documents).expect("whole build");
+        let (parallel_graph, _) = build_and_link_graph_parallel(&documents);
+
+        let mut incremental_graph = SemanticGraph::new();
+        incremental_graph.publication = crate::semantic::publication::SemanticPublication::new(
+            expected_root_digest(&documents),
+            SemanticCompleteness::Complete,
+        );
+        apply_scoped_patch(&mut incremental_graph, &a_uri, &a_doc.content);
+        apply_scoped_patch(&mut incremental_graph, &b_uri, &b_doc.content);
+
+        for graph in [&whole_graph, &parallel_graph, &incremental_graph] {
+            assert_eq!(graph.publication.phase(), SemanticPhase::SettledEvaluated);
+            assert_eq!(
+                graph.publication.completeness(),
+                SemanticCompleteness::Complete
+            );
+            assert!(graph.is_storage_eligible());
+        }
+        assert_eq!(
+            whole_graph.publication.root_digest(),
+            parallel_graph.publication.root_digest()
+        );
+        assert_eq!(
+            whole_graph.publication.root_digest(),
+            incremental_graph.publication.root_digest()
+        );
+        assert_eq!(
+            whole_graph.publication.root_digest(),
+            expected_root_digest(&documents)
+        );
+    }
+
+    #[test]
+    fn phase_never_regresses_across_a_document_patch_that_stops_before_evaluation() {
+        let uri = memory_doc("regress.sysml", "package Demo { part def Engine; }").uri;
+        let content = "package Demo { part def Engine; }";
+        let parsed = sysml_v2_parser::parse(content).expect("parse");
+        let mut graph = SemanticGraph::new();
+        patch_graph_for_document(&mut graph, &uri, Some(&parsed), true);
+        assert_eq!(graph.publication.phase(), SemanticPhase::SettledEvaluated);
+
+        // Patching again without evaluating must not claim a settled/evaluated phase for content
+        // that was never relinked -- it must honestly retreat, not silently keep the old phase.
+        let parsed_again = sysml_v2_parser::parse(content).expect("parse");
+        patch_graph_for_document(&mut graph, &uri, Some(&parsed_again), false);
+        assert_ne!(graph.publication.phase(), SemanticPhase::SettledEvaluated);
+        assert!(!graph.is_storage_eligible());
+    }
+}

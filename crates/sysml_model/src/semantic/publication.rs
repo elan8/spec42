@@ -8,7 +8,9 @@
 use std::collections::{BTreeMap, HashMap};
 use std::fmt;
 
+use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
+use source_identity::{Blake3Digest, RootDigest};
 
 use crate::semantic::graph::{DeclaredExpressionRelationshipRecord, SemanticGraph};
 pub use crate::semantic::model::DerivedRelationshipRule;
@@ -509,9 +511,10 @@ impl ResolutionState {
                 &relationship.source,
                 &relationship.target,
                 match relationship.provenance {
-                    ResolutionProvenance::Authored => {
-                        SemanticEdge::plain(relationship.kind.clone())
-                    }
+                    ResolutionProvenance::Authored => SemanticEdge::plain(
+                        relationship.kind.clone(),
+                        crate::semantic::model::ConstructionOwner::DocumentConstruction,
+                    ),
                     ResolutionProvenance::Implied(rule) => {
                         SemanticEdge::implied(relationship.kind.clone(), rule)
                     }
@@ -1444,13 +1447,13 @@ fn expression_range_order(
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum SemanticPhase {
+pub enum SemanticModelPhase {
     Resolved,
     Evaluated,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum SemanticCompleteness {
+pub enum SemanticModelCompleteness {
     Complete,
     EditorRecovery,
 }
@@ -1467,8 +1470,8 @@ pub struct SemanticModel {
     structural_graph: SemanticGraph,
     resolution: ResolutionState,
     evaluation: Option<EvaluationState>,
-    phase: SemanticPhase,
-    completeness: SemanticCompleteness,
+    phase: SemanticModelPhase,
+    completeness: SemanticModelCompleteness,
     indexes: SemanticQueryIndexes,
     navigation_index: BTreeMap<url::Url, NavigationIntervalIndex>,
 }
@@ -2090,11 +2093,11 @@ impl SemanticModel {
         &self.identity
     }
 
-    pub fn phase(&self) -> SemanticPhase {
+    pub fn phase(&self) -> SemanticModelPhase {
         self.phase
     }
 
-    pub fn completeness(&self) -> SemanticCompleteness {
+    pub fn completeness(&self) -> SemanticModelCompleteness {
         self.completeness
     }
 
@@ -2704,9 +2707,9 @@ fn build_prepared_semantic_model_with_max_passes(
         resolution,
         evaluation,
         phase: if matches!(request.evaluation, EvaluationPolicy::Evaluate) {
-            SemanticPhase::Evaluated
+            SemanticModelPhase::Evaluated
         } else {
-            SemanticPhase::Resolved
+            SemanticModelPhase::Resolved
         },
         completeness,
         indexes,
@@ -2798,7 +2801,7 @@ mod tests {
             configuration: SemanticConfiguration::default(),
         })
         .expect("recovery model");
-        assert_eq!(model.completeness(), SemanticCompleteness::EditorRecovery);
+        assert_eq!(model.completeness(), SemanticModelCompleteness::EditorRecovery);
     }
 
     #[test]
@@ -2864,9 +2867,9 @@ mod tests {
     #[test]
     fn model_publishes_indexed_relationships() {
         let model = build("package A { part def P {} part p : P; }");
-        assert_eq!(model.phase(), SemanticPhase::Resolved);
+        assert_eq!(model.phase(), SemanticModelPhase::Resolved);
         assert!(!model.has_evaluation());
-        assert_eq!(model.completeness(), SemanticCompleteness::Complete);
+        assert_eq!(model.completeness(), SemanticModelCompleteness::Complete);
         assert!(model
             .structural_graph
             .semantic_edges()
@@ -3049,7 +3052,7 @@ mod tests {
             configuration: SemanticConfiguration::default(),
         })
         .expect("evaluated semantic model");
-        assert_eq!(model.phase(), SemanticPhase::Evaluated);
+        assert_eq!(model.phase(), SemanticModelPhase::Evaluated);
         assert!(model.has_evaluation());
         assert!(model
             .evaluation_facts()
@@ -3285,5 +3288,307 @@ mod tests {
             configuration: SemanticConfiguration::default(),
         })
         .expect("semantic model")
+    }
+}
+
+// --- The graph's own publication contract (`ROUNDTRIP_SEMGRAPH_PREREQS.md` B4;
+// `UNIFY_CACHE_PLAN.md` §4.3). ---
+//
+// A decoded or in-memory [`SemanticGraph`] must be able to prove, without inspecting attributes
+// or guessing from shape: which exact source root produced it, whether parsing used strict
+// success or editor recovery, how far construction got (parsed / structurally linked /
+// settled+evaluated), and whether that construction was complete, degraded, or did not finish.
+// [`SemanticPublication`] is that proof. It intentionally does not duplicate
+// [`EvaluationPublicationState`](crate::semantic::model::EvaluationPublicationState):
+// [`SemanticPhase::SettledEvaluated`] is only ever reached by the pipeline barrier that also
+// sets `evaluation_publication` to `Complete` (see `semantic::pipeline`), and
+// [`SemanticGraph::is_storage_eligible`] checks both, so the two can never disagree in practice
+// -- evaluation state remains the single owner of per-expression evaluation facts, while
+// `SemanticPublication` owns the graph-wide phase/completeness/identity envelope around it.
+//
+// Distinct from the `SemanticModel` build API's [`SemanticModelPhase`]/
+// [`SemanticModelCompleteness`] above, which describe one immutable build request's outcome;
+// these types are carried by every `SemanticGraph`.
+
+/// Repository-owned semantic algorithm contract version.
+///
+/// Deliberately not `CARGO_PKG_VERSION` (`UNIFY_CACHE_PLAN.md` §6.1): the crate version changes
+/// for reasons unrelated to the semantic construction algorithm (docs, unrelated modules,
+/// dependency bumps), while this constant changes only when parsing, linking, effective-fact
+/// construction, pending resolution, or evaluation semantics change in a way that could make a
+/// previously published graph an unsafe substitute for a fresh build. Bump it whenever such a
+/// change lands.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+pub struct SemanticContractVersion(pub u32);
+
+/// The current semantic algorithm contract. Increment when construction, linking, or evaluation
+/// semantics change in a way that would make an older publication an unsafe substitute for a
+/// fresh build.
+pub const CURRENT_SEMANTIC_CONTRACT_VERSION: SemanticContractVersion = SemanticContractVersion(1);
+
+/// How far a graph's construction has progressed, in strict barrier order.
+///
+/// Ordered so `SemanticPhase` comparisons (`<`, `>=`, ...) express "has this barrier been
+/// crossed" directly, and so [`SemanticPublication::advance_phase`] can enforce monotonicity by
+/// construction rather than by convention.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum SemanticPhase {
+    /// Documents have been parsed into ASTs and merged into node/edge state, but workspace
+    /// relationship linking has not (yet) run over the merged graph.
+    Parsed,
+    /// Workspace relationship linking, effective-fact construction, and pending-relationship
+    /// resolution have crossed their barrier (`finalize_workspace_graph` /
+    /// `link_parsed_documents_parallel_from`'s structural phase). Expression evaluation has not
+    /// necessarily run, or ran against a now-stale structural state.
+    StructurallyLinked,
+    /// Expression evaluation has crossed its barrier against the current structural state
+    /// (`evaluate_expressions`, gated the same way `evaluation_publication` is). The only phase
+    /// eligible for persistent storage, and only when paired with
+    /// [`SemanticCompleteness::Complete`].
+    SettledEvaluated,
+}
+
+/// Whether a graph's construction input and process were complete, and if not, how it degraded.
+///
+/// Distinguishes "the graph is settled and its facts are exactly what a fresh build would
+/// produce" from every other way construction can legitimately end. None of the non-`Complete`
+/// variants are evidence of a bug: they are the explicit, typed alternative to guessing,
+/// substituting, or silently treating degraded input as success (`AGENTS.md`, "Keep unresolved,
+/// ambiguous, unsupported, partial, cancelled, and failed states explicit").
+///
+/// This is orthogonal to [`SemanticPhase`]: a `SettledEvaluated` graph can still be
+/// `EditorRecovery` (parsed with recovered syntax errors but linked/evaluated to completion), and
+/// pending unresolved/ambiguous *semantic* relationships never make a build `Partial` — see the
+/// module-level warning in `ROUNDTRIP_SEMGRAPH_PREREQS.md` §4/B4 and `UNIFY_CACHE_PLAN.md` §4.3:
+/// an explicit unresolved or ambiguous outcome is itself a complete, correctly settled fact.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum SemanticCompleteness {
+    /// Every admitted source parsed with strict success and construction ran to its declared
+    /// phase with no cancellation, no unsupported input, and no failure. Explicit unresolved or
+    /// ambiguous *semantic* facts (pending relationships, evaluation outcomes) do not disqualify
+    /// this — they are settled, typed facts, not missing ones.
+    Complete,
+    /// At least one admitted source required editor/parser recovery (non-empty parse
+    /// diagnostics) rather than strict parse success. Construction otherwise ran to its declared
+    /// phase.
+    EditorRecovery,
+    /// Construction encountered input or a configuration it does not have a defined semantic
+    /// mapping for (e.g. an unsupported language construct) and explicitly excluded it rather
+    /// than guessing.
+    Unsupported,
+    /// Construction covers less than the complete admitted source set — e.g. a single-document
+    /// live-edit patch, or a scoped frontier relink — rather than every admitted source.
+    Partial,
+    /// Construction was cancelled before reaching its declared phase (e.g. superseded by a newer
+    /// revision).
+    Cancelled,
+    /// Construction attempted its declared phase and did not complete it (e.g. an internal
+    /// error, or a safety bound in iterative enrichment was hit without convergence).
+    Failed,
+}
+
+/// The graph's own publication identity, phase, and completeness — `SemanticPublication` from
+/// `UNIFY_CACHE_PLAN.md` §4.3 and the required resolution for `ROUNDTRIP_SEMGRAPH_PREREQS.md` B4.
+///
+/// Every [`SemanticGraph`](crate::semantic::graph::SemanticGraph) carries one. It answers, without
+/// inspecting graph content: which exact source root produced this graph
+/// ([`Self::root_digest`]), how far construction progressed ([`Self::phase`]), and whether that
+/// construction was complete ([`Self::completeness`]). [`Self::is_storage_eligible`] is the single
+/// typed predicate for whether a graph may be accepted into persistent cache storage — no other
+/// code should reimplement that check from the individual fields.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SemanticPublication {
+    root_digest: RootDigest,
+    phase: SemanticPhase,
+    completeness: SemanticCompleteness,
+    semantic_contract: SemanticContractVersion,
+}
+
+impl SemanticPublication {
+    /// Starts a new publication at [`SemanticPhase::Parsed`] for the given source root and
+    /// completeness, stamped with the [`CURRENT_SEMANTIC_CONTRACT_VERSION`].
+    ///
+    /// `completeness` is the caller's honest assessment of *this* construction (e.g. whether any
+    /// admitted source needed editor recovery). It is never inferred from graph shape.
+    pub fn new(root_digest: RootDigest, completeness: SemanticCompleteness) -> Self {
+        Self {
+            root_digest,
+            phase: SemanticPhase::Parsed,
+            completeness,
+            semantic_contract: CURRENT_SEMANTIC_CONTRACT_VERSION,
+        }
+    }
+
+    /// A publication for a graph that has not (yet) had a real source root or completeness
+    /// established — e.g. a freshly constructed empty graph before any documents are known. Its
+    /// [`SemanticCompleteness::Partial`] and [`SemanticPhase::Parsed`] make it correctly
+    /// ineligible for storage until a real build supplies a real root digest and completeness via
+    /// [`Self::new`].
+    pub fn unpublished() -> Self {
+        Self::new(
+            RootDigest::from_digest(Blake3Digest::from_bytes([0u8; 32])),
+            SemanticCompleteness::Partial,
+        )
+    }
+
+    pub fn root_digest(&self) -> RootDigest {
+        self.root_digest
+    }
+
+    pub fn phase(&self) -> SemanticPhase {
+        self.phase
+    }
+
+    pub fn completeness(&self) -> SemanticCompleteness {
+        self.completeness
+    }
+
+    pub fn semantic_contract(&self) -> SemanticContractVersion {
+        self.semantic_contract
+    }
+
+    /// Replaces the source-root identity and completeness while leaving `phase` untouched.
+    ///
+    /// Used by the pipeline entry points that own document enumeration (`build_and_link_graph`,
+    /// `build_and_link_graph_parallel`) to stamp the real root digest and completeness onto a
+    /// freshly constructed graph before phase transitions begin. Not a phase transition itself —
+    /// callers that also know the graph is further along must call [`Self::advance_phase`]
+    /// separately, in barrier order, the same way pipeline functions already do.
+    pub fn set_identity(&mut self, root_digest: RootDigest, completeness: SemanticCompleteness) {
+        self.root_digest = root_digest;
+        self.completeness = completeness;
+    }
+
+    /// Overrides completeness only, leaving root digest and phase untouched. Used when
+    /// construction degrades (cancelled, failed, unsupported) partway through a phase that had
+    /// already started with `Complete` or `EditorRecovery`.
+    pub fn set_completeness(&mut self, completeness: SemanticCompleteness) {
+        self.completeness = completeness;
+    }
+
+    /// Advances `phase` to `phase`, or leaves it unchanged if `phase` is not further along than
+    /// the current phase.
+    ///
+    /// This is the only way `phase` ever changes after construction, and it can only move
+    /// forward: regression is structurally impossible to express here rather than merely
+    /// discouraged, satisfying `AGENTS.md`'s "Publish coherent model states atomically" and
+    /// `ROUNDTRIP_SEMGRAPH_PREREQS.md` B4's "phase transitions explicit and monotonic". Taking the
+    /// max (rather than asserting `phase >= self.phase`) is deliberate, not merely lenient: a
+    /// pipeline barrier function such as `finalize_and_evaluate_frontier` unconditionally
+    /// advances to `StructurallyLinked` before deciding whether to evaluate, and is itself a valid
+    /// re-entry point on an already-`SettledEvaluated` graph (e.g. re-finalizing after a second,
+    /// independent frontier refresh) -- that call is a legitimate no-op here, not a bug to flag.
+    pub fn advance_phase(&mut self, phase: SemanticPhase) {
+        if phase > self.phase {
+            self.phase = phase;
+        }
+    }
+
+    /// The single typed predicate for whether this publication may be accepted into persistent
+    /// graph storage (`ROUNDTRIP_SEMGRAPH_PREREQS.md` B4, `UNIFY_CACHE_PLAN.md` §4.3: "Only a
+    /// complete settled/evaluated publication is eligible for a persistent semantic-graph
+    /// entry.").
+    ///
+    /// Deliberately does **not** consult pending/unresolved/ambiguous relationship or evaluation
+    /// outcomes — those are settled, explicit facts once [`SemanticPhase::SettledEvaluated`] is
+    /// reached, not evidence of incompleteness. Getting this backwards (treating an explicit
+    /// unresolved/ambiguous result as "incomplete") is called out as the easiest mistake to make
+    /// in both design documents; this predicate is the one place that decision is made, so no
+    /// other code should reimplement it from the individual fields.
+    pub fn is_storage_eligible(&self) -> bool {
+        self.phase == SemanticPhase::SettledEvaluated
+            && self.completeness == SemanticCompleteness::Complete
+    }
+}
+
+impl Default for SemanticPublication {
+    fn default() -> Self {
+        Self::unpublished()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn digest(byte: u8) -> RootDigest {
+        RootDigest::from_digest(Blake3Digest::from_bytes([byte; 32]))
+    }
+
+    #[test]
+    fn advance_phase_moves_forward() {
+        let mut publication = SemanticPublication::new(digest(1), SemanticCompleteness::Complete);
+        assert_eq!(publication.phase(), SemanticPhase::Parsed);
+        publication.advance_phase(SemanticPhase::StructurallyLinked);
+        assert_eq!(publication.phase(), SemanticPhase::StructurallyLinked);
+        publication.advance_phase(SemanticPhase::SettledEvaluated);
+        assert_eq!(publication.phase(), SemanticPhase::SettledEvaluated);
+    }
+
+    #[test]
+    fn advance_phase_never_regresses() {
+        let mut publication = SemanticPublication::new(digest(1), SemanticCompleteness::Complete);
+        publication.advance_phase(SemanticPhase::SettledEvaluated);
+        // Attempting to move backward is a no-op, not an error and not applied — regression is
+        // impossible to observe even though the call itself does not panic in release builds.
+        publication.advance_phase(SemanticPhase::Parsed);
+        assert_eq!(publication.phase(), SemanticPhase::SettledEvaluated);
+        publication.advance_phase(SemanticPhase::StructurallyLinked);
+        assert_eq!(publication.phase(), SemanticPhase::SettledEvaluated);
+    }
+
+    #[test]
+    fn settled_complete_is_storage_eligible() {
+        let mut publication = SemanticPublication::new(digest(1), SemanticCompleteness::Complete);
+        publication.advance_phase(SemanticPhase::StructurallyLinked);
+        assert!(!publication.is_storage_eligible());
+        publication.advance_phase(SemanticPhase::SettledEvaluated);
+        assert!(publication.is_storage_eligible());
+    }
+
+    #[test]
+    fn structurally_linked_is_never_storage_eligible() {
+        let mut publication = SemanticPublication::new(digest(1), SemanticCompleteness::Complete);
+        publication.advance_phase(SemanticPhase::StructurallyLinked);
+        assert!(!publication.is_storage_eligible());
+    }
+
+    #[test]
+    fn non_complete_completeness_is_never_storage_eligible() {
+        for completeness in [
+            SemanticCompleteness::EditorRecovery,
+            SemanticCompleteness::Unsupported,
+            SemanticCompleteness::Partial,
+            SemanticCompleteness::Cancelled,
+            SemanticCompleteness::Failed,
+        ] {
+            let mut publication = SemanticPublication::new(digest(1), completeness);
+            publication.advance_phase(SemanticPhase::SettledEvaluated);
+            assert!(
+                !publication.is_storage_eligible(),
+                "{completeness:?} must not be storage-eligible even when settled/evaluated"
+            );
+        }
+    }
+
+    #[test]
+    fn unpublished_default_is_not_storage_eligible() {
+        assert!(!SemanticPublication::unpublished().is_storage_eligible());
+        assert!(!SemanticPublication::default().is_storage_eligible());
+    }
+
+    #[test]
+    fn set_identity_replaces_root_and_completeness_not_phase() {
+        let mut publication = SemanticPublication::new(digest(1), SemanticCompleteness::Complete);
+        publication.advance_phase(SemanticPhase::StructurallyLinked);
+        publication.set_identity(digest(2), SemanticCompleteness::EditorRecovery);
+        assert_eq!(publication.root_digest(), digest(2));
+        assert_eq!(
+            publication.completeness(),
+            SemanticCompleteness::EditorRecovery
+        );
+        assert_eq!(publication.phase(), SemanticPhase::StructurallyLinked);
     }
 }
