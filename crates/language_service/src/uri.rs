@@ -30,6 +30,13 @@ pub fn normalize_uri(uri: &Url) -> Url {
     uri.clone()
 }
 
+/// Returns true when `candidate` is under any of the library root URIs.
+pub fn uri_under_any_library(candidate: &Url, library_paths: &[Url]) -> bool {
+    library_paths
+        .iter()
+        .any(|root| candidate.as_str().starts_with(root.as_str()))
+}
+
 #[cfg(test)]
 mod tests {
     use super::normalize_uri;
@@ -62,11 +69,4 @@ mod tests {
 
         assert_eq!(normalize_uri(&uri), uri);
     }
-}
-
-/// Returns true when `candidate` is under any of the library root URIs.
-pub fn uri_under_any_library(candidate: &Url, library_paths: &[Url]) -> bool {
-    library_paths
-        .iter()
-        .any(|root| candidate.as_str().starts_with(root.as_str()))
 }
