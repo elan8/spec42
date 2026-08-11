@@ -20,9 +20,14 @@
 //! by both an LSP server and an HTTP server.
 
 mod actor;
+mod semantic_model;
 mod snapshot;
 
 pub use actor::{MutatePanicked, Mutation, MutationOutcome, SessionActor, TracksRelink};
+pub use semantic_model::{
+    SemanticBuildFailureKind, SemanticBuildToken, SemanticModelSession, SemanticModelSnapshot,
+    SemanticPublicationOutcome,
+};
 pub use snapshot::SnapshotHandle;
 
 // Re-exported so callers building `report_job_result` call sites don't need a direct
