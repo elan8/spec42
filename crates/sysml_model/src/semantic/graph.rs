@@ -1115,6 +1115,12 @@ impl SemanticGraphData {
         self.standard_library_uris.remove(uri);
         self.declared_expression_relationships
             .retain(|record| &record.owner.uri != uri);
+        // Likewise for the complete source-origin classification (B3): a removed document's
+        // prior Workspace/StandardLibrary/Library/External role must not survive as a stale
+        // entry once none of its nodes remain -- otherwise a document-delete-then-rebuild
+        // comparison diverges on `source_origins` alone despite an identical node/edge graph
+        // (found by the B11 differential post-edit suite's `delete_a_document` case).
+        self.source_origins.remove(uri);
         let Some(node_ids) = self.nodes_by_uri.remove(uri) else {
             self.clear_import_lookup_cache();
             return;

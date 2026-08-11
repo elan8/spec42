@@ -88,9 +88,16 @@ except where noted.
    postcard round-trip test, which is currently impossible. Note that part of the residue is
    itself blocked on the resolution work — see below — so chunk G cannot fully complete until
    that lands.
-2. B11 (graph state fingerprint) — not blocked, and needed regardless of how the resolution work
-   lands. B7's validator is in place and is the natural backing for
-   `workspace::cache::api::CacheArtifact::validate_invariants`, which is not yet wired to it.
+2. B11, complete (`feat/b11-graph-state-fingerprint`). Test-only `GraphStateFingerprint`
+   (`crates/sysml_model/src/semantic/graph_state_fingerprint.rs`, `cfg(test)`-gated) plus
+   determinism, sensitivity, post-edit (§7.3), and public-query (§7.2) differential suites
+   (`crates/sysml_model/src/semantic/graph_state_fingerprint_differential_tests.rs`).
+   `to_semantic_sexpr()` is untouched. Found and fixed a real B3 gap along the way:
+   `remove_nodes_for_uri` cleared `standard_library_uris` for a removed document but left a
+   stale `source_origins` entry, so a deleted document's source-role classification survived
+   deletion — see the defects table below. B7's validator is in place and is the natural
+   backing for `workspace::cache::api::CacheArtifact::validate_invariants`, which is not yet
+   wired to it.
 3. B5, B8, B2, B6 (the graph record, canonical encoding, index rebuild, workspace rehydration) —
    blocked on B9 completing, because the record cannot be defined while the untyped attribute bag
    exists.
@@ -335,7 +342,7 @@ Tracked against `ROUNDTRIP_SEMGRAPH_PREREQS.md` §8. Persistent `LibrarySemantic
 | B8 | Canonical, byte-stable encoding | not started |
 | B9 | Attribute bag removed | in progress |
 | B10 | Decode bounds; no stack overflow on hostile nesting | in progress (store layer) |
-| B11 | `GraphStateFingerprint` plus query and post-edit differential suites | not started |
+| B11 | `GraphStateFingerprint` plus query and post-edit differential suites | done |
 
 ## Semantic defects found while doing this work
 
@@ -345,6 +352,7 @@ are listed separately because they are not cache work and outlive it.
 | Defect | Status |
 |--------|--------|
 | Cross-document edge ownership was not reconstructible; a stale edge could survive an edit beside its replacement | fixed by B1 |
+| `remove_nodes_for_uri` cleared `standard_library_uris` for a removed document but left a stale `source_origins` entry, so a deleted document's Workspace/StandardLibrary/Library/External classification survived its own deletion | fixed by B11 |
 | Whole-graph linking and the scoped/incremental resolver are two independently implemented resolution engines | open, unscheduled |
 | Type-reference resolution is workspace-wide where KerML requires containment, visibility and import scoping; affects all typing kinds | open, unscheduled |
 | 22 pre-existing `snapshot_single_build` failures on `main` | open, out of scope for this effort |
