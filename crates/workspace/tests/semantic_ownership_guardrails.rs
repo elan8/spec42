@@ -42,6 +42,10 @@ const RELATIONSHIP_PROJECTION_KEYS: &[&str] = &[
     "crossesFeature",
     "typeRef",
     "valueType",
+    "endType",
+    "metaclassRole",
+    "refTarget",
+    "keyword",
 ];
 
 const MEMBERSHIP_IMPORT_PROJECTION_KEYS: &[&str] = &[

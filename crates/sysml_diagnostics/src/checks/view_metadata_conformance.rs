@@ -405,9 +405,11 @@ pub(crate) fn collect_view_metadata_conformance_diagnostics(
                 continue;
             }
             let Some(target) = node
-                .attributes
-                .get("refTarget")
-                .and_then(|v| v.as_str())
+                .declared_facts
+                .relationships
+                .reference_target
+                .first()
+                .map(|t| t.reference.as_str())
                 .map(str::trim)
                 .filter(|value| !value.is_empty())
             else {
@@ -502,7 +504,7 @@ pub(crate) fn collect_view_metadata_conformance_diagnostics(
             node.element_kind.as_str(),
             "feature decl" | "classifier decl"
         ) {
-            let Some(keyword) = node.attributes.get("keyword").and_then(|v| v.as_str()) else {
+            let Some(keyword) = node.declared_facts.modeled_keyword.as_deref() else {
                 continue;
             };
             let keyword = keyword.trim();
@@ -511,7 +513,7 @@ pub(crate) fn collect_view_metadata_conformance_diagnostics(
             }
             keyword.to_string()
         } else if node.element_kind == ElementKind::MetadataKeyword {
-            let Some(keyword) = node.attributes.get("keyword").and_then(|v| v.as_str()) else {
+            let Some(keyword) = node.declared_facts.modeled_keyword.as_deref() else {
                 continue;
             };
             let keyword = keyword.trim();

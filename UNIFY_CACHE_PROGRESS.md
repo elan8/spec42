@@ -69,6 +69,28 @@ onto a *boundary DTO's* JSON map at transport construction sites only. Nothing i
 onto `SemanticNode`; that projection is the precedent for how later chunks may serve presentation
 consumers without reintroducing a second semantic authority.
 
+Chunk F (in progress, `feat/b9-relationship-classification`) migrated the fully "genuine semantic
+classification" reads: `endType` (new `DeclaredSemanticFacts::interface_end_type` plus
+`declared_end_reference()`, kept out of `relationships.typing` because folding it in made
+unrelated unresolved-typing diagnostics double-fire), `metaclassRole` (new
+`DeclaredSemanticFacts::metaclass_role: Option<KermlMetaclassRole>`), the `keyword` metadata-view
+semantic use (new `DeclaredSemanticFacts::modeled_keyword`, distinct from `SourceTextFacts::keyword`
+which stays hover-only), and `refTarget` (new `DeclaredRelationshipFacts::reference_target` under
+`RelationshipKind::Reference`). `subjectRef` had no reader anywhere and was deleted outright. The
+guardrail's `RELATIONSHIP_PROJECTION_KEYS` now also covers `endType`, `metaclassRole`, `refTarget`,
+`keyword`. Still open for chunk F: `redefines`/`subsetsFeature`/`referencesFeature`/
+`crossesFeature`/`specializes` are already dual-written to `DeclaredRelationshipFacts` by every
+SysML producer but still have presentation consumers
+(`lsp_server/src/views/feature_inspector.rs`, `lsp_server/src/views/model.rs`,
+`language_service/src/presentation_hover.rs`) reading the legacy attribute map directly; the
+`*Type` classification family is entirely unmigrated. A gap-closing attempt to also populate
+`relationships.typing` for `attribute`/`attribute def` typing (to retire
+`lsp_server/src/lsp_runtime/symbols.rs`'s `attributeType`/`dataType`/`type` fallback) was reverted
+after it changed a semantic-graph golden fixture: `link_workspace_relationships_pass` republishes
+edges from every populated `relationships.typing` entry using workspace-wide resolution, which
+resolved an edge the corpus fixture expects to stay unresolved. That interaction needs a
+deliberate design decision, not a drive-by fix, before attribute typing can move.
+
 ### Agent worktree hygiene
 
 Each agent worktree builds its own `target/`, at roughly 20 GB apiece. Seven concurrent
