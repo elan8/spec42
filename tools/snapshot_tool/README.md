@@ -10,10 +10,10 @@ streams its canonical debug S-expression through the caller-provided writer. Dia
 collected by `sysml_diagnostics` from category-owned projections of the same published model; the
 runner never rebuilds a mutable graph for validation.
 
-The canonical top-level section order is `META`, `SOURCE`, `DIAGNOSTICS`, `TOKENS`, `AST`,
-`EXPECTED`, `PROBLEMS`, `FORMAT`, `SMG`. `SOURCE` is authored; generated sections are rewritten
-to this order with one final newline. Unknown or future sections should be added to the explicit
-ordering table before they become part of the corpus contract.
+The canonical top-level section order is `META`, `SOURCE`, `DIAGNOSTICS`, `FORMAT`, `SMG`.
+`SOURCE` is authored; generated sections are rewritten to this order with one final newline.
+Only sections in this contract are retained during normalization. Unknown or future sections
+should be added to the explicit ordering table before they become part of the corpus contract.
 
 Run it from the repository root:
 

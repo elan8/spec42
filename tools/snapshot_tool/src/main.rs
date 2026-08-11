@@ -74,7 +74,17 @@ fn main() -> Result<(), String> {
             fs::read(&path).map_err(|error| format!("{}: read failed: {error}", path.display()))?;
         let original = match String::from_utf8(bytes) {
             Ok(original) => original,
-            Err(_) => {
+            Err(error) => {
+                let bytes = error.into_bytes();
+                let normalized = remove_non_canonical_sections_bytes(&bytes);
+                if normalized != bytes {
+                    match cli.command {
+                        Command::Check => stale.push(path.clone()),
+                        Command::Update => fs::write(&path, normalized).map_err(|error| {
+                            format!("{}: write failed: {error}", path.display())
+                        })?,
+                    }
+                }
                 eprintln!("SKIP {}: snapshot is not UTF-8", path.display());
                 continue;
             }
@@ -334,20 +344,9 @@ fn replace_or_insert_full_section(fixture: &str, name: &str, replacement: &str) 
     Some(updated)
 }
 
-/// Canonical top-level Markdown order. SOURCE is authored; all other sections are either owned
-/// by this runner or preserved evidence. Reordering is part of update/check so a fixture cannot
-/// silently acquire a second section layout over time.
-const SECTION_ORDER: &[&str] = &[
-    "META",
-    "SOURCE",
-    "DIAGNOSTICS",
-    "TOKENS",
-    "AST",
-    "EXPECTED",
-    "PROBLEMS",
-    "FORMAT",
-    "SMG",
-];
+/// Canonical top-level Markdown order. SOURCE is authored; the other sections are owned by this
+/// runner. Canonicalization drops sections outside this ownership contract.
+const SECTION_ORDER: &[&str] = &["META", "SOURCE", "DIAGNOSTICS", "FORMAT", "SMG"];
 
 fn canonicalize_sections(fixture: &str) -> String {
     let mut sections = Vec::<(&str, &str, usize)>::new();
@@ -360,7 +359,7 @@ fn canonicalize_sections(fixture: &str) -> String {
         let name = line
             .strip_prefix("# ")
             .and_then(|line| line.strip_suffix('\n'));
-        if name.is_some_and(|name| SECTION_ORDER.contains(&name)) {
+        if let Some(name) = name {
             if let Some((previous_name, previous_start)) = marker.take() {
                 sections.push((
                     previous_name,
@@ -368,7 +367,7 @@ fn canonicalize_sections(fixture: &str) -> String {
                     previous_start,
                 ));
             }
-            marker = Some((name.expect("section name"), offset));
+            marker = Some((name, offset));
         }
     }
     if let Some((previous_name, previous_start)) = marker {
@@ -379,6 +378,7 @@ fn canonicalize_sections(fixture: &str) -> String {
     }
     let prefix_end = sections[0].2;
     let prefix = &fixture[..prefix_end];
+    sections.retain(|(name, _, _)| SECTION_ORDER.contains(name));
     sections.sort_by_key(|(name, _, original)| {
         (
             SECTION_ORDER
@@ -394,6 +394,43 @@ fn canonicalize_sections(fixture: &str) -> String {
         output.push_str(body.trim_end_matches('\n'));
         output.push('\n');
     }
+    output
+}
+
+fn remove_non_canonical_sections_bytes(fixture: &[u8]) -> Vec<u8> {
+    let mut headings = Vec::new();
+    let mut offset = 0;
+    for line in fixture.split_inclusive(|byte| *byte == b'\n') {
+        let content = line.strip_suffix(b"\n").unwrap_or(line);
+        if let Some(name) = content.strip_prefix(b"# ") {
+            headings.push((offset, name));
+        }
+        offset += line.len();
+    }
+
+    let mut ranges = Vec::new();
+    for (index, (start, name)) in headings.iter().enumerate() {
+        if !SECTION_ORDER
+            .iter()
+            .any(|section| *name == section.as_bytes())
+        {
+            let end = headings
+                .get(index + 1)
+                .map_or(fixture.len(), |(next_start, _)| *next_start);
+            ranges.push((*start, end));
+        }
+    }
+    if ranges.is_empty() {
+        return fixture.to_vec();
+    }
+
+    let mut output = Vec::with_capacity(fixture.len());
+    let mut cursor = 0;
+    for (start, end) in ranges {
+        output.extend_from_slice(&fixture[cursor..start]);
+        cursor = end;
+    }
+    output.extend_from_slice(&fixture[cursor..]);
     output
 }
 
@@ -481,5 +518,29 @@ mod tests {
             "# META\nmeta\n# SOURCE\n~~~sysml\npackage A {}\n~~~\n# DIAGNOSTICS\ndiag\n# SMG\nold\n"
         );
         assert_eq!(canonicalize_sections(&canonical), canonical);
+    }
+
+    #[test]
+    fn normalizes_out_of_contract_sections_and_is_idempotent() {
+        let fixture = "# META\nmeta\n# SOURCE\nsource\n# EXTRA\nextra\n# DIAGNOSTICS\ndiag\n# NOTES\nnotes\n# FORMAT\nformat\n# SMG\nsmg\n";
+        let canonical = canonicalize_sections(fixture);
+        assert_eq!(
+            canonical,
+            "# META\nmeta\n# SOURCE\nsource\n# DIAGNOSTICS\ndiag\n# FORMAT\nformat\n# SMG\nsmg\n"
+        );
+        assert!(!canonical.contains("# EXTRA\n"));
+        assert!(!canonical.contains("# NOTES\n"));
+        assert_eq!(canonicalize_sections(&canonical), canonical);
+    }
+
+    #[test]
+    fn removes_out_of_contract_sections_from_non_utf8_markdown() {
+        let fixture = b"# META\nmeta\n# SOURCE\nsource \xff\n# EXTRA\nextra\n# SMG\nsmg\n";
+        let normalized = remove_non_canonical_sections_bytes(fixture);
+        assert_eq!(
+            normalized,
+            b"# META\nmeta\n# SOURCE\nsource \xff\n# SMG\nsmg\n"
+        );
+        assert_eq!(remove_non_canonical_sections_bytes(&normalized), normalized);
     }
 }
