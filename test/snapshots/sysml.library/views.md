@@ -170,39 +170,38 @@ standard library package Views {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Part'
-semantic.unresolved_name 'self'
-semantic.unresolved_name 'checkedConstraints'
-semantic.unresolved_name 'ownedPerformances::this'
-semantic.unresolved_name 'subperformances::this'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'RequirementCheck'
-semantic.unresolved_name 'self'
-semantic.unresolved_name 'RequirementCheck::subj'
-semantic.unresolved_name 'Part'
-semantic.unresolved_name 'self'
-semantic.unresolved_name 'parts'
-semantic.unresolved_name 'requirementChecks'
-semantic.unresolved_name 'parts'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Part'
-semantic.unresolved_name 'self'
-semantic.unresolved_name 'checkedConstraints'
-semantic.unresolved_name 'ownedPerformances::this'
-semantic.unresolved_name 'subperformances::this'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'RequirementCheck'
-semantic.unresolved_name 'self'
-semantic.unresolved_name 'RequirementCheck::subj'
-semantic.unresolved_name 'Part'
-semantic.unresolved_name 'self'
-semantic.unresolved_name 'parts'
-semantic.unresolved_name 'requirementChecks'
-semantic.unresolved_name 'parts'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "views.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 16) (end 8 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 16) (end 9 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 16) (end 10 47))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -355,6 +354,40 @@ CloseCurly,EndOfFile,
         (documentation)
         (sysml_decl abstract ref :>> 'viewRendering' multiplicity))
       (sysml_decl :>> 'subrenderings' multiplicity value))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Part'
+semantic.unresolved_name 'self'
+semantic.unresolved_name 'checkedConstraints'
+semantic.unresolved_name 'ownedPerformances::this'
+semantic.unresolved_name 'subperformances::this'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'RequirementCheck'
+semantic.unresolved_name 'self'
+semantic.unresolved_name 'RequirementCheck::subj'
+semantic.unresolved_name 'Part'
+semantic.unresolved_name 'self'
+semantic.unresolved_name 'parts'
+semantic.unresolved_name 'requirementChecks'
+semantic.unresolved_name 'parts'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Part'
+semantic.unresolved_name 'self'
+semantic.unresolved_name 'checkedConstraints'
+semantic.unresolved_name 'ownedPerformances::this'
+semantic.unresolved_name 'subperformances::this'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'RequirementCheck'
+semantic.unresolved_name 'self'
+semantic.unresolved_name 'RequirementCheck::subj'
+semantic.unresolved_name 'Part'
+semantic.unresolved_name 'self'
+semantic.unresolved_name 'parts'
+semantic.unresolved_name 'requirementChecks'
+semantic.unresolved_name 'parts'
 ~~~
 # FORMAT
 ~~~sysml
@@ -525,186 +558,77 @@ standard library package Views {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Views"))) (name "Views") (declared-name "Views")
-      (contains
-        (element (kind "rendering def") (id (node (document "d0") (qualified-name "Views::GraphicalRendering"))) (name "GraphicalRendering") (declared-name "GraphicalRendering")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Views::GraphicalRendering::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Views::GraphicalRendering")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "Views::Part"))) (name "Part") (declared-name "Part"))
-        (element (kind "rendering def") (id (node (document "d0") (qualified-name "Views::Rendering"))) (name "Rendering") (declared-name "Rendering")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Views::Rendering::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Views::Rendering")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "Views::RequirementCheck"))) (name "RequirementCheck") (declared-name "RequirementCheck"))
-        (element (kind "rendering def") (id (node (document "d0") (qualified-name "Views::TabularRendering"))) (name "TabularRendering") (declared-name "TabularRendering")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Views::TabularRendering::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Views::TabularRendering")))))
-          )
-        )
-        (element (kind "rendering def") (id (node (document "d0") (qualified-name "Views::TextualRendering"))) (name "TextualRendering") (declared-name "TextualRendering")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Views::TextualRendering::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Views::TextualRendering")))))
-          )
-        )
-        (element (kind "view def") (id (node (document "d0") (qualified-name "Views::View"))) (name "View") (declared-name "View"))
-        (element (kind "viewpoint def") (id (node (document "d0") (qualified-name "Views::ViewpointCheck"))) (name "ViewpointCheck") (declared-name "ViewpointCheck")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Views::ViewpointCheck::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Views::ViewpointCheck")))))
-          )
-        )
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "Views::_documentation"))) (name ""))
-        (element (kind "rendering") (id (node (document "d0") (qualified-name "Views::asElementTable"))) (name "asElementTable") (declared-name "asElementTable")
-          (contains
-            (element (kind "view column") (id (node (document "d0") (qualified-name "Views::asElementTable::_columnView"))) (name "_columnView") (declared-name "_columnView") (effective (featuring-type (node (document "d0") (qualified-name "Views::TabularRendering")))))
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Views::asElementTable::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Views::TabularRendering")))))
-          )
-        )
-        (element (kind "rendering") (id (node (document "d0") (qualified-name "Views::asInterconnectionDiagram"))) (name "asInterconnectionDiagram") (declared-name "asInterconnectionDiagram")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Views::asInterconnectionDiagram::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Views::GraphicalRendering")))))
-          )
-        )
-        (element (kind "rendering") (id (node (document "d0") (qualified-name "Views::asTextualNotation"))) (name "asTextualNotation") (declared-name "asTextualNotation")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Views::asTextualNotation::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Views::TextualRendering")))))
-          )
-        )
-        (element (kind "rendering") (id (node (document "d0") (qualified-name "Views::asTreeDiagram"))) (name "asTreeDiagram") (declared-name "asTreeDiagram")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Views::asTreeDiagram::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Views::GraphicalRendering")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "Views::parts"))) (name "parts") (declared-name "parts"))
-        (element (kind "rendering") (id (node (document "d0") (qualified-name "Views::renderings"))) (name "renderings") (declared-name "renderings")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Views::renderings::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Views::Rendering")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "Views::requirementChecks"))) (name "requirementChecks") (declared-name "requirementChecks"))
-        (element (kind "viewpoint") (id (node (document "d0") (qualified-name "Views::viewpointChecks"))) (name "viewpointChecks") (declared-name "viewpointChecks")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Views::viewpointChecks::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Views::ViewpointCheck")))))
-          )
-        )
-        (element (kind "view") (id (node (document "d0") (qualified-name "Views::views"))) (name "views") (declared-name "views")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Views::views::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Views::View")))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ded06fb4dcc737b5e3eaa9267d71078f692241fc4ee3bf19eddd7fb4a049bbba") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Views"))) (kind "package") (name "Views") (declared-name "Views") (range (start (line 0) (character 0)) (end (line 0) (character 3973))))
+    (element (id (node (document "d0") (qualified-name "Views::GraphicalRendering"))) (kind "rendering def") (name "GraphicalRendering") (declared-name "GraphicalRendering") (range (start (line 86) (character 1)) (end (line 86) (character 144))) (parent (node (document "d0") (qualified-name "Views"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Rendering") (range (start (line 86) (character 37)) (end (line 86) (character 46)))))))
+    (element (id (node (document "d0") (qualified-name "Views::GraphicalRendering::_documentation"))) (kind "documentation") (name "") (range (start (line 86) (character 1)) (end (line 86) (character 144))) (parent (node (document "d0") (qualified-name "Views::GraphicalRendering"))))
+    (element (id (node (document "d0") (qualified-name "Views::Part"))) (kind "import") (name "Part") (declared-name "Part") (range (start (line 7) (character 1)) (end (line 7) (character 28))) (parent (node (document "d0") (qualified-name "Views"))) (authored (membership (kind Import) (visibility "private") (import (reference "Parts::Part") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 27))))))
+    (element (id (node (document "d0") (qualified-name "Views::Rendering"))) (kind "rendering def") (name "Rendering") (declared-name "Rendering") (range (start (line 63) (character 1)) (end (line 63) (character 321))) (parent (node (document "d0") (qualified-name "Views"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Part") (range (start (line 63) (character 37)) (end (line 63) (character 41)))))))
+    (element (id (node (document "d0") (qualified-name "Views::Rendering::_documentation"))) (kind "documentation") (name "") (range (start (line 63) (character 1)) (end (line 63) (character 321))) (parent (node (document "d0") (qualified-name "Views::Rendering"))))
+    (element (id (node (document "d0") (qualified-name "Views::RequirementCheck"))) (kind "import") (name "RequirementCheck") (declared-name "RequirementCheck") (range (start (line 9) (character 1)) (end (line 9) (character 47))) (parent (node (document "d0") (qualified-name "Views"))) (authored (membership (kind Import) (visibility "private") (import (reference "Requirements::RequirementCheck") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 9) (character 16)) (end (line 9) (character 46))))))
+    (element (id (node (document "d0") (qualified-name "Views::TabularRendering"))) (kind "rendering def") (name "TabularRendering") (declared-name "TabularRendering") (range (start (line 93) (character 1)) (end (line 93) (character 138))) (parent (node (document "d0") (qualified-name "Views"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Rendering") (range (start (line 93) (character 35)) (end (line 93) (character 44)))))))
+    (element (id (node (document "d0") (qualified-name "Views::TabularRendering::_documentation"))) (kind "documentation") (name "") (range (start (line 93) (character 1)) (end (line 93) (character 138))) (parent (node (document "d0") (qualified-name "Views::TabularRendering"))))
+    (element (id (node (document "d0") (qualified-name "Views::TextualRendering"))) (kind "rendering def") (name "TextualRendering") (declared-name "TextualRendering") (range (start (line 79) (character 1)) (end (line 79) (character 138))) (parent (node (document "d0") (qualified-name "Views"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Rendering") (range (start (line 79) (character 35)) (end (line 79) (character 44)))))))
+    (element (id (node (document "d0") (qualified-name "Views::TextualRendering::_documentation"))) (kind "documentation") (name "") (range (start (line 79) (character 1)) (end (line 79) (character 138))) (parent (node (document "d0") (qualified-name "Views::TextualRendering"))))
+    (element (id (node (document "d0") (qualified-name "Views::View"))) (kind "view def") (name "View") (declared-name "View") (range (start (line 12) (character 1)) (end (line 12) (character 887))) (parent (node (document "d0") (qualified-name "Views"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Part") (range (start (line 12) (character 27)) (end (line 12) (character 31)))))))
+    (element (id (node (document "d0") (qualified-name "Views::ViewpointCheck"))) (kind "viewpoint def") (name "ViewpointCheck") (declared-name "ViewpointCheck") (range (start (line 52) (character 1)) (end (line 52) (character 346))) (parent (node (document "d0") (qualified-name "Views"))) (authored (membership (kind Owning)) (relationships (specializes (reference "RequirementCheck") (range (start (line 52) (character 42)) (end (line 52) (character 58)))))))
+    (element (id (node (document "d0") (qualified-name "Views::ViewpointCheck::_documentation"))) (kind "documentation") (name "") (range (start (line 52) (character 1)) (end (line 52) (character 346))) (parent (node (document "d0") (qualified-name "Views::ViewpointCheck"))))
+    (element (id (node (document "d0") (qualified-name "Views::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 3973))) (parent (node (document "d0") (qualified-name "Views"))))
+    (element (id (node (document "d0") (qualified-name "Views::asElementTable"))) (kind "rendering") (name "asElementTable") (declared-name "asElementTable") (range (start (line 145) (character 1)) (end (line 145) (character 533))) (parent (node (document "d0") (qualified-name "Views"))) (authored (membership (kind Feature)) (relationships (typing (reference "TabularRendering") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Views::asElementTable::_columnView"))) (kind "view column") (name "_columnView") (declared-name "_columnView") (range (start (line 153) (character 2)) (end (line 153) (character 200))) (parent (node (document "d0") (qualified-name "Views::asElementTable"))))
+    (element (id (node (document "d0") (qualified-name "Views::asElementTable::_documentation"))) (kind "documentation") (name "") (range (start (line 145) (character 1)) (end (line 145) (character 533))) (parent (node (document "d0") (qualified-name "Views::asElementTable"))))
+    (element (id (node (document "d0") (qualified-name "Views::asInterconnectionDiagram"))) (kind "rendering") (name "asInterconnectionDiagram") (declared-name "asInterconnectionDiagram") (range (start (line 137) (character 1)) (end (line 137) (character 242))) (parent (node (document "d0") (qualified-name "Views"))) (authored (membership (kind Feature)) (relationships (typing (reference "GraphicalRendering") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Views::asInterconnectionDiagram::_documentation"))) (kind "documentation") (name "") (range (start (line 137) (character 1)) (end (line 137) (character 242))) (parent (node (document "d0") (qualified-name "Views::asInterconnectionDiagram"))))
+    (element (id (node (document "d0") (qualified-name "Views::asTextualNotation"))) (kind "rendering") (name "asTextualNotation") (declared-name "asTextualNotation") (range (start (line 121) (character 1)) (end (line 121) (character 202))) (parent (node (document "d0") (qualified-name "Views"))) (authored (membership (kind Feature)) (relationships (typing (reference "TextualRendering") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Views::asTextualNotation::_documentation"))) (kind "documentation") (name "") (range (start (line 121) (character 1)) (end (line 121) (character 202))) (parent (node (document "d0") (qualified-name "Views::asTextualNotation"))))
+    (element (id (node (document "d0") (qualified-name "Views::asTreeDiagram"))) (kind "rendering") (name "asTreeDiagram") (declared-name "asTreeDiagram") (range (start (line 129) (character 1)) (end (line 129) (character 208))) (parent (node (document "d0") (qualified-name "Views"))) (authored (membership (kind Feature)) (relationships (typing (reference "GraphicalRendering") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Views::asTreeDiagram::_documentation"))) (kind "documentation") (name "") (range (start (line 129) (character 1)) (end (line 129) (character 208))) (parent (node (document "d0") (qualified-name "Views::asTreeDiagram"))))
+    (element (id (node (document "d0") (qualified-name "Views::parts"))) (kind "import") (name "parts") (declared-name "parts") (range (start (line 8) (character 1)) (end (line 8) (character 29))) (parent (node (document "d0") (qualified-name "Views"))) (authored (membership (kind Import) (visibility "private") (import (reference "Parts::parts") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "Views::renderings"))) (kind "rendering") (name "renderings") (declared-name "renderings") (range (start (line 114) (character 1)) (end (line 114) (character 149))) (parent (node (document "d0") (qualified-name "Views"))) (authored (membership (kind Feature)) (relationships (typing (reference "Rendering") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Views::renderings::_documentation"))) (kind "documentation") (name "") (range (start (line 114) (character 1)) (end (line 114) (character 149))) (parent (node (document "d0") (qualified-name "Views::renderings"))))
+    (element (id (node (document "d0") (qualified-name "Views::requirementChecks"))) (kind "import") (name "requirementChecks") (declared-name "requirementChecks") (range (start (line 10) (character 1)) (end (line 10) (character 48))) (parent (node (document "d0") (qualified-name "Views"))) (authored (membership (kind Import) (visibility "private") (import (reference "Requirements::requirementChecks") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 10) (character 16)) (end (line 10) (character 47))))))
+    (element (id (node (document "d0") (qualified-name "Views::viewpointChecks"))) (kind "viewpoint") (name "viewpointChecks") (declared-name "viewpointChecks") (range (start (line 107) (character 1)) (end (line 107) (character 176))) (parent (node (document "d0") (qualified-name "Views"))) (authored (membership (kind Feature)) (relationships (typing (reference "ViewpointCheck") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Views::viewpointChecks::_documentation"))) (kind "documentation") (name "") (range (start (line 107) (character 1)) (end (line 107) (character 176))) (parent (node (document "d0") (qualified-name "Views::viewpointChecks"))))
+    (element (id (node (document "d0") (qualified-name "Views::views"))) (kind "view") (name "views") (declared-name "views") (range (start (line 100) (character 1)) (end (line 100) (character 124))) (parent (node (document "d0") (qualified-name "Views"))) (authored (membership (kind Feature)) (relationships (typing (reference "View") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Views::views::_documentation"))) (kind "documentation") (name "") (range (start (line 100) (character 1)) (end (line 100) (character 124))) (parent (node (document "d0") (qualified-name "Views::views"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Views::GraphicalRendering"))) (kind specialization) (ordinal 0)) (authored-target "Rendering") (range (start (line 86) (character 37)) (end (line 86) (character 46))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Views::Rendering")))))
+    (reference (id (source (node (document "d0") (qualified-name "Views::Part"))) (kind membershipImport) (ordinal 0)) (authored-target "Parts::Part") (range (start (line 7) (character 16)) (end (line 7) (character 27))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Views::Rendering"))) (kind specialization) (ordinal 0)) (authored-target "Part") (range (start (line 63) (character 37)) (end (line 63) (character 41))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Views::Part")))))
+    (reference (id (source (node (document "d0") (qualified-name "Views::RequirementCheck"))) (kind membershipImport) (ordinal 0)) (authored-target "Requirements::RequirementCheck") (range (start (line 9) (character 16)) (end (line 9) (character 46))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Views::TabularRendering"))) (kind specialization) (ordinal 0)) (authored-target "Rendering") (range (start (line 93) (character 35)) (end (line 93) (character 44))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Views::Rendering")))))
+    (reference (id (source (node (document "d0") (qualified-name "Views::TextualRendering"))) (kind specialization) (ordinal 0)) (authored-target "Rendering") (range (start (line 79) (character 35)) (end (line 79) (character 44))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Views::Rendering")))))
+    (reference (id (source (node (document "d0") (qualified-name "Views::View"))) (kind specialization) (ordinal 0)) (authored-target "Part") (range (start (line 12) (character 27)) (end (line 12) (character 31))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Views::Part")))))
+    (reference (id (source (node (document "d0") (qualified-name "Views::ViewpointCheck"))) (kind specialization) (ordinal 0)) (authored-target "RequirementCheck") (range (start (line 52) (character 42)) (end (line 52) (character 58))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Views::RequirementCheck")))))
+    (reference (id (source (node (document "d0") (qualified-name "Views::asElementTable"))) (kind featureTyping) (ordinal 0)) (authored-target "TabularRendering") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Views::TabularRendering")))))
+    (reference (id (source (node (document "d0") (qualified-name "Views::asInterconnectionDiagram"))) (kind featureTyping) (ordinal 0)) (authored-target "GraphicalRendering") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Views::GraphicalRendering")))))
+    (reference (id (source (node (document "d0") (qualified-name "Views::asTextualNotation"))) (kind featureTyping) (ordinal 0)) (authored-target "TextualRendering") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Views::TextualRendering")))))
+    (reference (id (source (node (document "d0") (qualified-name "Views::asTreeDiagram"))) (kind featureTyping) (ordinal 0)) (authored-target "GraphicalRendering") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Views::GraphicalRendering")))))
+    (reference (id (source (node (document "d0") (qualified-name "Views::parts"))) (kind membershipImport) (ordinal 0)) (authored-target "Parts::parts") (range (start (line 8) (character 16)) (end (line 8) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Views::renderings"))) (kind featureTyping) (ordinal 0)) (authored-target "Rendering") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Views::Rendering")))))
+    (reference (id (source (node (document "d0") (qualified-name "Views::requirementChecks"))) (kind membershipImport) (ordinal 0)) (authored-target "Requirements::requirementChecks") (range (start (line 10) (character 16)) (end (line 10) (character 47))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Views::viewpointChecks"))) (kind featureTyping) (ordinal 0)) (authored-target "ViewpointCheck") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Views::ViewpointCheck")))))
+    (reference (id (source (node (document "d0") (qualified-name "Views::views"))) (kind featureTyping) (ordinal 0)) (authored-target "View") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Views::View")))))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Views::GraphicalRendering::_documentation"))) (to (node (document "d0") (qualified-name "Views::GraphicalRendering"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Views::Rendering::_documentation"))) (to (node (document "d0") (qualified-name "Views::Rendering"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Views::TabularRendering::_documentation"))) (to (node (document "d0") (qualified-name "Views::TabularRendering"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Views::TextualRendering::_documentation"))) (to (node (document "d0") (qualified-name "Views::TextualRendering"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Views::ViewpointCheck::_documentation"))) (to (node (document "d0") (qualified-name "Views::ViewpointCheck"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Views::_documentation"))) (to (node (document "d0") (qualified-name "Views"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Views::asElementTable::_documentation"))) (to (node (document "d0") (qualified-name "Views::asElementTable"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Views::asInterconnectionDiagram::_documentation"))) (to (node (document "d0") (qualified-name "Views::asInterconnectionDiagram"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Views::asTextualNotation::_documentation"))) (to (node (document "d0") (qualified-name "Views::asTextualNotation"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Views::asTreeDiagram::_documentation"))) (to (node (document "d0") (qualified-name "Views::asTreeDiagram"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Views::renderings::_documentation"))) (to (node (document "d0") (qualified-name "Views::renderings"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Views::viewpointChecks::_documentation"))) (to (node (document "d0") (qualified-name "Views::viewpointChecks"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Views::views::_documentation"))) (to (node (document "d0") (qualified-name "Views::views"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "Views::GraphicalRendering"))) (to (node (document "d0") (qualified-name "Views::Rendering"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "Views::TabularRendering"))) (to (node (document "d0") (qualified-name "Views::Rendering"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "Views::TextualRendering"))) (to (node (document "d0") (qualified-name "Views::Rendering"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Views::asElementTable"))) (to (node (document "d0") (qualified-name "Views::TabularRendering"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Views::asInterconnectionDiagram"))) (to (node (document "d0") (qualified-name "Views::GraphicalRendering"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Views::asTextualNotation"))) (to (node (document "d0") (qualified-name "Views::TextualRendering"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Views::asTreeDiagram"))) (to (node (document "d0") (qualified-name "Views::GraphicalRendering"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Views::renderings"))) (to (node (document "d0") (qualified-name "Views::Rendering"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Views::viewpointChecks"))) (to (node (document "d0") (qualified-name "Views::ViewpointCheck"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Views::views"))) (to (node (document "d0") (qualified-name "Views::View"))) (provenance authored))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Views::GraphicalRendering"))) (target (node (document "d0") (qualified-name "Views::Rendering"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Views::GraphicalRendering"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Views::Rendering"))) (target (node (document "d0") (qualified-name "Views::Part"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Views::Rendering"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Views::TabularRendering"))) (target (node (document "d0") (qualified-name "Views::Rendering"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Views::TabularRendering"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Views::TextualRendering"))) (target (node (document "d0") (qualified-name "Views::Rendering"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Views::TextualRendering"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Views::View"))) (target (node (document "d0") (qualified-name "Views::Part"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Views::View"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Views::ViewpointCheck"))) (target (node (document "d0") (qualified-name "Views::RequirementCheck"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Views::ViewpointCheck"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Views::asElementTable"))) (target (node (document "d0") (qualified-name "Views::TabularRendering"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Views::asElementTable"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Views::asInterconnectionDiagram"))) (target (node (document "d0") (qualified-name "Views::GraphicalRendering"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Views::asInterconnectionDiagram"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Views::asTextualNotation"))) (target (node (document "d0") (qualified-name "Views::TextualRendering"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Views::asTextualNotation"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Views::asTreeDiagram"))) (target (node (document "d0") (qualified-name "Views::GraphicalRendering"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Views::asTreeDiagram"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Views::renderings"))) (target (node (document "d0") (qualified-name "Views::Rendering"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Views::renderings"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Views::viewpointChecks"))) (target (node (document "d0") (qualified-name "Views::ViewpointCheck"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Views::viewpointChecks"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Views::views"))) (target (node (document "d0") (qualified-name "Views::View"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Views::views"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Views::GraphicalRendering"))) (status missing-prerequisite) (target "Views::Rendering"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Views::Rendering"))) (status missing-prerequisite) (target "Views::Rendering"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Views::TabularRendering"))) (status missing-prerequisite) (target "Views::Rendering"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Views::TextualRendering"))) (status missing-prerequisite) (target "Views::Rendering"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Views::View"))) (status missing-prerequisite) (target "Views::View"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Views::ViewpointCheck"))) (status missing-prerequisite) (target "Views::Viewpoint"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Views::asElementTable"))) (status missing-prerequisite) (target "Views::renderings"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Views::asInterconnectionDiagram"))) (status missing-prerequisite) (target "Views::renderings"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Views::asTextualNotation"))) (status missing-prerequisite) (target "Views::renderings"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Views::asTreeDiagram"))) (status missing-prerequisite) (target "Views::renderings"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Views::renderings"))) (status missing-prerequisite) (target "Views::renderings"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Views::viewpointChecks"))) (status missing-prerequisite) (target "Views::viewpoints"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Views::views"))) (status missing-prerequisite) (target "Views::views"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/views.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 16) (end 7 27))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 16) (end 8 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 9 16) (end 9 46))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 10 16) (end 10 47))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 12 1) (end 12 887))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 52 1) (end 52 346))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 63 1) (end 63 321))
-      )
-      (diagnostic
-        (severity warning)
-        (code "view_type_non_standard")
-        (source "semantic")
-        (range (start 100 1) (end 100 124))
-      )
-      (diagnostic
-        (severity information)
-        (code "view_expose_empty")
-        (source "semantic")
-        (range (start 100 1) (end 100 124))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

@@ -73,33 +73,26 @@ standard library package Links {
 
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'sameThing::self'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'things'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'sameThing::self'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'things'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "links.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 19) (end 6 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 19) (end 7 31))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -169,6 +162,34 @@ CloseCurly,EndOfFile,
       (documentation)
       (feature_def end 'thisThing' : 'Anything' :>> 'SelfLink::thisThing', 'binaryLinks::source')
       (feature_def end 'sameThing' : 'Anything' :>> 'SelfLink::sameThing', 'binaryLinks::target'))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'sameThing::self'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'things'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'sameThing::self'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'things'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
 ~~~
 # FORMAT
 ~~~sysml
@@ -242,55 +263,27 @@ standard library package Links {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Links"))) (name "Links") (declared-name "Links")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Links::Anything"))) (name "Anything") (declared-name "Anything"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Links::Link"))) (name "Link") (declared-name "Link"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "Links::_documentation"))) (name ""))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Links::all"))) (name "all") (declared-name "all"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Links::all#kermlDecl"))) (name "all") (declared-name "all"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Links::binaryLinks"))) (name "binaryLinks") (declared-name "binaryLinks"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Links::links"))) (name "links") (declared-name "links"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Links::selfLinks"))) (name "selfLinks") (declared-name "selfLinks"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Links::things"))) (name "things") (declared-name "things"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b4572ee699fde98115409de601e85689a244738a78dd4baf2a9402fd3f9e4eb5") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Links"))) (kind "package") (name "Links") (declared-name "Links") (range (start (line 0) (character 0)) (end (line 0) (character 2117))))
+    (element (id (node (document "d0") (qualified-name "Links::Anything"))) (kind "import") (name "Anything") (declared-name "Anything") (range (start (line 6) (character 4)) (end (line 6) (character 34))) (parent (node (document "d0") (qualified-name "Links"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::Anything") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 6) (character 19)) (end (line 6) (character 33))))))
+    (element (id (node (document "d0") (qualified-name "Links::Link"))) (kind "kermlDecl") (name "Link") (declared-name "Link") (range (start (line 9) (character 4)) (end (line 9) (character 227))) (parent (node (document "d0") (qualified-name "Links"))))
+    (element (id (node (document "d0") (qualified-name "Links::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 2117))) (parent (node (document "d0") (qualified-name "Links"))))
+    (element (id (node (document "d0") (qualified-name "Links::all"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 18) (character 4)) (end (line 18) (character 456))) (parent (node (document "d0") (qualified-name "Links"))))
+    (element (id (node (document "d0") (qualified-name "Links::all#kermlDecl"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 31) (character 4)) (end (line 31) (character 402))) (parent (node (document "d0") (qualified-name "Links"))))
+    (element (id (node (document "d0") (qualified-name "Links::binaryLinks"))) (kind "feature decl") (name "binaryLinks") (declared-name "binaryLinks") (range (start (line 49) (character 4)) (end (line 49) (character 200))) (parent (node (document "d0") (qualified-name "Links"))))
+    (element (id (node (document "d0") (qualified-name "Links::links"))) (kind "feature decl") (name "links") (declared-name "links") (range (start (line 42) (character 4)) (end (line 42) (character 181))) (parent (node (document "d0") (qualified-name "Links"))))
+    (element (id (node (document "d0") (qualified-name "Links::selfLinks"))) (kind "feature decl") (name "selfLinks") (declared-name "selfLinks") (range (start (line 56) (character 4)) (end (line 56) (character 389))) (parent (node (document "d0") (qualified-name "Links"))))
+    (element (id (node (document "d0") (qualified-name "Links::things"))) (kind "import") (name "things") (declared-name "things") (range (start (line 7) (character 4)) (end (line 7) (character 32))) (parent (node (document "d0") (qualified-name "Links"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::things") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 19)) (end (line 7) (character 31))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Links::Anything"))) (kind membershipImport) (ordinal 0)) (authored-target "Base::Anything") (range (start (line 6) (character 19)) (end (line 6) (character 33))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Links::things"))) (kind membershipImport) (ordinal 0)) (authored-target "Base::things") (range (start (line 7) (character 19)) (end (line 7) (character 31))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Links::_documentation"))) (to (node (document "d0") (qualified-name "Links"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/links.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 6 19) (end 6 33))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 19) (end 7 31))
-      )
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 31 4) (end 31 402))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

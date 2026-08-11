@@ -58,23 +58,38 @@ standard library package Metaobjects {
     }
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Object'
-semantic.unresolved_name 'self'
-semantic.unresolved_name 'Element'
-semantic.unresolved_name 'Type'
-semantic.unresolved_name 'Type'
-semantic.unresolved_name 'objects'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Object'
-semantic.unresolved_name 'self'
-semantic.unresolved_name 'Element'
-semantic.unresolved_name 'Type'
-semantic.unresolved_name 'Type'
-semantic.unresolved_name 'objects'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "metaobjects.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 5 19) (end 5 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 19) (end 6 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 19) (end 7 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 19) (end 8 30))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -127,6 +142,24 @@ CloseCurly,EndOfFile,
         (documentation)))
     (feature_def 'metaobjects' : 'Metaobject' multiplicity :> 'objects'
       (comment))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Object'
+semantic.unresolved_name 'self'
+semantic.unresolved_name 'Element'
+semantic.unresolved_name 'Type'
+semantic.unresolved_name 'Type'
+semantic.unresolved_name 'objects'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Object'
+semantic.unresolved_name 'self'
+semantic.unresolved_name 'Element'
+semantic.unresolved_name 'Type'
+semantic.unresolved_name 'Type'
+semantic.unresolved_name 'objects'
 ~~~
 # FORMAT
 ~~~sysml
@@ -186,70 +219,30 @@ standard library package Metaobjects {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Metaobjects"))) (name "Metaobjects") (declared-name "Metaobjects")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Metaobjects::Element"))) (name "Element") (declared-name "Element"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Metaobjects::Metaobject"))) (name "Metaobject") (declared-name "Metaobject"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Metaobjects::Object"))) (name "Object") (declared-name "Object"))
-        (element (kind "metadata def") (id (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata"))) (name "SemanticMetadata") (declared-name "SemanticMetadata")
-          (contains
-            (element (kind "attribute def") (id (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (featuring-type (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata")))))
-            (element (kind "attribute def") (id (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata::redefines"))) (name "redefines") (declared-name "redefines") (effective (featuring-type (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "Metaobjects::Type"))) (name "Type") (declared-name "Type"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "Metaobjects::_documentation"))) (name ""))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Metaobjects::metaobjects"))) (name "metaobjects") (declared-name "metaobjects"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Metaobjects::objects"))) (name "objects") (declared-name "objects"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "fc901b09314024ee245f98cb5cd53ab7e735f525a98e6cb18d9487c727bb0982") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Metaobjects"))) (kind "package") (name "Metaobjects") (declared-name "Metaobjects") (range (start (line 0) (character 0)) (end (line 0) (character 1749))))
+    (element (id (node (document "d0") (qualified-name "Metaobjects::Element"))) (kind "import") (name "Element") (declared-name "Element") (range (start (line 7) (character 4)) (end (line 7) (character 34))) (parent (node (document "d0") (qualified-name "Metaobjects"))) (authored (membership (kind Import) (visibility "private") (import (reference "KerML::Element") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 19)) (end (line 7) (character 33))))))
+    (element (id (node (document "d0") (qualified-name "Metaobjects::Metaobject"))) (kind "kermlDecl") (name "Metaobject") (declared-name "Metaobject") (range (start (line 10) (character 4)) (end (line 10) (character 579))) (parent (node (document "d0") (qualified-name "Metaobjects"))))
+    (element (id (node (document "d0") (qualified-name "Metaobjects::Object"))) (kind "import") (name "Object") (declared-name "Object") (range (start (line 5) (character 4)) (end (line 5) (character 35))) (parent (node (document "d0") (qualified-name "Metaobjects"))) (authored (membership (kind Import) (visibility "private") (import (reference "Objects::Object") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 5) (character 19)) (end (line 5) (character 34))))))
+    (element (id (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata"))) (kind "metadata def") (name "SemanticMetadata") (declared-name "SemanticMetadata") (range (start (line 26) (character 4)) (end (line 26) (character 582))) (parent (node (document "d0") (qualified-name "Metaobjects"))))
+    (element (id (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata::baseType"))) (kind "attribute def") (name "baseType") (declared-name "baseType") (range (start (line 26) (character 4)) (end (line 26) (character 582))) (parent (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata"))))
+    (element (id (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata::redefines"))) (kind "attribute def") (name "redefines") (declared-name "redefines") (range (start (line 26) (character 4)) (end (line 26) (character 582))) (parent (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata"))))
+    (element (id (node (document "d0") (qualified-name "Metaobjects::Type"))) (kind "import") (name "Type") (declared-name "Type") (range (start (line 8) (character 4)) (end (line 8) (character 31))) (parent (node (document "d0") (qualified-name "Metaobjects"))) (authored (membership (kind Import) (visibility "private") (import (reference "KerML::Type") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 8) (character 19)) (end (line 8) (character 30))))))
+    (element (id (node (document "d0") (qualified-name "Metaobjects::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 1749))) (parent (node (document "d0") (qualified-name "Metaobjects"))))
+    (element (id (node (document "d0") (qualified-name "Metaobjects::metaobjects"))) (kind "feature decl") (name "metaobjects") (declared-name "metaobjects") (range (start (line 45) (character 4)) (end (line 45) (character 268))) (parent (node (document "d0") (qualified-name "Metaobjects"))))
+    (element (id (node (document "d0") (qualified-name "Metaobjects::objects"))) (kind "import") (name "objects") (declared-name "objects") (range (start (line 6) (character 4)) (end (line 6) (character 36))) (parent (node (document "d0") (qualified-name "Metaobjects"))) (authored (membership (kind Import) (visibility "private") (import (reference "Objects::objects") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 6) (character 19)) (end (line 6) (character 35))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Metaobjects::Element"))) (kind membershipImport) (ordinal 0)) (authored-target "KerML::Element") (range (start (line 7) (character 19)) (end (line 7) (character 33))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Metaobjects::Object"))) (kind membershipImport) (ordinal 0)) (authored-target "Objects::Object") (range (start (line 5) (character 19)) (end (line 5) (character 34))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Metaobjects::Type"))) (kind membershipImport) (ordinal 0)) (authored-target "KerML::Type") (range (start (line 8) (character 19)) (end (line 8) (character 30))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Metaobjects::objects"))) (kind membershipImport) (ordinal 0)) (authored-target "Objects::objects") (range (start (line 6) (character 19)) (end (line 6) (character 35))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Metaobjects::_documentation"))) (to (node (document "d0") (qualified-name "Metaobjects"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata::baseType"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata::redefines"))) (status missing-prerequisite) (target "Base::DataValue"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/metaobjects.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 5 19) (end 5 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 6 19) (end 6 35))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 19) (end 7 33))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 19) (end 8 30))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

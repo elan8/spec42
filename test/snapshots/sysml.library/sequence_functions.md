@@ -117,149 +117,38 @@ standard library package SequenceFunctions {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'BaseFunctions::#'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Positive'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Natural'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Positive'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Positive'
-semantic.unresolved_name 'Positive'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Positive'
-semantic.unresolved_name 'Positive'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Positive'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Positive'
-semantic.unresolved_name 'Positive'
-semantic.unresolved_name 'endShot'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'BaseFunctions::#'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Positive'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Natural'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Positive'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Positive'
-semantic.unresolved_name 'Positive'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Positive'
-semantic.unresolved_name 'Positive'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Positive'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Positive'
-semantic.unresolved_name 'Positive'
-semantic.unresolved_name 'endShot'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sequence_functions.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 16) (end 8 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 16) (end 9 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 16) (end 10 32))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -481,6 +370,150 @@ CloseCurly,EndOfFile,
           (connector_end)
           (connector_end))))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'BaseFunctions::#'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Positive'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Positive'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Positive'
+semantic.unresolved_name 'Positive'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Positive'
+semantic.unresolved_name 'Positive'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Positive'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Positive'
+semantic.unresolved_name 'Positive'
+semantic.unresolved_name 'endShot'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'BaseFunctions::#'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Positive'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Positive'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Positive'
+semantic.unresolved_name 'Positive'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Positive'
+semantic.unresolved_name 'Positive'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Positive'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Positive'
+semantic.unresolved_name 'Positive'
+semantic.unresolved_name 'endShot'
+~~~
 # FORMAT
 ~~~sysml
 standard library package SequenceFunctions {
@@ -597,80 +630,48 @@ standard library package SequenceFunctions {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "SequenceFunctions"))) (name "SequenceFunctions") (declared-name "SequenceFunctions")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "SequenceFunctions::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "SequenceFunctions::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "SequenceFunctions::Anything"))) (name "Anything") (declared-name "Anything"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "SequenceFunctions::SelfSameLifeLink"))) (name "SelfSameLifeLink") (declared-name "SelfSameLifeLink"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "SequenceFunctions::_documentation"))) (name ""))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::add"))) (name "add") (declared-name "add"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::addAt"))) (name "addAt") (declared-name "addAt"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::equals"))) (name "equals") (declared-name "equals"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::excludes"))) (name "excludes") (declared-name "excludes"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::excluding"))) (name "excluding") (declared-name "excluding"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::excludingAt"))) (name "excludingAt") (declared-name "excludingAt"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::function"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::head"))) (name "head") (declared-name "head"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::includes"))) (name "includes") (declared-name "includes"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::includesOnly"))) (name "includesOnly") (declared-name "includesOnly"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::including"))) (name "including") (declared-name "including"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::includingAt"))) (name "includingAt") (declared-name "includingAt"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::intersection"))) (name "intersection") (declared-name "intersection"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::isEmpty"))) (name "isEmpty") (declared-name "isEmpty"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::last"))) (name "last") (declared-name "last"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::notEmpty"))) (name "notEmpty") (declared-name "notEmpty"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::remove"))) (name "remove") (declared-name "remove"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::removeAt"))) (name "removeAt") (declared-name "removeAt"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::same"))) (name "same") (declared-name "same"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::size"))) (name "size") (declared-name "size"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::subsequence"))) (name "subsequence") (declared-name "subsequence"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::tail"))) (name "tail") (declared-name "tail"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::union"))) (name "union") (declared-name "union"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "424118b623dca74b1a0fd16d28427264df2aefe847bf58557a826a1c732329f9") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions"))) (kind "package") (name "SequenceFunctions") (declared-name "SequenceFunctions") (range (start (line 0) (character 0)) (end (line 0) (character 4501))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 9) (character 1)) (end (line 9) (character 32))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 9) (character 16)) (end (line 9) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 10) (character 1)) (end (line 10) (character 36))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ControlFunctions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 10) (character 16)) (end (line 10) (character 32))))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::Anything"))) (kind "import") (name "Anything") (declared-name "Anything") (range (start (line 7) (character 1)) (end (line 7) (character 31))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::Anything") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 30))))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::SelfSameLifeLink"))) (kind "import") (name "SelfSameLifeLink") (declared-name "SelfSameLifeLink") (range (start (line 8) (character 1)) (end (line 8) (character 46))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::SelfSameLifeLink") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 45))))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 4501))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::add"))) (kind "kermlDecl") (name "add") (declared-name "add") (range (start (line 84) (character 1)) (end (line 84) (character 223))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::addAt"))) (kind "kermlDecl") (name "addAt") (declared-name "addAt") (range (start (line 90) (character 1)) (end (line 90) (character 261))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::equals"))) (kind "kermlDecl") (name "equals") (declared-name "equals") (range (start (line 16) (character 1)) (end (line 16) (character 199))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::excludes"))) (kind "kermlDecl") (name "excludes") (declared-name "excludes") (range (start (line 43) (character 1)) (end (line 43) (character 156))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::excluding"))) (kind "kermlDecl") (name "excluding") (declared-name "excluding") (range (start (line 61) (character 1)) (end (line 61) (character 179))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::excludingAt"))) (kind "kermlDecl") (name "excludingAt") (declared-name "excludingAt") (range (start (line 64) (character 1)) (end (line 64) (character 263))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::function"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 12) (character 1)) (end (line 12) (character 141))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::head"))) (kind "kermlDecl") (name "head") (declared-name "head") (range (start (line 74) (character 1)) (end (line 74) (character 97))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::includes"))) (kind "kermlDecl") (name "includes") (declared-name "includes") (range (start (line 37) (character 1)) (end (line 37) (character 165))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::includesOnly"))) (kind "kermlDecl") (name "includesOnly") (declared-name "includesOnly") (range (start (line 40) (character 1)) (end (line 40) (character 167))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::including"))) (kind "kermlDecl") (name "including") (declared-name "including") (range (start (line 53) (character 1)) (end (line 53) (character 176))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::includingAt"))) (kind "kermlDecl") (name "includingAt") (declared-name "includingAt") (range (start (line 56) (character 1)) (end (line 56) (character 258))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::intersection"))) (kind "kermlDecl") (name "intersection") (declared-name "intersection") (range (start (line 50) (character 1)) (end (line 50) (character 198))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::isEmpty"))) (kind "kermlDecl") (name "isEmpty") (declared-name "isEmpty") (range (start (line 31) (character 1)) (end (line 31) (character 92))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::last"))) (kind "kermlDecl") (name "last") (declared-name "last") (range (start (line 80) (character 1)) (end (line 80) (character 105))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::notEmpty"))) (kind "kermlDecl") (name "notEmpty") (declared-name "notEmpty") (range (start (line 34) (character 1)) (end (line 34) (character 98))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::remove"))) (kind "kermlDecl") (name "remove") (declared-name "remove") (range (start (line 97) (character 1)) (end (line 97) (character 210))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::removeAt"))) (kind "kermlDecl") (name "removeAt") (declared-name "removeAt") (range (start (line 103) (character 1)) (end (line 103) (character 278))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::same"))) (kind "kermlDecl") (name "same") (declared-name "same") (range (start (line 22) (character 1)) (end (line 22) (character 197))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::size"))) (kind "kermlDecl") (name "size") (declared-name "size") (range (start (line 28) (character 1)) (end (line 28) (character 121))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::subsequence"))) (kind "kermlDecl") (name "subsequence") (declared-name "subsequence") (range (start (line 70) (character 1)) (end (line 70) (character 219))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::tail"))) (kind "kermlDecl") (name "tail") (declared-name "tail") (range (start (line 77) (character 1)) (end (line 77) (character 127))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))))
+    (element (id (node (document "d0") (qualified-name "SequenceFunctions::union"))) (kind "kermlDecl") (name "union") (declared-name "union") (range (start (line 47) (character 1)) (end (line 47) (character 165))) (parent (node (document "d0") (qualified-name "SequenceFunctions"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "SequenceFunctions::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (range (start (line 9) (character 16)) (end (line 9) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SequenceFunctions::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "ControlFunctions::*") (range (start (line 10) (character 16)) (end (line 10) (character 32))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SequenceFunctions::Anything"))) (kind membershipImport) (ordinal 0)) (authored-target "Base::Anything") (range (start (line 7) (character 16)) (end (line 7) (character 30))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SequenceFunctions::SelfSameLifeLink"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::SelfSameLifeLink") (range (start (line 8) (character 16)) (end (line 8) (character 45))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "SequenceFunctions::_documentation"))) (to (node (document "d0") (qualified-name "SequenceFunctions"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/sequence_functions.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 16) (end 7 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 16) (end 8 45))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 9 16) (end 9 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 10 16) (end 10 32))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

@@ -1229,685 +1229,644 @@ standard library package ISQCondensedMatter {
 
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dCoordinateFrame'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'isOrthogonal'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dCoordinateFrame'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'isOrthogonal'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'AngularMeasureValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'RepetencyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'RepetencyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'RepetencyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'AngularFrequencyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ThermodynamicTemperatureValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ResistivityValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ElectricPotentialDifferenceValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ElectricPotentialDifferenceValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'EnergyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'EnergyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'EnergyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'EnergyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'EnergyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ThermodynamicTemperatureValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DurationValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DurationValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'EnergyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ThermodynamicTemperatureValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ThermodynamicTemperatureValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ThermodynamicTemperatureValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'MagneticFluxDensityValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'MagneticFluxDensityValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'MagneticFluxDensityValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'EnergyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dCoordinateFrame'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'isOrthogonal'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dCoordinateFrame'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'isOrthogonal'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'AngularMeasureValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'RepetencyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'RepetencyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'RepetencyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'AngularFrequencyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ThermodynamicTemperatureValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ResistivityValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ElectricPotentialDifferenceValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ElectricPotentialDifferenceValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'EnergyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'EnergyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'EnergyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'EnergyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'EnergyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ThermodynamicTemperatureValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DurationValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DurationValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'EnergyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ThermodynamicTemperatureValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ThermodynamicTemperatureValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ThermodynamicTemperatureValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'MagneticFluxDensityValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'MagneticFluxDensityValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'MagneticFluxDensityValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'EnergyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "isq_condensed_matter.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 14 19) (end 14 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 15 19) (end 15 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 16 19) (end 16 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 17 19) (end 17 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 20 19) (end 20 72))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 21 19) (end 21 64))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 22 19) (end 22 56))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 23 19) (end 23 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 24 19) (end 24 54))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 25 19) (end 25 52))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 26 19) (end 26 47))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 27 19) (end 27 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 30 4) (end 30 688))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 50 4) (end 50 810))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 70 4) (end 70 749))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 89 4) (end 89 269))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 90 8) (end 90 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 94 4) (end 94 747))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 113 4) (end 113 258))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 120 4) (end 120 783))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 139 4) (end 139 273))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 140 8) (end 140 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 144 4) (end 144 791))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 163 4) (end 163 266))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 170 4) (end 170 578))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 202 4) (end 202 727))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 219 4) (end 219 700))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 236 4) (end 236 747))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 253 4) (end 253 789))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 270 4) (end 270 599))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 290 4) (end 290 701))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 310 4) (end 310 656))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 330 4) (end 330 888))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 350 4) (end 350 656))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 437 4) (end 437 819))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 453 4) (end 453 972))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 472 4) (end 472 375))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 473 8) (end 473 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 474 8) (end 474 104))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 479 4) (end 479 756))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 496 4) (end 496 750))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 513 4) (end 513 528))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 529 4) (end 529 536))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 545 4) (end 545 978))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 564 4) (end 564 480))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 565 8) (end 565 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 566 8) (end 566 101))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 567 8) (end 567 104))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 588 4) (end 588 885))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 607 4) (end 607 760))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 608 8) (end 608 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 609 8) (end 609 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 610 8) (end 610 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 611 8) (end 611 112))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 612 8) (end 612 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 617 4) (end 617 818))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 636 4) (end 636 496))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 637 8) (end 637 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 638 8) (end 638 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 639 8) (end 639 112))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 660 4) (end 660 926))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 679 4) (end 679 779))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 680 8) (end 680 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 681 8) (end 681 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 682 8) (end 682 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 683 8) (end 683 112))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 684 8) (end 684 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 705 4) (end 705 778))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 724 4) (end 724 761))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 725 8) (end 725 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 726 8) (end 726 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 727 8) (end 727 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 728 8) (end 728 112))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 729 8) (end 729 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 782 4) (end 782 789))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 801 4) (end 801 534))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 802 8) (end 802 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 803 8) (end 803 111))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 804 8) (end 804 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 841 4) (end 841 754))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 857 4) (end 857 818))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 876 4) (end 876 245))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 877 8) (end 877 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 882 4) (end 882 795))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 901 4) (end 901 241))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 902 8) (end 902 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 907 4) (end 907 877))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 926 4) (end 926 253))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 927 8) (end 927 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 932 4) (end 932 535))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 951 4) (end 951 242))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 952 8) (end 952 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 957 4) (end 957 550))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 976 4) (end 976 245))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 977 8) (end 977 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 982 4) (end 982 815))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 998 4) (end 998 638))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1015 4) (end 1015 702))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1031 4) (end 1031 668))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1047 4) (end 1047 709))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1079 4) (end 1079 588))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1095 4) (end 1095 533))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1111 4) (end 1111 590))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1191 4) (end 1191 701))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1207 4) (end 1207 565))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -2827,6 +2786,686 @@ CloseCurly,EndOfFile,
     (comment)
     (attribute_usage 'coherenceLength' : 'LengthValue' :> 'scalarQuantities'
       (documentation))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dCoordinateFrame'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'isOrthogonal'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dCoordinateFrame'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'isOrthogonal'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'AngularMeasureValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'RepetencyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'RepetencyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'RepetencyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'AngularFrequencyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ThermodynamicTemperatureValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ResistivityValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ElectricPotentialDifferenceValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ElectricPotentialDifferenceValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'EnergyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'EnergyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'EnergyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'EnergyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'EnergyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ThermodynamicTemperatureValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DurationValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DurationValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'EnergyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ThermodynamicTemperatureValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ThermodynamicTemperatureValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ThermodynamicTemperatureValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'MagneticFluxDensityValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'MagneticFluxDensityValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'MagneticFluxDensityValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'EnergyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dCoordinateFrame'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'isOrthogonal'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dCoordinateFrame'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'isOrthogonal'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'AngularMeasureValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'CartesianSpatial3dCoordinateFrame'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'RepetencyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'RepetencyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'RepetencyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'AngularFrequencyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ThermodynamicTemperatureValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ResistivityValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ElectricPotentialDifferenceValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ElectricPotentialDifferenceValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'EnergyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'EnergyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'EnergyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'EnergyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'EnergyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ThermodynamicTemperatureValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'MassValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DurationValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DurationValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'EnergyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ThermodynamicTemperatureValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ThermodynamicTemperatureValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ThermodynamicTemperatureValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'MagneticFluxDensityValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'MagneticFluxDensityValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'MagneticFluxDensityValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'EnergyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
 ~~~
 # FORMAT
 ~~~sysml
@@ -4057,2104 +4696,704 @@ standard library package ISQCondensedMatter {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ISQCondensedMatter"))) (name "ISQCondensedMatter") (declared-name "ISQCondensedMatter")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCondensedMatter::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCondensedMatter::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCondensedMatter::*#import2"))) (name "*") (declared-name "*"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit"))) (name "AcceptorDensityUnit") (declared-name "AcceptorDensityUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue"))) (name "AcceptorDensityValue") (declared-name "AcceptorDensityValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularFrequencyValue"))) (name "AngularFrequencyValue") (declared-name "AngularFrequencyValue"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularMeasureValue"))) (name "AngularMeasureValue") (declared-name "AngularMeasureValue"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit"))) (name "AngularReciprocalLatticeVectorMagnitudeUnit") (declared-name "AngularReciprocalLatticeVectorMagnitudeUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue"))) (name "AngularReciprocalLatticeVectorMagnitudeValue") (declared-name "AngularReciprocalLatticeVectorMagnitudeValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AtomicScatteringFactorValue"))) (name "AtomicScatteringFactorValue") (declared-name "AtomicScatteringFactorValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AtomicScatteringFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::AtomicScatteringFactorValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame"))) (name "CartesianAngularReciprocalLattice3dCoordinateFrame") (declared-name "CartesianAngularReciprocalLattice3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector"))) (name "CartesianAngularReciprocalLattice3dVector") (declared-name "CartesianAngularReciprocalLattice3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector"))) (name "CartesianBurgers3dVector") (declared-name "CartesianBurgers3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector"))) (name "CartesianDisplacement3dVector") (declared-name "CartesianDisplacement3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector"))) (name "CartesianEquilibriumPosition3dVector") (declared-name "CartesianEquilibriumPosition3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector"))) (name "CartesianFundamentalLattice3dVector") (declared-name "CartesianFundamentalLattice3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame"))) (name "CartesianFundamentalReciprocalLattice3dCoordinateFrame") (declared-name "CartesianFundamentalReciprocalLattice3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector"))) (name "CartesianFundamentalReciprocalLattice3dVector") (declared-name "CartesianFundamentalReciprocalLattice3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector"))) (name "CartesianLattice3dVector") (declared-name "CartesianLattice3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector"))) (name "CartesianParticlePosition3dVector") (declared-name "CartesianParticlePosition3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianSpatial3dCoordinateFrame"))) (name "CartesianSpatial3dCoordinateFrame") (declared-name "CartesianSpatial3dCoordinateFrame"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DebyeWallerFactorValue"))) (name "DebyeWallerFactorValue") (declared-name "DebyeWallerFactorValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DebyeWallerFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::DebyeWallerFactorValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit"))) (name "DensityOfVibrationalStatesUnit") (declared-name "DensityOfVibrationalStatesUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue"))) (name "DensityOfVibrationalStatesValue") (declared-name "DensityOfVibrationalStatesValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit"))) (name "DonorDensityUnit") (declared-name "DonorDensityUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue"))) (name "DonorDensityValue") (declared-name "DonorDensityValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ElectricPotentialDifferenceValue"))) (name "ElectricPotentialDifferenceValue") (declared-name "ElectricPotentialDifferenceValue"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit"))) (name "ElectronDensityUnit") (declared-name "ElectronDensityUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue"))) (name "ElectronDensityValue") (declared-name "ElectronDensityValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit"))) (name "EnergyDensityOfStatesUnit") (declared-name "EnergyDensityOfStatesUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue"))) (name "EnergyDensityOfStatesValue") (declared-name "EnergyDensityOfStatesValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyValue"))) (name "EnergyValue") (declared-name "EnergyValue"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit"))) (name "FundamentalReciprocalLatticeVectorMagnitudeUnit") (declared-name "FundamentalReciprocalLatticeVectorMagnitudeUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue"))) (name "FundamentalReciprocalLatticeVectorMagnitudeValue") (declared-name "FundamentalReciprocalLatticeVectorMagnitudeValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::GrüneisenParameterValue"))) (name "GrüneisenParameterValue") (declared-name "GrüneisenParameterValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::GrüneisenParameterValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::GrüneisenParameterValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit"))) (name "HallCoefficientUnit") (declared-name "HallCoefficientUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue"))) (name "HallCoefficientValue") (declared-name "HallCoefficientValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit"))) (name "HoleDensityUnit") (declared-name "HoleDensityUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue"))) (name "HoleDensityValue") (declared-name "HoleDensityValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit"))) (name "IntrinsicCarrierDensityUnit") (declared-name "IntrinsicCarrierDensityUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue"))) (name "IntrinsicCarrierDensityValue") (declared-name "IntrinsicCarrierDensityValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LongRangeOrderParameterValue"))) (name "LongRangeOrderParameterValue") (declared-name "LongRangeOrderParameterValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LongRangeOrderParameterValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::LongRangeOrderParameterValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit"))) (name "LorenzCoefficientUnit") (declared-name "LorenzCoefficientUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue"))) (name "LorenzCoefficientValue") (declared-name "LorenzCoefficientValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCondensedMatter::MagneticFluxDensityValue"))) (name "MagneticFluxDensityValue") (declared-name "MagneticFluxDensityValue"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::MobilityRatioValue"))) (name "MobilityRatioValue") (declared-name "MobilityRatioValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::MobilityRatioValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::MobilityRatioValue")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCondensedMatter::Real"))) (name "Real") (declared-name "Real"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCondensedMatter::RepetencyValue"))) (name "RepetencyValue") (declared-name "RepetencyValue"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ResistivityValue"))) (name "ResistivityValue") (declared-name "ResistivityValue"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit"))) (name "RichardsonConstantUnit") (declared-name "RichardsonConstantUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue"))) (name "RichardsonConstantValue") (declared-name "RichardsonConstantValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit"))) (name "SeebeckCoefficientForSubstancesAAndBUnit") (declared-name "SeebeckCoefficientForSubstancesAAndBUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue"))) (name "SeebeckCoefficientForSubstancesAAndBValue") (declared-name "SeebeckCoefficientForSubstancesAAndBValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ShortRangeOrderParameterValue"))) (name "ShortRangeOrderParameterValue") (declared-name "ShortRangeOrderParameterValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ShortRangeOrderParameterValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ShortRangeOrderParameterValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::StructureFactorValue"))) (name "StructureFactorValue") (declared-name "StructureFactorValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::StructureFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::StructureFactorValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThermodynamicGrüneisenParameterValue"))) (name "ThermodynamicGrüneisenParameterValue") (declared-name "ThermodynamicGrüneisenParameterValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThermodynamicGrüneisenParameterValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ThermodynamicGrüneisenParameterValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit"))) (name "ThomsonCoefficientUnit") (declared-name "ThomsonCoefficientUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue"))) (name "ThomsonCoefficientValue") (declared-name "ThomsonCoefficientValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue")))))
-          )
-        )
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::_documentation"))) (name ""))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::acceptorDensity"))) (name "acceptorDensity") (declared-name "acceptorDensity") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::angularReciprocalLatticeVectorMagnitude"))) (name "angularReciprocalLatticeVectorMagnitude") (declared-name "angularReciprocalLatticeVectorMagnitude") (declared (properties (ordered false) (unique false))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQCondensedMatter::angularRepetency"))) (name "angularRepetency") (declared-name "angularRepetency"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::angularWavenumber"))) (name "angularWavenumber") (declared-name "angularWavenumber") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::angularWavenumber::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::angularWavenumber")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::atomicScatteringFactor"))) (name "atomicScatteringFactor") (declared-name "atomicScatteringFactor") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::braggAngle"))) (name "braggAngle") (declared-name "braggAngle") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::braggAngle::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::braggAngle")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::carrierLifetime"))) (name "carrierLifetime") (declared-name "carrierLifetime") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::carrierLifetime::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::carrierLifetime")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianAngularReciprocalLattice3dVector"))) (name "cartesianAngularReciprocalLattice3dVector") (declared-name "cartesianAngularReciprocalLattice3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianBurgers3dVector"))) (name "cartesianBurgers3dVector") (declared-name "cartesianBurgers3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianDisplacement3dVector"))) (name "cartesianDisplacement3dVector") (declared-name "cartesianDisplacement3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianEquilibriumPosition3dVector"))) (name "cartesianEquilibriumPosition3dVector") (declared-name "cartesianEquilibriumPosition3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianFundamentalLattice3dVector"))) (name "cartesianFundamentalLattice3dVector") (declared-name "cartesianFundamentalLattice3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianFundamentalReciprocalLattice3dVector"))) (name "cartesianFundamentalReciprocalLattice3dVector") (declared-name "cartesianFundamentalReciprocalLattice3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianLattice3dVector"))) (name "cartesianLattice3dVector") (declared-name "cartesianLattice3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianParticlePosition3dVector"))) (name "cartesianParticlePosition3dVector") (declared-name "cartesianParticlePosition3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::coherenceLength"))) (name "coherenceLength") (declared-name "coherenceLength") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::coherenceLength::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::coherenceLength")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::curieTemperature"))) (name "curieTemperature") (declared-name "curieTemperature") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::curieTemperature::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::curieTemperature")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularFrequency"))) (name "debyeAngularFrequency") (declared-name "debyeAngularFrequency") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularFrequency::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularFrequency")))))
-          )
-        )
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularRepetency"))) (name "debyeAngularRepetency") (declared-name "debyeAngularRepetency"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularWavenumber"))) (name "debyeAngularWavenumber") (declared-name "debyeAngularWavenumber") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularWavenumber::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularWavenumber")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::debyeTemperature"))) (name "debyeTemperature") (declared-name "debyeTemperature") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::debyeTemperature::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::debyeTemperature")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::debyeWallerFactor"))) (name "debyeWallerFactor") (declared-name "debyeWallerFactor") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::densityOfVibrationalStates"))) (name "densityOfVibrationalStates") (declared-name "densityOfVibrationalStates") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::diffusionLengthForCondensedMatterPhysics"))) (name "diffusionLengthForCondensedMatterPhysics") (declared-name "diffusionLengthForCondensedMatterPhysics") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::diffusionLengthForCondensedMatterPhysics::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::diffusionLengthForCondensedMatterPhysics")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::donorDensity"))) (name "donorDensity") (declared-name "donorDensity") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::effectiveMass"))) (name "effectiveMass") (declared-name "effectiveMass") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::effectiveMass::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::effectiveMass")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::electronAffinity"))) (name "electronAffinity") (declared-name "electronAffinity") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::electronAffinity::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::electronAffinity")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::electronDensity"))) (name "electronDensity") (declared-name "electronDensity") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::energyDensityOfStates"))) (name "energyDensityOfStates") (declared-name "energyDensityOfStates") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::exchangeIntegral"))) (name "exchangeIntegral") (declared-name "exchangeIntegral") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::exchangeIntegral::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::exchangeIntegral")))))
-          )
-        )
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQCondensedMatter::fermiAngularRepetency"))) (name "fermiAngularRepetency") (declared-name "fermiAngularRepetency"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::fermiAngularWavenumber"))) (name "fermiAngularWavenumber") (declared-name "fermiAngularWavenumber") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::fermiAngularWavenumber::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::fermiAngularWavenumber")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::fermiEnergy"))) (name "fermiEnergy") (declared-name "fermiEnergy") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::fermiEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::fermiEnergy")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::fermiTemperature"))) (name "fermiTemperature") (declared-name "fermiTemperature") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::fermiTemperature::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::fermiTemperature")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::fundamentalReciprocalLatticeVectorMagnitude"))) (name "fundamentalReciprocalLatticeVectorMagnitude") (declared-name "fundamentalReciprocalLatticeVectorMagnitude") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::gapEnergy"))) (name "gapEnergy") (declared-name "gapEnergy") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::gapEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::gapEnergy")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::grüneisenParameter"))) (name "grüneisenParameter") (declared-name "grüneisenParameter") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::hallCoefficient"))) (name "hallCoefficient") (declared-name "hallCoefficient") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::holeDensity"))) (name "holeDensity") (declared-name "holeDensity") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::intrinsicCarrierDensity"))) (name "intrinsicCarrierDensity") (declared-name "intrinsicCarrierDensity") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ionizationEnergy"))) (name "ionizationEnergy") (declared-name "ionizationEnergy") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ionizationEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ionizationEnergy")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::latticePlaneSpacing"))) (name "latticePlaneSpacing") (declared-name "latticePlaneSpacing") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::latticePlaneSpacing::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::latticePlaneSpacing")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::londonPenetrationDepth"))) (name "londonPenetrationDepth") (declared-name "londonPenetrationDepth") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::londonPenetrationDepth::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::londonPenetrationDepth")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::longRangeOrderParameter"))) (name "longRangeOrderParameter") (declared-name "longRangeOrderParameter") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::lorenzCoefficient"))) (name "lorenzCoefficient") (declared-name "lorenzCoefficient") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::lowerCriticalMagneticFluxDensity"))) (name "lowerCriticalMagneticFluxDensity") (declared-name "lowerCriticalMagneticFluxDensity") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::lowerCriticalMagneticFluxDensity::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::lowerCriticalMagneticFluxDensity")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfElectrons"))) (name "meanFreePathOfElectrons") (declared-name "meanFreePathOfElectrons") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfElectrons::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfElectrons")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfPhonons"))) (name "meanFreePathOfPhonons") (declared-name "meanFreePathOfPhonons") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfPhonons::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfPhonons")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::mobilityRatio"))) (name "mobilityRatio") (declared-name "mobilityRatio") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::néelTemperature"))) (name "néelTemperature") (declared-name "néelTemperature") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::néelTemperature::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::néelTemperature")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::peltierCoefficientForSubstancesAAndB"))) (name "peltierCoefficientForSubstancesAAndB") (declared-name "peltierCoefficientForSubstancesAAndB") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::peltierCoefficientForSubstancesAAndB::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::peltierCoefficientForSubstancesAAndB")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::relaxationTime"))) (name "relaxationTime") (declared-name "relaxationTime") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::relaxationTime::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::relaxationTime")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::residualResistivity"))) (name "residualResistivity") (declared-name "residualResistivity") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::residualResistivity::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::residualResistivity")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::richardsonConstant"))) (name "richardsonConstant") (declared-name "richardsonConstant") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::seebeckCoefficientForSubstancesAAndB"))) (name "seebeckCoefficientForSubstancesAAndB") (declared-name "seebeckCoefficientForSubstancesAAndB") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::shortRangeOrderParameter"))) (name "shortRangeOrderParameter") (declared-name "shortRangeOrderParameter") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::structureFactor"))) (name "structureFactor") (declared-name "structureFactor") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::superconductionTransitionTemperature"))) (name "superconductionTransitionTemperature") (declared-name "superconductionTransitionTemperature") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::superconductionTransitionTemperature::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::superconductionTransitionTemperature")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::superconductorEnergyGap"))) (name "superconductorEnergyGap") (declared-name "superconductorEnergyGap") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::superconductorEnergyGap::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::superconductorEnergyGap")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicCriticalMagneticFluxDensity"))) (name "thermodynamicCriticalMagneticFluxDensity") (declared-name "thermodynamicCriticalMagneticFluxDensity") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicCriticalMagneticFluxDensity::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicCriticalMagneticFluxDensity")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicGrüneisenParameter"))) (name "thermodynamicGrüneisenParameter") (declared-name "thermodynamicGrüneisenParameter") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::thermoelectricVoltageBetweenSubstancesAAndB"))) (name "thermoelectricVoltageBetweenSubstancesAAndB") (declared-name "thermoelectricVoltageBetweenSubstancesAAndB") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::thermoelectricVoltageBetweenSubstancesAAndB::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::thermoelectricVoltageBetweenSubstancesAAndB")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::thomsonCoefficient"))) (name "thomsonCoefficient") (declared-name "thomsonCoefficient") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::upperCriticalMagneticFluxDensity"))) (name "upperCriticalMagneticFluxDensity") (declared-name "upperCriticalMagneticFluxDensity") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::upperCriticalMagneticFluxDensity::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::upperCriticalMagneticFluxDensity")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::workFunction"))) (name "workFunction") (declared-name "workFunction") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::workFunction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::workFunction")))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c7dd6d24b92a86bd7d6966cfac8a44f5a07b497e8edbdb25b3d4ad05fd564569") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter"))) (kind "package") (name "ISQCondensedMatter") (declared-name "ISQCondensedMatter") (range (start (line 0) (character 0)) (end (line 0) (character 59984))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 15) (character 4)) (end (line 15) (character 33))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Import) (visibility "private") (import (reference "Quantities::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 15) (character 19)) (end (line 15) (character 29))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 16) (character 4)) (end (line 16) (character 44))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Import) (visibility "private") (import (reference "MeasurementReferences::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 16) (character 19)) (end (line 16) (character 40))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::*#import2"))) (kind "import") (name "*") (declared-name "*") (range (start (line 17) (character 4)) (end (line 17) (character 30))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQBase::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 17) (character 19)) (end (line 17) (character 26))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit"))) (kind "attribute def") (name "AcceptorDensityUnit") (declared-name "AcceptorDensityUnit") (range (start (line 976) (character 4)) (end (line 976) (character 245))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 977) (character 8)) (end (line 977) (character 103))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 978) (character 8)) (end (line 978) (character 80))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 978) (character 22)) (end (line 978) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue"))) (kind "attribute def") (name "AcceptorDensityValue") (declared-name "AcceptorDensityValue") (range (start (line 957) (character 4)) (end (line 957) (character 550))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::_documentation"))) (kind "documentation") (name "") (range (start (line 957) (character 4)) (end (line 957) (character 550))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 971) (character 8)) (end (line 971) (character 51))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "AcceptorDensityUnit") (range none)) (redefinition (reference "mRef") (range (start (line 971) (character 22)) (end (line 971) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 970) (character 8)) (end (line 970) (character 32))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 970) (character 22)) (end (line 970) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularFrequencyValue"))) (kind "import") (name "AngularFrequencyValue") (declared-name "AngularFrequencyValue") (range (start (line 24) (character 4)) (end (line 24) (character 55))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQSpaceTime::AngularFrequencyValue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 24) (character 19)) (end (line 24) (character 54))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularMeasureValue"))) (kind "import") (name "AngularMeasureValue") (declared-name "AngularMeasureValue") (range (start (line 25) (character 4)) (end (line 25) (character 53))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQSpaceTime::AngularMeasureValue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 25) (character 19)) (end (line 25) (character 52))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit"))) (kind "attribute def") (name "AngularReciprocalLatticeVectorMagnitudeUnit") (declared-name "AngularReciprocalLatticeVectorMagnitudeUnit") (range (start (line 89) (character 4)) (end (line 89) (character 269))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 90) (character 8)) (end (line 90) (character 103))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 91) (character 8)) (end (line 91) (character 80))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 91) (character 22)) (end (line 91) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue"))) (kind "attribute def") (name "AngularReciprocalLatticeVectorMagnitudeValue") (declared-name "AngularReciprocalLatticeVectorMagnitudeValue") (range (start (line 70) (character 4)) (end (line 70) (character 749))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::_documentation"))) (kind "documentation") (name "") (range (start (line 70) (character 4)) (end (line 70) (character 749))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 84) (character 8)) (end (line 84) (character 75))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "AngularReciprocalLatticeVectorMagnitudeUnit") (range none)) (redefinition (reference "mRef") (range (start (line 84) (character 22)) (end (line 84) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 83) (character 8)) (end (line 83) (character 32))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 83) (character 22)) (end (line 83) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::AtomicScatteringFactorValue"))) (kind "attribute def") (name "AtomicScatteringFactorValue") (declared-name "AtomicScatteringFactorValue") (range (start (line 236) (character 4)) (end (line 236) (character 747))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::AtomicScatteringFactorValue::_documentation"))) (kind "documentation") (name "") (range (start (line 236) (character 4)) (end (line 236) (character 747))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::AtomicScatteringFactorValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame"))) (kind "attribute def") (name "CartesianAngularReciprocalLattice3dCoordinateFrame") (declared-name "CartesianAngularReciprocalLattice3dCoordinateFrame") (range (start (line 113) (character 4)) (end (line 113) (character 258))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dCoordinateFrame") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 114) (character 8)) (end (line 114) (character 38))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 114) (character 22)) (end (line 114) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::isOrthogonal"))) (kind "attribute") (name "isOrthogonal") (declared-name "isOrthogonal") (range (start (line 115) (character 8)) (end (line 115) (character 42))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isOrthogonal") (range (start (line 115) (character 22)) (end (line 115) (character 34)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::mRefs"))) (kind "attribute") (name "mRefs") (declared-name "mRefs") (range (start (line 116) (character 8)) (end (line 116) (character 76))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (typing (reference "AngularReciprocalLatticeVectorMagnitudeUnit") (range none)) (redefinition (reference "mRefs") (range (start (line 116) (character 22)) (end (line 116) (character 27)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector"))) (kind "attribute def") (name "CartesianAngularReciprocalLattice3dVector") (declared-name "CartesianAngularReciprocalLattice3dVector") (range (start (line 94) (character 4)) (end (line 94) (character 747))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dVectorQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::_documentation"))) (kind "documentation") (name "") (range (start (line 94) (character 4)) (end (line 94) (character 747))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 107) (character 8)) (end (line 107) (character 38))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 107) (character 22)) (end (line 107) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 108) (character 8)) (end (line 108) (character 82))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "CartesianAngularReciprocalLattice3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 108) (character 22)) (end (line 108) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector"))) (kind "attribute def") (name "CartesianBurgers3dVector") (declared-name "CartesianBurgers3dVector") (range (start (line 270) (character 4)) (end (line 270) (character 599))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dVectorQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::_documentation"))) (kind "documentation") (name "") (range (start (line 270) (character 4)) (end (line 270) (character 599))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 283) (character 8)) (end (line 283) (character 38))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 283) (character 22)) (end (line 283) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 284) (character 8)) (end (line 284) (character 65))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "CartesianSpatial3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 284) (character 22)) (end (line 284) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector"))) (kind "attribute def") (name "CartesianDisplacement3dVector") (declared-name "CartesianDisplacement3dVector") (range (start (line 330) (character 4)) (end (line 330) (character 888))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dVectorQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::_documentation"))) (kind "documentation") (name "") (range (start (line 330) (character 4)) (end (line 330) (character 888))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 343) (character 8)) (end (line 343) (character 38))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 343) (character 22)) (end (line 343) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 344) (character 8)) (end (line 344) (character 65))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "CartesianSpatial3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 344) (character 22)) (end (line 344) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector"))) (kind "attribute def") (name "CartesianEquilibriumPosition3dVector") (declared-name "CartesianEquilibriumPosition3dVector") (range (start (line 310) (character 4)) (end (line 310) (character 656))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dVectorQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::_documentation"))) (kind "documentation") (name "") (range (start (line 310) (character 4)) (end (line 310) (character 656))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 323) (character 8)) (end (line 323) (character 37))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 323) (character 22)) (end (line 323) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 324) (character 8)) (end (line 324) (character 65))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "CartesianSpatial3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 324) (character 22)) (end (line 324) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector"))) (kind "attribute def") (name "CartesianFundamentalLattice3dVector") (declared-name "CartesianFundamentalLattice3dVector") (range (start (line 50) (character 4)) (end (line 50) (character 810))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dVectorQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::_documentation"))) (kind "documentation") (name "") (range (start (line 50) (character 4)) (end (line 50) (character 810))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 63) (character 8)) (end (line 63) (character 38))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 63) (character 22)) (end (line 63) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 64) (character 8)) (end (line 64) (character 65))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "CartesianSpatial3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 64) (character 22)) (end (line 64) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame"))) (kind "attribute def") (name "CartesianFundamentalReciprocalLattice3dCoordinateFrame") (declared-name "CartesianFundamentalReciprocalLattice3dCoordinateFrame") (range (start (line 163) (character 4)) (end (line 163) (character 266))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dCoordinateFrame") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 164) (character 8)) (end (line 164) (character 38))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 164) (character 22)) (end (line 164) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::isOrthogonal"))) (kind "attribute") (name "isOrthogonal") (declared-name "isOrthogonal") (range (start (line 165) (character 8)) (end (line 165) (character 42))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isOrthogonal") (range (start (line 165) (character 22)) (end (line 165) (character 34)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::mRefs"))) (kind "attribute") (name "mRefs") (declared-name "mRefs") (range (start (line 166) (character 8)) (end (line 166) (character 80))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (typing (reference "FundamentalReciprocalLatticeVectorMagnitudeUnit") (range none)) (redefinition (reference "mRefs") (range (start (line 166) (character 22)) (end (line 166) (character 27)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector"))) (kind "attribute def") (name "CartesianFundamentalReciprocalLattice3dVector") (declared-name "CartesianFundamentalReciprocalLattice3dVector") (range (start (line 144) (character 4)) (end (line 144) (character 791))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dVectorQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::_documentation"))) (kind "documentation") (name "") (range (start (line 144) (character 4)) (end (line 144) (character 791))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 157) (character 8)) (end (line 157) (character 38))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 157) (character 22)) (end (line 157) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 158) (character 8)) (end (line 158) (character 86))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "CartesianFundamentalReciprocalLattice3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 158) (character 22)) (end (line 158) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector"))) (kind "attribute def") (name "CartesianLattice3dVector") (declared-name "CartesianLattice3dVector") (range (start (line 30) (character 4)) (end (line 30) (character 688))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dVectorQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::_documentation"))) (kind "documentation") (name "") (range (start (line 30) (character 4)) (end (line 30) (character 688))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 43) (character 8)) (end (line 43) (character 38))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 43) (character 22)) (end (line 43) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 44) (character 8)) (end (line 44) (character 65))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "CartesianSpatial3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 44) (character 22)) (end (line 44) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector"))) (kind "attribute def") (name "CartesianParticlePosition3dVector") (declared-name "CartesianParticlePosition3dVector") (range (start (line 290) (character 4)) (end (line 290) (character 701))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dVectorQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::_documentation"))) (kind "documentation") (name "") (range (start (line 290) (character 4)) (end (line 290) (character 701))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 303) (character 8)) (end (line 303) (character 37))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 303) (character 22)) (end (line 303) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 304) (character 8)) (end (line 304) (character 65))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "CartesianSpatial3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 304) (character 22)) (end (line 304) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianSpatial3dCoordinateFrame"))) (kind "import") (name "CartesianSpatial3dCoordinateFrame") (declared-name "CartesianSpatial3dCoordinateFrame") (range (start (line 23) (character 4)) (end (line 23) (character 67))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQSpaceTime::CartesianSpatial3dCoordinateFrame") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 23) (character 19)) (end (line 23) (character 66))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::DebyeWallerFactorValue"))) (kind "attribute def") (name "DebyeWallerFactorValue") (declared-name "DebyeWallerFactorValue") (range (start (line 350) (character 4)) (end (line 350) (character 656))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::DebyeWallerFactorValue::_documentation"))) (kind "documentation") (name "") (range (start (line 350) (character 4)) (end (line 350) (character 656))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::DebyeWallerFactorValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit"))) (kind "attribute def") (name "DensityOfVibrationalStatesUnit") (declared-name "DensityOfVibrationalStatesUnit") (range (start (line 472) (character 4)) (end (line 472) (character 375))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 474) (character 8)) (end (line 474) (character 104))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 473) (character 8)) (end (line 473) (character 103))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 475) (character 8)) (end (line 475) (character 94))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 475) (character 22)) (end (line 475) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue"))) (kind "attribute def") (name "DensityOfVibrationalStatesValue") (declared-name "DensityOfVibrationalStatesValue") (range (start (line 453) (character 4)) (end (line 453) (character 972))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::_documentation"))) (kind "documentation") (name "") (range (start (line 453) (character 4)) (end (line 453) (character 972))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 467) (character 8)) (end (line 467) (character 62))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "DensityOfVibrationalStatesUnit") (range none)) (redefinition (reference "mRef") (range (start (line 467) (character 22)) (end (line 467) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 466) (character 8)) (end (line 466) (character 32))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 466) (character 22)) (end (line 466) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit"))) (kind "attribute def") (name "DonorDensityUnit") (declared-name "DonorDensityUnit") (range (start (line 951) (character 4)) (end (line 951) (character 242))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 952) (character 8)) (end (line 952) (character 103))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 953) (character 8)) (end (line 953) (character 80))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 953) (character 22)) (end (line 953) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue"))) (kind "attribute def") (name "DonorDensityValue") (declared-name "DonorDensityValue") (range (start (line 932) (character 4)) (end (line 932) (character 535))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::_documentation"))) (kind "documentation") (name "") (range (start (line 932) (character 4)) (end (line 932) (character 535))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 946) (character 8)) (end (line 946) (character 48))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "DonorDensityUnit") (range none)) (redefinition (reference "mRef") (range (start (line 946) (character 22)) (end (line 946) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 945) (character 8)) (end (line 945) (character 32))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 945) (character 22)) (end (line 945) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ElectricPotentialDifferenceValue"))) (kind "import") (name "ElectricPotentialDifferenceValue") (declared-name "ElectricPotentialDifferenceValue") (range (start (line 20) (character 4)) (end (line 20) (character 73))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQElectromagnetism::ElectricPotentialDifferenceValue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 20) (character 19)) (end (line 20) (character 72))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit"))) (kind "attribute def") (name "ElectronDensityUnit") (declared-name "ElectronDensityUnit") (range (start (line 876) (character 4)) (end (line 876) (character 245))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 877) (character 8)) (end (line 877) (character 103))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 878) (character 8)) (end (line 878) (character 80))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 878) (character 22)) (end (line 878) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue"))) (kind "attribute def") (name "ElectronDensityValue") (declared-name "ElectronDensityValue") (range (start (line 857) (character 4)) (end (line 857) (character 818))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::_documentation"))) (kind "documentation") (name "") (range (start (line 857) (character 4)) (end (line 857) (character 818))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 871) (character 8)) (end (line 871) (character 51))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "ElectronDensityUnit") (range none)) (redefinition (reference "mRef") (range (start (line 871) (character 22)) (end (line 871) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 870) (character 8)) (end (line 870) (character 32))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 870) (character 22)) (end (line 870) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit"))) (kind "attribute def") (name "EnergyDensityOfStatesUnit") (declared-name "EnergyDensityOfStatesUnit") (range (start (line 564) (character 4)) (end (line 564) (character 480))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 567) (character 8)) (end (line 567) (character 104))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 565) (character 8)) (end (line 565) (character 103))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 566) (character 8)) (end (line 566) (character 101))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 568) (character 8)) (end (line 568) (character 102))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 568) (character 22)) (end (line 568) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue"))) (kind "attribute def") (name "EnergyDensityOfStatesValue") (declared-name "EnergyDensityOfStatesValue") (range (start (line 545) (character 4)) (end (line 545) (character 978))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::_documentation"))) (kind "documentation") (name "") (range (start (line 545) (character 4)) (end (line 545) (character 978))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 559) (character 8)) (end (line 559) (character 57))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "EnergyDensityOfStatesUnit") (range none)) (redefinition (reference "mRef") (range (start (line 559) (character 22)) (end (line 559) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 558) (character 8)) (end (line 558) (character 32))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 558) (character 22)) (end (line 558) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyValue"))) (kind "import") (name "EnergyValue") (declared-name "EnergyValue") (range (start (line 27) (character 4)) (end (line 27) (character 50))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQThermodynamics::EnergyValue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 27) (character 19)) (end (line 27) (character 49))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit"))) (kind "attribute def") (name "FundamentalReciprocalLatticeVectorMagnitudeUnit") (declared-name "FundamentalReciprocalLatticeVectorMagnitudeUnit") (range (start (line 139) (character 4)) (end (line 139) (character 273))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 140) (character 8)) (end (line 140) (character 103))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 141) (character 8)) (end (line 141) (character 80))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 141) (character 22)) (end (line 141) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue"))) (kind "attribute def") (name "FundamentalReciprocalLatticeVectorMagnitudeValue") (declared-name "FundamentalReciprocalLatticeVectorMagnitudeValue") (range (start (line 120) (character 4)) (end (line 120) (character 783))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::_documentation"))) (kind "documentation") (name "") (range (start (line 120) (character 4)) (end (line 120) (character 783))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 134) (character 8)) (end (line 134) (character 79))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "FundamentalReciprocalLatticeVectorMagnitudeUnit") (range none)) (redefinition (reference "mRef") (range (start (line 134) (character 22)) (end (line 134) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 133) (character 8)) (end (line 133) (character 32))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 133) (character 22)) (end (line 133) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::GrüneisenParameterValue"))) (kind "attribute def") (name "GrüneisenParameterValue") (declared-name "GrüneisenParameterValue") (range (start (line 496) (character 4)) (end (line 496) (character 750))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::GrüneisenParameterValue::_documentation"))) (kind "documentation") (name "") (range (start (line 496) (character 4)) (end (line 496) (character 750))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::GrüneisenParameterValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit"))) (kind "attribute def") (name "HallCoefficientUnit") (declared-name "HallCoefficientUnit") (range (start (line 636) (character 4)) (end (line 636) (character 496))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 638) (character 8)) (end (line 638) (character 105))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit::electricCurrentPF"))) (kind "attribute") (name "electricCurrentPF") (declared-name "electricCurrentPF") (range (start (line 639) (character 8)) (end (line 639) (character 112))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 637) (character 8)) (end (line 637) (character 102))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 640) (character 8)) (end (line 640) (character 113))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 640) (character 22)) (end (line 640) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue"))) (kind "attribute def") (name "HallCoefficientValue") (declared-name "HallCoefficientValue") (range (start (line 617) (character 4)) (end (line 617) (character 818))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::_documentation"))) (kind "documentation") (name "") (range (start (line 617) (character 4)) (end (line 617) (character 818))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 631) (character 8)) (end (line 631) (character 51))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "HallCoefficientUnit") (range none)) (redefinition (reference "mRef") (range (start (line 631) (character 22)) (end (line 631) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 630) (character 8)) (end (line 630) (character 32))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 630) (character 22)) (end (line 630) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit"))) (kind "attribute def") (name "HoleDensityUnit") (declared-name "HoleDensityUnit") (range (start (line 901) (character 4)) (end (line 901) (character 241))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 902) (character 8)) (end (line 902) (character 103))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 903) (character 8)) (end (line 903) (character 80))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 903) (character 22)) (end (line 903) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue"))) (kind "attribute def") (name "HoleDensityValue") (declared-name "HoleDensityValue") (range (start (line 882) (character 4)) (end (line 882) (character 795))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::_documentation"))) (kind "documentation") (name "") (range (start (line 882) (character 4)) (end (line 882) (character 795))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 896) (character 8)) (end (line 896) (character 47))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "HoleDensityUnit") (range none)) (redefinition (reference "mRef") (range (start (line 896) (character 22)) (end (line 896) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 895) (character 8)) (end (line 895) (character 32))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 895) (character 22)) (end (line 895) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit"))) (kind "attribute def") (name "IntrinsicCarrierDensityUnit") (declared-name "IntrinsicCarrierDensityUnit") (range (start (line 926) (character 4)) (end (line 926) (character 253))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 927) (character 8)) (end (line 927) (character 103))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 928) (character 8)) (end (line 928) (character 80))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 928) (character 22)) (end (line 928) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue"))) (kind "attribute def") (name "IntrinsicCarrierDensityValue") (declared-name "IntrinsicCarrierDensityValue") (range (start (line 907) (character 4)) (end (line 907) (character 877))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::_documentation"))) (kind "documentation") (name "") (range (start (line 907) (character 4)) (end (line 907) (character 877))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 921) (character 8)) (end (line 921) (character 59))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "IntrinsicCarrierDensityUnit") (range none)) (redefinition (reference "mRef") (range (start (line 921) (character 22)) (end (line 921) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 920) (character 8)) (end (line 920) (character 32))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 920) (character 22)) (end (line 920) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::LongRangeOrderParameterValue"))) (kind "attribute def") (name "LongRangeOrderParameterValue") (declared-name "LongRangeOrderParameterValue") (range (start (line 219) (character 4)) (end (line 219) (character 700))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::LongRangeOrderParameterValue::_documentation"))) (kind "documentation") (name "") (range (start (line 219) (character 4)) (end (line 219) (character 700))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::LongRangeOrderParameterValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit"))) (kind "attribute def") (name "LorenzCoefficientUnit") (declared-name "LorenzCoefficientUnit") (range (start (line 607) (character 4)) (end (line 607) (character 760))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 610) (character 8)) (end (line 610) (character 105))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::electricCurrentPF"))) (kind "attribute") (name "electricCurrentPF") (declared-name "electricCurrentPF") (range (start (line 611) (character 8)) (end (line 611) (character 112))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 608) (character 8)) (end (line 608) (character 102))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 609) (character 8)) (end (line 609) (character 100))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 613) (character 8)) (end (line 613) (character 149))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 613) (character 22)) (end (line 613) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 612) (character 8)) (end (line 612) (character 124))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue"))) (kind "attribute def") (name "LorenzCoefficientValue") (declared-name "LorenzCoefficientValue") (range (start (line 588) (character 4)) (end (line 588) (character 885))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::_documentation"))) (kind "documentation") (name "") (range (start (line 588) (character 4)) (end (line 588) (character 885))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 602) (character 8)) (end (line 602) (character 53))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "LorenzCoefficientUnit") (range none)) (redefinition (reference "mRef") (range (start (line 602) (character 22)) (end (line 602) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 601) (character 8)) (end (line 601) (character 32))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 601) (character 22)) (end (line 601) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::MagneticFluxDensityValue"))) (kind "import") (name "MagneticFluxDensityValue") (declared-name "MagneticFluxDensityValue") (range (start (line 21) (character 4)) (end (line 21) (character 65))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQElectromagnetism::MagneticFluxDensityValue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 21) (character 19)) (end (line 21) (character 64))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::MobilityRatioValue"))) (kind "attribute def") (name "MobilityRatioValue") (declared-name "MobilityRatioValue") (range (start (line 998) (character 4)) (end (line 998) (character 638))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::MobilityRatioValue::_documentation"))) (kind "documentation") (name "") (range (start (line 998) (character 4)) (end (line 998) (character 638))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::MobilityRatioValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::Real"))) (kind "import") (name "Real") (declared-name "Real") (range (start (line 14) (character 4)) (end (line 14) (character 38))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 14) (character 19)) (end (line 14) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::RepetencyValue"))) (kind "import") (name "RepetencyValue") (declared-name "RepetencyValue") (range (start (line 26) (character 4)) (end (line 26) (character 48))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQSpaceTime::RepetencyValue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 26) (character 19)) (end (line 26) (character 47))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ResistivityValue"))) (kind "import") (name "ResistivityValue") (declared-name "ResistivityValue") (range (start (line 22) (character 4)) (end (line 22) (character 57))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQElectromagnetism::ResistivityValue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 22) (character 19)) (end (line 22) (character 56))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit"))) (kind "attribute def") (name "RichardsonConstantUnit") (declared-name "RichardsonConstantUnit") (range (start (line 801) (character 4)) (end (line 801) (character 534))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit::electricCurrentPF"))) (kind "attribute") (name "electricCurrentPF") (declared-name "electricCurrentPF") (range (start (line 803) (character 8)) (end (line 803) (character 111))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 802) (character 8)) (end (line 802) (character 103))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 805) (character 8)) (end (line 805) (character 129))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 805) (character 22)) (end (line 805) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 804) (character 8)) (end (line 804) (character 124))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue"))) (kind "attribute def") (name "RichardsonConstantValue") (declared-name "RichardsonConstantValue") (range (start (line 782) (character 4)) (end (line 782) (character 789))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::_documentation"))) (kind "documentation") (name "") (range (start (line 782) (character 4)) (end (line 782) (character 789))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 796) (character 8)) (end (line 796) (character 54))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "RichardsonConstantUnit") (range none)) (redefinition (reference "mRef") (range (start (line 796) (character 22)) (end (line 796) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 795) (character 8)) (end (line 795) (character 32))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 795) (character 22)) (end (line 795) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit"))) (kind "attribute def") (name "SeebeckCoefficientForSubstancesAAndBUnit") (declared-name "SeebeckCoefficientForSubstancesAAndBUnit") (range (start (line 679) (character 4)) (end (line 679) (character 779))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 682) (character 8)) (end (line 682) (character 105))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::electricCurrentPF"))) (kind "attribute") (name "electricCurrentPF") (declared-name "electricCurrentPF") (range (start (line 683) (character 8)) (end (line 683) (character 112))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 680) (character 8)) (end (line 680) (character 102))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 681) (character 8)) (end (line 681) (character 100))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 685) (character 8)) (end (line 685) (character 149))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 685) (character 22)) (end (line 685) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 684) (character 8)) (end (line 684) (character 124))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue"))) (kind "attribute def") (name "SeebeckCoefficientForSubstancesAAndBValue") (declared-name "SeebeckCoefficientForSubstancesAAndBValue") (range (start (line 660) (character 4)) (end (line 660) (character 926))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::_documentation"))) (kind "documentation") (name "") (range (start (line 660) (character 4)) (end (line 660) (character 926))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 674) (character 8)) (end (line 674) (character 72))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "SeebeckCoefficientForSubstancesAAndBUnit") (range none)) (redefinition (reference "mRef") (range (start (line 674) (character 22)) (end (line 674) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 673) (character 8)) (end (line 673) (character 32))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 673) (character 22)) (end (line 673) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ShortRangeOrderParameterValue"))) (kind "attribute def") (name "ShortRangeOrderParameterValue") (declared-name "ShortRangeOrderParameterValue") (range (start (line 202) (character 4)) (end (line 202) (character 727))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ShortRangeOrderParameterValue::_documentation"))) (kind "documentation") (name "") (range (start (line 202) (character 4)) (end (line 202) (character 727))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::ShortRangeOrderParameterValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::StructureFactorValue"))) (kind "attribute def") (name "StructureFactorValue") (declared-name "StructureFactorValue") (range (start (line 253) (character 4)) (end (line 253) (character 789))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::StructureFactorValue::_documentation"))) (kind "documentation") (name "") (range (start (line 253) (character 4)) (end (line 253) (character 789))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::StructureFactorValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThermodynamicGrüneisenParameterValue"))) (kind "attribute def") (name "ThermodynamicGrüneisenParameterValue") (declared-name "ThermodynamicGrüneisenParameterValue") (range (start (line 479) (character 4)) (end (line 479) (character 756))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThermodynamicGrüneisenParameterValue::_documentation"))) (kind "documentation") (name "") (range (start (line 479) (character 4)) (end (line 479) (character 756))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::ThermodynamicGrüneisenParameterValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit"))) (kind "attribute def") (name "ThomsonCoefficientUnit") (declared-name "ThomsonCoefficientUnit") (range (start (line 724) (character 4)) (end (line 724) (character 761))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 727) (character 8)) (end (line 727) (character 105))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::electricCurrentPF"))) (kind "attribute") (name "electricCurrentPF") (declared-name "electricCurrentPF") (range (start (line 728) (character 8)) (end (line 728) (character 112))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 725) (character 8)) (end (line 725) (character 102))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 726) (character 8)) (end (line 726) (character 100))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 730) (character 8)) (end (line 730) (character 149))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 730) (character 22)) (end (line 730) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 729) (character 8)) (end (line 729) (character 124))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue"))) (kind "attribute def") (name "ThomsonCoefficientValue") (declared-name "ThomsonCoefficientValue") (range (start (line 705) (character 4)) (end (line 705) (character 778))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::_documentation"))) (kind "documentation") (name "") (range (start (line 705) (character 4)) (end (line 705) (character 778))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 719) (character 8)) (end (line 719) (character 54))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "ThomsonCoefficientUnit") (range none)) (redefinition (reference "mRef") (range (start (line 719) (character 22)) (end (line 719) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 718) (character 8)) (end (line 718) (character 32))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 718) (character 22)) (end (line 718) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 59984))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::acceptorDensity"))) (kind "attribute def") (name "acceptorDensity") (declared-name "acceptorDensity") (range (start (line 974) (character 4)) (end (line 974) (character 85))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "AcceptorDensityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::angularReciprocalLatticeVectorMagnitude"))) (kind "attribute def") (name "angularReciprocalLatticeVectorMagnitude") (declared-name "angularReciprocalLatticeVectorMagnitude") (range (start (line 87) (character 4)) (end (line 87) (character 133))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "AngularReciprocalLatticeVectorMagnitudeValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::angularRepetency"))) (kind "alias") (name "angularRepetency") (declared-name "angularRepetency") (range (start (line 382) (character 4)) (end (line 382) (character 49))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::angularWavenumber"))) (kind "attribute def") (name "angularWavenumber") (declared-name "angularWavenumber") (range (start (line 367) (character 4)) (end (line 367) (character 1293))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "RepetencyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::angularWavenumber::_documentation"))) (kind "documentation") (name "") (range (start (line 367) (character 4)) (end (line 367) (character 1293))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::angularWavenumber"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::atomicScatteringFactor"))) (kind "attribute def") (name "atomicScatteringFactor") (declared-name "atomicScatteringFactor") (range (start (line 250) (character 4)) (end (line 250) (character 86))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "AtomicScatteringFactorValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::braggAngle"))) (kind "attribute def") (name "braggAngle") (declared-name "braggAngle") (range (start (line 186) (character 4)) (end (line 186) (character 677))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "AngularMeasureValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::braggAngle::_documentation"))) (kind "documentation") (name "") (range (start (line 186) (character 4)) (end (line 186) (character 677))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::braggAngle"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::carrierLifetime"))) (kind "attribute def") (name "carrierLifetime") (declared-name "carrierLifetime") (range (start (line 1031) (character 4)) (end (line 1031) (character 668))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DurationValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::carrierLifetime::_documentation"))) (kind "documentation") (name "") (range (start (line 1031) (character 4)) (end (line 1031) (character 668))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::carrierLifetime"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianAngularReciprocalLattice3dVector"))) (kind "attribute def") (name "cartesianAngularReciprocalLattice3dVector") (declared-name "cartesianAngularReciprocalLattice3dVector") (range (start (line 111) (character 4)) (end (line 111) (character 119))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "CartesianAngularReciprocalLattice3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianBurgers3dVector"))) (kind "attribute def") (name "cartesianBurgers3dVector") (declared-name "cartesianBurgers3dVector") (range (start (line 287) (character 4)) (end (line 287) (character 85))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "CartesianBurgers3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianDisplacement3dVector"))) (kind "attribute def") (name "cartesianDisplacement3dVector") (declared-name "cartesianDisplacement3dVector") (range (start (line 347) (character 4)) (end (line 347) (character 95))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "CartesianDisplacement3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianEquilibriumPosition3dVector"))) (kind "attribute def") (name "cartesianEquilibriumPosition3dVector") (declared-name "cartesianEquilibriumPosition3dVector") (range (start (line 327) (character 4)) (end (line 327) (character 109))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "CartesianEquilibriumPosition3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianFundamentalLattice3dVector"))) (kind "attribute def") (name "cartesianFundamentalLattice3dVector") (declared-name "cartesianFundamentalLattice3dVector") (range (start (line 67) (character 4)) (end (line 67) (character 107))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "CartesianFundamentalLattice3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianFundamentalReciprocalLattice3dVector"))) (kind "attribute def") (name "cartesianFundamentalReciprocalLattice3dVector") (declared-name "cartesianFundamentalReciprocalLattice3dVector") (range (start (line 161) (character 4)) (end (line 161) (character 127))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "CartesianFundamentalReciprocalLattice3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianLattice3dVector"))) (kind "attribute def") (name "cartesianLattice3dVector") (declared-name "cartesianLattice3dVector") (range (start (line 47) (character 4)) (end (line 47) (character 85))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "CartesianLattice3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianParticlePosition3dVector"))) (kind "attribute def") (name "cartesianParticlePosition3dVector") (declared-name "cartesianParticlePosition3dVector") (range (start (line 307) (character 4)) (end (line 307) (character 103))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "CartesianParticlePosition3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::coherenceLength"))) (kind "attribute def") (name "coherenceLength") (declared-name "coherenceLength") (range (start (line 1207) (character 4)) (end (line 1207) (character 565))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::coherenceLength::_documentation"))) (kind "documentation") (name "") (range (start (line 1207) (character 4)) (end (line 1207) (character 565))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::coherenceLength"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::curieTemperature"))) (kind "attribute def") (name "curieTemperature") (declared-name "curieTemperature") (range (start (line 1079) (character 4)) (end (line 1079) (character 588))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ThermodynamicTemperatureValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::curieTemperature::_documentation"))) (kind "documentation") (name "") (range (start (line 1079) (character 4)) (end (line 1079) (character 588))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::curieTemperature"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularFrequency"))) (kind "attribute def") (name "debyeAngularFrequency") (declared-name "debyeAngularFrequency") (range (start (line 421) (character 4)) (end (line 421) (character 595))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "AngularFrequencyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularFrequency::_documentation"))) (kind "documentation") (name "") (range (start (line 421) (character 4)) (end (line 421) (character 595))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularFrequency"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularRepetency"))) (kind "alias") (name "debyeAngularRepetency") (declared-name "debyeAngularRepetency") (range (start (line 418) (character 4)) (end (line 418) (character 59))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularWavenumber"))) (kind "attribute def") (name "debyeAngularWavenumber") (declared-name "debyeAngularWavenumber") (range (start (line 403) (character 4)) (end (line 403) (character 686))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "RepetencyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularWavenumber::_documentation"))) (kind "documentation") (name "") (range (start (line 403) (character 4)) (end (line 403) (character 686))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularWavenumber"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::debyeTemperature"))) (kind "attribute def") (name "debyeTemperature") (declared-name "debyeTemperature") (range (start (line 437) (character 4)) (end (line 437) (character 819))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ThermodynamicTemperatureValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::debyeTemperature::_documentation"))) (kind "documentation") (name "") (range (start (line 437) (character 4)) (end (line 437) (character 819))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::debyeTemperature"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::debyeWallerFactor"))) (kind "attribute def") (name "debyeWallerFactor") (declared-name "debyeWallerFactor") (range (start (line 364) (character 4)) (end (line 364) (character 76))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DebyeWallerFactorValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::densityOfVibrationalStates"))) (kind "attribute def") (name "densityOfVibrationalStates") (declared-name "densityOfVibrationalStates") (range (start (line 470) (character 4)) (end (line 470) (character 107))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DensityOfVibrationalStatesValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::diffusionLengthForCondensedMatterPhysics"))) (kind "attribute def") (name "diffusionLengthForCondensedMatterPhysics") (declared-name "diffusionLengthForCondensedMatterPhysics") (range (start (line 1047) (character 4)) (end (line 1047) (character 709))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::diffusionLengthForCondensedMatterPhysics::_documentation"))) (kind "documentation") (name "") (range (start (line 1047) (character 4)) (end (line 1047) (character 709))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::diffusionLengthForCondensedMatterPhysics"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::donorDensity"))) (kind "attribute def") (name "donorDensity") (declared-name "donorDensity") (range (start (line 949) (character 4)) (end (line 949) (character 79))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DonorDensityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::effectiveMass"))) (kind "attribute def") (name "effectiveMass") (declared-name "effectiveMass") (range (start (line 982) (character 4)) (end (line 982) (character 815))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "MassValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::effectiveMass::_documentation"))) (kind "documentation") (name "") (range (start (line 982) (character 4)) (end (line 982) (character 815))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::effectiveMass"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::electronAffinity"))) (kind "attribute def") (name "electronAffinity") (declared-name "electronAffinity") (range (start (line 766) (character 4)) (end (line 766) (character 627))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "EnergyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::electronAffinity::_documentation"))) (kind "documentation") (name "") (range (start (line 766) (character 4)) (end (line 766) (character 627))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::electronAffinity"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::electronDensity"))) (kind "attribute def") (name "electronDensity") (declared-name "electronDensity") (range (start (line 874) (character 4)) (end (line 874) (character 85))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ElectronDensityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::energyDensityOfStates"))) (kind "attribute def") (name "energyDensityOfStates") (declared-name "energyDensityOfStates") (range (start (line 562) (character 4)) (end (line 562) (character 97))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "EnergyDensityOfStatesValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::exchangeIntegral"))) (kind "attribute def") (name "exchangeIntegral") (declared-name "exchangeIntegral") (range (start (line 1063) (character 4)) (end (line 1063) (character 605))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "EnergyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::exchangeIntegral::_documentation"))) (kind "documentation") (name "") (range (start (line 1063) (character 4)) (end (line 1063) (character 605))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::exchangeIntegral"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::fermiAngularRepetency"))) (kind "alias") (name "fermiAngularRepetency") (declared-name "fermiAngularRepetency") (range (start (line 400) (character 4)) (end (line 400) (character 59))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::fermiAngularWavenumber"))) (kind "attribute def") (name "fermiAngularWavenumber") (declared-name "fermiAngularWavenumber") (range (start (line 385) (character 4)) (end (line 385) (character 622))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "RepetencyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::fermiAngularWavenumber::_documentation"))) (kind "documentation") (name "") (range (start (line 385) (character 4)) (end (line 385) (character 622))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::fermiAngularWavenumber"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::fermiEnergy"))) (kind "attribute def") (name "fermiEnergy") (declared-name "fermiEnergy") (range (start (line 809) (character 4)) (end (line 809) (character 898))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "EnergyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::fermiEnergy::_documentation"))) (kind "documentation") (name "") (range (start (line 809) (character 4)) (end (line 809) (character 898))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::fermiEnergy"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::fermiTemperature"))) (kind "attribute def") (name "fermiTemperature") (declared-name "fermiTemperature") (range (start (line 841) (character 4)) (end (line 841) (character 754))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ThermodynamicTemperatureValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::fermiTemperature::_documentation"))) (kind "documentation") (name "") (range (start (line 841) (character 4)) (end (line 841) (character 754))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::fermiTemperature"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::fundamentalReciprocalLatticeVectorMagnitude"))) (kind "attribute def") (name "fundamentalReciprocalLatticeVectorMagnitude") (declared-name "fundamentalReciprocalLatticeVectorMagnitude") (range (start (line 137) (character 4)) (end (line 137) (character 141))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "FundamentalReciprocalLatticeVectorMagnitudeValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::gapEnergy"))) (kind "attribute def") (name "gapEnergy") (declared-name "gapEnergy") (range (start (line 825) (character 4)) (end (line 825) (character 593))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "EnergyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::gapEnergy::_documentation"))) (kind "documentation") (name "") (range (start (line 825) (character 4)) (end (line 825) (character 593))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::gapEnergy"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::grüneisenParameter"))) (kind "attribute def") (name "grüneisenParameter") (declared-name "grüneisenParameter") (range (start (line 510) (character 4)) (end (line 510) (character 84))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "GrüneisenParameterValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::hallCoefficient"))) (kind "attribute def") (name "hallCoefficient") (declared-name "hallCoefficient") (range (start (line 634) (character 4)) (end (line 634) (character 85))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "HallCoefficientValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::holeDensity"))) (kind "attribute def") (name "holeDensity") (declared-name "holeDensity") (range (start (line 899) (character 4)) (end (line 899) (character 77))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "HoleDensityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::intrinsicCarrierDensity"))) (kind "attribute def") (name "intrinsicCarrierDensity") (declared-name "intrinsicCarrierDensity") (range (start (line 924) (character 4)) (end (line 924) (character 101))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "IntrinsicCarrierDensityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ionizationEnergy"))) (kind "attribute def") (name "ionizationEnergy") (declared-name "ionizationEnergy") (range (start (line 750) (character 4)) (end (line 750) (character 617))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "EnergyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::ionizationEnergy::_documentation"))) (kind "documentation") (name "") (range (start (line 750) (character 4)) (end (line 750) (character 617))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::ionizationEnergy"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::latticePlaneSpacing"))) (kind "attribute def") (name "latticePlaneSpacing") (declared-name "latticePlaneSpacing") (range (start (line 170) (character 4)) (end (line 170) (character 578))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::latticePlaneSpacing::_documentation"))) (kind "documentation") (name "") (range (start (line 170) (character 4)) (end (line 170) (character 578))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::latticePlaneSpacing"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::londonPenetrationDepth"))) (kind "attribute def") (name "londonPenetrationDepth") (declared-name "londonPenetrationDepth") (range (start (line 1191) (character 4)) (end (line 1191) (character 701))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::londonPenetrationDepth::_documentation"))) (kind "documentation") (name "") (range (start (line 1191) (character 4)) (end (line 1191) (character 701))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::londonPenetrationDepth"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::longRangeOrderParameter"))) (kind "attribute def") (name "longRangeOrderParameter") (declared-name "longRangeOrderParameter") (range (start (line 233) (character 4)) (end (line 233) (character 88))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "LongRangeOrderParameterValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::lorenzCoefficient"))) (kind "attribute def") (name "lorenzCoefficient") (declared-name "lorenzCoefficient") (range (start (line 605) (character 4)) (end (line 605) (character 89))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "LorenzCoefficientValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::lowerCriticalMagneticFluxDensity"))) (kind "attribute def") (name "lowerCriticalMagneticFluxDensity") (declared-name "lowerCriticalMagneticFluxDensity") (range (start (line 1143) (character 4)) (end (line 1143) (character 666))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "MagneticFluxDensityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::lowerCriticalMagneticFluxDensity::_documentation"))) (kind "documentation") (name "") (range (start (line 1143) (character 4)) (end (line 1143) (character 666))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::lowerCriticalMagneticFluxDensity"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfElectrons"))) (kind "attribute def") (name "meanFreePathOfElectrons") (declared-name "meanFreePathOfElectrons") (range (start (line 529) (character 4)) (end (line 529) (character 536))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfElectrons::_documentation"))) (kind "documentation") (name "") (range (start (line 529) (character 4)) (end (line 529) (character 536))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfElectrons"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfPhonons"))) (kind "attribute def") (name "meanFreePathOfPhonons") (declared-name "meanFreePathOfPhonons") (range (start (line 513) (character 4)) (end (line 513) (character 528))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfPhonons::_documentation"))) (kind "documentation") (name "") (range (start (line 513) (character 4)) (end (line 513) (character 528))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfPhonons"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::mobilityRatio"))) (kind "attribute def") (name "mobilityRatio") (declared-name "mobilityRatio") (range (start (line 1012) (character 4)) (end (line 1012) (character 68))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "MobilityRatioValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::néelTemperature"))) (kind "attribute def") (name "néelTemperature") (declared-name "néelTemperature") (range (start (line 1095) (character 4)) (end (line 1095) (character 533))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ThermodynamicTemperatureValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::néelTemperature::_documentation"))) (kind "documentation") (name "") (range (start (line 1095) (character 4)) (end (line 1095) (character 533))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::néelTemperature"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::peltierCoefficientForSubstancesAAndB"))) (kind "attribute def") (name "peltierCoefficientForSubstancesAAndB") (declared-name "peltierCoefficientForSubstancesAAndB") (range (start (line 689) (character 4)) (end (line 689) (character 832))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ElectricPotentialDifferenceValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::peltierCoefficientForSubstancesAAndB::_documentation"))) (kind "documentation") (name "") (range (start (line 689) (character 4)) (end (line 689) (character 832))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::peltierCoefficientForSubstancesAAndB"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::relaxationTime"))) (kind "attribute def") (name "relaxationTime") (declared-name "relaxationTime") (range (start (line 1015) (character 4)) (end (line 1015) (character 702))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "DurationValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::relaxationTime::_documentation"))) (kind "documentation") (name "") (range (start (line 1015) (character 4)) (end (line 1015) (character 702))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::relaxationTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::residualResistivity"))) (kind "attribute def") (name "residualResistivity") (declared-name "residualResistivity") (range (start (line 572) (character 4)) (end (line 572) (character 579))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ResistivityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::residualResistivity::_documentation"))) (kind "documentation") (name "") (range (start (line 572) (character 4)) (end (line 572) (character 579))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::residualResistivity"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::richardsonConstant"))) (kind "attribute def") (name "richardsonConstant") (declared-name "richardsonConstant") (range (start (line 799) (character 4)) (end (line 799) (character 91))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "RichardsonConstantValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::seebeckCoefficientForSubstancesAAndB"))) (kind "attribute def") (name "seebeckCoefficientForSubstancesAAndB") (declared-name "seebeckCoefficientForSubstancesAAndB") (range (start (line 677) (character 4)) (end (line 677) (character 127))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "SeebeckCoefficientForSubstancesAAndBValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::shortRangeOrderParameter"))) (kind "attribute def") (name "shortRangeOrderParameter") (declared-name "shortRangeOrderParameter") (range (start (line 216) (character 4)) (end (line 216) (character 90))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ShortRangeOrderParameterValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::structureFactor"))) (kind "attribute def") (name "structureFactor") (declared-name "structureFactor") (range (start (line 267) (character 4)) (end (line 267) (character 72))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "StructureFactorValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::superconductionTransitionTemperature"))) (kind "attribute def") (name "superconductionTransitionTemperature") (declared-name "superconductionTransitionTemperature") (range (start (line 1111) (character 4)) (end (line 1111) (character 590))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ThermodynamicTemperatureValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::superconductionTransitionTemperature::_documentation"))) (kind "documentation") (name "") (range (start (line 1111) (character 4)) (end (line 1111) (character 590))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::superconductionTransitionTemperature"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::superconductorEnergyGap"))) (kind "attribute def") (name "superconductorEnergyGap") (declared-name "superconductorEnergyGap") (range (start (line 1175) (character 4)) (end (line 1175) (character 538))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "EnergyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::superconductorEnergyGap::_documentation"))) (kind "documentation") (name "") (range (start (line 1175) (character 4)) (end (line 1175) (character 538))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::superconductorEnergyGap"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicCriticalMagneticFluxDensity"))) (kind "attribute def") (name "thermodynamicCriticalMagneticFluxDensity") (declared-name "thermodynamicCriticalMagneticFluxDensity") (range (start (line 1127) (character 4)) (end (line 1127) (character 1062))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "MagneticFluxDensityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicCriticalMagneticFluxDensity::_documentation"))) (kind "documentation") (name "") (range (start (line 1127) (character 4)) (end (line 1127) (character 1062))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicCriticalMagneticFluxDensity"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicGrüneisenParameter"))) (kind "attribute def") (name "thermodynamicGrüneisenParameter") (declared-name "thermodynamicGrüneisenParameter") (range (start (line 493) (character 4)) (end (line 493) (character 110))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ThermodynamicGrüneisenParameterValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::thermoelectricVoltageBetweenSubstancesAAndB"))) (kind "attribute def") (name "thermoelectricVoltageBetweenSubstancesAAndB") (declared-name "thermoelectricVoltageBetweenSubstancesAAndB") (range (start (line 644) (character 4)) (end (line 644) (character 675))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ElectricPotentialDifferenceValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::thermoelectricVoltageBetweenSubstancesAAndB::_documentation"))) (kind "documentation") (name "") (range (start (line 644) (character 4)) (end (line 644) (character 675))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::thermoelectricVoltageBetweenSubstancesAAndB"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::thomsonCoefficient"))) (kind "attribute def") (name "thomsonCoefficient") (declared-name "thomsonCoefficient") (range (start (line 722) (character 4)) (end (line 722) (character 91))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "ThomsonCoefficientValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::upperCriticalMagneticFluxDensity"))) (kind "attribute def") (name "upperCriticalMagneticFluxDensity") (declared-name "upperCriticalMagneticFluxDensity") (range (start (line 1159) (character 4)) (end (line 1159) (character 650))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "MagneticFluxDensityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::upperCriticalMagneticFluxDensity::_documentation"))) (kind "documentation") (name "") (range (start (line 1159) (character 4)) (end (line 1159) (character 650))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::upperCriticalMagneticFluxDensity"))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::workFunction"))) (kind "attribute def") (name "workFunction") (declared-name "workFunction") (range (start (line 734) (character 4)) (end (line 734) (character 993))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter"))) (authored (membership (kind Owning)) (relationships (typing (reference "EnergyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCondensedMatter::workFunction::_documentation"))) (kind "documentation") (name "") (range (start (line 734) (character 4)) (end (line 734) (character 993))) (parent (node (document "d0") (qualified-name "ISQCondensedMatter::workFunction"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Quantities::*") (range (start (line 15) (character 19)) (end (line 15) (character 29))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "MeasurementReferences::*") (range (start (line 16) (character 19)) (end (line 16) (character 40))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::*#import2"))) (kind namespaceImport) (ordinal 0)) (authored-target "ISQBase::*") (range (start (line 17) (character 19)) (end (line 17) (character 26))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 978) (character 22)) (end (line 978) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "AcceptorDensityUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 971) (character 22)) (end (line 971) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 970) (character 22)) (end (line 970) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::AngularFrequencyValue"))) (kind membershipImport) (ordinal 0)) (authored-target "ISQSpaceTime::AngularFrequencyValue") (range (start (line 24) (character 19)) (end (line 24) (character 54))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::AngularMeasureValue"))) (kind membershipImport) (ordinal 0)) (authored-target "ISQSpaceTime::AngularMeasureValue") (range (start (line 25) (character 19)) (end (line 25) (character 52))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 91) (character 22)) (end (line 91) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularReciprocalLatticeVectorMagnitudeUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 84) (character 22)) (end (line 84) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 83) (character 22)) (end (line 83) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::AtomicScatteringFactorValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame"))) (kind featureTyping) (ordinal 0)) (authored-target "3dCoordinateFrame") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 114) (character 22)) (end (line 114) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::isOrthogonal"))) (kind redefinition) (ordinal 0)) (authored-target "isOrthogonal") (range (start (line 115) (character 22)) (end (line 115) (character 34))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::isOrthogonal")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::mRefs"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularReciprocalLatticeVectorMagnitudeUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)) (authored-target "mRefs") (range (start (line 116) (character 22)) (end (line 116) (character 27))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::mRefs")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "3dVectorQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 107) (character 22)) (end (line 107) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianAngularReciprocalLattice3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 108) (character 22)) (end (line 108) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "3dVectorQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 283) (character 22)) (end (line 283) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianSpatial3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianSpatial3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 284) (character 22)) (end (line 284) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "3dVectorQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 343) (character 22)) (end (line 343) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianSpatial3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianSpatial3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 344) (character 22)) (end (line 344) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "3dVectorQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 323) (character 22)) (end (line 323) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianSpatial3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianSpatial3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 324) (character 22)) (end (line 324) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "3dVectorQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 63) (character 22)) (end (line 63) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianSpatial3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianSpatial3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 64) (character 22)) (end (line 64) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame"))) (kind featureTyping) (ordinal 0)) (authored-target "3dCoordinateFrame") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 164) (character 22)) (end (line 164) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::isOrthogonal"))) (kind redefinition) (ordinal 0)) (authored-target "isOrthogonal") (range (start (line 165) (character 22)) (end (line 165) (character 34))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::isOrthogonal")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::mRefs"))) (kind featureTyping) (ordinal 0)) (authored-target "FundamentalReciprocalLatticeVectorMagnitudeUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)) (authored-target "mRefs") (range (start (line 166) (character 22)) (end (line 166) (character 27))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::mRefs")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "3dVectorQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 157) (character 22)) (end (line 157) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianFundamentalReciprocalLattice3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 158) (character 22)) (end (line 158) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "3dVectorQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 43) (character 22)) (end (line 43) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianSpatial3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianSpatial3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 44) (character 22)) (end (line 44) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "3dVectorQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 303) (character 22)) (end (line 303) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianSpatial3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianSpatial3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 304) (character 22)) (end (line 304) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianSpatial3dCoordinateFrame"))) (kind membershipImport) (ordinal 0)) (authored-target "ISQSpaceTime::CartesianSpatial3dCoordinateFrame") (range (start (line 23) (character 19)) (end (line 23) (character 66))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::DebyeWallerFactorValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 475) (character 22)) (end (line 475) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "DensityOfVibrationalStatesUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 467) (character 22)) (end (line 467) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 466) (character 22)) (end (line 466) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 953) (character 22)) (end (line 953) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "DonorDensityUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 946) (character 22)) (end (line 946) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 945) (character 22)) (end (line 945) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::ElectricPotentialDifferenceValue"))) (kind membershipImport) (ordinal 0)) (authored-target "ISQElectromagnetism::ElectricPotentialDifferenceValue") (range (start (line 20) (character 19)) (end (line 20) (character 72))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 878) (character 22)) (end (line 878) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "ElectronDensityUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 871) (character 22)) (end (line 871) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 870) (character 22)) (end (line 870) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 568) (character 22)) (end (line 568) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "EnergyDensityOfStatesUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 559) (character 22)) (end (line 559) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 558) (character 22)) (end (line 558) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyValue"))) (kind membershipImport) (ordinal 0)) (authored-target "ISQThermodynamics::EnergyValue") (range (start (line 27) (character 19)) (end (line 27) (character 49))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 141) (character 22)) (end (line 141) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "FundamentalReciprocalLatticeVectorMagnitudeUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 134) (character 22)) (end (line 134) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 133) (character 22)) (end (line 133) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::GrüneisenParameterValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit::electricCurrentPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 640) (character 22)) (end (line 640) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "HallCoefficientUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 631) (character 22)) (end (line 631) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 630) (character 22)) (end (line 630) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 903) (character 22)) (end (line 903) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "HoleDensityUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 896) (character 22)) (end (line 896) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 895) (character 22)) (end (line 895) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 928) (character 22)) (end (line 928) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "IntrinsicCarrierDensityUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 921) (character 22)) (end (line 921) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 920) (character 22)) (end (line 920) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::LongRangeOrderParameterValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::electricCurrentPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 613) (character 22)) (end (line 613) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "LorenzCoefficientUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 602) (character 22)) (end (line 602) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 601) (character 22)) (end (line 601) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::MagneticFluxDensityValue"))) (kind membershipImport) (ordinal 0)) (authored-target "ISQElectromagnetism::MagneticFluxDensityValue") (range (start (line 21) (character 19)) (end (line 21) (character 64))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::MobilityRatioValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (range (start (line 14) (character 19)) (end (line 14) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::RepetencyValue"))) (kind membershipImport) (ordinal 0)) (authored-target "ISQSpaceTime::RepetencyValue") (range (start (line 26) (character 19)) (end (line 26) (character 47))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::ResistivityValue"))) (kind membershipImport) (ordinal 0)) (authored-target "ISQElectromagnetism::ResistivityValue") (range (start (line 22) (character 19)) (end (line 22) (character 56))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit::electricCurrentPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 805) (character 22)) (end (line 805) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "RichardsonConstantUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 796) (character 22)) (end (line 796) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 795) (character 22)) (end (line 795) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::electricCurrentPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 685) (character 22)) (end (line 685) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "SeebeckCoefficientForSubstancesAAndBUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 674) (character 22)) (end (line 674) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 673) (character 22)) (end (line 673) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::ShortRangeOrderParameterValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::StructureFactorValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::ThermodynamicGrüneisenParameterValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::electricCurrentPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 730) (character 22)) (end (line 730) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "ThomsonCoefficientUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 719) (character 22)) (end (line 719) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 718) (character 22)) (end (line 718) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::acceptorDensity"))) (kind featureTyping) (ordinal 0)) (authored-target "AcceptorDensityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::angularReciprocalLatticeVectorMagnitude"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularReciprocalLatticeVectorMagnitudeValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::angularWavenumber"))) (kind featureTyping) (ordinal 0)) (authored-target "RepetencyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::RepetencyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::atomicScatteringFactor"))) (kind featureTyping) (ordinal 0)) (authored-target "AtomicScatteringFactorValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AtomicScatteringFactorValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::braggAngle"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularMeasureValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AngularMeasureValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::carrierLifetime"))) (kind featureTyping) (ordinal 0)) (authored-target "DurationValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianAngularReciprocalLattice3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianAngularReciprocalLattice3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianBurgers3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianBurgers3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianDisplacement3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianDisplacement3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianEquilibriumPosition3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianEquilibriumPosition3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianFundamentalLattice3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianFundamentalLattice3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianFundamentalReciprocalLattice3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianFundamentalReciprocalLattice3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianLattice3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianLattice3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianParticlePosition3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianParticlePosition3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::coherenceLength"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::curieTemperature"))) (kind featureTyping) (ordinal 0)) (authored-target "ThermodynamicTemperatureValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularFrequency"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularFrequencyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AngularFrequencyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularWavenumber"))) (kind featureTyping) (ordinal 0)) (authored-target "RepetencyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::RepetencyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::debyeTemperature"))) (kind featureTyping) (ordinal 0)) (authored-target "ThermodynamicTemperatureValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::debyeWallerFactor"))) (kind featureTyping) (ordinal 0)) (authored-target "DebyeWallerFactorValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::DebyeWallerFactorValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::densityOfVibrationalStates"))) (kind featureTyping) (ordinal 0)) (authored-target "DensityOfVibrationalStatesValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::diffusionLengthForCondensedMatterPhysics"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::donorDensity"))) (kind featureTyping) (ordinal 0)) (authored-target "DonorDensityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::effectiveMass"))) (kind featureTyping) (ordinal 0)) (authored-target "MassValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::electronAffinity"))) (kind featureTyping) (ordinal 0)) (authored-target "EnergyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::electronDensity"))) (kind featureTyping) (ordinal 0)) (authored-target "ElectronDensityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::energyDensityOfStates"))) (kind featureTyping) (ordinal 0)) (authored-target "EnergyDensityOfStatesValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::exchangeIntegral"))) (kind featureTyping) (ordinal 0)) (authored-target "EnergyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::fermiAngularWavenumber"))) (kind featureTyping) (ordinal 0)) (authored-target "RepetencyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::RepetencyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::fermiEnergy"))) (kind featureTyping) (ordinal 0)) (authored-target "EnergyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::fermiTemperature"))) (kind featureTyping) (ordinal 0)) (authored-target "ThermodynamicTemperatureValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::fundamentalReciprocalLatticeVectorMagnitude"))) (kind featureTyping) (ordinal 0)) (authored-target "FundamentalReciprocalLatticeVectorMagnitudeValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::gapEnergy"))) (kind featureTyping) (ordinal 0)) (authored-target "EnergyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::grüneisenParameter"))) (kind featureTyping) (ordinal 0)) (authored-target "GrüneisenParameterValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::GrüneisenParameterValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::hallCoefficient"))) (kind featureTyping) (ordinal 0)) (authored-target "HallCoefficientValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::holeDensity"))) (kind featureTyping) (ordinal 0)) (authored-target "HoleDensityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::intrinsicCarrierDensity"))) (kind featureTyping) (ordinal 0)) (authored-target "IntrinsicCarrierDensityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::ionizationEnergy"))) (kind featureTyping) (ordinal 0)) (authored-target "EnergyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::latticePlaneSpacing"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::londonPenetrationDepth"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::longRangeOrderParameter"))) (kind featureTyping) (ordinal 0)) (authored-target "LongRangeOrderParameterValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::LongRangeOrderParameterValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::lorenzCoefficient"))) (kind featureTyping) (ordinal 0)) (authored-target "LorenzCoefficientValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::lowerCriticalMagneticFluxDensity"))) (kind featureTyping) (ordinal 0)) (authored-target "MagneticFluxDensityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::MagneticFluxDensityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfElectrons"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfPhonons"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::mobilityRatio"))) (kind featureTyping) (ordinal 0)) (authored-target "MobilityRatioValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::MobilityRatioValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::néelTemperature"))) (kind featureTyping) (ordinal 0)) (authored-target "ThermodynamicTemperatureValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::peltierCoefficientForSubstancesAAndB"))) (kind featureTyping) (ordinal 0)) (authored-target "ElectricPotentialDifferenceValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ElectricPotentialDifferenceValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::relaxationTime"))) (kind featureTyping) (ordinal 0)) (authored-target "DurationValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::residualResistivity"))) (kind featureTyping) (ordinal 0)) (authored-target "ResistivityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ResistivityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::richardsonConstant"))) (kind featureTyping) (ordinal 0)) (authored-target "RichardsonConstantValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::seebeckCoefficientForSubstancesAAndB"))) (kind featureTyping) (ordinal 0)) (authored-target "SeebeckCoefficientForSubstancesAAndBValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::shortRangeOrderParameter"))) (kind featureTyping) (ordinal 0)) (authored-target "ShortRangeOrderParameterValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ShortRangeOrderParameterValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::structureFactor"))) (kind featureTyping) (ordinal 0)) (authored-target "StructureFactorValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::StructureFactorValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::superconductionTransitionTemperature"))) (kind featureTyping) (ordinal 0)) (authored-target "ThermodynamicTemperatureValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::superconductorEnergyGap"))) (kind featureTyping) (ordinal 0)) (authored-target "EnergyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicCriticalMagneticFluxDensity"))) (kind featureTyping) (ordinal 0)) (authored-target "MagneticFluxDensityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::MagneticFluxDensityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicGrüneisenParameter"))) (kind featureTyping) (ordinal 0)) (authored-target "ThermodynamicGrüneisenParameterValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ThermodynamicGrüneisenParameterValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::thermoelectricVoltageBetweenSubstancesAAndB"))) (kind featureTyping) (ordinal 0)) (authored-target "ElectricPotentialDifferenceValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ElectricPotentialDifferenceValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::thomsonCoefficient"))) (kind featureTyping) (ordinal 0)) (authored-target "ThomsonCoefficientValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::upperCriticalMagneticFluxDensity"))) (kind featureTyping) (ordinal 0)) (authored-target "MagneticFluxDensityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::MagneticFluxDensityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCondensedMatter::workFunction"))) (kind featureTyping) (ordinal 0)) (authored-target "EnergyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyValue")))))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::AtomicScatteringFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::AtomicScatteringFactorValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::DebyeWallerFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::DebyeWallerFactorValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::GrüneisenParameterValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::GrüneisenParameterValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::LongRangeOrderParameterValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::LongRangeOrderParameterValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::MobilityRatioValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::MobilityRatioValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::ShortRangeOrderParameterValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::ShortRangeOrderParameterValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::StructureFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::StructureFactorValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::ThermodynamicGrüneisenParameterValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::ThermodynamicGrüneisenParameterValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::angularWavenumber::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::angularWavenumber"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::braggAngle::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::braggAngle"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::carrierLifetime::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::carrierLifetime"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::coherenceLength::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::coherenceLength"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::curieTemperature::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::curieTemperature"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularFrequency::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularFrequency"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularWavenumber::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularWavenumber"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::debyeTemperature::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::debyeTemperature"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::diffusionLengthForCondensedMatterPhysics::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::diffusionLengthForCondensedMatterPhysics"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::effectiveMass::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::effectiveMass"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::electronAffinity::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::electronAffinity"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::exchangeIntegral::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::exchangeIntegral"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::fermiAngularWavenumber::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::fermiAngularWavenumber"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::fermiEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::fermiEnergy"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::fermiTemperature::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::fermiTemperature"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::gapEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::gapEnergy"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::ionizationEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::ionizationEnergy"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::latticePlaneSpacing::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::latticePlaneSpacing"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::londonPenetrationDepth::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::londonPenetrationDepth"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::lowerCriticalMagneticFluxDensity::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::lowerCriticalMagneticFluxDensity"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfElectrons::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfElectrons"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfPhonons::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfPhonons"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::néelTemperature::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::néelTemperature"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::peltierCoefficientForSubstancesAAndB::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::peltierCoefficientForSubstancesAAndB"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::relaxationTime::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::relaxationTime"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::residualResistivity::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::residualResistivity"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::superconductionTransitionTemperature::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::superconductionTransitionTemperature"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::superconductorEnergyGap::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::superconductorEnergyGap"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicCriticalMagneticFluxDensity::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicCriticalMagneticFluxDensity"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::thermoelectricVoltageBetweenSubstancesAAndB::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::thermoelectricVoltageBetweenSubstancesAAndB"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::upperCriticalMagneticFluxDensity::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::upperCriticalMagneticFluxDensity"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::workFunction::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::workFunction"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::acceptorDensity"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::angularReciprocalLatticeVectorMagnitude"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::atomicScatteringFactor"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::AtomicScatteringFactorValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianAngularReciprocalLattice3dVector"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianBurgers3dVector"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianDisplacement3dVector"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianEquilibriumPosition3dVector"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianFundamentalLattice3dVector"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianFundamentalReciprocalLattice3dVector"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianLattice3dVector"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianParticlePosition3dVector"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::debyeWallerFactor"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::DebyeWallerFactorValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::densityOfVibrationalStates"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::donorDensity"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::electronDensity"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::energyDensityOfStates"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::fundamentalReciprocalLatticeVectorMagnitude"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::grüneisenParameter"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::GrüneisenParameterValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::hallCoefficient"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::holeDensity"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::intrinsicCarrierDensity"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::longRangeOrderParameter"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::LongRangeOrderParameterValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::lorenzCoefficient"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::mobilityRatio"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::MobilityRatioValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::richardsonConstant"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::seebeckCoefficientForSubstancesAAndB"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::shortRangeOrderParameter"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::ShortRangeOrderParameterValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::structureFactor"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::StructureFactorValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicGrüneisenParameter"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::ThermodynamicGrüneisenParameterValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::thomsonCoefficient"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue"))) (provenance authored))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::isBound"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::isOrthogonal"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::isOrthogonal"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::isOrthogonal"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::mRefs"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::mRefs"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::mRefs"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::mRefs"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::isBound"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::isBound"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianSpatial3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::isBound"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianSpatial3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::isBound"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianSpatial3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::isBound"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianSpatial3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::isBound"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::isOrthogonal"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::isOrthogonal"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::isOrthogonal"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::mRefs"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::mRefs"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::mRefs"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::mRefs"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::isBound"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::isBound"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianSpatial3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::isBound"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianSpatial3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::acceptorDensity"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::acceptorDensity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::angularReciprocalLatticeVectorMagnitude"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::angularReciprocalLatticeVectorMagnitude"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::angularWavenumber"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::RepetencyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::angularWavenumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::atomicScatteringFactor"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AtomicScatteringFactorValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::atomicScatteringFactor"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::braggAngle"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AngularMeasureValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::braggAngle"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianAngularReciprocalLattice3dVector"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianAngularReciprocalLattice3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianBurgers3dVector"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianBurgers3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianDisplacement3dVector"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianDisplacement3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianEquilibriumPosition3dVector"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianEquilibriumPosition3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianFundamentalLattice3dVector"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianFundamentalLattice3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianFundamentalReciprocalLattice3dVector"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianFundamentalReciprocalLattice3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianLattice3dVector"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianLattice3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianParticlePosition3dVector"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianParticlePosition3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularFrequency"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::AngularFrequencyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularFrequency"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularWavenumber"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::RepetencyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularWavenumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::debyeWallerFactor"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::DebyeWallerFactorValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::debyeWallerFactor"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::densityOfVibrationalStates"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::densityOfVibrationalStates"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::donorDensity"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::donorDensity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::electronAffinity"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::electronAffinity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::electronDensity"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::electronDensity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::energyDensityOfStates"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::energyDensityOfStates"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::exchangeIntegral"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::exchangeIntegral"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::fermiAngularWavenumber"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::RepetencyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::fermiAngularWavenumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::fermiEnergy"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::fermiEnergy"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::fundamentalReciprocalLatticeVectorMagnitude"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::fundamentalReciprocalLatticeVectorMagnitude"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::gapEnergy"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::gapEnergy"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::grüneisenParameter"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::GrüneisenParameterValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::grüneisenParameter"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::hallCoefficient"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::hallCoefficient"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::holeDensity"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::holeDensity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::intrinsicCarrierDensity"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::intrinsicCarrierDensity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::ionizationEnergy"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::ionizationEnergy"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::longRangeOrderParameter"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::LongRangeOrderParameterValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::longRangeOrderParameter"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::lorenzCoefficient"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::lorenzCoefficient"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::lowerCriticalMagneticFluxDensity"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::MagneticFluxDensityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::lowerCriticalMagneticFluxDensity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::mobilityRatio"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::MobilityRatioValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::mobilityRatio"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::peltierCoefficientForSubstancesAAndB"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ElectricPotentialDifferenceValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::peltierCoefficientForSubstancesAAndB"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::residualResistivity"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ResistivityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::residualResistivity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::richardsonConstant"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::richardsonConstant"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::seebeckCoefficientForSubstancesAAndB"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::seebeckCoefficientForSubstancesAAndB"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::shortRangeOrderParameter"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ShortRangeOrderParameterValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::shortRangeOrderParameter"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::structureFactor"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::StructureFactorValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::structureFactor"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::superconductorEnergyGap"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::superconductorEnergyGap"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicCriticalMagneticFluxDensity"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::MagneticFluxDensityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicCriticalMagneticFluxDensity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicGrüneisenParameter"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ThermodynamicGrüneisenParameterValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicGrüneisenParameter"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::thermoelectricVoltageBetweenSubstancesAAndB"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ElectricPotentialDifferenceValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::thermoelectricVoltageBetweenSubstancesAAndB"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::thomsonCoefficient"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::thomsonCoefficient"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::upperCriticalMagneticFluxDensity"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::MagneticFluxDensityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::upperCriticalMagneticFluxDensity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCondensedMatter::workFunction"))) (target (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCondensedMatter::workFunction"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::AtomicScatteringFactorValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::isOrthogonal"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::mRefs"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::isOrthogonal"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::mRefs"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::DebyeWallerFactorValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::GrüneisenParameterValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit::electricCurrentPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::LongRangeOrderParameterValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::electricCurrentPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::MobilityRatioValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit::electricCurrentPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::electricCurrentPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::ShortRangeOrderParameterValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::StructureFactorValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::ThermodynamicGrüneisenParameterValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::electricCurrentPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::acceptorDensity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::angularReciprocalLatticeVectorMagnitude"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::angularWavenumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::atomicScatteringFactor"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::braggAngle"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::carrierLifetime"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianAngularReciprocalLattice3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianBurgers3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianDisplacement3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianEquilibriumPosition3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianFundamentalLattice3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianFundamentalReciprocalLattice3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianLattice3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianParticlePosition3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::coherenceLength"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::curieTemperature"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularFrequency"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularWavenumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::debyeTemperature"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::debyeWallerFactor"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::densityOfVibrationalStates"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::diffusionLengthForCondensedMatterPhysics"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::donorDensity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::effectiveMass"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::electronAffinity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::electronDensity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::energyDensityOfStates"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::exchangeIntegral"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::fermiAngularWavenumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::fermiEnergy"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::fermiTemperature"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::fundamentalReciprocalLatticeVectorMagnitude"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::gapEnergy"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::grüneisenParameter"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::hallCoefficient"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::holeDensity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::intrinsicCarrierDensity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::ionizationEnergy"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::latticePlaneSpacing"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::londonPenetrationDepth"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::longRangeOrderParameter"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::lorenzCoefficient"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::lowerCriticalMagneticFluxDensity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfElectrons"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfPhonons"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::mobilityRatio"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::néelTemperature"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::peltierCoefficientForSubstancesAAndB"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::relaxationTime"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::residualResistivity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::richardsonConstant"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::seebeckCoefficientForSubstancesAAndB"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::shortRangeOrderParameter"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::structureFactor"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::superconductionTransitionTemperature"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::superconductorEnergyGap"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicCriticalMagneticFluxDensity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicGrüneisenParameter"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::thermoelectricVoltageBetweenSubstancesAAndB"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::thomsonCoefficient"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::upperCriticalMagneticFluxDensity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCondensedMatter::workFunction"))) (status missing-prerequisite) (target "Base::DataValue"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/isq_condensed_matter.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 14 19) (end 14 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 15 19) (end 15 29))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 16 19) (end 16 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 17 19) (end 17 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 20 19) (end 20 72))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 21 19) (end 21 64))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 22 19) (end 22 56))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 23 19) (end 23 66))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 24 19) (end 24 54))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 25 19) (end 25 52))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 26 19) (end 26 47))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 27 19) (end 27 49))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 30 4) (end 30 688))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 43 8) (end 43 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 44 8) (end 44 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 44 8) (end 44 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 50 4) (end 50 810))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 63 8) (end 63 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 64 8) (end 64 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 64 8) (end 64 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 70 4) (end 70 749))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 83 8) (end 83 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 83 8) (end 83 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 84 8) (end 84 75))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 89 4) (end 89 269))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 90 8) (end 90 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 91 8) (end 91 80))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 94 4) (end 94 747))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 107 8) (end 107 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 108 8) (end 108 82))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 113 4) (end 113 258))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 114 8) (end 114 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 115 8) (end 115 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 116 8) (end 116 76))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 120 4) (end 120 783))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 133 8) (end 133 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 133 8) (end 133 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 134 8) (end 134 79))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 139 4) (end 139 273))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 140 8) (end 140 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 141 8) (end 141 80))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 144 4) (end 144 791))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 157 8) (end 157 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 158 8) (end 158 86))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 163 4) (end 163 266))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 164 8) (end 164 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 165 8) (end 165 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 166 8) (end 166 80))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 170 4) (end 170 578))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 186 4) (end 186 677))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 202 4) (end 202 727))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 219 4) (end 219 700))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 236 4) (end 236 747))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 253 4) (end 253 789))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 270 4) (end 270 599))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 283 8) (end 283 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 284 8) (end 284 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 284 8) (end 284 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 290 4) (end 290 701))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 303 8) (end 303 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 304 8) (end 304 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 304 8) (end 304 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 310 4) (end 310 656))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 323 8) (end 323 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 324 8) (end 324 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 324 8) (end 324 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 330 4) (end 330 888))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 343 8) (end 343 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 344 8) (end 344 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 344 8) (end 344 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 350 4) (end 350 656))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 367 4) (end 367 1293))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 385 4) (end 385 622))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 403 4) (end 403 686))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 421 4) (end 421 595))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 437 4) (end 437 819))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 453 4) (end 453 972))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 466 8) (end 466 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 466 8) (end 466 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 467 8) (end 467 62))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 472 4) (end 472 375))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 473 8) (end 473 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 474 8) (end 474 104))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 475 8) (end 475 94))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 479 4) (end 479 756))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 496 4) (end 496 750))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 513 4) (end 513 528))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 529 4) (end 529 536))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 545 4) (end 545 978))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 558 8) (end 558 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 558 8) (end 558 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 559 8) (end 559 57))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 564 4) (end 564 480))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 565 8) (end 565 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 566 8) (end 566 101))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 567 8) (end 567 104))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 568 8) (end 568 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 572 4) (end 572 579))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 588 4) (end 588 885))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 601 8) (end 601 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 601 8) (end 601 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 602 8) (end 602 53))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 607 4) (end 607 760))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 608 8) (end 608 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 609 8) (end 609 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 610 8) (end 610 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 611 8) (end 611 112))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 612 8) (end 612 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 613 8) (end 613 149))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 617 4) (end 617 818))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 630 8) (end 630 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 630 8) (end 630 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 631 8) (end 631 51))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 636 4) (end 636 496))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 637 8) (end 637 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 638 8) (end 638 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 639 8) (end 639 112))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 640 8) (end 640 113))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 644 4) (end 644 675))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 660 4) (end 660 926))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 673 8) (end 673 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 673 8) (end 673 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 674 8) (end 674 72))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 679 4) (end 679 779))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 680 8) (end 680 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 681 8) (end 681 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 682 8) (end 682 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 683 8) (end 683 112))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 684 8) (end 684 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 685 8) (end 685 149))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 689 4) (end 689 832))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 705 4) (end 705 778))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 718 8) (end 718 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 718 8) (end 718 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 719 8) (end 719 54))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 724 4) (end 724 761))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 725 8) (end 725 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 726 8) (end 726 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 727 8) (end 727 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 728 8) (end 728 112))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 729 8) (end 729 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 730 8) (end 730 149))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 734 4) (end 734 993))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 750 4) (end 750 617))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 766 4) (end 766 627))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 782 4) (end 782 789))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 795 8) (end 795 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 795 8) (end 795 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 796 8) (end 796 54))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 801 4) (end 801 534))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 802 8) (end 802 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 803 8) (end 803 111))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 804 8) (end 804 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 805 8) (end 805 129))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 809 4) (end 809 898))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 825 4) (end 825 593))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 841 4) (end 841 754))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 857 4) (end 857 818))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 870 8) (end 870 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 870 8) (end 870 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 871 8) (end 871 51))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 876 4) (end 876 245))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 877 8) (end 877 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 878 8) (end 878 80))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 882 4) (end 882 795))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 895 8) (end 895 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 895 8) (end 895 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 896 8) (end 896 47))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 901 4) (end 901 241))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 902 8) (end 902 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 903 8) (end 903 80))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 907 4) (end 907 877))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 920 8) (end 920 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 920 8) (end 920 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 921 8) (end 921 59))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 926 4) (end 926 253))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 927 8) (end 927 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 928 8) (end 928 80))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 932 4) (end 932 535))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 945 8) (end 945 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 945 8) (end 945 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 946 8) (end 946 48))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 951 4) (end 951 242))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 952 8) (end 952 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 953 8) (end 953 80))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 957 4) (end 957 550))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 970 8) (end 970 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 970 8) (end 970 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 971 8) (end 971 51))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 976 4) (end 976 245))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 977 8) (end 977 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 978 8) (end 978 80))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 982 4) (end 982 815))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 998 4) (end 998 638))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1015 4) (end 1015 702))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1031 4) (end 1031 668))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1047 4) (end 1047 709))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1063 4) (end 1063 605))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1079 4) (end 1079 588))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1095 4) (end 1095 533))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1111 4) (end 1111 590))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1127 4) (end 1127 1062))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1143 4) (end 1143 666))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1159 4) (end 1159 650))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1175 4) (end 1175 538))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1191 4) (end 1191 701))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1207 4) (end 1207 565))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

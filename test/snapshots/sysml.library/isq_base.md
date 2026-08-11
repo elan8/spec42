@@ -212,169 +212,164 @@ standard library package ISQBase {
     }
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'SimpleUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'SimpleUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'SimpleUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'SimpleUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'SimpleUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'SimpleUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'SimpleUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'SystemOfQuantities'
-semantic.unresolved_name 'baseQuantities'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'SimpleUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'SimpleUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'SimpleUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'SimpleUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'SimpleUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'SimpleUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'SimpleUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'SystemOfQuantities'
-semantic.unresolved_name 'baseQuantities'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "isq_base.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 19) (end 10 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 11 19) (end 11 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 12 19) (end 12 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 15 4) (end 15 641))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 34 4) (end 34 234))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 35 8) (end 35 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 40 4) (end 40 683))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 59 4) (end 59 240))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 60 8) (end 60 104))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 65 4) (end 65 728))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 84 4) (end 84 228))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 85 8) (end 85 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 90 4) (end 90 2181))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 109 4) (end 109 291))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 110 8) (end 110 123))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 115 4) (end 115 963))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 134 4) (end 134 261))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 135 8) (end 135 111))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 140 4) (end 140 1591))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 159 4) (end 159 267))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 160 8) (end 160 113))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 165 4) (end 165 1473))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 184 4) (end 184 267))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 185 8) (end 185 113))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 189 4) (end 189 666))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -584,6 +579,170 @@ CloseCurly,EndOfFile,
       (attribute_usage ''Θ'' : 'ThermodynamicTemperatureValue' multiplicity)
       (attribute_usage 'N' : 'AmountOfSubstanceValue' multiplicity)
       (attribute_usage 'J' : 'LuminousIntensityValue' multiplicity))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'SimpleUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'SimpleUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'SimpleUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'SimpleUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'SimpleUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'SimpleUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'SimpleUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'SystemOfQuantities'
+semantic.unresolved_name 'baseQuantities'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'SimpleUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'SimpleUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'SimpleUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'SimpleUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'SimpleUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'SimpleUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'SimpleUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'SystemOfQuantities'
+semantic.unresolved_name 'baseQuantities'
 ~~~
 # FORMAT
 ~~~sysml
@@ -797,556 +956,211 @@ standard library package ISQBase {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ISQBase"))) (name "ISQBase") (declared-name "ISQBase")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQBase::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQBase::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit"))) (name "AmountOfSubstanceUnit") (declared-name "AmountOfSubstanceUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit::amountOfSubstancePF"))) (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue"))) (name "AmountOfSubstanceValue") (declared-name "AmountOfSubstanceValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::DurationUnit"))) (name "DurationUnit") (declared-name "DurationUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::DurationUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::DurationUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::DurationUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::DurationUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::DurationValue"))) (name "DurationValue") (declared-name "DurationValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQBase::DurationValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQBase::DurationValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::DurationValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::DurationValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::DurationValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::DurationValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit"))) (name "ElectricCurrentUnit") (declared-name "ElectricCurrentUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue"))) (name "ElectricCurrentValue") (declared-name "ElectricCurrentValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities"))) (name "International System of Quantities") (declared-name "International System of Quantities") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::I"))) (name "I") (declared-name "I") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::International System of Quantities")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::J"))) (name "J") (declared-name "J") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::International System of Quantities")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::L"))) (name "L") (declared-name "L") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::International System of Quantities")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::M"))) (name "M") (declared-name "M") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::International System of Quantities")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::N"))) (name "N") (declared-name "N") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::International System of Quantities")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::T"))) (name "T") (declared-name "T") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::International System of Quantities")))))
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQBase::International System of Quantities")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::baseQuantities"))) (name "baseQuantities") (declared-name "baseQuantities") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::International System of Quantities")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::Θ"))) (name "Θ") (declared-name "Θ") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::International System of Quantities")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::LengthUnit"))) (name "LengthUnit") (declared-name "LengthUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::LengthUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::LengthUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::LengthUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::LengthUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::LengthValue"))) (name "LengthValue") (declared-name "LengthValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQBase::LengthValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQBase::LengthValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::LengthValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::LengthValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::LengthValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::LengthValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit"))) (name "LuminousIntensityUnit") (declared-name "LuminousIntensityUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit::luminousIntensityPF"))) (name "luminousIntensityPF") (declared-name "luminousIntensityPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue"))) (name "LuminousIntensityValue") (declared-name "LuminousIntensityValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::MassUnit"))) (name "MassUnit") (declared-name "MassUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::MassUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::MassUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::MassUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::MassUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::MassValue"))) (name "MassValue") (declared-name "MassValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQBase::MassValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQBase::MassValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::MassValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::MassValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::MassValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::MassValue")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQBase::Real"))) (name "Real") (declared-name "Real"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit"))) (name "ThermodynamicTemperatureUnit") (declared-name "ThermodynamicTemperatureUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue"))) (name "ThermodynamicTemperatureValue") (declared-name "ThermodynamicTemperatureValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue")))))
-          )
-        )
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQBase::_documentation"))) (name ""))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::amountOfSubstance"))) (name "amountOfSubstance") (declared-name "amountOfSubstance") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::duration"))) (name "duration") (declared-name "duration") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::electricCurrent"))) (name "electricCurrent") (declared-name "electricCurrent") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::length"))) (name "length") (declared-name "length") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::luminousIntensity"))) (name "luminousIntensity") (declared-name "luminousIntensity") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::mass"))) (name "mass") (declared-name "mass") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::thermodynamicTemperature"))) (name "thermodynamicTemperature") (declared-name "thermodynamicTemperature") (declared (properties (ordered false) (unique false))))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "057c36eb002774ea19a360f69af1575e45965ae4755b950d206f5cbb41eb641f") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ISQBase"))) (kind "package") (name "ISQBase") (declared-name "ISQBase") (range (start (line 0) (character 0)) (end (line 0) (character 12218))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 11) (character 4)) (end (line 11) (character 33))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Import) (visibility "private") (import (reference "Quantities::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 11) (character 19)) (end (line 11) (character 29))))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 12) (character 4)) (end (line 12) (character 44))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Import) (visibility "private") (import (reference "MeasurementReferences::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 12) (character 19)) (end (line 12) (character 40))))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit"))) (kind "attribute def") (name "AmountOfSubstanceUnit") (declared-name "AmountOfSubstanceUnit") (range (start (line 184) (character 4)) (end (line 184) (character 267))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Owning)) (relationships (typing (reference "SimpleUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit::amountOfSubstancePF"))) (kind "attribute") (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (range (start (line 185) (character 8)) (end (line 185) (character 113))) (parent (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 186) (character 8)) (end (line 186) (character 91))) (parent (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 186) (character 22)) (end (line 186) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue"))) (kind "attribute def") (name "AmountOfSubstanceValue") (declared-name "AmountOfSubstanceValue") (range (start (line 165) (character 4)) (end (line 165) (character 1473))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::_documentation"))) (kind "documentation") (name "") (range (start (line 165) (character 4)) (end (line 165) (character 1473))) (parent (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 179) (character 8)) (end (line 179) (character 53))) (parent (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "AmountOfSubstanceUnit") (range none)) (redefinition (reference "mRef") (range (start (line 179) (character 22)) (end (line 179) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 178) (character 8)) (end (line 178) (character 32))) (parent (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 178) (character 22)) (end (line 178) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::DurationUnit"))) (kind "attribute def") (name "DurationUnit") (declared-name "DurationUnit") (range (start (line 59) (character 4)) (end (line 59) (character 240))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Owning)) (relationships (typing (reference "SimpleUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::DurationUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 60) (character 8)) (end (line 60) (character 104))) (parent (node (document "d0") (qualified-name "ISQBase::DurationUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::DurationUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 61) (character 8)) (end (line 61) (character 82))) (parent (node (document "d0") (qualified-name "ISQBase::DurationUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 61) (character 22)) (end (line 61) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::DurationValue"))) (kind "attribute def") (name "DurationValue") (declared-name "DurationValue") (range (start (line 40) (character 4)) (end (line 40) (character 683))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::DurationValue::_documentation"))) (kind "documentation") (name "") (range (start (line 40) (character 4)) (end (line 40) (character 683))) (parent (node (document "d0") (qualified-name "ISQBase::DurationValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::DurationValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 54) (character 8)) (end (line 54) (character 44))) (parent (node (document "d0") (qualified-name "ISQBase::DurationValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "DurationUnit") (range none)) (redefinition (reference "mRef") (range (start (line 54) (character 22)) (end (line 54) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::DurationValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 53) (character 8)) (end (line 53) (character 32))) (parent (node (document "d0") (qualified-name "ISQBase::DurationValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 53) (character 22)) (end (line 53) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit"))) (kind "attribute def") (name "ElectricCurrentUnit") (declared-name "ElectricCurrentUnit") (range (start (line 134) (character 4)) (end (line 134) (character 261))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Owning)) (relationships (typing (reference "SimpleUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit::electricCurrentPF"))) (kind "attribute") (name "electricCurrentPF") (declared-name "electricCurrentPF") (range (start (line 135) (character 8)) (end (line 135) (character 111))) (parent (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 136) (character 8)) (end (line 136) (character 89))) (parent (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 136) (character 22)) (end (line 136) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue"))) (kind "attribute def") (name "ElectricCurrentValue") (declared-name "ElectricCurrentValue") (range (start (line 115) (character 4)) (end (line 115) (character 963))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::_documentation"))) (kind "documentation") (name "") (range (start (line 115) (character 4)) (end (line 115) (character 963))) (parent (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 129) (character 8)) (end (line 129) (character 51))) (parent (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "ElectricCurrentUnit") (range none)) (redefinition (reference "mRef") (range (start (line 129) (character 22)) (end (line 129) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 128) (character 8)) (end (line 128) (character 32))) (parent (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 128) (character 22)) (end (line 128) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities"))) (kind "attribute def") (name "International System of Quantities") (declared-name "International System of Quantities") (range (start (line 189) (character 4)) (end (line 189) (character 666))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Owning)) (relationships (typing (reference "SystemOfQuantities") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::I"))) (kind "attribute") (name "I") (declared-name "I") (range (start (line 200) (character 8)) (end (line 200) (character 45))) (parent (node (document "d0") (qualified-name "ISQBase::International System of Quantities"))) (authored (membership (kind Feature)) (relationships (typing (reference "ElectricCurrentValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::J"))) (kind "attribute") (name "J") (declared-name "J") (range (start (line 203) (character 8)) (end (line 203) (character 47))) (parent (node (document "d0") (qualified-name "ISQBase::International System of Quantities"))) (authored (membership (kind Feature)) (relationships (typing (reference "LuminousIntensityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::L"))) (kind "attribute") (name "L") (declared-name "L") (range (start (line 197) (character 8)) (end (line 197) (character 36))) (parent (node (document "d0") (qualified-name "ISQBase::International System of Quantities"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::M"))) (kind "attribute") (name "M") (declared-name "M") (range (start (line 198) (character 8)) (end (line 198) (character 34))) (parent (node (document "d0") (qualified-name "ISQBase::International System of Quantities"))) (authored (membership (kind Feature)) (relationships (typing (reference "MassValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::N"))) (kind "attribute") (name "N") (declared-name "N") (range (start (line 202) (character 8)) (end (line 202) (character 47))) (parent (node (document "d0") (qualified-name "ISQBase::International System of Quantities"))) (authored (membership (kind Feature)) (relationships (typing (reference "AmountOfSubstanceValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::T"))) (kind "attribute") (name "T") (declared-name "T") (range (start (line 199) (character 8)) (end (line 199) (character 38))) (parent (node (document "d0") (qualified-name "ISQBase::International System of Quantities"))) (authored (membership (kind Feature)) (relationships (typing (reference "DurationValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::_documentation"))) (kind "documentation") (name "") (range (start (line 189) (character 4)) (end (line 189) (character 666))) (parent (node (document "d0") (qualified-name "ISQBase::International System of Quantities"))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::baseQuantities"))) (kind "attribute") (name "baseQuantities") (declared-name "baseQuantities") (range (start (line 195) (character 8)) (end (line 195) (character 66))) (parent (node (document "d0") (qualified-name "ISQBase::International System of Quantities"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "baseQuantities") (range (start (line 195) (character 22)) (end (line 195) (character 36)))))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::Θ"))) (kind "attribute") (name "Θ") (declared-name "Θ") (range (start (line 201) (character 8)) (end (line 201) (character 57))) (parent (node (document "d0") (qualified-name "ISQBase::International System of Quantities"))) (authored (membership (kind Feature)) (relationships (typing (reference "ThermodynamicTemperatureValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::LengthUnit"))) (kind "attribute def") (name "LengthUnit") (declared-name "LengthUnit") (range (start (line 34) (character 4)) (end (line 34) (character 234))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Owning)) (relationships (typing (reference "SimpleUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::LengthUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 35) (character 8)) (end (line 35) (character 102))) (parent (node (document "d0") (qualified-name "ISQBase::LengthUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::LengthUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 36) (character 8)) (end (line 36) (character 80))) (parent (node (document "d0") (qualified-name "ISQBase::LengthUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 36) (character 22)) (end (line 36) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::LengthValue"))) (kind "attribute def") (name "LengthValue") (declared-name "LengthValue") (range (start (line 15) (character 4)) (end (line 15) (character 641))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::LengthValue::_documentation"))) (kind "documentation") (name "") (range (start (line 15) (character 4)) (end (line 15) (character 641))) (parent (node (document "d0") (qualified-name "ISQBase::LengthValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::LengthValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 29) (character 8)) (end (line 29) (character 42))) (parent (node (document "d0") (qualified-name "ISQBase::LengthValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthUnit") (range none)) (redefinition (reference "mRef") (range (start (line 29) (character 22)) (end (line 29) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::LengthValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 28) (character 8)) (end (line 28) (character 32))) (parent (node (document "d0") (qualified-name "ISQBase::LengthValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 28) (character 22)) (end (line 28) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit"))) (kind "attribute def") (name "LuminousIntensityUnit") (declared-name "LuminousIntensityUnit") (range (start (line 159) (character 4)) (end (line 159) (character 267))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Owning)) (relationships (typing (reference "SimpleUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit::luminousIntensityPF"))) (kind "attribute") (name "luminousIntensityPF") (declared-name "luminousIntensityPF") (range (start (line 160) (character 8)) (end (line 160) (character 113))) (parent (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 161) (character 8)) (end (line 161) (character 91))) (parent (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 161) (character 22)) (end (line 161) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue"))) (kind "attribute def") (name "LuminousIntensityValue") (declared-name "LuminousIntensityValue") (range (start (line 140) (character 4)) (end (line 140) (character 1591))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::_documentation"))) (kind "documentation") (name "") (range (start (line 140) (character 4)) (end (line 140) (character 1591))) (parent (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 154) (character 8)) (end (line 154) (character 53))) (parent (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "LuminousIntensityUnit") (range none)) (redefinition (reference "mRef") (range (start (line 154) (character 22)) (end (line 154) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 153) (character 8)) (end (line 153) (character 32))) (parent (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 153) (character 22)) (end (line 153) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::MassUnit"))) (kind "attribute def") (name "MassUnit") (declared-name "MassUnit") (range (start (line 84) (character 4)) (end (line 84) (character 228))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Owning)) (relationships (typing (reference "SimpleUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::MassUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 85) (character 8)) (end (line 85) (character 100))) (parent (node (document "d0") (qualified-name "ISQBase::MassUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::MassUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 86) (character 8)) (end (line 86) (character 78))) (parent (node (document "d0") (qualified-name "ISQBase::MassUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 86) (character 22)) (end (line 86) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::MassValue"))) (kind "attribute def") (name "MassValue") (declared-name "MassValue") (range (start (line 65) (character 4)) (end (line 65) (character 728))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::MassValue::_documentation"))) (kind "documentation") (name "") (range (start (line 65) (character 4)) (end (line 65) (character 728))) (parent (node (document "d0") (qualified-name "ISQBase::MassValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::MassValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 79) (character 8)) (end (line 79) (character 40))) (parent (node (document "d0") (qualified-name "ISQBase::MassValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "MassUnit") (range none)) (redefinition (reference "mRef") (range (start (line 79) (character 22)) (end (line 79) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::MassValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 78) (character 8)) (end (line 78) (character 32))) (parent (node (document "d0") (qualified-name "ISQBase::MassValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 78) (character 22)) (end (line 78) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::Real"))) (kind "import") (name "Real") (declared-name "Real") (range (start (line 10) (character 4)) (end (line 10) (character 38))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 10) (character 19)) (end (line 10) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit"))) (kind "attribute def") (name "ThermodynamicTemperatureUnit") (declared-name "ThermodynamicTemperatureUnit") (range (start (line 109) (character 4)) (end (line 109) (character 291))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Owning)) (relationships (typing (reference "SimpleUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 111) (character 8)) (end (line 111) (character 98))) (parent (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 111) (character 22)) (end (line 111) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 110) (character 8)) (end (line 110) (character 123))) (parent (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue"))) (kind "attribute def") (name "ThermodynamicTemperatureValue") (declared-name "ThermodynamicTemperatureValue") (range (start (line 90) (character 4)) (end (line 90) (character 2181))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::_documentation"))) (kind "documentation") (name "") (range (start (line 90) (character 4)) (end (line 90) (character 2181))) (parent (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 104) (character 8)) (end (line 104) (character 60))) (parent (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "ThermodynamicTemperatureUnit") (range none)) (redefinition (reference "mRef") (range (start (line 104) (character 22)) (end (line 104) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 103) (character 8)) (end (line 103) (character 32))) (parent (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 103) (character 22)) (end (line 103) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 12218))) (parent (node (document "d0") (qualified-name "ISQBase"))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::amountOfSubstance"))) (kind "attribute def") (name "amountOfSubstance") (declared-name "amountOfSubstance") (range (start (line 182) (character 4)) (end (line 182) (character 89))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Owning)) (relationships (typing (reference "AmountOfSubstanceValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::duration"))) (kind "attribute def") (name "duration") (declared-name "duration") (range (start (line 57) (character 4)) (end (line 57) (character 71))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Owning)) (relationships (typing (reference "DurationValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::electricCurrent"))) (kind "attribute def") (name "electricCurrent") (declared-name "electricCurrent") (range (start (line 132) (character 4)) (end (line 132) (character 85))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Owning)) (relationships (typing (reference "ElectricCurrentValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::length"))) (kind "attribute def") (name "length") (declared-name "length") (range (start (line 32) (character 4)) (end (line 32) (character 67))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Owning)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::luminousIntensity"))) (kind "attribute def") (name "luminousIntensity") (declared-name "luminousIntensity") (range (start (line 157) (character 4)) (end (line 157) (character 89))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Owning)) (relationships (typing (reference "LuminousIntensityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::mass"))) (kind "attribute def") (name "mass") (declared-name "mass") (range (start (line 82) (character 4)) (end (line 82) (character 63))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Owning)) (relationships (typing (reference "MassValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQBase::thermodynamicTemperature"))) (kind "attribute def") (name "thermodynamicTemperature") (declared-name "thermodynamicTemperature") (range (start (line 107) (character 4)) (end (line 107) (character 103))) (parent (node (document "d0") (qualified-name "ISQBase"))) (authored (membership (kind Owning)) (relationships (typing (reference "ThermodynamicTemperatureValue") (range none)))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Quantities::*") (range (start (line 11) (character 19)) (end (line 11) (character 29))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "MeasurementReferences::*") (range (start (line 12) (character 19)) (end (line 12) (character 40))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "SimpleUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit::amountOfSubstancePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 186) (character 22)) (end (line 186) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "AmountOfSubstanceUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 179) (character 22)) (end (line 179) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 178) (character 22)) (end (line 178) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::DurationUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "SimpleUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::DurationUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::DurationUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 61) (character 22)) (end (line 61) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::DurationUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::DurationValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::DurationValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "DurationUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::DurationUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::DurationValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 54) (character 22)) (end (line 54) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::DurationValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::DurationValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::DurationValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 53) (character 22)) (end (line 53) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::DurationValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "SimpleUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit::electricCurrentPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 136) (character 22)) (end (line 136) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "ElectricCurrentUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 129) (character 22)) (end (line 129) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 128) (character 22)) (end (line 128) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::International System of Quantities"))) (kind featureTyping) (ordinal 0)) (authored-target "SystemOfQuantities") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::International System of Quantities::I"))) (kind featureTyping) (ordinal 0)) (authored-target "ElectricCurrentValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::International System of Quantities::J"))) (kind featureTyping) (ordinal 0)) (authored-target "LuminousIntensityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::International System of Quantities::L"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::LengthValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::International System of Quantities::M"))) (kind featureTyping) (ordinal 0)) (authored-target "MassValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::MassValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::International System of Quantities::N"))) (kind featureTyping) (ordinal 0)) (authored-target "AmountOfSubstanceValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::International System of Quantities::T"))) (kind featureTyping) (ordinal 0)) (authored-target "DurationValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::DurationValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::International System of Quantities::baseQuantities"))) (kind redefinition) (ordinal 0)) (authored-target "baseQuantities") (range (start (line 195) (character 22)) (end (line 195) (character 36))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::International System of Quantities::baseQuantities")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::International System of Quantities::Θ"))) (kind featureTyping) (ordinal 0)) (authored-target "ThermodynamicTemperatureValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::LengthUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "SimpleUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::LengthUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::LengthUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 36) (character 22)) (end (line 36) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::LengthUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::LengthValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::LengthValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::LengthUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::LengthValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 29) (character 22)) (end (line 29) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::LengthValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::LengthValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::LengthValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 28) (character 22)) (end (line 28) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::LengthValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "SimpleUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit::luminousIntensityPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 161) (character 22)) (end (line 161) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "LuminousIntensityUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 154) (character 22)) (end (line 154) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 153) (character 22)) (end (line 153) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::MassUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "SimpleUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::MassUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::MassUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 86) (character 22)) (end (line 86) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::MassUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::MassValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::MassValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "MassUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::MassUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::MassValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 79) (character 22)) (end (line 79) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::MassValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::MassValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::MassValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 78) (character 22)) (end (line 78) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::MassValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (range (start (line 10) (character 19)) (end (line 10) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "SimpleUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 111) (character 22)) (end (line 111) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "ThermodynamicTemperatureUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 104) (character 22)) (end (line 104) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 103) (character 22)) (end (line 103) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::amountOfSubstance"))) (kind featureTyping) (ordinal 0)) (authored-target "AmountOfSubstanceValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::duration"))) (kind featureTyping) (ordinal 0)) (authored-target "DurationValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::DurationValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::electricCurrent"))) (kind featureTyping) (ordinal 0)) (authored-target "ElectricCurrentValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::length"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::LengthValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::luminousIntensity"))) (kind featureTyping) (ordinal 0)) (authored-target "LuminousIntensityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::mass"))) (kind featureTyping) (ordinal 0)) (authored-target "MassValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::MassValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQBase::thermodynamicTemperature"))) (kind featureTyping) (ordinal 0)) (authored-target "ThermodynamicTemperatureValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue")))))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQBase::DurationValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQBase::DurationValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQBase::International System of Quantities::_documentation"))) (to (node (document "d0") (qualified-name "ISQBase::International System of Quantities"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQBase::LengthValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQBase::LengthValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQBase::MassValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQBase::MassValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQBase::_documentation"))) (to (node (document "d0") (qualified-name "ISQBase"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::DurationValue::mRef"))) (to (node (document "d0") (qualified-name "ISQBase::DurationUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::mRef"))) (to (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::International System of Quantities::I"))) (to (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::International System of Quantities::J"))) (to (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::International System of Quantities::L"))) (to (node (document "d0") (qualified-name "ISQBase::LengthValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::International System of Quantities::M"))) (to (node (document "d0") (qualified-name "ISQBase::MassValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::International System of Quantities::N"))) (to (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::International System of Quantities::T"))) (to (node (document "d0") (qualified-name "ISQBase::DurationValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::International System of Quantities::Θ"))) (to (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::LengthValue::mRef"))) (to (node (document "d0") (qualified-name "ISQBase::LengthUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::MassValue::mRef"))) (to (node (document "d0") (qualified-name "ISQBase::MassUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::mRef"))) (to (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::amountOfSubstance"))) (to (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::duration"))) (to (node (document "d0") (qualified-name "ISQBase::DurationValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::electricCurrent"))) (to (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::length"))) (to (node (document "d0") (qualified-name "ISQBase::LengthValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::luminousIntensity"))) (to (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::mass"))) (to (node (document "d0") (qualified-name "ISQBase::MassValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::thermodynamicTemperature"))) (to (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue"))) (provenance authored))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::mRef"))) (target (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::mRef"))) (target (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::num"))) (target (node (document "d0") (qualified-name "ISQBase::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::num"))) (target (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQBase::DurationUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQBase::DurationUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::DurationUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::DurationValue::mRef"))) (target (node (document "d0") (qualified-name "ISQBase::DurationUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::DurationValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQBase::DurationValue::mRef"))) (target (node (document "d0") (qualified-name "ISQBase::DurationValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::DurationValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::DurationValue::num"))) (target (node (document "d0") (qualified-name "ISQBase::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::DurationValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQBase::DurationValue::num"))) (target (node (document "d0") (qualified-name "ISQBase::DurationValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::DurationValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::mRef"))) (target (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::mRef"))) (target (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::num"))) (target (node (document "d0") (qualified-name "ISQBase::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::num"))) (target (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::International System of Quantities::I"))) (target (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::International System of Quantities::I"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::International System of Quantities::J"))) (target (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::International System of Quantities::J"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::International System of Quantities::L"))) (target (node (document "d0") (qualified-name "ISQBase::LengthValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::International System of Quantities::L"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::International System of Quantities::M"))) (target (node (document "d0") (qualified-name "ISQBase::MassValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::International System of Quantities::M"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::International System of Quantities::N"))) (target (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::International System of Quantities::N"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::International System of Quantities::T"))) (target (node (document "d0") (qualified-name "ISQBase::DurationValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::International System of Quantities::T"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQBase::International System of Quantities::baseQuantities"))) (target (node (document "d0") (qualified-name "ISQBase::International System of Quantities::baseQuantities"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::International System of Quantities::baseQuantities"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::International System of Quantities::Θ"))) (target (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::International System of Quantities::Θ"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQBase::LengthUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQBase::LengthUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::LengthUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::LengthValue::mRef"))) (target (node (document "d0") (qualified-name "ISQBase::LengthUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::LengthValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQBase::LengthValue::mRef"))) (target (node (document "d0") (qualified-name "ISQBase::LengthValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::LengthValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::LengthValue::num"))) (target (node (document "d0") (qualified-name "ISQBase::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::LengthValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQBase::LengthValue::num"))) (target (node (document "d0") (qualified-name "ISQBase::LengthValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::LengthValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::num"))) (target (node (document "d0") (qualified-name "ISQBase::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::num"))) (target (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQBase::MassUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQBase::MassUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::MassUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::MassValue::mRef"))) (target (node (document "d0") (qualified-name "ISQBase::MassUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::MassValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQBase::MassValue::mRef"))) (target (node (document "d0") (qualified-name "ISQBase::MassValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::MassValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::MassValue::num"))) (target (node (document "d0") (qualified-name "ISQBase::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::MassValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQBase::MassValue::num"))) (target (node (document "d0") (qualified-name "ISQBase::MassValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::MassValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::mRef"))) (target (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::mRef"))) (target (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::num"))) (target (node (document "d0") (qualified-name "ISQBase::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::num"))) (target (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::amountOfSubstance"))) (target (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::amountOfSubstance"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::duration"))) (target (node (document "d0") (qualified-name "ISQBase::DurationValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::duration"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::electricCurrent"))) (target (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::electricCurrent"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::length"))) (target (node (document "d0") (qualified-name "ISQBase::LengthValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::length"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::luminousIntensity"))) (target (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::luminousIntensity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::mass"))) (target (node (document "d0") (qualified-name "ISQBase::MassValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::mass"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQBase::thermodynamicTemperature"))) (target (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQBase::thermodynamicTemperature"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit::amountOfSubstancePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::DurationUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::DurationUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::DurationUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::DurationValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::DurationValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::DurationValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit::electricCurrentPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::International System of Quantities"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::International System of Quantities::I"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::International System of Quantities::J"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::International System of Quantities::L"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::International System of Quantities::M"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::International System of Quantities::N"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::International System of Quantities::T"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::International System of Quantities::baseQuantities"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::International System of Quantities::Θ"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::LengthUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::LengthUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::LengthUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::LengthValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::LengthValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::LengthValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit::luminousIntensityPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::MassUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::MassUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::MassUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::MassValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::MassValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::MassValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::amountOfSubstance"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::duration"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::electricCurrent"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::length"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::luminousIntensity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::mass"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQBase::thermodynamicTemperature"))) (status missing-prerequisite) (target "Base::DataValue"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/isq_base.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 10 19) (end 10 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 11 19) (end 11 29))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 12 19) (end 12 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 15 4) (end 15 641))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 28 8) (end 28 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 28 8) (end 28 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 29 8) (end 29 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 34 4) (end 34 234))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 35 8) (end 35 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 36 8) (end 36 80))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 40 4) (end 40 683))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 53 8) (end 53 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 53 8) (end 53 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 54 8) (end 54 44))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 59 4) (end 59 240))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 60 8) (end 60 104))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 61 8) (end 61 82))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 65 4) (end 65 728))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 78 8) (end 78 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 78 8) (end 78 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 79 8) (end 79 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 84 4) (end 84 228))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 85 8) (end 85 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 86 8) (end 86 78))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 90 4) (end 90 2181))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 103 8) (end 103 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 103 8) (end 103 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 104 8) (end 104 60))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 109 4) (end 109 291))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 110 8) (end 110 123))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 111 8) (end 111 98))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 115 4) (end 115 963))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 128 8) (end 128 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 128 8) (end 128 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 129 8) (end 129 51))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 134 4) (end 134 261))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 135 8) (end 135 111))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 136 8) (end 136 89))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 140 4) (end 140 1591))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 153 8) (end 153 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 153 8) (end 153 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 154 8) (end 154 53))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 159 4) (end 159 267))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 160 8) (end 160 113))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 161 8) (end 161 91))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 165 4) (end 165 1473))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 178 8) (end 178 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 178 8) (end 178 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 179 8) (end 179 53))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 184 4) (end 184 267))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 185 8) (end 185 113))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 186 8) (end 186 91))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 189 4) (end 189 666))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 195 8) (end 195 66))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

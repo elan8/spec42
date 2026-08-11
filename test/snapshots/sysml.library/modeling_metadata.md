@@ -149,27 +149,38 @@ standard library package ModelingMetadata {
 	
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Risk'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'annotatedElement'
-semantic.unresolved_name 'SysML::Dependency'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Risk'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'annotatedElement'
-semantic.unresolved_name 'SysML::Dependency'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "modeling_metadata.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 16) (end 6 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 16) (end 8 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 139 2) (end 139 43))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -299,6 +310,28 @@ CloseCurly,EndOfFile,
     (metadata_def 'Refinement'
       (documentation)
       (default_ref_usage :>> 'annotatedElement' : 'SysML::Dependency'))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Risk'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'annotatedElement'
+semantic.unresolved_name 'SysML::Dependency'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Risk'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'annotatedElement'
+semantic.unresolved_name 'SysML::Dependency'
 ~~~
 # FORMAT
 ~~~sysml
@@ -448,135 +481,62 @@ standard library package ModelingMetadata {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ModelingMetadata"))) (name "ModelingMetadata") (declared-name "ModelingMetadata")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "ModelingMetadata::Anything"))) (name "Anything") (declared-name "Anything"))
-        (element (kind "metadata def") (id (node (document "d0") (qualified-name "ModelingMetadata::Issue"))) (name "Issue") (declared-name "Issue")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ModelingMetadata::Issue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ModelingMetadata::Issue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ModelingMetadata::Issue::text"))) (name "text") (declared-name "text") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ModelingMetadata::Issue"))))
-              (contains
-                (element (kind "documentation") (id (node (document "d0") (qualified-name "ModelingMetadata::Issue::text::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ModelingMetadata::Issue")))))
-              )
-            )
-          )
-        )
-        (element (kind "metadata def") (id (node (document "d0") (qualified-name "ModelingMetadata::Rationale"))) (name "Rationale") (declared-name "Rationale")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ModelingMetadata::Rationale::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ModelingMetadata::Rationale")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ModelingMetadata::Rationale::text"))) (name "text") (declared-name "text") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ModelingMetadata::Rationale"))))
-              (contains
-                (element (kind "documentation") (id (node (document "d0") (qualified-name "ModelingMetadata::Rationale::text::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ModelingMetadata::Rationale")))))
-              )
-            )
-          )
-        )
-        (element (kind "metadata def") (id (node (document "d0") (qualified-name "ModelingMetadata::Refinement"))) (name "Refinement") (declared-name "Refinement")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ModelingMetadata::Refinement::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ModelingMetadata::Refinement")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ModelingMetadata::Refinement::annotatedElement"))) (name "annotatedElement") (declared-name "annotatedElement") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ModelingMetadata::Refinement")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "ModelingMetadata::Risk"))) (name "Risk") (declared-name "Risk"))
-        (element (kind "metadata def") (id (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo"))) (name "StatusInfo") (declared-name "StatusInfo")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::originator"))) (name "originator") (declared-name "originator") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo"))))
-              (contains
-                (element (kind "documentation") (id (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::originator::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo")))))
-              )
-            )
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::owner"))) (name "owner") (declared-name "owner") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo"))))
-              (contains
-                (element (kind "documentation") (id (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::owner::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo")))))
-              )
-            )
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::status"))) (name "status") (declared-name "status") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo"))))
-              (contains
-                (element (kind "documentation") (id (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::status::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ModelingMetadata::StatusKind")))))
-              )
-            )
-          )
-        )
-        (element (kind "enum def") (id (node (document "d0") (qualified-name "ModelingMetadata::StatusKind"))) (name "StatusKind") (declared-name "StatusKind")
-          (contains
-            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "ModelingMetadata::StatusKind::closed"))) (name "closed") (declared-name "closed") (effective (featuring-type (node (document "d0") (qualified-name "ModelingMetadata::StatusKind")))))
-            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "ModelingMetadata::StatusKind::done"))) (name "done") (declared-name "done") (effective (featuring-type (node (document "d0") (qualified-name "ModelingMetadata::StatusKind")))))
-            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "ModelingMetadata::StatusKind::open"))) (name "open") (declared-name "open") (effective (featuring-type (node (document "d0") (qualified-name "ModelingMetadata::StatusKind")))))
-            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "ModelingMetadata::StatusKind::tbc"))) (name "tbc") (declared-name "tbc") (effective (featuring-type (node (document "d0") (qualified-name "ModelingMetadata::StatusKind")))))
-            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "ModelingMetadata::StatusKind::tbd"))) (name "tbd") (declared-name "tbd") (effective (featuring-type (node (document "d0") (qualified-name "ModelingMetadata::StatusKind")))))
-            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "ModelingMetadata::StatusKind::tbr"))) (name "tbr") (declared-name "tbr") (effective (featuring-type (node (document "d0") (qualified-name "ModelingMetadata::StatusKind")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "ModelingMetadata::String"))) (name "String") (declared-name "String"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "ModelingMetadata::_documentation"))) (name ""))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a88e9f0a5a11eec4d38bc1bf8ecb88f77833aea229433bce0a77a8d310ea5ad2") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata"))) (kind "package") (name "ModelingMetadata") (declared-name "ModelingMetadata") (range (start (line 0) (character 0)) (end (line 0) (character 2423))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::Anything"))) (kind "import") (name "Anything") (declared-name "Anything") (range (start (line 6) (character 1)) (end (line 6) (character 31))) (parent (node (document "d0") (qualified-name "ModelingMetadata"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::Anything") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 30))))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::Issue"))) (kind "metadata def") (name "Issue") (declared-name "Issue") (range (start (line 117) (character 1)) (end (line 117) (character 207))) (parent (node (document "d0") (qualified-name "ModelingMetadata"))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::Issue::_documentation"))) (kind "documentation") (name "") (range (start (line 117) (character 1)) (end (line 117) (character 207))) (parent (node (document "d0") (qualified-name "ModelingMetadata::Issue"))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::Issue::text"))) (kind "attribute") (name "text") (declared-name "text") (range (start (line 123) (character 2)) (end (line 123) (character 89))) (parent (node (document "d0") (qualified-name "ModelingMetadata::Issue"))) (authored (membership (kind Feature)) (relationships (typing (reference "String") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::Issue::text::_documentation"))) (kind "documentation") (name "") (range (start (line 123) (character 2)) (end (line 123) (character 89))) (parent (node (document "d0") (qualified-name "ModelingMetadata::Issue::text"))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::Rationale"))) (kind "metadata def") (name "Rationale") (declared-name "Rationale") (range (start (line 94) (character 1)) (end (line 94) (character 504))) (parent (node (document "d0") (qualified-name "ModelingMetadata"))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::Rationale::_documentation"))) (kind "documentation") (name "") (range (start (line 94) (character 1)) (end (line 94) (character 504))) (parent (node (document "d0") (qualified-name "ModelingMetadata::Rationale"))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::Rationale::text"))) (kind "attribute") (name "text") (declared-name "text") (range (start (line 101) (character 2)) (end (line 101) (character 108))) (parent (node (document "d0") (qualified-name "ModelingMetadata::Rationale"))) (authored (membership (kind Feature)) (relationships (typing (reference "String") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::Rationale::text::_documentation"))) (kind "documentation") (name "") (range (start (line 101) (character 2)) (end (line 101) (character 108))) (parent (node (document "d0") (qualified-name "ModelingMetadata::Rationale::text"))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::Refinement"))) (kind "metadata def") (name "Refinement") (declared-name "Refinement") (range (start (line 131) (character 1)) (end (line 131) (character 348))) (parent (node (document "d0") (qualified-name "ModelingMetadata"))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::Refinement::_documentation"))) (kind "documentation") (name "") (range (start (line 131) (character 1)) (end (line 131) (character 348))) (parent (node (document "d0") (qualified-name "ModelingMetadata::Refinement"))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::Refinement::annotatedElement"))) (kind "attribute") (name "annotatedElement") (declared-name "annotatedElement") (range (start (line 139) (character 2)) (end (line 139) (character 43))) (parent (node (document "d0") (qualified-name "ModelingMetadata::Refinement"))) (authored (membership (kind Feature)) (relationships (typing (reference "Dependency") (range none)) (redefinition (reference "annotatedElement") (range (start (line 139) (character 2)) (end (line 139) (character 22)))))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::Risk"))) (kind "import") (name "Risk") (declared-name "Risk") (range (start (line 8) (character 1)) (end (line 8) (character 35))) (parent (node (document "d0") (qualified-name "ModelingMetadata"))) (authored (membership (kind Import) (visibility "private") (import (reference "RiskMetadata::Risk") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 34))))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo"))) (kind "metadata def") (name "StatusInfo") (declared-name "StatusInfo") (range (start (line 59) (character 1)) (end (line 59) (character 591))) (parent (node (document "d0") (qualified-name "ModelingMetadata"))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::_documentation"))) (kind "documentation") (name "") (range (start (line 59) (character 1)) (end (line 59) (character 591))) (parent (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo"))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::originator"))) (kind "attribute") (name "originator") (declared-name "originator") (range (start (line 65) (character 2)) (end (line 65) (character 111))) (parent (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo"))) (authored (membership (kind Feature)) (relationships (typing (reference "String") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::originator::_documentation"))) (kind "documentation") (name "") (range (start (line 65) (character 2)) (end (line 65) (character 111))) (parent (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::originator"))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::owner"))) (kind "attribute") (name "owner") (declared-name "owner") (range (start (line 72) (character 2)) (end (line 72) (character 109))) (parent (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo"))) (authored (membership (kind Feature)) (relationships (typing (reference "String") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::owner::_documentation"))) (kind "documentation") (name "") (range (start (line 72) (character 2)) (end (line 72) (character 109))) (parent (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::owner"))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::status"))) (kind "attribute") (name "status") (declared-name "status") (range (start (line 79) (character 2)) (end (line 79) (character 127))) (parent (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo"))) (authored (membership (kind Feature)) (relationships (typing (reference "StatusKind") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::status::_documentation"))) (kind "documentation") (name "") (range (start (line 79) (character 2)) (end (line 79) (character 127))) (parent (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::status"))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::StatusKind"))) (kind "enum def") (name "StatusKind") (declared-name "StatusKind") (range (start (line 10) (character 1)) (end (line 10) (character 500))) (parent (node (document "d0") (qualified-name "ModelingMetadata"))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::StatusKind::closed"))) (kind "enumerated value") (name "closed") (declared-name "closed") (range (start (line 51) (character 2)) (end (line 51) (character 8))) (parent (node (document "d0") (qualified-name "ModelingMetadata::StatusKind"))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::StatusKind::done"))) (kind "enumerated value") (name "done") (declared-name "done") (range (start (line 44) (character 2)) (end (line 44) (character 6))) (parent (node (document "d0") (qualified-name "ModelingMetadata::StatusKind"))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::StatusKind::open"))) (kind "enumerated value") (name "open") (declared-name "open") (range (start (line 16) (character 2)) (end (line 16) (character 6))) (parent (node (document "d0") (qualified-name "ModelingMetadata::StatusKind"))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::StatusKind::tbc"))) (kind "enumerated value") (name "tbc") (declared-name "tbc") (range (start (line 37) (character 2)) (end (line 37) (character 5))) (parent (node (document "d0") (qualified-name "ModelingMetadata::StatusKind"))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::StatusKind::tbd"))) (kind "enumerated value") (name "tbd") (declared-name "tbd") (range (start (line 23) (character 2)) (end (line 23) (character 5))) (parent (node (document "d0") (qualified-name "ModelingMetadata::StatusKind"))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::StatusKind::tbr"))) (kind "enumerated value") (name "tbr") (declared-name "tbr") (range (start (line 30) (character 2)) (end (line 30) (character 5))) (parent (node (document "d0") (qualified-name "ModelingMetadata::StatusKind"))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::String"))) (kind "import") (name "String") (declared-name "String") (range (start (line 7) (character 1)) (end (line 7) (character 37))) (parent (node (document "d0") (qualified-name "ModelingMetadata"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::String") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 36))))))
+    (element (id (node (document "d0") (qualified-name "ModelingMetadata::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 2423))) (parent (node (document "d0") (qualified-name "ModelingMetadata"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "ModelingMetadata::Anything"))) (kind membershipImport) (ordinal 0)) (authored-target "Base::Anything") (range (start (line 6) (character 16)) (end (line 6) (character 30))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ModelingMetadata::Issue::text"))) (kind featureTyping) (ordinal 0)) (authored-target "String") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ModelingMetadata::String")))))
+    (reference (id (source (node (document "d0") (qualified-name "ModelingMetadata::Rationale::text"))) (kind featureTyping) (ordinal 0)) (authored-target "String") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ModelingMetadata::String")))))
+    (reference (id (source (node (document "d0") (qualified-name "ModelingMetadata::Refinement::annotatedElement"))) (kind featureTyping) (ordinal 0)) (authored-target "Dependency") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ModelingMetadata::Refinement::annotatedElement"))) (kind redefinition) (ordinal 0)) (authored-target "annotatedElement") (range (start (line 139) (character 2)) (end (line 139) (character 22))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ModelingMetadata::Refinement::annotatedElement")))))
+    (reference (id (source (node (document "d0") (qualified-name "ModelingMetadata::Risk"))) (kind membershipImport) (ordinal 0)) (authored-target "RiskMetadata::Risk") (range (start (line 8) (character 16)) (end (line 8) (character 34))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::originator"))) (kind featureTyping) (ordinal 0)) (authored-target "String") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ModelingMetadata::String")))))
+    (reference (id (source (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::owner"))) (kind featureTyping) (ordinal 0)) (authored-target "String") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ModelingMetadata::String")))))
+    (reference (id (source (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::status"))) (kind featureTyping) (ordinal 0)) (authored-target "StatusKind") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ModelingMetadata::StatusKind")))))
+    (reference (id (source (node (document "d0") (qualified-name "ModelingMetadata::String"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::String") (range (start (line 7) (character 16)) (end (line 7) (character 36))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ModelingMetadata::Issue::_documentation"))) (to (node (document "d0") (qualified-name "ModelingMetadata::Issue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ModelingMetadata::Issue::text::_documentation"))) (to (node (document "d0") (qualified-name "ModelingMetadata::Issue::text"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ModelingMetadata::Rationale::_documentation"))) (to (node (document "d0") (qualified-name "ModelingMetadata::Rationale"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ModelingMetadata::Rationale::text::_documentation"))) (to (node (document "d0") (qualified-name "ModelingMetadata::Rationale::text"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ModelingMetadata::Refinement::_documentation"))) (to (node (document "d0") (qualified-name "ModelingMetadata::Refinement"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::_documentation"))) (to (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::originator::_documentation"))) (to (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::originator"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::owner::_documentation"))) (to (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::owner"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::status::_documentation"))) (to (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::status"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ModelingMetadata::_documentation"))) (to (node (document "d0") (qualified-name "ModelingMetadata"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::status"))) (to (node (document "d0") (qualified-name "ModelingMetadata::StatusKind"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ModelingMetadata::Issue::text"))) (target (node (document "d0") (qualified-name "ModelingMetadata::String"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ModelingMetadata::Issue::text"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ModelingMetadata::Rationale::text"))) (target (node (document "d0") (qualified-name "ModelingMetadata::String"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ModelingMetadata::Rationale::text"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ModelingMetadata::Refinement::annotatedElement"))) (target (node (document "d0") (qualified-name "ModelingMetadata::Refinement::annotatedElement"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ModelingMetadata::Refinement::annotatedElement"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::originator"))) (target (node (document "d0") (qualified-name "ModelingMetadata::String"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::originator"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::owner"))) (target (node (document "d0") (qualified-name "ModelingMetadata::String"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::owner"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::status"))) (target (node (document "d0") (qualified-name "ModelingMetadata::StatusKind"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::status"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ModelingMetadata::Issue"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ModelingMetadata::Issue::text"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ModelingMetadata::Rationale"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ModelingMetadata::Rationale::text"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ModelingMetadata::Refinement"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ModelingMetadata::Refinement::annotatedElement"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::originator"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::owner"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ModelingMetadata::StatusInfo::status"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ModelingMetadata::StatusKind"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ModelingMetadata::StatusKind::closed"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ModelingMetadata::StatusKind::done"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ModelingMetadata::StatusKind::open"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ModelingMetadata::StatusKind::tbc"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ModelingMetadata::StatusKind::tbd"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ModelingMetadata::StatusKind::tbr"))) (status missing-prerequisite) (target "Base::dataValues"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/modeling_metadata.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 6 16) (end 6 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 16) (end 7 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 16) (end 8 34))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

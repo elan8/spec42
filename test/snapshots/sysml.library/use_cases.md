@@ -63,29 +63,26 @@ standard library package UseCases {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Case'
-semantic.unresolved_name 'Case::self'
-semantic.unresolved_name 'Case::subj'
-semantic.unresolved_name 'Case::obj'
-semantic.unresolved_name 'start'
-semantic.unresolved_name 'done'
-semantic.unresolved_name 'subcases'
-semantic.unresolved_name 'enclosedPerformances'
-semantic.unresolved_name 'cases'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Case'
-semantic.unresolved_name 'Case::self'
-semantic.unresolved_name 'Case::subj'
-semantic.unresolved_name 'Case::obj'
-semantic.unresolved_name 'start'
-semantic.unresolved_name 'done'
-semantic.unresolved_name 'subcases'
-semantic.unresolved_name 'enclosedPerformances'
-semantic.unresolved_name 'cases'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "use_cases.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 16) (end 6 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 28))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -145,6 +142,30 @@ CloseCurly,EndOfFile,
         (documentation)))
     (sysml_decl 'useCases' : 'UseCase' :> 'cases' multiplicity nonunique
       (documentation))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Case'
+semantic.unresolved_name 'Case::self'
+semantic.unresolved_name 'Case::subj'
+semantic.unresolved_name 'Case::obj'
+semantic.unresolved_name 'start'
+semantic.unresolved_name 'done'
+semantic.unresolved_name 'subcases'
+semantic.unresolved_name 'enclosedPerformances'
+semantic.unresolved_name 'cases'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Case'
+semantic.unresolved_name 'Case::self'
+semantic.unresolved_name 'Case::subj'
+semantic.unresolved_name 'Case::obj'
+semantic.unresolved_name 'start'
+semantic.unresolved_name 'done'
+semantic.unresolved_name 'subcases'
+semantic.unresolved_name 'enclosedPerformances'
+semantic.unresolved_name 'cases'
 ~~~
 # FORMAT
 ~~~sysml
@@ -208,68 +229,30 @@ standard library package UseCases {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "UseCases"))) (name "UseCases") (declared-name "UseCases")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "UseCases::Case"))) (name "Case") (declared-name "Case"))
-        (element (kind "use case def") (id (node (document "d0") (qualified-name "UseCases::UseCase"))) (name "UseCase") (declared-name "UseCase")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "UseCases::UseCase::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "UseCases::UseCase")))))
-            (element (kind "objective") (id (node (document "d0") (qualified-name "UseCases::UseCase::obj"))) (name "obj") (declared-name "obj") (effective (featuring-type (node (document "d0") (qualified-name "UseCases::UseCase")))))
-          )
-        )
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "UseCases::_documentation"))) (name ""))
-        (element (kind "import") (id (node (document "d0") (qualified-name "UseCases::cases"))) (name "cases") (declared-name "cases"))
-        (element (kind "use case") (id (node (document "d0") (qualified-name "UseCases::useCases"))) (name "useCases") (declared-name "useCases")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "UseCases::useCases::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "UseCases::UseCase")))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1dca455c471e154a8d247820976a235d41bf04c120a57805593fe501a60afe05") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "UseCases"))) (kind "package") (name "UseCases") (declared-name "UseCases") (range (start (line 0) (character 0)) (end (line 0) (character 1271))))
+    (element (id (node (document "d0") (qualified-name "UseCases::Case"))) (kind "import") (name "Case") (declared-name "Case") (range (start (line 6) (character 1)) (end (line 6) (character 28))) (parent (node (document "d0") (qualified-name "UseCases"))) (authored (membership (kind Import) (visibility "private") (import (reference "Cases::Case") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 27))))))
+    (element (id (node (document "d0") (qualified-name "UseCases::UseCase"))) (kind "use case def") (name "UseCase") (declared-name "UseCase") (range (start (line 9) (character 1)) (end (line 9) (character 912))) (parent (node (document "d0") (qualified-name "UseCases"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Case") (range (start (line 9) (character 25)) (end (line 9) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "UseCases::UseCase::_documentation"))) (kind "documentation") (name "") (range (start (line 9) (character 1)) (end (line 9) (character 912))) (parent (node (document "d0") (qualified-name "UseCases::UseCase"))))
+    (element (id (node (document "d0") (qualified-name "UseCases::UseCase::obj"))) (kind "objective") (name "obj") (declared-name "obj") (range (start (line 18) (character 2)) (end (line 18) (character 30))) (parent (node (document "d0") (qualified-name "UseCases::UseCase"))))
+    (element (id (node (document "d0") (qualified-name "UseCases::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 1271))) (parent (node (document "d0") (qualified-name "UseCases"))))
+    (element (id (node (document "d0") (qualified-name "UseCases::cases"))) (kind "import") (name "cases") (declared-name "cases") (range (start (line 7) (character 1)) (end (line 7) (character 29))) (parent (node (document "d0") (qualified-name "UseCases"))) (authored (membership (kind Import) (visibility "private") (import (reference "Cases::cases") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "UseCases::useCases"))) (kind "use case") (name "useCases") (declared-name "useCases") (range (start (line 50) (character 1)) (end (line 50) (character 131))) (parent (node (document "d0") (qualified-name "UseCases"))) (authored (membership (kind Feature)) (relationships (typing (reference "UseCase") (range none)))))
+    (element (id (node (document "d0") (qualified-name "UseCases::useCases::_documentation"))) (kind "documentation") (name "") (range (start (line 50) (character 1)) (end (line 50) (character 131))) (parent (node (document "d0") (qualified-name "UseCases::useCases"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "UseCases::Case"))) (kind membershipImport) (ordinal 0)) (authored-target "Cases::Case") (range (start (line 6) (character 16)) (end (line 6) (character 27))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "UseCases::UseCase"))) (kind specialization) (ordinal 0)) (authored-target "Case") (range (start (line 9) (character 25)) (end (line 9) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "UseCases::Case")))))
+    (reference (id (source (node (document "d0") (qualified-name "UseCases::cases"))) (kind membershipImport) (ordinal 0)) (authored-target "Cases::cases") (range (start (line 7) (character 16)) (end (line 7) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "UseCases::useCases"))) (kind featureTyping) (ordinal 0)) (authored-target "UseCase") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "UseCases::UseCase")))))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "UseCases::UseCase::_documentation"))) (to (node (document "d0") (qualified-name "UseCases::UseCase"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "UseCases::_documentation"))) (to (node (document "d0") (qualified-name "UseCases"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "UseCases::useCases::_documentation"))) (to (node (document "d0") (qualified-name "UseCases::useCases"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "UseCases::useCases"))) (to (node (document "d0") (qualified-name "UseCases::UseCase"))) (provenance authored))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "UseCases::UseCase"))) (target (node (document "d0") (qualified-name "UseCases::Case"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "UseCases::UseCase"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "UseCases::useCases"))) (target (node (document "d0") (qualified-name "UseCases::UseCase"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "UseCases::useCases"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "UseCases::UseCase"))) (status missing-prerequisite) (target "UseCases::UseCase"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "UseCases::UseCase::obj"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "UseCases::useCases"))) (status missing-prerequisite) (target "UseCases::useCases"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/use_cases.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 6 16) (end 6 27))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 16) (end 7 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 9 1) (end 9 912))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

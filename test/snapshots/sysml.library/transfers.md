@@ -287,119 +287,176 @@ standard library package Transfers {
     }
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Performance'
-semantic.unresolved_name 'BinaryLink'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'BinaryLink::source'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'BinaryLink::target'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Natural'
-semantic.unresolved_name 'Natural'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'BinaryLinkObject'
-semantic.unresolved_name 'BinaryLinkObject'
-semantic.unresolved_name 'HappensDuring'
-semantic.unresolved_name 'HappensWhile'
-semantic.unresolved_name 'HappensWhile'
-semantic.unresolved_name 'HappensWhile'
-semantic.unresolved_name 'HappensBefore'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'HappensBefore::earlierOccurrence'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'HappensBefore::laterOccurrence'
-semantic.unresolved_name 'Performance::self'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'performances'
-semantic.unresolved_name 'binaryLinks'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'binaryLinks::source'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'binaryLinks::target'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'happensBeforeLinks'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'happensBeforeLinks::earlierOccurrence'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'happensBeforeLinks::laterOccurrence'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Performance'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'sender::outgoingTransfersFromSelf'
-semantic.unresolved_name 'Performance'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'receiver::incomingTransfersToSelf'
-semantic.unresolved_name 'performances'
-semantic.unresolved_name 'performances'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Performance'
-semantic.unresolved_name 'BinaryLink'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'BinaryLink::source'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'BinaryLink::target'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Natural'
-semantic.unresolved_name 'Natural'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'BinaryLinkObject'
-semantic.unresolved_name 'BinaryLinkObject'
-semantic.unresolved_name 'HappensDuring'
-semantic.unresolved_name 'HappensWhile'
-semantic.unresolved_name 'HappensWhile'
-semantic.unresolved_name 'HappensWhile'
-semantic.unresolved_name 'HappensBefore'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'HappensBefore::earlierOccurrence'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'HappensBefore::laterOccurrence'
-semantic.unresolved_name 'Performance::self'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'performances'
-semantic.unresolved_name 'binaryLinks'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'binaryLinks::source'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'binaryLinks::target'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'happensBeforeLinks'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'happensBeforeLinks::earlierOccurrence'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'happensBeforeLinks::laterOccurrence'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Performance'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'sender::outgoingTransfersFromSelf'
-semantic.unresolved_name 'Performance'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'receiver::incomingTransfersToSelf'
-semantic.unresolved_name 'performances'
-semantic.unresolved_name 'performances'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "transfers.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 19) (end 6 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 19) (end 7 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 19) (end 8 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 19) (end 9 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 19) (end 10 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 11 19) (end 11 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 12 19) (end 12 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 13 19) (end 13 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 14 19) (end 14 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 207 8) (end 207 89))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 207 49) (end 207 69))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 207 71) (end 207 88))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 208 8) (end 208 89))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 208 49) (end 208 69))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 208 71) (end 208 88))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 219 8) (end 219 130))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 219 49) (end 219 71))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 219 73) (end 219 90))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 219 92) (end 219 129))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 220 8) (end 220 128))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 220 49) (end 220 71))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 220 73) (end 220 90))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 220 92) (end 220 127))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 231 8) (end 231 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 231 49) (end 231 75))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 232 8) (end 232 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 232 49) (end 232 75))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -699,6 +756,120 @@ CloseCurly,EndOfFile,
     (step_def
       (documentation))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'BinaryLink'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'BinaryLink::source'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'BinaryLink::target'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'BinaryLinkObject'
+semantic.unresolved_name 'BinaryLinkObject'
+semantic.unresolved_name 'HappensDuring'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'HappensBefore'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'HappensBefore::earlierOccurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'HappensBefore::laterOccurrence'
+semantic.unresolved_name 'Performance::self'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'performances'
+semantic.unresolved_name 'binaryLinks'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'binaryLinks::source'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'binaryLinks::target'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'happensBeforeLinks'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'happensBeforeLinks::earlierOccurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'happensBeforeLinks::laterOccurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'sender::outgoingTransfersFromSelf'
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'receiver::incomingTransfersToSelf'
+semantic.unresolved_name 'performances'
+semantic.unresolved_name 'performances'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'BinaryLink'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'BinaryLink::source'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'BinaryLink::target'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'BinaryLinkObject'
+semantic.unresolved_name 'BinaryLinkObject'
+semantic.unresolved_name 'HappensDuring'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'HappensBefore'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'HappensBefore::earlierOccurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'HappensBefore::laterOccurrence'
+semantic.unresolved_name 'Performance::self'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'performances'
+semantic.unresolved_name 'binaryLinks'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'binaryLinks::source'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'binaryLinks::target'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'happensBeforeLinks'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'happensBeforeLinks::earlierOccurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'happensBeforeLinks::laterOccurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'sender::outgoingTransfersFromSelf'
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'receiver::incomingTransfersToSelf'
+semantic.unresolved_name 'performances'
+semantic.unresolved_name 'performances'
+~~~
 # FORMAT
 ~~~sysml
 standard library package Transfers {
@@ -985,225 +1156,90 @@ standard library package Transfers {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Transfers"))) (name "Transfers") (declared-name "Transfers")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Transfers::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Transfers::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Transfers::*#import2"))) (name "*") (declared-name "*"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Transfers::AcceptPerformance"))) (name "AcceptPerformance") (declared-name "AcceptPerformance"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Transfers::Anything"))) (name "Anything") (declared-name "Anything"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Transfers::BinaryLinkObject"))) (name "BinaryLinkObject") (declared-name "BinaryLinkObject"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Transfers::Boolean"))) (name "Boolean") (declared-name "Boolean"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Transfers::FlowTransfer"))) (name "FlowTransfer") (declared-name "FlowTransfer"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Transfers::FlowTransferBefore"))) (name "FlowTransferBefore") (declared-name "FlowTransferBefore"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Transfers::MessageTransfer"))) (name "MessageTransfer") (declared-name "MessageTransfer"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Transfers::Natural"))) (name "Natural") (declared-name "Natural"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Transfers::Performance"))) (name "Performance") (declared-name "Performance"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Transfers::SendPerformance"))) (name "SendPerformance") (declared-name "SendPerformance"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Transfers::Transfer"))) (name "Transfer") (declared-name "Transfer"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Transfers::TransferBefore"))) (name "TransferBefore") (declared-name "TransferBefore"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "Transfers::_documentation"))) (name ""))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Transfers::acceptPerformances"))) (name "acceptPerformances") (declared-name "acceptPerformances"))
-        (element (kind "flow") (id (node (document "d0") (qualified-name "Transfers::flowTransfers"))) (name "flowTransfers") (declared-name "flowTransfers")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Transfers::flowTransfers::_documentation"))) (name ""))
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "Transfers::flowTransfers::source"))) (name "source") (declared-name "source") (declared (properties (end true))))
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "Transfers::flowTransfers::target"))) (name "target") (declared-name "target") (declared (properties (end true))))
-          )
-        )
-        (element (kind "flow") (id (node (document "d0") (qualified-name "Transfers::flowTransfersBefore"))) (name "flowTransfersBefore") (declared-name "flowTransfersBefore")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::_documentation"))) (name ""))
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::source"))) (name "source") (declared-name "source") (declared (properties (end true))))
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::target"))) (name "target") (declared-name "target") (declared (properties (end true))))
-          )
-        )
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Transfers::messageTransfers"))) (name "messageTransfers") (declared-name "messageTransfers"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Transfers::performances"))) (name "performances") (declared-name "performances"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Transfers::sendPerformances"))) (name "sendPerformances") (declared-name "sendPerformances"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Transfers::transfers"))) (name "transfers") (declared-name "transfers"))
-        (element (kind "flow") (id (node (document "d0") (qualified-name "Transfers::transfersBefore"))) (name "transfersBefore") (declared-name "transfersBefore")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Transfers::transfersBefore::_documentation"))) (name ""))
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "Transfers::transfersBefore::source"))) (name "source") (declared-name "source") (declared (properties (end true))))
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "Transfers::transfersBefore::target"))) (name "target") (declared-name "target") (declared (properties (end true))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d66f746481b94d726f262501f3c91a48537c977ccb83fd7ad3ce5066c86c0855") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Transfers"))) (kind "package") (name "Transfers") (declared-name "Transfers") (range (start (line 0) (character 0)) (end (line 0) (character 10817))))
+    (element (id (node (document "d0") (qualified-name "Transfers::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 7) (character 4)) (end (line 7) (character 34))) (parent (node (document "d0") (qualified-name "Transfers"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 7) (character 19)) (end (line 7) (character 30))))))
+    (element (id (node (document "d0") (qualified-name "Transfers::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 8) (character 4)) (end (line 8) (character 28))) (parent (node (document "d0") (qualified-name "Transfers"))) (authored (membership (kind Import) (visibility "private") (import (reference "Links::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 8) (character 19)) (end (line 8) (character 24))))))
+    (element (id (node (document "d0") (qualified-name "Transfers::*#import2"))) (kind "import") (name "*") (declared-name "*") (range (start (line 14) (character 4)) (end (line 14) (character 40))) (parent (node (document "d0") (qualified-name "Transfers"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 14) (character 19)) (end (line 14) (character 36))))))
+    (element (id (node (document "d0") (qualified-name "Transfers::AcceptPerformance"))) (kind "kermlDecl") (name "AcceptPerformance") (declared-name "AcceptPerformance") (range (start (line 253) (character 4)) (end (line 253) (character 568))) (parent (node (document "d0") (qualified-name "Transfers"))))
+    (element (id (node (document "d0") (qualified-name "Transfers::Anything"))) (kind "import") (name "Anything") (declared-name "Anything") (range (start (line 6) (character 4)) (end (line 6) (character 34))) (parent (node (document "d0") (qualified-name "Transfers"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::Anything") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 6) (character 19)) (end (line 6) (character 33))))))
+    (element (id (node (document "d0") (qualified-name "Transfers::BinaryLinkObject"))) (kind "import") (name "BinaryLinkObject") (declared-name "BinaryLinkObject") (range (start (line 9) (character 4)) (end (line 9) (character 45))) (parent (node (document "d0") (qualified-name "Transfers"))) (authored (membership (kind Import) (visibility "private") (import (reference "Objects::BinaryLinkObject") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 9) (character 19)) (end (line 9) (character 44))))))
+    (element (id (node (document "d0") (qualified-name "Transfers::Boolean"))) (kind "import") (name "Boolean") (declared-name "Boolean") (range (start (line 12) (character 4)) (end (line 12) (character 41))) (parent (node (document "d0") (qualified-name "Transfers"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Boolean") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 12) (character 19)) (end (line 12) (character 40))))))
+    (element (id (node (document "d0") (qualified-name "Transfers::FlowTransfer"))) (kind "kermlDecl") (name "FlowTransfer") (declared-name "FlowTransfer") (range (start (line 75) (character 4)) (end (line 75) (character 2978))) (parent (node (document "d0") (qualified-name "Transfers"))))
+    (element (id (node (document "d0") (qualified-name "Transfers::FlowTransferBefore"))) (kind "kermlDecl") (name "FlowTransferBefore") (declared-name "FlowTransferBefore") (range (start (line 169) (character 4)) (end (line 169) (character 439))) (parent (node (document "d0") (qualified-name "Transfers"))))
+    (element (id (node (document "d0") (qualified-name "Transfers::MessageTransfer"))) (kind "kermlDecl") (name "MessageTransfer") (declared-name "MessageTransfer") (range (start (line 66) (character 4)) (end (line 66) (character 319))) (parent (node (document "d0") (qualified-name "Transfers"))))
+    (element (id (node (document "d0") (qualified-name "Transfers::Natural"))) (kind "import") (name "Natural") (declared-name "Natural") (range (start (line 13) (character 4)) (end (line 13) (character 41))) (parent (node (document "d0") (qualified-name "Transfers"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Natural") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 13) (character 19)) (end (line 13) (character 40))))))
+    (element (id (node (document "d0") (qualified-name "Transfers::Performance"))) (kind "import") (name "Performance") (declared-name "Performance") (range (start (line 10) (character 4)) (end (line 10) (character 45))) (parent (node (document "d0") (qualified-name "Transfers"))) (authored (membership (kind Import) (visibility "private") (import (reference "Performances::Performance") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 10) (character 19)) (end (line 10) (character 44))))))
+    (element (id (node (document "d0") (qualified-name "Transfers::SendPerformance"))) (kind "kermlDecl") (name "SendPerformance") (declared-name "SendPerformance") (range (start (line 235) (character 4)) (end (line 235) (character 723))) (parent (node (document "d0") (qualified-name "Transfers"))))
+    (element (id (node (document "d0") (qualified-name "Transfers::Transfer"))) (kind "kermlDecl") (name "Transfer") (declared-name "Transfer") (range (start (line 16) (character 4)) (end (line 16) (character 1524))) (parent (node (document "d0") (qualified-name "Transfers"))))
+    (element (id (node (document "d0") (qualified-name "Transfers::TransferBefore"))) (kind "kermlDecl") (name "TransferBefore") (declared-name "TransferBefore") (range (start (line 153) (character 4)) (end (line 153) (character 674))) (parent (node (document "d0") (qualified-name "Transfers"))))
+    (element (id (node (document "d0") (qualified-name "Transfers::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 10817))) (parent (node (document "d0") (qualified-name "Transfers"))))
+    (element (id (node (document "d0") (qualified-name "Transfers::acceptPerformances"))) (kind "kermlDecl") (name "acceptPerformances") (declared-name "acceptPerformances") (range (start (line 274) (character 4)) (end (line 274) (character 225))) (parent (node (document "d0") (qualified-name "Transfers"))))
+    (element (id (node (document "d0") (qualified-name "Transfers::flowTransfers"))) (kind "flow") (name "flowTransfers") (declared-name "flowTransfers") (range (start (line 200) (character 4)) (end (line 200) (character 470))) (parent (node (document "d0") (qualified-name "Transfers"))) (authored (membership (kind Feature)) (relationships (typing (reference "FlowTransfer") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Transfers::flowTransfers::_documentation"))) (kind "documentation") (name "") (range (start (line 200) (character 4)) (end (line 200) (character 470))) (parent (node (document "d0") (qualified-name "Transfers::flowTransfers"))))
+    (element (id (node (document "d0") (qualified-name "Transfers::flowTransfers::source"))) (kind "interface end") (name "source") (declared-name "source") (range (start (line 207) (character 8)) (end (line 207) (character 89))) (parent (node (document "d0") (qualified-name "Transfers::flowTransfers"))) (authored (relationships (typing (reference "Occurrence") (range none)) (redefinition (reference "FlowTransfer::source") (range (start (line 207) (character 49)) (end (line 207) (character 69)))) (redefinition (reference "transfers::source") (range (start (line 207) (character 71)) (end (line 207) (character 88)))))))
+    (element (id (node (document "d0") (qualified-name "Transfers::flowTransfers::target"))) (kind "interface end") (name "target") (declared-name "target") (range (start (line 208) (character 8)) (end (line 208) (character 89))) (parent (node (document "d0") (qualified-name "Transfers::flowTransfers"))) (authored (relationships (typing (reference "Occurrence") (range none)) (redefinition (reference "FlowTransfer::target") (range (start (line 208) (character 49)) (end (line 208) (character 69)))) (redefinition (reference "transfers::target") (range (start (line 208) (character 71)) (end (line 208) (character 88)))))))
+    (element (id (node (document "d0") (qualified-name "Transfers::flowTransfersBefore"))) (kind "flow") (name "flowTransfersBefore") (declared-name "flowTransfersBefore") (range (start (line 223) (character 4)) (end (line 223) (character 657))) (parent (node (document "d0") (qualified-name "Transfers"))) (authored (membership (kind Feature)) (relationships (typing (reference "FlowTransferBefore") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::_documentation"))) (kind "documentation") (name "") (range (start (line 223) (character 4)) (end (line 223) (character 657))) (parent (node (document "d0") (qualified-name "Transfers::flowTransfersBefore"))))
+    (element (id (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::source"))) (kind "interface end") (name "source") (declared-name "source") (range (start (line 231) (character 8)) (end (line 231) (character 124))) (parent (node (document "d0") (qualified-name "Transfers::flowTransfersBefore"))) (authored (relationships (typing (reference "Occurrence") (range none)) (redefinition (reference "FlowTransferBefore::source") (range (start (line 231) (character 49)) (end (line 231) (character 75)))) (redefinition (reference "flowTransfers::source") (range (start (line 231) (character 77)) (end (line 231) (character 98)))) (redefinition (reference "transfersBefore::source") (range (start (line 231) (character 100)) (end (line 231) (character 123)))))))
+    (element (id (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::target"))) (kind "interface end") (name "target") (declared-name "target") (range (start (line 232) (character 8)) (end (line 232) (character 124))) (parent (node (document "d0") (qualified-name "Transfers::flowTransfersBefore"))) (authored (relationships (typing (reference "Occurrence") (range none)) (redefinition (reference "FlowTransferBefore::target") (range (start (line 232) (character 49)) (end (line 232) (character 75)))) (redefinition (reference "flowTransfers::target") (range (start (line 232) (character 77)) (end (line 232) (character 98)))) (redefinition (reference "transfersBefore::target") (range (start (line 232) (character 100)) (end (line 232) (character 123)))))))
+    (element (id (node (document "d0") (qualified-name "Transfers::messageTransfers"))) (kind "kermlDecl") (name "messageTransfers") (declared-name "messageTransfers") (range (start (line 190) (character 4)) (end (line 190) (character 427))) (parent (node (document "d0") (qualified-name "Transfers"))))
+    (element (id (node (document "d0") (qualified-name "Transfers::performances"))) (kind "import") (name "performances") (declared-name "performances") (range (start (line 11) (character 4)) (end (line 11) (character 46))) (parent (node (document "d0") (qualified-name "Transfers"))) (authored (membership (kind Import) (visibility "private") (import (reference "Performances::performances") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 11) (character 19)) (end (line 11) (character 45))))))
+    (element (id (node (document "d0") (qualified-name "Transfers::sendPerformances"))) (kind "kermlDecl") (name "sendPerformances") (declared-name "sendPerformances") (range (start (line 267) (character 4)) (end (line 267) (character 217))) (parent (node (document "d0") (qualified-name "Transfers"))))
+    (element (id (node (document "d0") (qualified-name "Transfers::transfers"))) (kind "kermlDecl") (name "transfers") (declared-name "transfers") (range (start (line 179) (character 4)) (end (line 179) (character 425))) (parent (node (document "d0") (qualified-name "Transfers"))))
+    (element (id (node (document "d0") (qualified-name "Transfers::transfersBefore"))) (kind "flow") (name "transfersBefore") (declared-name "transfersBefore") (range (start (line 211) (character 4)) (end (line 211) (character 589))) (parent (node (document "d0") (qualified-name "Transfers"))) (authored (membership (kind Feature)) (relationships (typing (reference "TransferBefore") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Transfers::transfersBefore::_documentation"))) (kind "documentation") (name "") (range (start (line 211) (character 4)) (end (line 211) (character 589))) (parent (node (document "d0") (qualified-name "Transfers::transfersBefore"))))
+    (element (id (node (document "d0") (qualified-name "Transfers::transfersBefore::source"))) (kind "interface end") (name "source") (declared-name "source") (range (start (line 219) (character 8)) (end (line 219) (character 130))) (parent (node (document "d0") (qualified-name "Transfers::transfersBefore"))) (authored (relationships (typing (reference "Occurrence") (range none)) (redefinition (reference "TransferBefore::source") (range (start (line 219) (character 49)) (end (line 219) (character 71)))) (redefinition (reference "transfers::source") (range (start (line 219) (character 73)) (end (line 219) (character 90)))) (redefinition (reference "happensBeforeLinks::earlierOccurrence") (range (start (line 219) (character 92)) (end (line 219) (character 129)))))))
+    (element (id (node (document "d0") (qualified-name "Transfers::transfersBefore::target"))) (kind "interface end") (name "target") (declared-name "target") (range (start (line 220) (character 8)) (end (line 220) (character 128))) (parent (node (document "d0") (qualified-name "Transfers::transfersBefore"))) (authored (relationships (typing (reference "Occurrence") (range none)) (redefinition (reference "TransferBefore::target") (range (start (line 220) (character 49)) (end (line 220) (character 71)))) (redefinition (reference "transfers::target") (range (start (line 220) (character 73)) (end (line 220) (character 90)))) (redefinition (reference "happensBeforeLinks::laterOccurrence") (range (start (line 220) (character 92)) (end (line 220) (character 127)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Occurrences::*") (range (start (line 7) (character 19)) (end (line 7) (character 30))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "Links::*") (range (start (line 8) (character 19)) (end (line 8) (character 24))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::*#import2"))) (kind namespaceImport) (ordinal 0)) (authored-target "SequenceFunctions::*") (range (start (line 14) (character 19)) (end (line 14) (character 36))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::Anything"))) (kind membershipImport) (ordinal 0)) (authored-target "Base::Anything") (range (start (line 6) (character 19)) (end (line 6) (character 33))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::BinaryLinkObject"))) (kind membershipImport) (ordinal 0)) (authored-target "Objects::BinaryLinkObject") (range (start (line 9) (character 19)) (end (line 9) (character 44))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::Boolean"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Boolean") (range (start (line 12) (character 19)) (end (line 12) (character 40))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::Natural"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Natural") (range (start (line 13) (character 19)) (end (line 13) (character 40))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::Performance"))) (kind membershipImport) (ordinal 0)) (authored-target "Performances::Performance") (range (start (line 10) (character 19)) (end (line 10) (character 44))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::flowTransfers"))) (kind featureTyping) (ordinal 0)) (authored-target "FlowTransfer") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Transfers::FlowTransfer")))))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::flowTransfers::source"))) (kind featureTyping) (ordinal 0)) (authored-target "Occurrence") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::flowTransfers::source"))) (kind redefinition) (ordinal 0)) (authored-target "FlowTransfer::source") (range (start (line 207) (character 49)) (end (line 207) (character 69))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::flowTransfers::source"))) (kind redefinition) (ordinal 1)) (authored-target "transfers::source") (range (start (line 207) (character 71)) (end (line 207) (character 88))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::flowTransfers::target"))) (kind featureTyping) (ordinal 0)) (authored-target "Occurrence") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::flowTransfers::target"))) (kind redefinition) (ordinal 0)) (authored-target "FlowTransfer::target") (range (start (line 208) (character 49)) (end (line 208) (character 69))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::flowTransfers::target"))) (kind redefinition) (ordinal 1)) (authored-target "transfers::target") (range (start (line 208) (character 71)) (end (line 208) (character 88))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::flowTransfersBefore"))) (kind featureTyping) (ordinal 0)) (authored-target "FlowTransferBefore") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Transfers::FlowTransferBefore")))))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::source"))) (kind featureTyping) (ordinal 0)) (authored-target "Occurrence") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::source"))) (kind redefinition) (ordinal 0)) (authored-target "FlowTransferBefore::source") (range (start (line 231) (character 49)) (end (line 231) (character 75))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::source"))) (kind redefinition) (ordinal 1)) (authored-target "flowTransfers::source") (range (start (line 231) (character 77)) (end (line 231) (character 98))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Transfers::flowTransfers::source")))))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::source"))) (kind redefinition) (ordinal 2)) (authored-target "transfersBefore::source") (range (start (line 231) (character 100)) (end (line 231) (character 123))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Transfers::transfersBefore::source")))))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::target"))) (kind featureTyping) (ordinal 0)) (authored-target "Occurrence") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::target"))) (kind redefinition) (ordinal 0)) (authored-target "FlowTransferBefore::target") (range (start (line 232) (character 49)) (end (line 232) (character 75))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::target"))) (kind redefinition) (ordinal 1)) (authored-target "flowTransfers::target") (range (start (line 232) (character 77)) (end (line 232) (character 98))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Transfers::flowTransfers::target")))))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::target"))) (kind redefinition) (ordinal 2)) (authored-target "transfersBefore::target") (range (start (line 232) (character 100)) (end (line 232) (character 123))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Transfers::transfersBefore::target")))))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::performances"))) (kind membershipImport) (ordinal 0)) (authored-target "Performances::performances") (range (start (line 11) (character 19)) (end (line 11) (character 45))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::transfersBefore"))) (kind featureTyping) (ordinal 0)) (authored-target "TransferBefore") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Transfers::TransferBefore")))))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::transfersBefore::source"))) (kind featureTyping) (ordinal 0)) (authored-target "Occurrence") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::transfersBefore::source"))) (kind redefinition) (ordinal 0)) (authored-target "TransferBefore::source") (range (start (line 219) (character 49)) (end (line 219) (character 71))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::transfersBefore::source"))) (kind redefinition) (ordinal 1)) (authored-target "transfers::source") (range (start (line 219) (character 73)) (end (line 219) (character 90))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::transfersBefore::source"))) (kind redefinition) (ordinal 2)) (authored-target "happensBeforeLinks::earlierOccurrence") (range (start (line 219) (character 92)) (end (line 219) (character 129))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::transfersBefore::target"))) (kind featureTyping) (ordinal 0)) (authored-target "Occurrence") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::transfersBefore::target"))) (kind redefinition) (ordinal 0)) (authored-target "TransferBefore::target") (range (start (line 220) (character 49)) (end (line 220) (character 71))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::transfersBefore::target"))) (kind redefinition) (ordinal 1)) (authored-target "transfers::target") (range (start (line 220) (character 73)) (end (line 220) (character 90))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Transfers::transfersBefore::target"))) (kind redefinition) (ordinal 2)) (authored-target "happensBeforeLinks::laterOccurrence") (range (start (line 220) (character 92)) (end (line 220) (character 127))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Transfers::_documentation"))) (to (node (document "d0") (qualified-name "Transfers"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Transfers::flowTransfers::_documentation"))) (to (node (document "d0") (qualified-name "Transfers::flowTransfers"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::_documentation"))) (to (node (document "d0") (qualified-name "Transfers::flowTransfersBefore"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Transfers::transfersBefore::_documentation"))) (to (node (document "d0") (qualified-name "Transfers::transfersBefore"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Transfers::flowTransfers"))) (to (node (document "d0") (qualified-name "Transfers::FlowTransfer"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Transfers::flowTransfersBefore"))) (to (node (document "d0") (qualified-name "Transfers::FlowTransferBefore"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Transfers::transfersBefore"))) (to (node (document "d0") (qualified-name "Transfers::TransferBefore"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Transfers::flowTransfers"))) (target (node (document "d0") (qualified-name "Transfers::FlowTransfer"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Transfers::flowTransfers"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Transfers::flowTransfersBefore"))) (target (node (document "d0") (qualified-name "Transfers::FlowTransferBefore"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Transfers::flowTransfersBefore"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::source"))) (target (node (document "d0") (qualified-name "Transfers::flowTransfers::source"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::source"))) (kind redefinition) (ordinal 1)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::source"))) (target (node (document "d0") (qualified-name "Transfers::transfersBefore::source"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::source"))) (kind redefinition) (ordinal 2)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::target"))) (target (node (document "d0") (qualified-name "Transfers::flowTransfers::target"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::target"))) (kind redefinition) (ordinal 1)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::target"))) (target (node (document "d0") (qualified-name "Transfers::transfersBefore::target"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::target"))) (kind redefinition) (ordinal 2)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Transfers::transfersBefore"))) (target (node (document "d0") (qualified-name "Transfers::TransferBefore"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Transfers::transfersBefore"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Transfers::flowTransfers"))) (status missing-prerequisite) (target "Flows::messages"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Transfers::flowTransfersBefore"))) (status missing-prerequisite) (target "Flows::messages"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Transfers::transfersBefore"))) (status missing-prerequisite) (target "Flows::messages"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/transfers.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 6 19) (end 6 33))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 19) (end 7 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 19) (end 8 24))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 9 19) (end 9 44))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 10 19) (end 10 44))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 11 19) (end 11 45))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 12 19) (end 12 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 13 19) (end 13 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 14 19) (end 14 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "incompatible_type_kind")
-        (source "semantic")
-        (range (start 200 4) (end 200 470))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 207 8) (end 207 89))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 207 8) (end 207 89))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 208 8) (end 208 89))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 208 8) (end 208 89))
-      )
-      (diagnostic
-        (severity warning)
-        (code "incompatible_type_kind")
-        (source "semantic")
-        (range (start 211 4) (end 211 589))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 219 8) (end 219 130))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 219 8) (end 219 130))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 220 8) (end 220 128))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 220 8) (end 220 128))
-      )
-      (diagnostic
-        (severity warning)
-        (code "incompatible_type_kind")
-        (source "semantic")
-        (range (start 223 4) (end 223 657))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 231 8) (end 231 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 231 8) (end 231 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 232 8) (end 232 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 232 8) (end 232 124))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

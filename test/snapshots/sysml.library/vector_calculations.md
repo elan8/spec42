@@ -68,469 +68,10 @@ standard library package VectorCalculations {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'BaseFunctions::['
-semantic.unresolved_name 'Number'
-semantic.unresolved_name 'VectorMeasurementReference'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorFunctions::isZeroVector'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'VectorFunctions::+'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorFunctions::-'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorFunctions::scalarVectorMult'
-semantic.unresolved_name 'Number'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorFunctions::vectorScalarMult'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'Number'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorFunctions::vectorScalarDiv'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'Number'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorFunctions::inner'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'Number'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorFunctions::norm'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'Number'
-semantic.unresolved_name 'VectorFunctions::angle'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'Number'
-semantic.unresolved_name 'CoordinateTransformation'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'dimensions'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'BaseFunctions::['
-semantic.unresolved_name 'Number'
-semantic.unresolved_name 'VectorMeasurementReference'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorFunctions::isZeroVector'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'VectorFunctions::+'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorFunctions::-'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorFunctions::scalarVectorMult'
-semantic.unresolved_name 'Number'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorFunctions::vectorScalarMult'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'Number'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorFunctions::vectorScalarDiv'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'Number'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorFunctions::inner'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'Number'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorFunctions::norm'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'Number'
-semantic.unresolved_name 'VectorFunctions::angle'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'Number'
-semantic.unresolved_name 'CoordinateTransformation'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'VectorQuantityValue'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'dimensions'
-~~~
-# TOKENS
-~~~zig
-KwStandard,KwLibrary,KwPackage,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwCalc,KwDef,UnrestrictedName,ColonGt,Ident,ColonColon,UnrestrictedName,OpenCurly,
-KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Ident,CloseSquare,KwOrdered,Semicolon,
-KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
-KwReturn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
-KwPrivate,KwAttribute,Ident,Eq,Ident,Dot,Ident,Semicolon,
-CloseCurly,
-KwCalc,KwDef,Ident,ColonGt,Ident,ColonColon,Ident,OpenCurly,
-KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
-KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
-CloseCurly,
-KwCalc,KwDef,Ident,OpenCurly,
-KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
-KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
-CloseCurly,
-RegularComment,
-KwCalc,KwDef,UnrestrictedName,ColonGt,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwCalc,KwDef,UnrestrictedName,ColonGt,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-RegularComment,
-KwCalc,KwDef,Ident,ColonGt,Ident,ColonColon,Ident,OpenCurly,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwCalc,KwDef,Ident,ColonGt,Ident,ColonColon,Ident,OpenCurly,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwCalc,KwDef,Ident,OpenCurly,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwCalc,KwDef,Ident,OpenCurly,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwCalc,KwDef,Ident,ColonGt,Ident,ColonColon,Ident,OpenCurly,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwCalc,KwDef,Ident,OpenCurly,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwCalc,KwDef,Ident,ColonGt,Ident,ColonColon,Ident,OpenCurly,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwCalc,KwDef,Ident,OpenCurly,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwAlias,UnrestrictedName,KwFor,Ident,Semicolon,
-RegularComment,
-KwCalc,KwDef,Ident,ColonGt,Ident,ColonColon,Ident,OpenCurly,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwCalc,KwDef,Ident,ColonGt,Ident,ColonColon,Ident,OpenCurly,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-RegularComment,
-KwCalc,KwDef,Ident,OpenCurly,
-KwIn,Ident,Colon,Ident,Semicolon,
-KwIn,Ident,Colon,Ident,OpenCurly,
-ColonGtGt,Ident,Eq,Ident,Dot,Ident,Semicolon,
-CloseCurly,
-KwReturn,Ident,Colon,Ident,OpenCurly,
-ColonGtGt,Ident,Eq,Ident,Dot,Ident,OpenCurly,
-ColonGtGt,Ident,Eq,Ident,Dot,Ident,Dot,Ident,Semicolon,
-CloseCurly,
-CloseCurly,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (standard_library_package_def 'VectorCalculations'
-    (documentation)
-    (import_decl private 'ScalarValues::Boolean')
-    (import_decl private 'ScalarValues::Number')
-    (import_decl private 'Quantities::ScalarQuantityValue')
-    (import_decl private 'Quantities::VectorQuantityValue')
-    (import_decl private 'MeasurementReferences::VectorMeasurementReference')
-    (import_decl private 'MeasurementReferences::CoordinateTransformation')
-    (calc_def ''['' :> 'BaseFunctions::'[''
-      (default_ref_usage in 'elements' : 'Number' multiplicity ordered)
-      (default_ref_usage in 'mRef' : 'VectorMeasurementReference' multiplicity)
-      (return_member)
-      (attribute_usage private 'n' value))
-    (calc_def 'isZeroVectorQuantity' :> 'VectorFunctions::isZeroVector'
-      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
-      (return_member))
-    (calc_def 'isUnitVectorQuantity'
-      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
-      (return_member))
-    (comment)
-    (calc_def ''+'' :> 'VectorFunctions::'+''
-      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
-      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
-      (return_member))
-    (calc_def ''-'' :> 'VectorFunctions::'-''
-      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
-      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
-      (return_member))
-    (comment)
-    (calc_def 'scalarVectorMult' :> 'VectorFunctions::scalarVectorMult'
-      (default_ref_usage in : 'Number' multiplicity)
-      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
-      (return_member))
-    (calc_def 'vectorScalarMult' :> 'VectorFunctions::vectorScalarMult'
-      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
-      (default_ref_usage in : 'Number' multiplicity)
-      (return_member))
-    (calc_def 'scalarQuantityVectorMult'
-      (default_ref_usage in : 'ScalarQuantityValue' multiplicity)
-      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
-      (return_member))
-    (calc_def 'vectorScalarQuantityMult'
-      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
-      (default_ref_usage in : 'ScalarQuantityValue' multiplicity)
-      (return_member))
-    (calc_def 'vectorScalarDiv' :> 'VectorFunctions::vectorScalarDiv'
-      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
-      (default_ref_usage in : 'Number' multiplicity)
-      (return_member))
-    (calc_def 'vectorScalarQuantityDiv'
-      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
-      (default_ref_usage in : 'ScalarQuantityValue' multiplicity)
-      (return_member))
-    (calc_def 'inner' :> 'VectorFunctions::inner'
-      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
-      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
-      (return_member))
-    (calc_def 'outer'
-      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
-      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
-      (return_member))
-    (alias_member ''*'' for 'scalarVectorMult')
-    (comment)
-    (calc_def 'norm' :> 'VectorFunctions::norm'
-      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
-      (return_member))
-    (calc_def 'angle' :> 'VectorFunctions::angle'
-      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
-      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
-      (return_member))
-    (comment)
-    (calc_def 'transform'
-      (default_ref_usage in 'transformation' : 'CoordinateTransformation')
-      (default_ref_usage in 'sourceVector' : 'VectorQuantityValue'
-        (default_ref_usage :>> 'mRef' value))
-      (return_member))))
-~~~
-# FORMAT
-~~~sysml
-standard library package VectorCalculations {
-	doc
-	/*
-	 * This package package defines calculations for the construction of and computations on VectorQuantityValues.
-	 */
-	 
-	private import ScalarValues::Boolean;
-	private import ScalarValues::Number;
-    private import Quantities::ScalarQuantityValue;
-    private import Quantities::VectorQuantityValue;
-    private import MeasurementReferences::VectorMeasurementReference;
-    private import MeasurementReferences::CoordinateTransformation;
-    
-    calc def '[' :> BaseFunctions::'[' { 
-    	in elements: Number[1..n] ordered; 
-    	in mRef: VectorMeasurementReference[1]; 
-    	return quantity : VectorQuantityValue[1];
-    	private attribute n = mRef.flattenedSize;
-    }
-
-    calc def isZeroVectorQuantity :> VectorFunctions::isZeroVector { 
-    	in : VectorQuantityValue[1]; 
-    	return : Boolean[1];
-    }
-    calc def isUnitVectorQuantity { 
-    	in : VectorQuantityValue[1]; 
-    	return : Boolean[1];
-    }
-
-    /* Addition and subtraction */
-	calc def '+' :> VectorFunctions::'+' { in : VectorQuantityValue[1]; in : VectorQuantityValue[1]; return : VectorQuantityValue[1]; }
-	calc def '-' :> VectorFunctions::'-' { in : VectorQuantityValue[1]; in : VectorQuantityValue[1]; return : VectorQuantityValue[1]; }
-
-    /* Multiplication and division */
-	calc def scalarVectorMult :> VectorFunctions::scalarVectorMult { in : Number[1]; in : VectorQuantityValue[1]; return : VectorQuantityValue[1]; }
-	calc def vectorScalarMult :> VectorFunctions::vectorScalarMult { in : VectorQuantityValue[1]; in : Number[1]; return : VectorQuantityValue[1]; }
-    calc def scalarQuantityVectorMult { in : ScalarQuantityValue[1]; in : VectorQuantityValue[1]; return : VectorQuantityValue[1]; }
-    calc def vectorScalarQuantityMult { in : VectorQuantityValue[1]; in : ScalarQuantityValue[1]; return : VectorQuantityValue[1]; }
-	calc def vectorScalarDiv :> VectorFunctions::vectorScalarDiv { in : VectorQuantityValue[1]; in : Number[1]; return : VectorQuantityValue[1]; }
-    calc def vectorScalarQuantityDiv { in : VectorQuantityValue[1]; in : ScalarQuantityValue[1]; return : VectorQuantityValue[1]; }
-	calc def inner :> VectorFunctions::inner { in : VectorQuantityValue[1]; in : VectorQuantityValue[1]; return : Number[1]; }
-    calc def outer { in : VectorQuantityValue[1]; in : VectorQuantityValue[1]; return : VectorQuantityValue[1]; }
-	
-    alias '*' for scalarVectorMult;
-    
-    /* Norm and angle */
-	calc def norm :> VectorFunctions::norm { in : VectorQuantityValue[1]; return : Number[1]; }
-	calc def angle :> VectorFunctions::angle { in : VectorQuantityValue[1]; in : VectorQuantityValue[1]; return : Number[1]; }
-	
-	/* Coordinate transformation */
-	calc def transform {
-	    in transformation : CoordinateTransformation;
-	    in sourceVector : VectorQuantityValue {
-	        :>> mRef = transformation.source;
-	    }
-	    return targetVector : VectorQuantityValue {
-	        :>> mRef = transformation.target {
-	            :>> dimensions = sourceVector.mRef.dimensions;
-	        }
-    	}
-	}
-}
-~~~
-# SMG
-~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "VectorCalculations"))) (name "VectorCalculations") (declared-name "VectorCalculations")
-      (contains
-        (element (kind "alias") (id (node (document "d0") (qualified-name "VectorCalculations::*"))) (name "*") (declared-name "*"))
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "VectorCalculations::+"))) (name "+") (declared-name "+")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::+::VectorQuantityValue"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::+")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::+::VectorQuantityValue#in_out_parameter"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::+")))))
-          )
-        )
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "VectorCalculations::-"))) (name "-") (declared-name "-")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::-::VectorQuantityValue"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::-")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::-::VectorQuantityValue#in_out_parameter"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::-")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "VectorCalculations::Boolean"))) (name "Boolean") (declared-name "Boolean"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "VectorCalculations::CoordinateTransformation"))) (name "CoordinateTransformation") (declared-name "CoordinateTransformation"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "VectorCalculations::Number"))) (name "Number") (declared-name "Number"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "VectorCalculations::ScalarQuantityValue"))) (name "ScalarQuantityValue") (declared-name "ScalarQuantityValue"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "VectorCalculations::VectorMeasurementReference"))) (name "VectorMeasurementReference") (declared-name "VectorMeasurementReference"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "VectorCalculations::VectorQuantityValue"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue"))
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "VectorCalculations::["))) (name "[") (declared-name "[") (declared (own-expression (expression (kind "featureReference") (reference "quantity")))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference")))
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::[::elements"))) (name "elements") (declared-name "elements") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::[")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::[::mRef"))) (name "mRef") (declared-name "mRef") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::[")))))
-          )
-        )
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "VectorCalculations::_documentation"))) (name ""))
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "VectorCalculations::angle"))) (name "angle") (declared-name "angle")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::angle::VectorQuantityValue"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::angle")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::angle::VectorQuantityValue#in_out_parameter"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::angle")))))
-          )
-        )
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "VectorCalculations::inner"))) (name "inner") (declared-name "inner")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::inner::VectorQuantityValue"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::inner")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::inner::VectorQuantityValue#in_out_parameter"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::inner")))))
-          )
-        )
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "VectorCalculations::isUnitVectorQuantity"))) (name "isUnitVectorQuantity") (declared-name "isUnitVectorQuantity")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::isUnitVectorQuantity::VectorQuantityValue"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::isUnitVectorQuantity")))))
-          )
-        )
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "VectorCalculations::isZeroVectorQuantity"))) (name "isZeroVectorQuantity") (declared-name "isZeroVectorQuantity")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::isZeroVectorQuantity::VectorQuantityValue"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::isZeroVectorQuantity")))))
-          )
-        )
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "VectorCalculations::norm"))) (name "norm") (declared-name "norm")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::norm::VectorQuantityValue"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::norm")))))
-          )
-        )
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "VectorCalculations::outer"))) (name "outer") (declared-name "outer")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::outer::VectorQuantityValue"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::outer")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::outer::VectorQuantityValue#in_out_parameter"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::outer")))))
-          )
-        )
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "VectorCalculations::scalarQuantityVectorMult"))) (name "scalarQuantityVectorMult") (declared-name "scalarQuantityVectorMult")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::scalarQuantityVectorMult::ScalarQuantityValue"))) (name "ScalarQuantityValue") (declared-name "ScalarQuantityValue") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::scalarQuantityVectorMult")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::scalarQuantityVectorMult::VectorQuantityValue"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::scalarQuantityVectorMult")))))
-          )
-        )
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "VectorCalculations::scalarVectorMult"))) (name "scalarVectorMult") (declared-name "scalarVectorMult")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::scalarVectorMult::Number"))) (name "Number") (declared-name "Number") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::scalarVectorMult")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::scalarVectorMult::VectorQuantityValue"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::scalarVectorMult")))))
-          )
-        )
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "VectorCalculations::transform"))) (name "transform") (declared-name "transform") (declared (own-expression (expression (kind "featureReference") (reference "targetVector")))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference")))
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::transform::sourceVector"))) (name "sourceVector") (declared-name "sourceVector") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::transform")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::transform::transformation"))) (name "transformation") (declared-name "transformation") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::transform")))))
-          )
-        )
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "VectorCalculations::vectorScalarDiv"))) (name "vectorScalarDiv") (declared-name "vectorScalarDiv")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::vectorScalarDiv::Number"))) (name "Number") (declared-name "Number") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::vectorScalarDiv")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::vectorScalarDiv::VectorQuantityValue"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::vectorScalarDiv")))))
-          )
-        )
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "VectorCalculations::vectorScalarMult"))) (name "vectorScalarMult") (declared-name "vectorScalarMult")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::vectorScalarMult::Number"))) (name "Number") (declared-name "Number") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::vectorScalarMult")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::vectorScalarMult::VectorQuantityValue"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::vectorScalarMult")))))
-          )
-        )
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityDiv"))) (name "vectorScalarQuantityDiv") (declared-name "vectorScalarQuantityDiv")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityDiv::ScalarQuantityValue"))) (name "ScalarQuantityValue") (declared-name "ScalarQuantityValue") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityDiv")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityDiv::VectorQuantityValue"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityDiv")))))
-          )
-        )
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityMult"))) (name "vectorScalarQuantityMult") (declared-name "vectorScalarQuantityMult")
-          (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityMult::ScalarQuantityValue"))) (name "ScalarQuantityValue") (declared-name "ScalarQuantityValue") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityMult")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityMult::VectorQuantityValue"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityMult")))))
-          )
-        )
-      )
-    )
-  )
-  (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VectorCalculations::_documentation"))) (to (node (document "d0") (qualified-name "VectorCalculations"))) (provenance authored))
-  )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::+"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::-"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::["))) (status missing-prerequisite) (target "Calculations::Calculation"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::angle"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::inner"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::isUnitVectorQuantity"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::isZeroVectorQuantity"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::norm"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::outer"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::scalarQuantityVectorMult"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::scalarVectorMult"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::transform"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::vectorScalarDiv"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::vectorScalarMult"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityDiv"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityMult"))) (status missing-prerequisite) (target "Calculations::Calculation"))
-  )
-)
-~~~
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "sysml.library/vector_calculations.md"
+  (document "vector_calculations.md"
     (diagnostics
       (diagnostic
         (severity warning)
@@ -730,19 +271,436 @@ standard library package VectorCalculations {
         (source "semantic")
         (range (start 47 73) (end 47 101))
       )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 51 5) (end 51 50))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 52 5) (end 52 94))
-      )
     )
+  )
+)
+~~~
+# TOKENS
+~~~zig
+KwStandard,KwLibrary,KwPackage,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
+KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
+KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
+KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
+KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
+KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
+KwCalc,KwDef,UnrestrictedName,ColonGt,Ident,ColonColon,UnrestrictedName,OpenCurly,
+KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Ident,CloseSquare,KwOrdered,Semicolon,
+KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
+KwReturn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
+KwPrivate,KwAttribute,Ident,Eq,Ident,Dot,Ident,Semicolon,
+CloseCurly,
+KwCalc,KwDef,Ident,ColonGt,Ident,ColonColon,Ident,OpenCurly,
+KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
+KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
+CloseCurly,
+KwCalc,KwDef,Ident,OpenCurly,
+KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
+KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
+CloseCurly,
+RegularComment,
+KwCalc,KwDef,UnrestrictedName,ColonGt,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwCalc,KwDef,UnrestrictedName,ColonGt,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+RegularComment,
+KwCalc,KwDef,Ident,ColonGt,Ident,ColonColon,Ident,OpenCurly,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwCalc,KwDef,Ident,ColonGt,Ident,ColonColon,Ident,OpenCurly,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwCalc,KwDef,Ident,OpenCurly,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwCalc,KwDef,Ident,OpenCurly,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwCalc,KwDef,Ident,ColonGt,Ident,ColonColon,Ident,OpenCurly,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwCalc,KwDef,Ident,OpenCurly,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwCalc,KwDef,Ident,ColonGt,Ident,ColonColon,Ident,OpenCurly,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwCalc,KwDef,Ident,OpenCurly,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwAlias,UnrestrictedName,KwFor,Ident,Semicolon,
+RegularComment,
+KwCalc,KwDef,Ident,ColonGt,Ident,ColonColon,Ident,OpenCurly,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwCalc,KwDef,Ident,ColonGt,Ident,ColonColon,Ident,OpenCurly,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+RegularComment,
+KwCalc,KwDef,Ident,OpenCurly,
+KwIn,Ident,Colon,Ident,Semicolon,
+KwIn,Ident,Colon,Ident,OpenCurly,
+ColonGtGt,Ident,Eq,Ident,Dot,Ident,Semicolon,
+CloseCurly,
+KwReturn,Ident,Colon,Ident,OpenCurly,
+ColonGtGt,Ident,Eq,Ident,Dot,Ident,OpenCurly,
+ColonGtGt,Ident,Eq,Ident,Dot,Ident,Dot,Ident,Semicolon,
+CloseCurly,
+CloseCurly,
+CloseCurly,
+CloseCurly,EndOfFile,
+~~~
+# AST
+~~~
+(root
+  (standard_library_package_def 'VectorCalculations'
+    (documentation)
+    (import_decl private 'ScalarValues::Boolean')
+    (import_decl private 'ScalarValues::Number')
+    (import_decl private 'Quantities::ScalarQuantityValue')
+    (import_decl private 'Quantities::VectorQuantityValue')
+    (import_decl private 'MeasurementReferences::VectorMeasurementReference')
+    (import_decl private 'MeasurementReferences::CoordinateTransformation')
+    (calc_def ''['' :> 'BaseFunctions::'[''
+      (default_ref_usage in 'elements' : 'Number' multiplicity ordered)
+      (default_ref_usage in 'mRef' : 'VectorMeasurementReference' multiplicity)
+      (return_member)
+      (attribute_usage private 'n' value))
+    (calc_def 'isZeroVectorQuantity' :> 'VectorFunctions::isZeroVector'
+      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
+      (return_member))
+    (calc_def 'isUnitVectorQuantity'
+      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
+      (return_member))
+    (comment)
+    (calc_def ''+'' :> 'VectorFunctions::'+''
+      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
+      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
+      (return_member))
+    (calc_def ''-'' :> 'VectorFunctions::'-''
+      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
+      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
+      (return_member))
+    (comment)
+    (calc_def 'scalarVectorMult' :> 'VectorFunctions::scalarVectorMult'
+      (default_ref_usage in : 'Number' multiplicity)
+      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
+      (return_member))
+    (calc_def 'vectorScalarMult' :> 'VectorFunctions::vectorScalarMult'
+      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
+      (default_ref_usage in : 'Number' multiplicity)
+      (return_member))
+    (calc_def 'scalarQuantityVectorMult'
+      (default_ref_usage in : 'ScalarQuantityValue' multiplicity)
+      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
+      (return_member))
+    (calc_def 'vectorScalarQuantityMult'
+      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
+      (default_ref_usage in : 'ScalarQuantityValue' multiplicity)
+      (return_member))
+    (calc_def 'vectorScalarDiv' :> 'VectorFunctions::vectorScalarDiv'
+      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
+      (default_ref_usage in : 'Number' multiplicity)
+      (return_member))
+    (calc_def 'vectorScalarQuantityDiv'
+      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
+      (default_ref_usage in : 'ScalarQuantityValue' multiplicity)
+      (return_member))
+    (calc_def 'inner' :> 'VectorFunctions::inner'
+      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
+      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
+      (return_member))
+    (calc_def 'outer'
+      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
+      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
+      (return_member))
+    (alias_member ''*'' for 'scalarVectorMult')
+    (comment)
+    (calc_def 'norm' :> 'VectorFunctions::norm'
+      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
+      (return_member))
+    (calc_def 'angle' :> 'VectorFunctions::angle'
+      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
+      (default_ref_usage in : 'VectorQuantityValue' multiplicity)
+      (return_member))
+    (comment)
+    (calc_def 'transform'
+      (default_ref_usage in 'transformation' : 'CoordinateTransformation')
+      (default_ref_usage in 'sourceVector' : 'VectorQuantityValue'
+        (default_ref_usage :>> 'mRef' value))
+      (return_member))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'BaseFunctions::['
+semantic.unresolved_name 'Number'
+semantic.unresolved_name 'VectorMeasurementReference'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorFunctions::isZeroVector'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'VectorFunctions::+'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorFunctions::-'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorFunctions::scalarVectorMult'
+semantic.unresolved_name 'Number'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorFunctions::vectorScalarMult'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'Number'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorFunctions::vectorScalarDiv'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'Number'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorFunctions::inner'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'Number'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorFunctions::norm'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'Number'
+semantic.unresolved_name 'VectorFunctions::angle'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'Number'
+semantic.unresolved_name 'CoordinateTransformation'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'dimensions'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'BaseFunctions::['
+semantic.unresolved_name 'Number'
+semantic.unresolved_name 'VectorMeasurementReference'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorFunctions::isZeroVector'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'VectorFunctions::+'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorFunctions::-'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorFunctions::scalarVectorMult'
+semantic.unresolved_name 'Number'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorFunctions::vectorScalarMult'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'Number'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorFunctions::vectorScalarDiv'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'Number'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorFunctions::inner'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'Number'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorFunctions::norm'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'Number'
+semantic.unresolved_name 'VectorFunctions::angle'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'Number'
+semantic.unresolved_name 'CoordinateTransformation'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'VectorQuantityValue'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'dimensions'
+~~~
+# FORMAT
+~~~sysml
+standard library package VectorCalculations {
+	doc
+	/*
+	 * This package package defines calculations for the construction of and computations on VectorQuantityValues.
+	 */
+	 
+	private import ScalarValues::Boolean;
+	private import ScalarValues::Number;
+    private import Quantities::ScalarQuantityValue;
+    private import Quantities::VectorQuantityValue;
+    private import MeasurementReferences::VectorMeasurementReference;
+    private import MeasurementReferences::CoordinateTransformation;
+    
+    calc def '[' :> BaseFunctions::'[' { 
+    	in elements: Number[1..n] ordered; 
+    	in mRef: VectorMeasurementReference[1]; 
+    	return quantity : VectorQuantityValue[1];
+    	private attribute n = mRef.flattenedSize;
+    }
+
+    calc def isZeroVectorQuantity :> VectorFunctions::isZeroVector { 
+    	in : VectorQuantityValue[1]; 
+    	return : Boolean[1];
+    }
+    calc def isUnitVectorQuantity { 
+    	in : VectorQuantityValue[1]; 
+    	return : Boolean[1];
+    }
+
+    /* Addition and subtraction */
+	calc def '+' :> VectorFunctions::'+' { in : VectorQuantityValue[1]; in : VectorQuantityValue[1]; return : VectorQuantityValue[1]; }
+	calc def '-' :> VectorFunctions::'-' { in : VectorQuantityValue[1]; in : VectorQuantityValue[1]; return : VectorQuantityValue[1]; }
+
+    /* Multiplication and division */
+	calc def scalarVectorMult :> VectorFunctions::scalarVectorMult { in : Number[1]; in : VectorQuantityValue[1]; return : VectorQuantityValue[1]; }
+	calc def vectorScalarMult :> VectorFunctions::vectorScalarMult { in : VectorQuantityValue[1]; in : Number[1]; return : VectorQuantityValue[1]; }
+    calc def scalarQuantityVectorMult { in : ScalarQuantityValue[1]; in : VectorQuantityValue[1]; return : VectorQuantityValue[1]; }
+    calc def vectorScalarQuantityMult { in : VectorQuantityValue[1]; in : ScalarQuantityValue[1]; return : VectorQuantityValue[1]; }
+	calc def vectorScalarDiv :> VectorFunctions::vectorScalarDiv { in : VectorQuantityValue[1]; in : Number[1]; return : VectorQuantityValue[1]; }
+    calc def vectorScalarQuantityDiv { in : VectorQuantityValue[1]; in : ScalarQuantityValue[1]; return : VectorQuantityValue[1]; }
+	calc def inner :> VectorFunctions::inner { in : VectorQuantityValue[1]; in : VectorQuantityValue[1]; return : Number[1]; }
+    calc def outer { in : VectorQuantityValue[1]; in : VectorQuantityValue[1]; return : VectorQuantityValue[1]; }
+	
+    alias '*' for scalarVectorMult;
+    
+    /* Norm and angle */
+	calc def norm :> VectorFunctions::norm { in : VectorQuantityValue[1]; return : Number[1]; }
+	calc def angle :> VectorFunctions::angle { in : VectorQuantityValue[1]; in : VectorQuantityValue[1]; return : Number[1]; }
+	
+	/* Coordinate transformation */
+	calc def transform {
+	    in transformation : CoordinateTransformation;
+	    in sourceVector : VectorQuantityValue {
+	        :>> mRef = transformation.source;
+	    }
+	    return targetVector : VectorQuantityValue {
+	        :>> mRef = transformation.target {
+	            :>> dimensions = sourceVector.mRef.dimensions;
+	        }
+    	}
+	}
+}
+~~~
+# SMG
+~~~
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d25bd7fd0ca08914cec7fc25d8dfa70a0a4b8327cc7dd6eee3ccdfe21134caad") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "VectorCalculations"))) (kind "package") (name "VectorCalculations") (declared-name "VectorCalculations") (range (start (line 0) (character 0)) (end (line 0) (character 3046))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::*"))) (kind "alias") (name "*") (declared-name "*") (range (start (line 43) (character 4)) (end (line 43) (character 35))) (parent (node (document "d0") (qualified-name "VectorCalculations"))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::+"))) (kind "calc def") (name "+") (declared-name "+") (range (start (line 30) (character 1)) (end (line 30) (character 132))) (parent (node (document "d0") (qualified-name "VectorCalculations"))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::+::VectorQuantityValue"))) (kind "in out parameter") (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (range (start (line 30) (character 40)) (end (line 30) (character 68))) (parent (node (document "d0") (qualified-name "VectorCalculations::+"))) (authored (relationships (typing (reference ": VectorQuantityValue[1]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::+::VectorQuantityValue#in_out_parameter"))) (kind "in out parameter") (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (range (start (line 30) (character 69)) (end (line 30) (character 97))) (parent (node (document "d0") (qualified-name "VectorCalculations::+"))) (authored (relationships (typing (reference ": VectorQuantityValue[1]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::-"))) (kind "calc def") (name "-") (declared-name "-") (range (start (line 31) (character 1)) (end (line 31) (character 132))) (parent (node (document "d0") (qualified-name "VectorCalculations"))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::-::VectorQuantityValue"))) (kind "in out parameter") (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (range (start (line 31) (character 40)) (end (line 31) (character 68))) (parent (node (document "d0") (qualified-name "VectorCalculations::-"))) (authored (relationships (typing (reference ": VectorQuantityValue[1]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::-::VectorQuantityValue#in_out_parameter"))) (kind "in out parameter") (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (range (start (line 31) (character 69)) (end (line 31) (character 97))) (parent (node (document "d0") (qualified-name "VectorCalculations::-"))) (authored (relationships (typing (reference ": VectorQuantityValue[1]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::Boolean"))) (kind "import") (name "Boolean") (declared-name "Boolean") (range (start (line 6) (character 1)) (end (line 6) (character 38))) (parent (node (document "d0") (qualified-name "VectorCalculations"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Boolean") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::CoordinateTransformation"))) (kind "import") (name "CoordinateTransformation") (declared-name "CoordinateTransformation") (range (start (line 11) (character 4)) (end (line 11) (character 67))) (parent (node (document "d0") (qualified-name "VectorCalculations"))) (authored (membership (kind Import) (visibility "private") (import (reference "MeasurementReferences::CoordinateTransformation") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 11) (character 19)) (end (line 11) (character 66))))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::Number"))) (kind "import") (name "Number") (declared-name "Number") (range (start (line 7) (character 1)) (end (line 7) (character 37))) (parent (node (document "d0") (qualified-name "VectorCalculations"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Number") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 36))))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::ScalarQuantityValue"))) (kind "import") (name "ScalarQuantityValue") (declared-name "ScalarQuantityValue") (range (start (line 8) (character 4)) (end (line 8) (character 51))) (parent (node (document "d0") (qualified-name "VectorCalculations"))) (authored (membership (kind Import) (visibility "private") (import (reference "Quantities::ScalarQuantityValue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 8) (character 19)) (end (line 8) (character 50))))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::VectorMeasurementReference"))) (kind "import") (name "VectorMeasurementReference") (declared-name "VectorMeasurementReference") (range (start (line 10) (character 4)) (end (line 10) (character 69))) (parent (node (document "d0") (qualified-name "VectorCalculations"))) (authored (membership (kind Import) (visibility "private") (import (reference "MeasurementReferences::VectorMeasurementReference") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 10) (character 19)) (end (line 10) (character 68))))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::VectorQuantityValue"))) (kind "import") (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (range (start (line 9) (character 4)) (end (line 9) (character 51))) (parent (node (document "d0") (qualified-name "VectorCalculations"))) (authored (membership (kind Import) (visibility "private") (import (reference "Quantities::VectorQuantityValue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 9) (character 19)) (end (line 9) (character 50))))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::["))) (kind "calc def") (name "[") (declared-name "[") (range (start (line 13) (character 4)) (end (line 13) (character 228))) (parent (node (document "d0") (qualified-name "VectorCalculations"))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::[::elements"))) (kind "in out parameter") (name "elements") (declared-name "elements") (range (start (line 14) (character 5)) (end (line 14) (character 39))) (parent (node (document "d0") (qualified-name "VectorCalculations::["))) (authored (relationships (typing (reference "elements: Number[1..n] ordered") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::[::mRef"))) (kind "in out parameter") (name "mRef") (declared-name "mRef") (range (start (line 15) (character 5)) (end (line 15) (character 44))) (parent (node (document "d0") (qualified-name "VectorCalculations::["))) (authored (relationships (typing (reference "mRef: VectorMeasurementReference[1]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 3046))) (parent (node (document "d0") (qualified-name "VectorCalculations"))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::angle"))) (kind "calc def") (name "angle") (declared-name "angle") (range (start (line 47) (character 1)) (end (line 47) (character 123))) (parent (node (document "d0") (qualified-name "VectorCalculations"))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::angle::VectorQuantityValue"))) (kind "in out parameter") (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (range (start (line 47) (character 44)) (end (line 47) (character 72))) (parent (node (document "d0") (qualified-name "VectorCalculations::angle"))) (authored (relationships (typing (reference ": VectorQuantityValue[1]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::angle::VectorQuantityValue#in_out_parameter"))) (kind "in out parameter") (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (range (start (line 47) (character 73)) (end (line 47) (character 101))) (parent (node (document "d0") (qualified-name "VectorCalculations::angle"))) (authored (relationships (typing (reference ": VectorQuantityValue[1]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::inner"))) (kind "calc def") (name "inner") (declared-name "inner") (range (start (line 40) (character 1)) (end (line 40) (character 123))) (parent (node (document "d0") (qualified-name "VectorCalculations"))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::inner::VectorQuantityValue"))) (kind "in out parameter") (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (range (start (line 40) (character 44)) (end (line 40) (character 72))) (parent (node (document "d0") (qualified-name "VectorCalculations::inner"))) (authored (relationships (typing (reference ": VectorQuantityValue[1]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::inner::VectorQuantityValue#in_out_parameter"))) (kind "in out parameter") (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (range (start (line 40) (character 73)) (end (line 40) (character 101))) (parent (node (document "d0") (qualified-name "VectorCalculations::inner"))) (authored (relationships (typing (reference ": VectorQuantityValue[1]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::isUnitVectorQuantity"))) (kind "calc def") (name "isUnitVectorQuantity") (declared-name "isUnitVectorQuantity") (range (start (line 24) (character 4)) (end (line 24) (character 103))) (parent (node (document "d0") (qualified-name "VectorCalculations"))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::isUnitVectorQuantity::VectorQuantityValue"))) (kind "in out parameter") (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (range (start (line 25) (character 5)) (end (line 25) (character 33))) (parent (node (document "d0") (qualified-name "VectorCalculations::isUnitVectorQuantity"))) (authored (relationships (typing (reference ": VectorQuantityValue[1]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::isZeroVectorQuantity"))) (kind "calc def") (name "isZeroVectorQuantity") (declared-name "isZeroVectorQuantity") (range (start (line 20) (character 4)) (end (line 20) (character 136))) (parent (node (document "d0") (qualified-name "VectorCalculations"))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::isZeroVectorQuantity::VectorQuantityValue"))) (kind "in out parameter") (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (range (start (line 21) (character 5)) (end (line 21) (character 33))) (parent (node (document "d0") (qualified-name "VectorCalculations::isZeroVectorQuantity"))) (authored (relationships (typing (reference ": VectorQuantityValue[1]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::norm"))) (kind "calc def") (name "norm") (declared-name "norm") (range (start (line 46) (character 1)) (end (line 46) (character 92))) (parent (node (document "d0") (qualified-name "VectorCalculations"))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::norm::VectorQuantityValue"))) (kind "in out parameter") (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (range (start (line 46) (character 42)) (end (line 46) (character 70))) (parent (node (document "d0") (qualified-name "VectorCalculations::norm"))) (authored (relationships (typing (reference ": VectorQuantityValue[1]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::outer"))) (kind "calc def") (name "outer") (declared-name "outer") (range (start (line 41) (character 4)) (end (line 41) (character 113))) (parent (node (document "d0") (qualified-name "VectorCalculations"))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::outer::VectorQuantityValue"))) (kind "in out parameter") (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (range (start (line 41) (character 21)) (end (line 41) (character 49))) (parent (node (document "d0") (qualified-name "VectorCalculations::outer"))) (authored (relationships (typing (reference ": VectorQuantityValue[1]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::outer::VectorQuantityValue#in_out_parameter"))) (kind "in out parameter") (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (range (start (line 41) (character 50)) (end (line 41) (character 78))) (parent (node (document "d0") (qualified-name "VectorCalculations::outer"))) (authored (relationships (typing (reference ": VectorQuantityValue[1]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::scalarQuantityVectorMult"))) (kind "calc def") (name "scalarQuantityVectorMult") (declared-name "scalarQuantityVectorMult") (range (start (line 36) (character 4)) (end (line 36) (character 132))) (parent (node (document "d0") (qualified-name "VectorCalculations"))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::scalarQuantityVectorMult::ScalarQuantityValue"))) (kind "in out parameter") (name "ScalarQuantityValue") (declared-name "ScalarQuantityValue") (range (start (line 36) (character 40)) (end (line 36) (character 68))) (parent (node (document "d0") (qualified-name "VectorCalculations::scalarQuantityVectorMult"))) (authored (relationships (typing (reference ": ScalarQuantityValue[1]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::scalarQuantityVectorMult::VectorQuantityValue"))) (kind "in out parameter") (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (range (start (line 36) (character 69)) (end (line 36) (character 97))) (parent (node (document "d0") (qualified-name "VectorCalculations::scalarQuantityVectorMult"))) (authored (relationships (typing (reference ": VectorQuantityValue[1]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::scalarVectorMult"))) (kind "calc def") (name "scalarVectorMult") (declared-name "scalarVectorMult") (range (start (line 34) (character 1)) (end (line 34) (character 145))) (parent (node (document "d0") (qualified-name "VectorCalculations"))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::scalarVectorMult::Number"))) (kind "in out parameter") (name "Number") (declared-name "Number") (range (start (line 34) (character 66)) (end (line 34) (character 81))) (parent (node (document "d0") (qualified-name "VectorCalculations::scalarVectorMult"))) (authored (relationships (typing (reference ": Number[1]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::scalarVectorMult::VectorQuantityValue"))) (kind "in out parameter") (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (range (start (line 34) (character 82)) (end (line 34) (character 110))) (parent (node (document "d0") (qualified-name "VectorCalculations::scalarVectorMult"))) (authored (relationships (typing (reference ": VectorQuantityValue[1]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::transform"))) (kind "calc def") (name "transform") (declared-name "transform") (range (start (line 50) (character 1)) (end (line 50) (character 341))) (parent (node (document "d0") (qualified-name "VectorCalculations"))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::transform::sourceVector"))) (kind "in out parameter") (name "sourceVector") (declared-name "sourceVector") (range (start (line 52) (character 5)) (end (line 52) (character 94))) (parent (node (document "d0") (qualified-name "VectorCalculations::transform"))) (authored (relationships (typing (reference "VectorQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::transform::transformation"))) (kind "in out parameter") (name "transformation") (declared-name "transformation") (range (start (line 51) (character 5)) (end (line 51) (character 50))) (parent (node (document "d0") (qualified-name "VectorCalculations::transform"))) (authored (relationships (typing (reference "CoordinateTransformation") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::vectorScalarDiv"))) (kind "calc def") (name "vectorScalarDiv") (declared-name "vectorScalarDiv") (range (start (line 38) (character 1)) (end (line 38) (character 143))) (parent (node (document "d0") (qualified-name "VectorCalculations"))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::vectorScalarDiv::Number"))) (kind "in out parameter") (name "Number") (declared-name "Number") (range (start (line 38) (character 93)) (end (line 38) (character 108))) (parent (node (document "d0") (qualified-name "VectorCalculations::vectorScalarDiv"))) (authored (relationships (typing (reference ": Number[1]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::vectorScalarDiv::VectorQuantityValue"))) (kind "in out parameter") (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (range (start (line 38) (character 64)) (end (line 38) (character 92))) (parent (node (document "d0") (qualified-name "VectorCalculations::vectorScalarDiv"))) (authored (relationships (typing (reference ": VectorQuantityValue[1]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::vectorScalarMult"))) (kind "calc def") (name "vectorScalarMult") (declared-name "vectorScalarMult") (range (start (line 35) (character 1)) (end (line 35) (character 145))) (parent (node (document "d0") (qualified-name "VectorCalculations"))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::vectorScalarMult::Number"))) (kind "in out parameter") (name "Number") (declared-name "Number") (range (start (line 35) (character 95)) (end (line 35) (character 110))) (parent (node (document "d0") (qualified-name "VectorCalculations::vectorScalarMult"))) (authored (relationships (typing (reference ": Number[1]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::vectorScalarMult::VectorQuantityValue"))) (kind "in out parameter") (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (range (start (line 35) (character 66)) (end (line 35) (character 94))) (parent (node (document "d0") (qualified-name "VectorCalculations::vectorScalarMult"))) (authored (relationships (typing (reference ": VectorQuantityValue[1]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityDiv"))) (kind "calc def") (name "vectorScalarQuantityDiv") (declared-name "vectorScalarQuantityDiv") (range (start (line 39) (character 4)) (end (line 39) (character 131))) (parent (node (document "d0") (qualified-name "VectorCalculations"))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityDiv::ScalarQuantityValue"))) (kind "in out parameter") (name "ScalarQuantityValue") (declared-name "ScalarQuantityValue") (range (start (line 39) (character 68)) (end (line 39) (character 96))) (parent (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityDiv"))) (authored (relationships (typing (reference ": ScalarQuantityValue[1]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityDiv::VectorQuantityValue"))) (kind "in out parameter") (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (range (start (line 39) (character 39)) (end (line 39) (character 67))) (parent (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityDiv"))) (authored (relationships (typing (reference ": VectorQuantityValue[1]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityMult"))) (kind "calc def") (name "vectorScalarQuantityMult") (declared-name "vectorScalarQuantityMult") (range (start (line 37) (character 4)) (end (line 37) (character 132))) (parent (node (document "d0") (qualified-name "VectorCalculations"))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityMult::ScalarQuantityValue"))) (kind "in out parameter") (name "ScalarQuantityValue") (declared-name "ScalarQuantityValue") (range (start (line 37) (character 69)) (end (line 37) (character 97))) (parent (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityMult"))) (authored (relationships (typing (reference ": ScalarQuantityValue[1]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityMult::VectorQuantityValue"))) (kind "in out parameter") (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (range (start (line 37) (character 40)) (end (line 37) (character 68))) (parent (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityMult"))) (authored (relationships (typing (reference ": VectorQuantityValue[1]") (range none)))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::+::VectorQuantityValue"))) (kind featureTyping) (ordinal 0)) (authored-target ": VectorQuantityValue[1]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::+::VectorQuantityValue#in_out_parameter"))) (kind featureTyping) (ordinal 0)) (authored-target ": VectorQuantityValue[1]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::-::VectorQuantityValue"))) (kind featureTyping) (ordinal 0)) (authored-target ": VectorQuantityValue[1]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::-::VectorQuantityValue#in_out_parameter"))) (kind featureTyping) (ordinal 0)) (authored-target ": VectorQuantityValue[1]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::Boolean"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Boolean") (range (start (line 6) (character 16)) (end (line 6) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::CoordinateTransformation"))) (kind membershipImport) (ordinal 0)) (authored-target "MeasurementReferences::CoordinateTransformation") (range (start (line 11) (character 19)) (end (line 11) (character 66))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::Number"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Number") (range (start (line 7) (character 16)) (end (line 7) (character 36))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::ScalarQuantityValue"))) (kind membershipImport) (ordinal 0)) (authored-target "Quantities::ScalarQuantityValue") (range (start (line 8) (character 19)) (end (line 8) (character 50))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::VectorMeasurementReference"))) (kind membershipImport) (ordinal 0)) (authored-target "MeasurementReferences::VectorMeasurementReference") (range (start (line 10) (character 19)) (end (line 10) (character 68))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::VectorQuantityValue"))) (kind membershipImport) (ordinal 0)) (authored-target "Quantities::VectorQuantityValue") (range (start (line 9) (character 19)) (end (line 9) (character 50))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::[::elements"))) (kind featureTyping) (ordinal 0)) (authored-target "elements: Number[1..n] ordered") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::[::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "mRef: VectorMeasurementReference[1]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::angle::VectorQuantityValue"))) (kind featureTyping) (ordinal 0)) (authored-target ": VectorQuantityValue[1]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::angle::VectorQuantityValue#in_out_parameter"))) (kind featureTyping) (ordinal 0)) (authored-target ": VectorQuantityValue[1]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::inner::VectorQuantityValue"))) (kind featureTyping) (ordinal 0)) (authored-target ": VectorQuantityValue[1]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::inner::VectorQuantityValue#in_out_parameter"))) (kind featureTyping) (ordinal 0)) (authored-target ": VectorQuantityValue[1]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::isUnitVectorQuantity::VectorQuantityValue"))) (kind featureTyping) (ordinal 0)) (authored-target ": VectorQuantityValue[1]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::isZeroVectorQuantity::VectorQuantityValue"))) (kind featureTyping) (ordinal 0)) (authored-target ": VectorQuantityValue[1]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::norm::VectorQuantityValue"))) (kind featureTyping) (ordinal 0)) (authored-target ": VectorQuantityValue[1]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::outer::VectorQuantityValue"))) (kind featureTyping) (ordinal 0)) (authored-target ": VectorQuantityValue[1]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::outer::VectorQuantityValue#in_out_parameter"))) (kind featureTyping) (ordinal 0)) (authored-target ": VectorQuantityValue[1]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::scalarQuantityVectorMult::ScalarQuantityValue"))) (kind featureTyping) (ordinal 0)) (authored-target ": ScalarQuantityValue[1]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::scalarQuantityVectorMult::VectorQuantityValue"))) (kind featureTyping) (ordinal 0)) (authored-target ": VectorQuantityValue[1]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::scalarVectorMult::Number"))) (kind featureTyping) (ordinal 0)) (authored-target ": Number[1]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::scalarVectorMult::VectorQuantityValue"))) (kind featureTyping) (ordinal 0)) (authored-target ": VectorQuantityValue[1]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::transform::sourceVector"))) (kind featureTyping) (ordinal 0)) (authored-target "VectorQuantityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "VectorCalculations::VectorQuantityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::transform::transformation"))) (kind featureTyping) (ordinal 0)) (authored-target "CoordinateTransformation") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "VectorCalculations::CoordinateTransformation")))))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::vectorScalarDiv::Number"))) (kind featureTyping) (ordinal 0)) (authored-target ": Number[1]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::vectorScalarDiv::VectorQuantityValue"))) (kind featureTyping) (ordinal 0)) (authored-target ": VectorQuantityValue[1]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::vectorScalarMult::Number"))) (kind featureTyping) (ordinal 0)) (authored-target ": Number[1]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::vectorScalarMult::VectorQuantityValue"))) (kind featureTyping) (ordinal 0)) (authored-target ": VectorQuantityValue[1]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityDiv::ScalarQuantityValue"))) (kind featureTyping) (ordinal 0)) (authored-target ": ScalarQuantityValue[1]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityDiv::VectorQuantityValue"))) (kind featureTyping) (ordinal 0)) (authored-target ": VectorQuantityValue[1]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityMult::ScalarQuantityValue"))) (kind featureTyping) (ordinal 0)) (authored-target ": ScalarQuantityValue[1]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityMult::VectorQuantityValue"))) (kind featureTyping) (ordinal 0)) (authored-target ": VectorQuantityValue[1]") (range none) (outcome (status unresolved)))
+  )
+  (relationships
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "VectorCalculations::transform::sourceVector"))) (target (node (document "d0") (qualified-name "VectorCalculations::VectorQuantityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VectorCalculations::transform::sourceVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "VectorCalculations::transform::transformation"))) (target (node (document "d0") (qualified-name "VectorCalculations::CoordinateTransformation"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VectorCalculations::transform::transformation"))) (kind featureTyping) (ordinal 0)))
+  )
+  (evaluation
+    (node (node (document "d0") (qualified-name "VectorCalculations::[")) (expression (status "unresolved") (error "expression has an unresolved reference")))
+    (node (node (document "d0") (qualified-name "VectorCalculations::transform")) (expression (status "unresolved") (error "expression has an unresolved reference")))
   )
 )
 ~~~

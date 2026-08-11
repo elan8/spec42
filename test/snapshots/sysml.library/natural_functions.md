@@ -33,6 +33,99 @@ standard library package NaturalFunctions {
 	function ToNatural{ in x: String[1]; return : Natural[1]; }
 }	
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "natural_functions.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 15) (end 7 27))
+      )
+    )
+  )
+)
+~~~
+# TOKENS
+~~~zig
+KwStandard,KwLibrary,KwPackage,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+KwPublic,KwImport,Ident,ColonColon,Star,Semicolon,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,Ident,KwSpecializes,Ident,ColonColon,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,Ident,KwSpecializes,Ident,ColonColon,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,Ident,KwSpecializes,Ident,ColonColon,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwFunction,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+CloseCurly,EndOfFile,
+~~~
+# AST
+~~~
+(root
+  (standard_library_package_def 'NaturalFunctions'
+    (documentation)
+    (import_decl public 'ScalarValues::*')
+    (function_def
+      (feature_def in 'x' : 'Natural' multiplicity)
+      (feature_def in 'y' : 'Natural' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Natural' multiplicity)
+      (feature_def in 'y' : 'Natural' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Natural' multiplicity)
+      (feature_def in 'y' : 'Natural' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Natural' multiplicity)
+      (feature_def in 'y' : 'Natural' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Natural' multiplicity)
+      (feature_def in 'y' : 'Natural' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Natural' multiplicity)
+      (feature_def in 'y' : 'Natural' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Natural' multiplicity)
+      (feature_def in 'y' : 'Natural' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Natural' multiplicity)
+      (feature_def in 'y' : 'Natural' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Natural' multiplicity)
+      (feature_def in 'y' : 'Natural' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Natural' multiplicity)
+      (feature_def in 'y' : 'Natural' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Natural' multiplicity)
+      (feature_def in 'y' : 'Natural' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'Natural' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'String' multiplicity)
+      (return_member))))
+~~~
 # EXPECTED
 ~~~
 semantic.unresolved_name 'IntegerFunctions::+'
@@ -137,84 +230,6 @@ semantic.unresolved_name 'String'
 semantic.unresolved_name 'String'
 semantic.unresolved_name 'Natural'
 ~~~
-# TOKENS
-~~~zig
-KwStandard,KwLibrary,KwPackage,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-KwPublic,KwImport,Ident,ColonColon,Star,Semicolon,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,Ident,KwSpecializes,Ident,ColonColon,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,Ident,KwSpecializes,Ident,ColonColon,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,Ident,KwSpecializes,Ident,ColonColon,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-KwFunction,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (standard_library_package_def 'NaturalFunctions'
-    (documentation)
-    (import_decl public 'ScalarValues::*')
-    (function_def
-      (feature_def in 'x' : 'Natural' multiplicity)
-      (feature_def in 'y' : 'Natural' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Natural' multiplicity)
-      (feature_def in 'y' : 'Natural' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Natural' multiplicity)
-      (feature_def in 'y' : 'Natural' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Natural' multiplicity)
-      (feature_def in 'y' : 'Natural' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Natural' multiplicity)
-      (feature_def in 'y' : 'Natural' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Natural' multiplicity)
-      (feature_def in 'y' : 'Natural' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Natural' multiplicity)
-      (feature_def in 'y' : 'Natural' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Natural' multiplicity)
-      (feature_def in 'y' : 'Natural' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Natural' multiplicity)
-      (feature_def in 'y' : 'Natural' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Natural' multiplicity)
-      (feature_def in 'y' : 'Natural' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Natural' multiplicity)
-      (feature_def in 'y' : 'Natural' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'Natural' multiplicity)
-      (return_member))
-    (function_def
-      (feature_def in 'x' : 'String' multiplicity)
-      (return_member))))
-~~~
 # FORMAT
 ~~~sysml
 standard library package NaturalFunctions {
@@ -248,55 +263,32 @@ standard library package NaturalFunctions {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "NaturalFunctions"))) (name "NaturalFunctions") (declared-name "NaturalFunctions")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "NaturalFunctions::*"))) (name "*") (declared-name "*"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::ToNatural"))) (name "ToNatural") (declared-name "ToNatural"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::ToString"))) (name "ToString") (declared-name "ToString"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "NaturalFunctions::_documentation"))) (name ""))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::function"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::function#kermlDecl"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::function#kermlDecl2"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::function#kermlDecl3"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::function#kermlDecl4"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::function#kermlDecl5"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::function#kermlDecl6"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::function#kermlDecl7"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::function#kermlDecl8"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::max"))) (name "max") (declared-name "max"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::min"))) (name "min") (declared-name "min"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "acc80980a4dae9c5ec82735f94c09957c135d78bee3b25fa0bf9905ad2326917") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "NaturalFunctions"))) (kind "package") (name "NaturalFunctions") (declared-name "NaturalFunctions") (range (start (line 0) (character 0)) (end (line 0) (character 1622))))
+    (element (id (node (document "d0") (qualified-name "NaturalFunctions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 7) (character 1)) (end (line 7) (character 31))) (parent (node (document "d0") (qualified-name "NaturalFunctions"))) (authored (membership (kind Import) (visibility "public") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 7) (character 15)) (end (line 7) (character 27))))))
+    (element (id (node (document "d0") (qualified-name "NaturalFunctions::ToNatural"))) (kind "kermlDecl") (name "ToNatural") (declared-name "ToNatural") (range (start (line 25) (character 1)) (end (line 25) (character 60))) (parent (node (document "d0") (qualified-name "NaturalFunctions"))))
+    (element (id (node (document "d0") (qualified-name "NaturalFunctions::ToString"))) (kind "kermlDecl") (name "ToString") (declared-name "ToString") (range (start (line 24) (character 1)) (end (line 24) (character 99))) (parent (node (document "d0") (qualified-name "NaturalFunctions"))))
+    (element (id (node (document "d0") (qualified-name "NaturalFunctions::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 1622))) (parent (node (document "d0") (qualified-name "NaturalFunctions"))))
+    (element (id (node (document "d0") (qualified-name "NaturalFunctions::function"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 9) (character 1)) (end (line 9) (character 111))) (parent (node (document "d0") (qualified-name "NaturalFunctions"))))
+    (element (id (node (document "d0") (qualified-name "NaturalFunctions::function#kermlDecl"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 10) (character 1)) (end (line 10) (character 108))) (parent (node (document "d0") (qualified-name "NaturalFunctions"))))
+    (element (id (node (document "d0") (qualified-name "NaturalFunctions::function#kermlDecl2"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 11) (character 1)) (end (line 11) (character 108))) (parent (node (document "d0") (qualified-name "NaturalFunctions"))))
+    (element (id (node (document "d0") (qualified-name "NaturalFunctions::function#kermlDecl3"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 12) (character 1)) (end (line 12) (character 108))) (parent (node (document "d0") (qualified-name "NaturalFunctions"))))
+    (element (id (node (document "d0") (qualified-name "NaturalFunctions::function#kermlDecl4"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 14) (character 1)) (end (line 14) (character 108))) (parent (node (document "d0") (qualified-name "NaturalFunctions"))))
+    (element (id (node (document "d0") (qualified-name "NaturalFunctions::function#kermlDecl5"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 15) (character 1)) (end (line 15) (character 108))) (parent (node (document "d0") (qualified-name "NaturalFunctions"))))
+    (element (id (node (document "d0") (qualified-name "NaturalFunctions::function#kermlDecl6"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 16) (character 1)) (end (line 16) (character 110))) (parent (node (document "d0") (qualified-name "NaturalFunctions"))))
+    (element (id (node (document "d0") (qualified-name "NaturalFunctions::function#kermlDecl7"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 17) (character 1)) (end (line 17) (character 110))) (parent (node (document "d0") (qualified-name "NaturalFunctions"))))
+    (element (id (node (document "d0") (qualified-name "NaturalFunctions::function#kermlDecl8"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 22) (character 1)) (end (line 22) (character 116))) (parent (node (document "d0") (qualified-name "NaturalFunctions"))))
+    (element (id (node (document "d0") (qualified-name "NaturalFunctions::max"))) (kind "kermlDecl") (name "max") (declared-name "max") (range (start (line 19) (character 1)) (end (line 19) (character 108))) (parent (node (document "d0") (qualified-name "NaturalFunctions"))))
+    (element (id (node (document "d0") (qualified-name "NaturalFunctions::min"))) (kind "kermlDecl") (name "min") (declared-name "min") (range (start (line 20) (character 1)) (end (line 20) (character 108))) (parent (node (document "d0") (qualified-name "NaturalFunctions"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "NaturalFunctions::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (range (start (line 7) (character 15)) (end (line 7) (character 27))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "NaturalFunctions::_documentation"))) (to (node (document "d0") (qualified-name "NaturalFunctions"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/natural_functions.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 15) (end 7 27))
-      )
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 10 1) (end 10 108))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

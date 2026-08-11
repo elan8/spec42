@@ -545,715 +545,404 @@ standard library package SysML {
 	
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'parameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Behavior'
-semantic.unresolved_name 'step'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Step'
-semantic.unresolved_name 'Behavior'
-semantic.unresolved_name 'behavior'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ParameterMembership'
-semantic.unresolved_name 'ownedMemberParameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'expression'
-semantic.unresolved_name 'ownedFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'ownedFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Invariant'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Feature'
-semantic.unresolved_name 'member'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'DataType'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'DataType'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'BindingConnector'
-semantic.unresolved_name 'Function'
-semantic.unresolved_name 'expression'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Function'
-semantic.unresolved_name 'function'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'parameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'parameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'parameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'parameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'owningNamespace'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ownedConjugator'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'FeatureTyping'
-semantic.unresolved_name 'type'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'AssociationStructure'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'isSufficient'
-semantic.unresolved_name 'associationEnd'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'AssociationStructure'
-semantic.unresolved_name 'association'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Connector'
-semantic.unresolved_name 'Predicate'
-semantic.unresolved_name 'BooleanExpression'
-semantic.unresolved_name 'Predicate'
-semantic.unresolved_name 'predicate'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Classifier'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'ownedMember'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ownedMembership'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'feature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'directedFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ownedFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Import'
-semantic.unresolved_name 'VisibilityKind'
-semantic.unresolved_name 'visibility'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'isImportAll'
-semantic.unresolved_name 'Interaction'
-semantic.unresolved_name 'associationEnd'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Flow'
-semantic.unresolved_name 'Interaction'
-semantic.unresolved_name 'interaction'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Structure'
-semantic.unresolved_name 'Structure'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'MembershipImport'
-semantic.unresolved_name 'Metaclass'
-semantic.unresolved_name 'MetadataFeature'
-semantic.unresolved_name 'Metaclass'
-semantic.unresolved_name 'metaclass'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'NamespaceImport'
-semantic.unresolved_name 'FeatureMembership'
-semantic.unresolved_name 'ownedMemberFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Class'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Class'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Conjugation'
-semantic.unresolved_name 'originalType'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'owningType'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Structure'
-semantic.unresolved_name 'ownedMember'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'FeatureMembership'
-semantic.unresolved_name 'ownedMemberFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'declaredShortName'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'parameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'parameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'parameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ownedFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ownedFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'declaredShortName'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ownedFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ownedFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'parameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'parameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'parameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Feature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ParameterMembership'
-semantic.unresolved_name 'ownedMemberParameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'FeatureMembership'
-semantic.unresolved_name 'ownedMemberFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Behavior'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ParameterMembership'
-semantic.unresolved_name 'ownedMemberParameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Succession'
-semantic.unresolved_name 'SuccessionFlow'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'FeatureMembership'
-semantic.unresolved_name 'Step'
-semantic.unresolved_name 'ownedMemberFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ownedFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'ownedFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'feature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Succession'
-semantic.unresolved_name 'ownedMember'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'InvocationExpression'
-semantic.unresolved_name 'Feature'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'isVariable'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'ownedMember'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ownedMembership'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'owningType'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'owningType'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Classifier'
-semantic.unresolved_name 'type'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'feature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'directedFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ownedFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'OwningMembership'
-semantic.unresolved_name 'ownedMemberElement'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'ownedMember'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'FeatureMembership'
-semantic.unresolved_name 'ownedMemberFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Element'
-semantic.unresolved_name 'member'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'ownedMember'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Metadata::metadataItems'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'parameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Behavior'
-semantic.unresolved_name 'step'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Step'
-semantic.unresolved_name 'Behavior'
-semantic.unresolved_name 'behavior'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ParameterMembership'
-semantic.unresolved_name 'ownedMemberParameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'expression'
-semantic.unresolved_name 'ownedFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'ownedFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Invariant'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Feature'
-semantic.unresolved_name 'member'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'DataType'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'DataType'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'BindingConnector'
-semantic.unresolved_name 'Function'
-semantic.unresolved_name 'expression'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Function'
-semantic.unresolved_name 'function'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'parameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'parameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'parameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'parameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'owningNamespace'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ownedConjugator'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'FeatureTyping'
-semantic.unresolved_name 'type'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'AssociationStructure'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'isSufficient'
-semantic.unresolved_name 'associationEnd'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'AssociationStructure'
-semantic.unresolved_name 'association'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Connector'
-semantic.unresolved_name 'Predicate'
-semantic.unresolved_name 'BooleanExpression'
-semantic.unresolved_name 'Predicate'
-semantic.unresolved_name 'predicate'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Classifier'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'ownedMember'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ownedMembership'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'feature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'directedFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ownedFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Import'
-semantic.unresolved_name 'VisibilityKind'
-semantic.unresolved_name 'visibility'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'isImportAll'
-semantic.unresolved_name 'Interaction'
-semantic.unresolved_name 'associationEnd'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Flow'
-semantic.unresolved_name 'Interaction'
-semantic.unresolved_name 'interaction'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Structure'
-semantic.unresolved_name 'Structure'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'MembershipImport'
-semantic.unresolved_name 'Metaclass'
-semantic.unresolved_name 'MetadataFeature'
-semantic.unresolved_name 'Metaclass'
-semantic.unresolved_name 'metaclass'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'NamespaceImport'
-semantic.unresolved_name 'FeatureMembership'
-semantic.unresolved_name 'ownedMemberFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Class'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Class'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Conjugation'
-semantic.unresolved_name 'originalType'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'owningType'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Structure'
-semantic.unresolved_name 'ownedMember'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'FeatureMembership'
-semantic.unresolved_name 'ownedMemberFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'declaredShortName'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'parameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'parameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'parameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ownedFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ownedFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'declaredShortName'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ownedFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ownedFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'parameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'parameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'parameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Feature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ParameterMembership'
-semantic.unresolved_name 'ownedMemberParameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'FeatureMembership'
-semantic.unresolved_name 'ownedMemberFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Behavior'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ParameterMembership'
-semantic.unresolved_name 'ownedMemberParameter'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Succession'
-semantic.unresolved_name 'SuccessionFlow'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'FeatureMembership'
-semantic.unresolved_name 'Step'
-semantic.unresolved_name 'ownedMemberFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ownedFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'ownedFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'feature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Succession'
-semantic.unresolved_name 'ownedMember'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'InvocationExpression'
-semantic.unresolved_name 'Feature'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'isVariable'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'ownedMember'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ownedMembership'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'owningType'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'owningType'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Classifier'
-semantic.unresolved_name 'type'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'feature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'directedFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'ownedFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'OwningMembership'
-semantic.unresolved_name 'ownedMemberElement'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'ownedMember'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'FeatureMembership'
-semantic.unresolved_name 'ownedMemberFeature'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Element'
-semantic.unresolved_name 'member'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'ownedMember'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Metadata::metadataItems'
-semantic.unresolved_name 'Expression'
-semantic.unresolved_name 'Metadata::metadataItems'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sys_ml.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 16) (end 6 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 16) (end 10 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 18 44) (end 18 52))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 22 39) (end 22 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 26 43) (end 26 62))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 47 66) (end 47 75))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 57 47) (end 57 55))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 60 3) (end 60 71))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 65 51) (end 65 67))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 67 49) (end 67 57))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 71 44) (end 71 54))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 99 48) (end 99 61))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 104 48) (end 104 68))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 105 3) (end 105 65))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 114 60) (end 114 69))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 116 70) (end 116 79))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 118 43) (end 118 60))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 126 38) (end 126 48))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 127 3) (end 127 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 163 3) (end 163 63))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 173 3) (end 173 71))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 182 43) (end 182 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 183 3) (end 183 68))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 184 3) (end 184 63))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 187 42) (end 187 53))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 191 55) (end 191 59))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 227 42) (end 227 51))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 239 44) (end 239 60))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 243 62) (end 243 71))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 245 52) (end 245 67))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 249 51) (end 249 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 251 47) (end 251 64))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 255 60) (end 255 65))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 256 3) (end 256 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 260 3) (end 260 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 277 43) (end 277 54))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 282 64) (end 282 73))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 296 3) (end 296 71))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 312 59) (end 312 76))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 313 3) (end 313 52))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 320 3) (end 320 62))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 320 44) (end 320 61))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 321 3) (end 321 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 332 3) (end 332 62))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 332 44) (end 332 61))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 333 3) (end 333 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 362 49) (end 362 68))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 367 3) (end 367 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 381 52) (end 381 69))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 382 3) (end 382 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 388 3) (end 388 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 396 45) (end 396 64))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 400 63) (end 400 73))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 402 47) (end 402 61))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 414 55) (end 414 72))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 415 3) (end 415 48))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 429 55) (end 429 75))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 430 3) (end 430 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 439 33) (end 439 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 440 3) (end 440 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 441 3) (end 441 70))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 441 59) (end 441 69))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 442 3) (end 442 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 489 45) (end 489 61))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 509 51) (end 509 68))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -2016,6 +1705,716 @@ CloseCurly,EndOfFile,
         (item_usage derived ref 'whileArgument' : 'Expression' :> 'Metadata::metadataItems' multiplicity)
         (item_usage derived ref 'untilArgument' : 'Expression' :> 'Metadata::metadataItems' multiplicity)))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'parameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Behavior'
+semantic.unresolved_name 'step'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Step'
+semantic.unresolved_name 'Behavior'
+semantic.unresolved_name 'behavior'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ParameterMembership'
+semantic.unresolved_name 'ownedMemberParameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'expression'
+semantic.unresolved_name 'ownedFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'ownedFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Invariant'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Feature'
+semantic.unresolved_name 'member'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'DataType'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'DataType'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'BindingConnector'
+semantic.unresolved_name 'Function'
+semantic.unresolved_name 'expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Function'
+semantic.unresolved_name 'function'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'parameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'parameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'parameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'parameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'owningNamespace'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ownedConjugator'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'FeatureTyping'
+semantic.unresolved_name 'type'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'AssociationStructure'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'isSufficient'
+semantic.unresolved_name 'associationEnd'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'AssociationStructure'
+semantic.unresolved_name 'association'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Connector'
+semantic.unresolved_name 'Predicate'
+semantic.unresolved_name 'BooleanExpression'
+semantic.unresolved_name 'Predicate'
+semantic.unresolved_name 'predicate'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Classifier'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'ownedMember'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ownedMembership'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'feature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'directedFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ownedFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Import'
+semantic.unresolved_name 'VisibilityKind'
+semantic.unresolved_name 'visibility'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'isImportAll'
+semantic.unresolved_name 'Interaction'
+semantic.unresolved_name 'associationEnd'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Flow'
+semantic.unresolved_name 'Interaction'
+semantic.unresolved_name 'interaction'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Structure'
+semantic.unresolved_name 'Structure'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'MembershipImport'
+semantic.unresolved_name 'Metaclass'
+semantic.unresolved_name 'MetadataFeature'
+semantic.unresolved_name 'Metaclass'
+semantic.unresolved_name 'metaclass'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'NamespaceImport'
+semantic.unresolved_name 'FeatureMembership'
+semantic.unresolved_name 'ownedMemberFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Class'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Class'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Conjugation'
+semantic.unresolved_name 'originalType'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'owningType'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Structure'
+semantic.unresolved_name 'ownedMember'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'FeatureMembership'
+semantic.unresolved_name 'ownedMemberFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'declaredShortName'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'parameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'parameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'parameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ownedFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ownedFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'declaredShortName'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ownedFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ownedFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'parameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'parameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'parameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Feature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ParameterMembership'
+semantic.unresolved_name 'ownedMemberParameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'FeatureMembership'
+semantic.unresolved_name 'ownedMemberFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Behavior'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ParameterMembership'
+semantic.unresolved_name 'ownedMemberParameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Succession'
+semantic.unresolved_name 'SuccessionFlow'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'FeatureMembership'
+semantic.unresolved_name 'Step'
+semantic.unresolved_name 'ownedMemberFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ownedFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'ownedFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'feature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Succession'
+semantic.unresolved_name 'ownedMember'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'InvocationExpression'
+semantic.unresolved_name 'Feature'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'isVariable'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'ownedMember'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ownedMembership'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'owningType'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'owningType'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Classifier'
+semantic.unresolved_name 'type'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'feature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'directedFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ownedFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'OwningMembership'
+semantic.unresolved_name 'ownedMemberElement'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'ownedMember'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'FeatureMembership'
+semantic.unresolved_name 'ownedMemberFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Element'
+semantic.unresolved_name 'member'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'ownedMember'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'parameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Behavior'
+semantic.unresolved_name 'step'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Step'
+semantic.unresolved_name 'Behavior'
+semantic.unresolved_name 'behavior'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ParameterMembership'
+semantic.unresolved_name 'ownedMemberParameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'expression'
+semantic.unresolved_name 'ownedFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'ownedFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Invariant'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Feature'
+semantic.unresolved_name 'member'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'DataType'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'DataType'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'BindingConnector'
+semantic.unresolved_name 'Function'
+semantic.unresolved_name 'expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Function'
+semantic.unresolved_name 'function'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'parameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'parameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'parameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'parameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'owningNamespace'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ownedConjugator'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'FeatureTyping'
+semantic.unresolved_name 'type'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'AssociationStructure'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'isSufficient'
+semantic.unresolved_name 'associationEnd'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'AssociationStructure'
+semantic.unresolved_name 'association'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Connector'
+semantic.unresolved_name 'Predicate'
+semantic.unresolved_name 'BooleanExpression'
+semantic.unresolved_name 'Predicate'
+semantic.unresolved_name 'predicate'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Classifier'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'ownedMember'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ownedMembership'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'feature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'directedFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ownedFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Import'
+semantic.unresolved_name 'VisibilityKind'
+semantic.unresolved_name 'visibility'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'isImportAll'
+semantic.unresolved_name 'Interaction'
+semantic.unresolved_name 'associationEnd'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Flow'
+semantic.unresolved_name 'Interaction'
+semantic.unresolved_name 'interaction'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Structure'
+semantic.unresolved_name 'Structure'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'MembershipImport'
+semantic.unresolved_name 'Metaclass'
+semantic.unresolved_name 'MetadataFeature'
+semantic.unresolved_name 'Metaclass'
+semantic.unresolved_name 'metaclass'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'NamespaceImport'
+semantic.unresolved_name 'FeatureMembership'
+semantic.unresolved_name 'ownedMemberFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Class'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Class'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Conjugation'
+semantic.unresolved_name 'originalType'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'owningType'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Structure'
+semantic.unresolved_name 'ownedMember'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'FeatureMembership'
+semantic.unresolved_name 'ownedMemberFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'declaredShortName'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'parameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'parameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'parameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ownedFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ownedFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'declaredShortName'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ownedFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ownedFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'parameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'parameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'parameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Feature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ParameterMembership'
+semantic.unresolved_name 'ownedMemberParameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'FeatureMembership'
+semantic.unresolved_name 'ownedMemberFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Behavior'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ParameterMembership'
+semantic.unresolved_name 'ownedMemberParameter'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Succession'
+semantic.unresolved_name 'SuccessionFlow'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'FeatureMembership'
+semantic.unresolved_name 'Step'
+semantic.unresolved_name 'ownedMemberFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ownedFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'ownedFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'feature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Succession'
+semantic.unresolved_name 'ownedMember'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'InvocationExpression'
+semantic.unresolved_name 'Feature'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'isVariable'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'ownedMember'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ownedMembership'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'owningType'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'owningType'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Classifier'
+semantic.unresolved_name 'type'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'feature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'directedFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'ownedFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'OwningMembership'
+semantic.unresolved_name 'ownedMemberElement'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'ownedMember'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'FeatureMembership'
+semantic.unresolved_name 'ownedMemberFeature'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Element'
+semantic.unresolved_name 'member'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'ownedMember'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+semantic.unresolved_name 'Expression'
+semantic.unresolved_name 'Metadata::metadataItems'
+~~~
 # FORMAT
 ~~~sysml
 standard library package SysML {
@@ -2561,844 +2960,416 @@ standard library package SysML {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "SysML"))) (name "SysML") (declared-name "SysML")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "SysML::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "SysML::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "package") (id (node (document "d0") (qualified-name "SysML::Systems"))) (name "Systems") (declared-name "Systems")
-          (contains
-            (element (kind "import") (id (node (document "d0") (qualified-name "SysML::Systems::*"))) (name "*") (declared-name "*"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::AcceptActionUsage"))) (name "AcceptActionUsage") (declared-name "AcceptActionUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ActionDefinition"))) (name "ActionDefinition") (declared-name "ActionDefinition"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (name "ActionUsage") (declared-name "ActionUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ActorMembership"))) (name "ActorMembership") (declared-name "ActorMembership"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::AllocationDefinition"))) (name "AllocationDefinition") (declared-name "AllocationDefinition"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::AllocationUsage"))) (name "AllocationUsage") (declared-name "AllocationUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::AnalysisCaseDefinition"))) (name "AnalysisCaseDefinition") (declared-name "AnalysisCaseDefinition"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::AnalysisCaseUsage"))) (name "AnalysisCaseUsage") (declared-name "AnalysisCaseUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::AssertConstraintUsage"))) (name "AssertConstraintUsage") (declared-name "AssertConstraintUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::AssignmentActionUsage"))) (name "AssignmentActionUsage") (declared-name "AssignmentActionUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::AttributeDefinition"))) (name "AttributeDefinition") (declared-name "AttributeDefinition"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage"))) (name "AttributeUsage") (declared-name "AttributeUsage")
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage::isReference"))) (name "isReference") (declared-name "isReference") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage")))))
-              )
-            )
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::BindingConnectorAsUsage"))) (name "BindingConnectorAsUsage") (declared-name "BindingConnectorAsUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::CalculationDefinition"))) (name "CalculationDefinition") (declared-name "CalculationDefinition"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::CalculationUsage"))) (name "CalculationUsage") (declared-name "CalculationUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::CaseDefinition"))) (name "CaseDefinition") (declared-name "CaseDefinition"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::CaseUsage"))) (name "CaseUsage") (declared-name "CaseUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ConcernDefinition"))) (name "ConcernDefinition") (declared-name "ConcernDefinition"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ConcernUsage"))) (name "ConcernUsage") (declared-name "ConcernUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ConjugatedPortDefinition"))) (name "ConjugatedPortDefinition") (declared-name "ConjugatedPortDefinition"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ConjugatedPortTyping"))) (name "ConjugatedPortTyping") (declared-name "ConjugatedPortTyping"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition"))) (name "ConnectionDefinition") (declared-name "ConnectionDefinition")
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition::isSufficient"))) (name "isSufficient") (declared-name "isSufficient") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition")))))
-              )
-            )
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ConnectionUsage"))) (name "ConnectionUsage") (declared-name "ConnectionUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage"))) (name "ConnectorAsUsage") (declared-name "ConnectorAsUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ConstraintDefinition"))) (name "ConstraintDefinition") (declared-name "ConstraintDefinition"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ConstraintUsage"))) (name "ConstraintUsage") (declared-name "ConstraintUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ControlNode"))) (name "ControlNode") (declared-name "ControlNode"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::DecisionNode"))) (name "DecisionNode") (declared-name "DecisionNode"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::Definition"))) (name "Definition") (declared-name "Definition")
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::Definition::isVariation"))) (name "isVariation") (declared-name "isVariation") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::Definition")))))
-              )
-            )
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::EnumerationDefinition"))) (name "EnumerationDefinition") (declared-name "EnumerationDefinition")
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::EnumerationDefinition::isVariation"))) (name "isVariation") (declared-name "isVariation") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::EnumerationDefinition")))))
-              )
-            )
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::EnumerationUsage"))) (name "EnumerationUsage") (declared-name "EnumerationUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage"))) (name "EventOccurrenceUsage") (declared-name "EventOccurrenceUsage")
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage::isReference"))) (name "isReference") (declared-name "isReference") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage")))))
-              )
-            )
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ExhibitStateUsage"))) (name "ExhibitStateUsage") (declared-name "ExhibitStateUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::Expose"))) (name "Expose") (declared-name "Expose")
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::Expose::isImportAll"))) (name "isImportAll") (declared-name "isImportAll") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::Expose")))))
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::Expose::visibility"))) (name "visibility") (declared-name "visibility") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::Expose")))))
-              )
-            )
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::FlowDefinition"))) (name "FlowDefinition") (declared-name "FlowDefinition"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::FlowUsage"))) (name "FlowUsage") (declared-name "FlowUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ForLoopActionUsage"))) (name "ForLoopActionUsage") (declared-name "ForLoopActionUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ForkNode"))) (name "ForkNode") (declared-name "ForkNode"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership"))) (name "FramedConcernMembership") (declared-name "FramedConcernMembership")
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership::kind"))) (name "kind") (declared-name "kind") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership")))))
-              )
-            )
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::IfActionUsage"))) (name "IfActionUsage") (declared-name "IfActionUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::IncludeUseCaseUsage"))) (name "IncludeUseCaseUsage") (declared-name "IncludeUseCaseUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::InterfaceDefinition"))) (name "InterfaceDefinition") (declared-name "InterfaceDefinition"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::InterfaceUsage"))) (name "InterfaceUsage") (declared-name "InterfaceUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ItemDefinition"))) (name "ItemDefinition") (declared-name "ItemDefinition"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ItemUsage"))) (name "ItemUsage") (declared-name "ItemUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::JoinNode"))) (name "JoinNode") (declared-name "JoinNode"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::LoopActionUsage"))) (name "LoopActionUsage") (declared-name "LoopActionUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::MembershipExpose"))) (name "MembershipExpose") (declared-name "MembershipExpose"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::MergeNode"))) (name "MergeNode") (declared-name "MergeNode"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::MetadataDefinition"))) (name "MetadataDefinition") (declared-name "MetadataDefinition"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::MetadataUsage"))) (name "MetadataUsage") (declared-name "MetadataUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::NamespaceExpose"))) (name "NamespaceExpose") (declared-name "NamespaceExpose"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ObjectiveMembership"))) (name "ObjectiveMembership") (declared-name "ObjectiveMembership"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition"))) (name "OccurrenceDefinition") (declared-name "OccurrenceDefinition")
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition::isIndividual"))) (name "isIndividual") (declared-name "isIndividual") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition")))))
-              )
-            )
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))) (name "OccurrenceUsage") (declared-name "OccurrenceUsage")
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage::isIndividual"))) (name "isIndividual") (declared-name "isIndividual") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage")))))
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage::portionKind"))) (name "portionKind") (declared-name "portionKind") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage")))))
-              )
-            )
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::PartDefinition"))) (name "PartDefinition") (declared-name "PartDefinition"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::PartUsage"))) (name "PartUsage") (declared-name "PartUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::PerformActionUsage"))) (name "PerformActionUsage") (declared-name "PerformActionUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::PortConjugation"))) (name "PortConjugation") (declared-name "PortConjugation"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::PortDefinition"))) (name "PortDefinition") (declared-name "PortDefinition"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::PortUsage"))) (name "PortUsage") (declared-name "PortUsage"))
-            (element (kind "enum def") (id (node (document "d0") (qualified-name "SysML::Systems::PortionKind"))) (name "PortionKind") (declared-name "PortionKind")
-              (contains
-                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::PortionKind::snapshot"))) (name "snapshot") (declared-name "snapshot") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::PortionKind")))))
-                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::PortionKind::timeslice"))) (name "timeslice") (declared-name "timeslice") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::PortionKind")))))
-              )
-            )
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ReferenceUsage"))) (name "ReferenceUsage") (declared-name "ReferenceUsage")
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::ReferenceUsage::isReference"))) (name "isReference") (declared-name "isReference") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::ReferenceUsage")))))
-              )
-            )
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::RenderingDefinition"))) (name "RenderingDefinition") (declared-name "RenderingDefinition"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::RenderingUsage"))) (name "RenderingUsage") (declared-name "RenderingUsage"))
-            (element (kind "enum def") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind"))) (name "RequirementConstraintKind") (declared-name "RequirementConstraintKind")
-              (contains
-                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind::assumption"))) (name "assumption") (declared-name "assumption") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind")))))
-                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind::requirement"))) (name "requirement") (declared-name "requirement") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind")))))
-              )
-            )
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership"))) (name "RequirementConstraintMembership") (declared-name "RequirementConstraintMembership")
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership::kind"))) (name "kind") (declared-name "kind") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership")))))
-              )
-            )
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition"))) (name "RequirementDefinition") (declared-name "RequirementDefinition")
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition::reqId"))) (name "reqId") (declared-name "reqId") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition")))))
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition::text"))) (name "text") (declared-name "text") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition")))))
-              )
-            )
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage"))) (name "RequirementUsage") (declared-name "RequirementUsage")
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage::reqId"))) (name "reqId") (declared-name "reqId") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage")))))
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage::text"))) (name "text") (declared-name "text") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage")))))
-              )
-            )
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership"))) (name "RequirementVerificationMembership") (declared-name "RequirementVerificationMembership")
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership::kind"))) (name "kind") (declared-name "kind") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership")))))
-              )
-            )
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::SatisfyRequirementUsage"))) (name "SatisfyRequirementUsage") (declared-name "SatisfyRequirementUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::SendActionUsage"))) (name "SendActionUsage") (declared-name "SendActionUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::StakeholderMembership"))) (name "StakeholderMembership") (declared-name "StakeholderMembership"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::StateDefinition"))) (name "StateDefinition") (declared-name "StateDefinition")
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::StateDefinition::isParallel"))) (name "isParallel") (declared-name "isParallel") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::StateDefinition")))))
-              )
-            )
-            (element (kind "enum def") (id (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind"))) (name "StateSubactionKind") (declared-name "StateSubactionKind")
-              (contains
-                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind::do"))) (name "do") (declared-name "do") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind")))))
-                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind::entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind")))))
-                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind::exit"))) (name "exit") (declared-name "exit") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind")))))
-              )
-            )
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::StateSubactionMembership"))) (name "StateSubactionMembership") (declared-name "StateSubactionMembership")
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::StateSubactionMembership::kind"))) (name "kind") (declared-name "kind") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::StateSubactionMembership")))))
-              )
-            )
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::StateUsage"))) (name "StateUsage") (declared-name "StateUsage")
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::StateUsage::isParallel"))) (name "isParallel") (declared-name "isParallel") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::StateUsage")))))
-              )
-            )
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::SubjectMembership"))) (name "SubjectMembership") (declared-name "SubjectMembership"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::SuccessionAsUsage"))) (name "SuccessionAsUsage") (declared-name "SuccessionAsUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::SuccessionFlowUsage"))) (name "SuccessionFlowUsage") (declared-name "SuccessionFlowUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::TerminateActionUsage"))) (name "TerminateActionUsage") (declared-name "TerminateActionUsage"))
-            (element (kind "enum def") (id (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind"))) (name "TransitionFeatureKind") (declared-name "TransitionFeatureKind")
-              (contains
-                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind::effect"))) (name "effect") (declared-name "effect") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind")))))
-                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind::guard"))) (name "guard") (declared-name "guard") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind")))))
-                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind")))))
-              )
-            )
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureMembership"))) (name "TransitionFeatureMembership") (declared-name "TransitionFeatureMembership")
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureMembership::kind"))) (name "kind") (declared-name "kind") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureMembership")))))
-              )
-            )
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::TransitionUsage"))) (name "TransitionUsage") (declared-name "TransitionUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::TriggerInvocationExpression"))) (name "TriggerInvocationExpression") (declared-name "TriggerInvocationExpression")
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::TriggerInvocationExpression::kind"))) (name "kind") (declared-name "kind") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::TriggerInvocationExpression")))))
-              )
-            )
-            (element (kind "enum def") (id (node (document "d0") (qualified-name "SysML::Systems::TriggerKind"))) (name "TriggerKind") (declared-name "TriggerKind")
-              (contains
-                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::TriggerKind::after"))) (name "after") (declared-name "after") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::TriggerKind")))))
-                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::TriggerKind::at"))) (name "at") (declared-name "at") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::TriggerKind")))))
-                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::TriggerKind::when"))) (name "when") (declared-name "when") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::TriggerKind")))))
-              )
-            )
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::Usage"))) (name "Usage") (declared-name "Usage")
-              (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::Usage::isReference"))) (name "isReference") (declared-name "isReference") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::Usage")))))
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::Usage::isVariation"))) (name "isVariation") (declared-name "isVariation") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::Usage")))))
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::Usage::mayTimeVary"))) (name "mayTimeVary") (declared-name "mayTimeVary") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::Usage")))))
-              )
-            )
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::UseCaseDefinition"))) (name "UseCaseDefinition") (declared-name "UseCaseDefinition"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::UseCaseUsage"))) (name "UseCaseUsage") (declared-name "UseCaseUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::VariantMembership"))) (name "VariantMembership") (declared-name "VariantMembership"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::VerificationCaseDefinition"))) (name "VerificationCaseDefinition") (declared-name "VerificationCaseDefinition"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::VerificationCaseUsage"))) (name "VerificationCaseUsage") (declared-name "VerificationCaseUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ViewDefinition"))) (name "ViewDefinition") (declared-name "ViewDefinition"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ViewRenderingMembership"))) (name "ViewRenderingMembership") (declared-name "ViewRenderingMembership"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ViewUsage"))) (name "ViewUsage") (declared-name "ViewUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ViewpointDefinition"))) (name "ViewpointDefinition") (declared-name "ViewpointDefinition"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ViewpointUsage"))) (name "ViewpointUsage") (declared-name "ViewpointUsage"))
-            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::WhileLoopActionUsage"))) (name "WhileLoopActionUsage") (declared-name "WhileLoopActionUsage"))
-          )
-        )
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "SysML::_documentation"))) (name ""))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "2c92147ed962ec10fe132e07c73c37c02c4df202987dedfbe8f6c593b6df7866") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "SysML"))) (kind "package") (name "SysML") (declared-name "SysML") (range (start (line 0) (character 0)) (end (line 0) (character 30788))))
+    (element (id (node (document "d0") (qualified-name "SysML::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 6) (character 1)) (end (line 6) (character 32))) (parent (node (document "d0") (qualified-name "SysML"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "SysML::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 7) (character 1)) (end (line 7) (character 26))) (parent (node (document "d0") (qualified-name "SysML"))) (authored (membership (kind Import) (visibility "public") (import (reference "Systems::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 7) (character 15)) (end (line 7) (character 22))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems"))) (kind "package") (name "Systems") (declared-name "Systems") (range (start (line 9) (character 1)) (end (line 9) (character 30590))) (parent (node (document "d0") (qualified-name "SysML"))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 10) (character 2)) (end (line 10) (character 33))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Import) (visibility "public") (import (reference "KerML::Kernel::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 10) (character 16)) (end (line 10) (character 29))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::AcceptActionUsage"))) (kind "metadata def") (name "AcceptActionUsage") (declared-name "AcceptActionUsage") (range (start (line 12) (character 2)) (end (line 12) (character 367))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ActionUsage") (range (start (line 12) (character 45)) (end (line 12) (character 56)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ActionDefinition"))) (kind "metadata def") (name "ActionDefinition") (declared-name "ActionDefinition") (range (start (line 18) (character 2)) (end (line 18) (character 190))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Behavior") (range (start (line 18) (character 44)) (end (line 18) (character 52)))) (specializes (reference "OccurrenceDefinition") (range (start (line 18) (character 54)) (end (line 18) (character 74)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (kind "metadata def") (name "ActionUsage") (declared-name "ActionUsage") (range (start (line 22) (character 2)) (end (line 22) (character 202))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Step") (range (start (line 22) (character 39)) (end (line 22) (character 43)))) (specializes (reference "OccurrenceUsage") (range (start (line 22) (character 45)) (end (line 22) (character 60)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ActorMembership"))) (kind "metadata def") (name "ActorMembership") (declared-name "ActorMembership") (range (start (line 26) (character 2)) (end (line 26) (character 186))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ParameterMembership") (range (start (line 26) (character 43)) (end (line 26) (character 62)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::AllocationDefinition"))) (kind "metadata def") (name "AllocationDefinition") (declared-name "AllocationDefinition") (range (start (line 30) (character 2)) (end (line 30) (character 186))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ConnectionDefinition") (range (start (line 30) (character 48)) (end (line 30) (character 68)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::AllocationUsage"))) (kind "metadata def") (name "AllocationUsage") (declared-name "AllocationUsage") (range (start (line 34) (character 2)) (end (line 34) (character 206))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ConnectionUsage") (range (start (line 34) (character 43)) (end (line 34) (character 58)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::AnalysisCaseDefinition"))) (kind "metadata def") (name "AnalysisCaseDefinition") (declared-name "AnalysisCaseDefinition") (range (start (line 38) (character 2)) (end (line 38) (character 192))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "CaseDefinition") (range (start (line 38) (character 50)) (end (line 38) (character 64)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::AnalysisCaseUsage"))) (kind "metadata def") (name "AnalysisCaseUsage") (declared-name "AnalysisCaseUsage") (range (start (line 42) (character 2)) (end (line 42) (character 302))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "CaseUsage") (range (start (line 42) (character 45)) (end (line 42) (character 54)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::AssertConstraintUsage"))) (kind "metadata def") (name "AssertConstraintUsage") (declared-name "AssertConstraintUsage") (range (start (line 47) (character 2)) (end (line 47) (character 177))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ConstraintUsage") (range (start (line 47) (character 49)) (end (line 47) (character 64)))) (specializes (reference "Invariant") (range (start (line 47) (character 66)) (end (line 47) (character 75)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::AssignmentActionUsage"))) (kind "metadata def") (name "AssignmentActionUsage") (declared-name "AssignmentActionUsage") (range (start (line 51) (character 2)) (end (line 51) (character 334))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ActionUsage") (range (start (line 51) (character 49)) (end (line 51) (character 60)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::AttributeDefinition"))) (kind "metadata def") (name "AttributeDefinition") (declared-name "AttributeDefinition") (range (start (line 57) (character 2)) (end (line 57) (character 68))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "DataType") (range (start (line 57) (character 47)) (end (line 57) (character 55)))) (specializes (reference "Definition") (range (start (line 57) (character 57)) (end (line 57) (character 67)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage"))) (kind "metadata def") (name "AttributeUsage") (declared-name "AttributeUsage") (range (start (line 59) (character 2)) (end (line 59) (character 248))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Usage") (range (start (line 59) (character 42)) (end (line 59) (character 47)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage::isReference"))) (kind "attribute") (name "isReference") (declared-name "isReference") (range (start (line 60) (character 3)) (end (line 60) (character 71))) (parent (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage"))) (authored (membership (kind Feature)) (relationships (typing (reference "Boolean") (range none)) (redefinition (reference "isReference") (range (start (line 60) (character 59)) (end (line 60) (character 70)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::BindingConnectorAsUsage"))) (kind "metadata def") (name "BindingConnectorAsUsage") (declared-name "BindingConnectorAsUsage") (range (start (line 65) (character 2)) (end (line 65) (character 86))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "BindingConnector") (range (start (line 65) (character 51)) (end (line 65) (character 67)))) (specializes (reference "ConnectorAsUsage") (range (start (line 65) (character 69)) (end (line 65) (character 85)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::CalculationDefinition"))) (kind "metadata def") (name "CalculationDefinition") (declared-name "CalculationDefinition") (range (start (line 67) (character 2)) (end (line 67) (character 208))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Function") (range (start (line 67) (character 49)) (end (line 67) (character 57)))) (specializes (reference "ActionDefinition") (range (start (line 67) (character 59)) (end (line 67) (character 75)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::CalculationUsage"))) (kind "metadata def") (name "CalculationUsage") (declared-name "CalculationUsage") (range (start (line 71) (character 2)) (end (line 71) (character 210))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Expression") (range (start (line 71) (character 44)) (end (line 71) (character 54)))) (specializes (reference "ActionUsage") (range (start (line 71) (character 56)) (end (line 71) (character 67)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::CaseDefinition"))) (kind "metadata def") (name "CaseDefinition") (declared-name "CaseDefinition") (range (start (line 75) (character 2)) (end (line 75) (character 418))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "CalculationDefinition") (range (start (line 75) (character 42)) (end (line 75) (character 63)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::CaseUsage"))) (kind "metadata def") (name "CaseUsage") (declared-name "CaseUsage") (range (start (line 81) (character 2)) (end (line 81) (character 531))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "CalculationUsage") (range (start (line 81) (character 37)) (end (line 81) (character 53)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ConcernDefinition"))) (kind "metadata def") (name "ConcernDefinition") (declared-name "ConcernDefinition") (range (start (line 88) (character 2)) (end (line 88) (character 67))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "RequirementDefinition") (range (start (line 88) (character 45)) (end (line 88) (character 66)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ConcernUsage"))) (kind "metadata def") (name "ConcernUsage") (declared-name "ConcernUsage") (range (start (line 90) (character 2)) (end (line 90) (character 191))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "RequirementUsage") (range (start (line 90) (character 40)) (end (line 90) (character 56)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ConjugatedPortDefinition"))) (kind "metadata def") (name "ConjugatedPortDefinition") (declared-name "ConjugatedPortDefinition") (range (start (line 94) (character 2)) (end (line 94) (character 320))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "PortDefinition") (range (start (line 94) (character 52)) (end (line 94) (character 66)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ConjugatedPortTyping"))) (kind "metadata def") (name "ConjugatedPortTyping") (declared-name "ConjugatedPortTyping") (range (start (line 99) (character 2)) (end (line 99) (character 276))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "FeatureTyping") (range (start (line 99) (character 48)) (end (line 99) (character 61)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition"))) (kind "metadata def") (name "ConnectionDefinition") (declared-name "ConnectionDefinition") (range (start (line 104) (character 2)) (end (line 104) (character 274))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "AssociationStructure") (range (start (line 104) (character 48)) (end (line 104) (character 68)))) (specializes (reference "PartDefinition") (range (start (line 104) (character 70)) (end (line 104) (character 84)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition::isSufficient"))) (kind "attribute") (name "isSufficient") (declared-name "isSufficient") (range (start (line 105) (character 3)) (end (line 105) (character 65))) (parent (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition"))) (authored (membership (kind Feature)) (relationships (typing (reference "Boolean") (range none)) (redefinition (reference "isSufficient") (range (start (line 105) (character 52)) (end (line 105) (character 64)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ConnectionUsage"))) (kind "metadata def") (name "ConnectionUsage") (declared-name "ConnectionUsage") (range (start (line 110) (character 2)) (end (line 110) (character 232))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ConnectorAsUsage") (range (start (line 110) (character 43)) (end (line 110) (character 59)))) (specializes (reference "PartUsage") (range (start (line 110) (character 61)) (end (line 110) (character 70)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage"))) (kind "metadata def") (name "ConnectorAsUsage") (declared-name "ConnectorAsUsage") (range (start (line 114) (character 2)) (end (line 114) (character 70))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Usage") (range (start (line 114) (character 53)) (end (line 114) (character 58)))) (specializes (reference "Connector") (range (start (line 114) (character 60)) (end (line 114) (character 69)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ConstraintDefinition"))) (kind "metadata def") (name "ConstraintDefinition") (declared-name "ConstraintDefinition") (range (start (line 116) (character 2)) (end (line 116) (character 80))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "OccurrenceDefinition") (range (start (line 116) (character 48)) (end (line 116) (character 68)))) (specializes (reference "Predicate") (range (start (line 116) (character 70)) (end (line 116) (character 79)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ConstraintUsage"))) (kind "metadata def") (name "ConstraintUsage") (declared-name "ConstraintUsage") (range (start (line 118) (character 2)) (end (line 118) (character 195))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "BooleanExpression") (range (start (line 118) (character 43)) (end (line 118) (character 60)))) (specializes (reference "OccurrenceUsage") (range (start (line 118) (character 62)) (end (line 118) (character 77)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ControlNode"))) (kind "metadata def") (name "ControlNode") (declared-name "ControlNode") (range (start (line 122) (character 2)) (end (line 122) (character 60))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ActionUsage") (range (start (line 122) (character 48)) (end (line 122) (character 59)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::DecisionNode"))) (kind "metadata def") (name "DecisionNode") (declared-name "DecisionNode") (range (start (line 124) (character 2)) (end (line 124) (character 52))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ControlNode") (range (start (line 124) (character 40)) (end (line 124) (character 51)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::Definition"))) (kind "metadata def") (name "Definition") (declared-name "Definition") (range (start (line 126) (character 2)) (end (line 126) (character 3700))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Classifier") (range (start (line 126) (character 38)) (end (line 126) (character 48)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::Definition::isVariation"))) (kind "attribute") (name "isVariation") (declared-name "isVariation") (range (start (line 127) (character 3)) (end (line 127) (character 41))) (parent (node (document "d0") (qualified-name "SysML::Systems::Definition"))) (authored (membership (kind Feature)) (relationships (typing (reference "Boolean") (range none)))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::EnumerationDefinition"))) (kind "metadata def") (name "EnumerationDefinition") (declared-name "EnumerationDefinition") (range (start (line 162) (character 2)) (end (line 162) (character 264))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "AttributeDefinition") (range (start (line 162) (character 49)) (end (line 162) (character 68)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::EnumerationDefinition::isVariation"))) (kind "attribute") (name "isVariation") (declared-name "isVariation") (range (start (line 163) (character 3)) (end (line 163) (character 63))) (parent (node (document "d0") (qualified-name "SysML::Systems::EnumerationDefinition"))) (authored (membership (kind Feature)) (relationships (typing (reference "Boolean") (range none)) (redefinition (reference "isVariation") (range (start (line 163) (character 51)) (end (line 163) (character 62)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::EnumerationUsage"))) (kind "metadata def") (name "EnumerationUsage") (declared-name "EnumerationUsage") (range (start (line 168) (character 2)) (end (line 168) (character 199))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "AttributeUsage") (range (start (line 168) (character 44)) (end (line 168) (character 58)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage"))) (kind "metadata def") (name "EventOccurrenceUsage") (declared-name "EventOccurrenceUsage") (range (start (line 172) (character 2)) (end (line 172) (character 238))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "OccurrenceUsage") (range (start (line 172) (character 48)) (end (line 172) (character 63)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage::isReference"))) (kind "attribute") (name "isReference") (declared-name "isReference") (range (start (line 173) (character 3)) (end (line 173) (character 71))) (parent (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage"))) (authored (membership (kind Feature)) (relationships (typing (reference "Boolean") (range none)) (redefinition (reference "isReference") (range (start (line 173) (character 59)) (end (line 173) (character 70)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ExhibitStateUsage"))) (kind "metadata def") (name "ExhibitStateUsage") (declared-name "ExhibitStateUsage") (range (start (line 178) (character 2)) (end (line 178) (character 194))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "StateUsage") (range (start (line 178) (character 45)) (end (line 178) (character 55)))) (specializes (reference "PerformActionUsage") (range (start (line 178) (character 57)) (end (line 178) (character 75)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::Expose"))) (kind "metadata def") (name "Expose") (declared-name "Expose") (range (start (line 182) (character 2)) (end (line 182) (character 188))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Import") (range (start (line 182) (character 43)) (end (line 182) (character 49)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::Expose::isImportAll"))) (kind "attribute") (name "isImportAll") (declared-name "isImportAll") (range (start (line 184) (character 3)) (end (line 184) (character 63))) (parent (node (document "d0") (qualified-name "SysML::Systems::Expose"))) (authored (membership (kind Feature)) (relationships (typing (reference "Boolean") (range none)) (redefinition (reference "isImportAll") (range (start (line 184) (character 51)) (end (line 184) (character 62)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::Expose::visibility"))) (kind "attribute") (name "visibility") (declared-name "visibility") (range (start (line 183) (character 3)) (end (line 183) (character 68))) (parent (node (document "d0") (qualified-name "SysML::Systems::Expose"))) (authored (membership (kind Feature)) (relationships (typing (reference "VisibilityKind") (range none)) (redefinition (reference "visibility") (range (start (line 183) (character 57)) (end (line 183) (character 67)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::FlowDefinition"))) (kind "metadata def") (name "FlowDefinition") (declared-name "FlowDefinition") (range (start (line 187) (character 2)) (end (line 187) (character 177))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Interaction") (range (start (line 187) (character 42)) (end (line 187) (character 53)))) (specializes (reference "ActionDefinition") (range (start (line 187) (character 55)) (end (line 187) (character 71)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::FlowUsage"))) (kind "metadata def") (name "FlowUsage") (declared-name "FlowUsage") (range (start (line 191) (character 2)) (end (line 191) (character 214))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ConnectorAsUsage") (range (start (line 191) (character 37)) (end (line 191) (character 53)))) (specializes (reference "Flow") (range (start (line 191) (character 55)) (end (line 191) (character 59)))) (specializes (reference "ActionUsage") (range (start (line 191) (character 61)) (end (line 191) (character 72)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ForLoopActionUsage"))) (kind "metadata def") (name "ForLoopActionUsage") (declared-name "ForLoopActionUsage") (range (start (line 195) (character 2)) (end (line 195) (character 240))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "LoopActionUsage") (range (start (line 195) (character 46)) (end (line 195) (character 61)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ForkNode"))) (kind "metadata def") (name "ForkNode") (declared-name "ForkNode") (range (start (line 200) (character 2)) (end (line 200) (character 48))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ControlNode") (range (start (line 200) (character 36)) (end (line 200) (character 47)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership"))) (kind "metadata def") (name "FramedConcernMembership") (declared-name "FramedConcernMembership") (range (start (line 202) (character 2)) (end (line 202) (character 392))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "RequirementConstraintMembership") (range (start (line 202) (character 51)) (end (line 202) (character 82)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership::kind"))) (kind "attribute") (name "kind") (declared-name "kind") (range (start (line 203) (character 3)) (end (line 203) (character 67))) (parent (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership"))) (authored (membership (kind Feature)) (relationships (typing (reference "RequirementConstraintKind") (range none)) (redefinition (reference "kind") (range (start (line 203) (character 62)) (end (line 203) (character 66)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::IfActionUsage"))) (kind "metadata def") (name "IfActionUsage") (declared-name "IfActionUsage") (range (start (line 209) (character 2)) (end (line 209) (character 309))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ActionUsage") (range (start (line 209) (character 41)) (end (line 209) (character 52)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::IncludeUseCaseUsage"))) (kind "metadata def") (name "IncludeUseCaseUsage") (declared-name "IncludeUseCaseUsage") (range (start (line 215) (character 2)) (end (line 215) (character 201))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "UseCaseUsage") (range (start (line 215) (character 47)) (end (line 215) (character 59)))) (specializes (reference "PerformActionUsage") (range (start (line 215) (character 61)) (end (line 215) (character 79)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::InterfaceDefinition"))) (kind "metadata def") (name "InterfaceDefinition") (declared-name "InterfaceDefinition") (range (start (line 219) (character 2)) (end (line 219) (character 189))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ConnectionDefinition") (range (start (line 219) (character 47)) (end (line 219) (character 67)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::InterfaceUsage"))) (kind "metadata def") (name "InterfaceUsage") (declared-name "InterfaceUsage") (range (start (line 223) (character 2)) (end (line 223) (character 195))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ConnectionUsage") (range (start (line 223) (character 42)) (end (line 223) (character 57)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ItemDefinition"))) (kind "metadata def") (name "ItemDefinition") (declared-name "ItemDefinition") (range (start (line 227) (character 2)) (end (line 227) (character 74))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Structure") (range (start (line 227) (character 42)) (end (line 227) (character 51)))) (specializes (reference "OccurrenceDefinition") (range (start (line 227) (character 53)) (end (line 227) (character 73)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ItemUsage"))) (kind "metadata def") (name "ItemUsage") (declared-name "ItemUsage") (range (start (line 229) (character 2)) (end (line 229) (character 213))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "OccurrenceUsage") (range (start (line 229) (character 37)) (end (line 229) (character 52)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::JoinNode"))) (kind "metadata def") (name "JoinNode") (declared-name "JoinNode") (range (start (line 233) (character 2)) (end (line 233) (character 48))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ControlNode") (range (start (line 233) (character 36)) (end (line 233) (character 47)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::LoopActionUsage"))) (kind "metadata def") (name "LoopActionUsage") (declared-name "LoopActionUsage") (range (start (line 235) (character 2)) (end (line 235) (character 153))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ActionUsage") (range (start (line 235) (character 52)) (end (line 235) (character 63)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::MembershipExpose"))) (kind "metadata def") (name "MembershipExpose") (declared-name "MembershipExpose") (range (start (line 239) (character 2)) (end (line 239) (character 69))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "MembershipImport") (range (start (line 239) (character 44)) (end (line 239) (character 60)))) (specializes (reference "Expose") (range (start (line 239) (character 62)) (end (line 239) (character 68)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::MergeNode"))) (kind "metadata def") (name "MergeNode") (declared-name "MergeNode") (range (start (line 241) (character 2)) (end (line 241) (character 49))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ControlNode") (range (start (line 241) (character 37)) (end (line 241) (character 48)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::MetadataDefinition"))) (kind "metadata def") (name "MetadataDefinition") (declared-name "MetadataDefinition") (range (start (line 243) (character 2)) (end (line 243) (character 72))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ItemDefinition") (range (start (line 243) (character 46)) (end (line 243) (character 60)))) (specializes (reference "Metaclass") (range (start (line 243) (character 62)) (end (line 243) (character 71)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::MetadataUsage"))) (kind "metadata def") (name "MetadataUsage") (declared-name "MetadataUsage") (range (start (line 245) (character 2)) (end (line 245) (character 199))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ItemUsage") (range (start (line 245) (character 41)) (end (line 245) (character 50)))) (specializes (reference "MetadataFeature") (range (start (line 245) (character 52)) (end (line 245) (character 67)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::NamespaceExpose"))) (kind "metadata def") (name "NamespaceExpose") (declared-name "NamespaceExpose") (range (start (line 249) (character 2)) (end (line 249) (character 67))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Expose") (range (start (line 249) (character 43)) (end (line 249) (character 49)))) (specializes (reference "NamespaceImport") (range (start (line 249) (character 51)) (end (line 249) (character 66)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ObjectiveMembership"))) (kind "metadata def") (name "ObjectiveMembership") (declared-name "ObjectiveMembership") (range (start (line 251) (character 2)) (end (line 251) (character 199))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "FeatureMembership") (range (start (line 251) (character 47)) (end (line 251) (character 64)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition"))) (kind "metadata def") (name "OccurrenceDefinition") (declared-name "OccurrenceDefinition") (range (start (line 255) (character 2)) (end (line 255) (character 114))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Definition") (range (start (line 255) (character 48)) (end (line 255) (character 58)))) (specializes (reference "Class") (range (start (line 255) (character 60)) (end (line 255) (character 65)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition::isIndividual"))) (kind "attribute") (name "isIndividual") (declared-name "isIndividual") (range (start (line 256) (character 3)) (end (line 256) (character 42))) (parent (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition"))) (authored (membership (kind Feature)) (relationships (typing (reference "Boolean") (range none)))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))) (kind "metadata def") (name "OccurrenceUsage") (declared-name "OccurrenceUsage") (range (start (line 259) (character 2)) (end (line 259) (character 396))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Usage") (range (start (line 259) (character 43)) (end (line 259) (character 48)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage::isIndividual"))) (kind "attribute") (name "isIndividual") (declared-name "isIndividual") (range (start (line 260) (character 3)) (end (line 260) (character 42))) (parent (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))) (authored (membership (kind Feature)) (relationships (typing (reference "Boolean") (range none)))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage::portionKind"))) (kind "attribute") (name "portionKind") (declared-name "portionKind") (range (start (line 261) (character 3)) (end (line 261) (character 45))) (parent (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))) (authored (membership (kind Feature)) (relationships (typing (reference "PortionKind") (range none)))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::PartDefinition"))) (kind "metadata def") (name "PartDefinition") (declared-name "PartDefinition") (range (start (line 267) (character 2)) (end (line 267) (character 57))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ItemDefinition") (range (start (line 267) (character 42)) (end (line 267) (character 56)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::PartUsage"))) (kind "metadata def") (name "PartUsage") (declared-name "PartUsage") (range (start (line 269) (character 2)) (end (line 269) (character 174))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ItemUsage") (range (start (line 269) (character 37)) (end (line 269) (character 46)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::PerformActionUsage"))) (kind "metadata def") (name "PerformActionUsage") (declared-name "PerformActionUsage") (range (start (line 273) (character 2)) (end (line 273) (character 200))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ActionUsage") (range (start (line 273) (character 46)) (end (line 273) (character 57)))) (specializes (reference "EventOccurrenceUsage") (range (start (line 273) (character 59)) (end (line 273) (character 79)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::PortConjugation"))) (kind "metadata def") (name "PortConjugation") (declared-name "PortConjugation") (range (start (line 277) (character 2)) (end (line 277) (character 306))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Conjugation") (range (start (line 277) (character 43)) (end (line 277) (character 54)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::PortDefinition"))) (kind "metadata def") (name "PortDefinition") (declared-name "PortDefinition") (range (start (line 282) (character 2)) (end (line 282) (character 210))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "OccurrenceDefinition") (range (start (line 282) (character 42)) (end (line 282) (character 62)))) (specializes (reference "Structure") (range (start (line 282) (character 64)) (end (line 282) (character 73)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::PortUsage"))) (kind "metadata def") (name "PortUsage") (declared-name "PortUsage") (range (start (line 286) (character 2)) (end (line 286) (character 188))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "OccurrenceUsage") (range (start (line 286) (character 37)) (end (line 286) (character 52)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::PortionKind"))) (kind "enum def") (name "PortionKind") (declared-name "PortionKind") (range (start (line 290) (character 2)) (end (line 290) (character 69))) (parent (node (document "d0") (qualified-name "SysML::Systems"))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::PortionKind::snapshot"))) (kind "enumerated value") (name "snapshot") (declared-name "snapshot") (range (start (line 292) (character 8)) (end (line 292) (character 18))) (parent (node (document "d0") (qualified-name "SysML::Systems::PortionKind"))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::PortionKind::timeslice"))) (kind "enumerated value") (name "timeslice") (declared-name "timeslice") (range (start (line 291) (character 8)) (end (line 291) (character 19))) (parent (node (document "d0") (qualified-name "SysML::Systems::PortionKind"))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ReferenceUsage"))) (kind "metadata def") (name "ReferenceUsage") (declared-name "ReferenceUsage") (range (start (line 295) (character 2)) (end (line 295) (character 125))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Usage") (range (start (line 295) (character 42)) (end (line 295) (character 47)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ReferenceUsage::isReference"))) (kind "attribute") (name "isReference") (declared-name "isReference") (range (start (line 296) (character 3)) (end (line 296) (character 71))) (parent (node (document "d0") (qualified-name "SysML::Systems::ReferenceUsage"))) (authored (membership (kind Feature)) (relationships (typing (reference "Boolean") (range none)) (redefinition (reference "isReference") (range (start (line 296) (character 59)) (end (line 296) (character 70)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::RenderingDefinition"))) (kind "metadata def") (name "RenderingDefinition") (declared-name "RenderingDefinition") (range (start (line 299) (character 2)) (end (line 299) (character 177))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "PartDefinition") (range (start (line 299) (character 47)) (end (line 299) (character 61)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::RenderingUsage"))) (kind "metadata def") (name "RenderingUsage") (declared-name "RenderingUsage") (range (start (line 303) (character 2)) (end (line 303) (character 183))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "PartUsage") (range (start (line 303) (character 42)) (end (line 303) (character 51)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind"))) (kind "enum def") (name "RequirementConstraintKind") (declared-name "RequirementConstraintKind") (range (start (line 307) (character 2)) (end (line 307) (character 85))) (parent (node (document "d0") (qualified-name "SysML::Systems"))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind::assumption"))) (kind "enumerated value") (name "assumption") (declared-name "assumption") (range (start (line 308) (character 8)) (end (line 308) (character 18))) (parent (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind"))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind::requirement"))) (kind "enumerated value") (name "requirement") (declared-name "requirement") (range (start (line 309) (character 8)) (end (line 309) (character 21))) (parent (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind"))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership"))) (kind "metadata def") (name "RequirementConstraintMembership") (declared-name "RequirementConstraintMembership") (range (start (line 312) (character 2)) (end (line 312) (character 355))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "FeatureMembership") (range (start (line 312) (character 59)) (end (line 312) (character 76)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership::kind"))) (kind "attribute") (name "kind") (declared-name "kind") (range (start (line 313) (character 3)) (end (line 313) (character 52))) (parent (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership"))) (authored (membership (kind Feature)) (relationships (typing (reference "RequirementConstraintKind") (range none)))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition"))) (kind "metadata def") (name "RequirementDefinition") (declared-name "RequirementDefinition") (range (start (line 319) (character 2)) (end (line 319) (character 909))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ConstraintDefinition") (range (start (line 319) (character 49)) (end (line 319) (character 69)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition::reqId"))) (kind "attribute") (name "reqId") (declared-name "reqId") (range (start (line 320) (character 3)) (end (line 320) (character 62))) (parent (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition"))) (authored (membership (kind Feature)) (relationships (typing (reference "String") (range none)) (redefinition (reference "declaredShortName") (range (start (line 320) (character 44)) (end (line 320) (character 61)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition::text"))) (kind "attribute") (name "text") (declared-name "text") (range (start (line 321) (character 3)) (end (line 321) (character 41))) (parent (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition"))) (authored (membership (kind Feature)) (relationships (typing (reference "String") (range none)))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage"))) (kind "metadata def") (name "RequirementUsage") (declared-name "RequirementUsage") (range (start (line 331) (character 2)) (end (line 331) (character 1035))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ConstraintUsage") (range (start (line 331) (character 44)) (end (line 331) (character 59)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage::reqId"))) (kind "attribute") (name "reqId") (declared-name "reqId") (range (start (line 332) (character 3)) (end (line 332) (character 62))) (parent (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage"))) (authored (membership (kind Feature)) (relationships (typing (reference "String") (range none)) (redefinition (reference "declaredShortName") (range (start (line 332) (character 44)) (end (line 332) (character 61)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage::text"))) (kind "attribute") (name "text") (declared-name "text") (range (start (line 333) (character 3)) (end (line 333) (character 41))) (parent (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage"))) (authored (membership (kind Feature)) (relationships (typing (reference "String") (range none)))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership"))) (kind "metadata def") (name "RequirementVerificationMembership") (declared-name "RequirementVerificationMembership") (range (start (line 344) (character 2)) (end (line 344) (character 416))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "RequirementConstraintMembership") (range (start (line 344) (character 61)) (end (line 344) (character 92)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership::kind"))) (kind "attribute") (name "kind") (declared-name "kind") (range (start (line 345) (character 3)) (end (line 345) (character 67))) (parent (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership"))) (authored (membership (kind Feature)) (relationships (typing (reference "RequirementConstraintKind") (range none)) (redefinition (reference "kind") (range (start (line 345) (character 62)) (end (line 345) (character 66)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::SatisfyRequirementUsage"))) (kind "metadata def") (name "SatisfyRequirementUsage") (declared-name "SatisfyRequirementUsage") (range (start (line 351) (character 2)) (end (line 351) (character 311))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "RequirementUsage") (range (start (line 351) (character 51)) (end (line 351) (character 67)))) (specializes (reference "AssertConstraintUsage") (range (start (line 351) (character 69)) (end (line 351) (character 90)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::SendActionUsage"))) (kind "metadata def") (name "SendActionUsage") (declared-name "SendActionUsage") (range (start (line 356) (character 2)) (end (line 356) (character 324))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ActionUsage") (range (start (line 356) (character 43)) (end (line 356) (character 54)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::StakeholderMembership"))) (kind "metadata def") (name "StakeholderMembership") (declared-name "StakeholderMembership") (range (start (line 362) (character 2)) (end (line 362) (character 198))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ParameterMembership") (range (start (line 362) (character 49)) (end (line 362) (character 68)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::StateDefinition"))) (kind "metadata def") (name "StateDefinition") (declared-name "StateDefinition") (range (start (line 366) (character 2)) (end (line 366) (character 466))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ActionDefinition") (range (start (line 366) (character 43)) (end (line 366) (character 59)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::StateDefinition::isParallel"))) (kind "attribute") (name "isParallel") (declared-name "isParallel") (range (start (line 367) (character 3)) (end (line 367) (character 40))) (parent (node (document "d0") (qualified-name "SysML::Systems::StateDefinition"))) (authored (membership (kind Feature)) (relationships (typing (reference "Boolean") (range none)))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind"))) (kind "enum def") (name "StateSubactionKind") (declared-name "StateSubactionKind") (range (start (line 375) (character 2)) (end (line 375) (character 82))) (parent (node (document "d0") (qualified-name "SysML::Systems"))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind::do"))) (kind "enumerated value") (name "do") (declared-name "do") (range (start (line 377) (character 8)) (end (line 377) (character 12))) (parent (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind"))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind::entry"))) (kind "enumerated value") (name "entry") (declared-name "entry") (range (start (line 376) (character 8)) (end (line 376) (character 15))) (parent (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind"))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind::exit"))) (kind "enumerated value") (name "exit") (declared-name "exit") (range (start (line 378) (character 8)) (end (line 378) (character 14))) (parent (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind"))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::StateSubactionMembership"))) (kind "metadata def") (name "StateSubactionMembership") (declared-name "StateSubactionMembership") (range (start (line 381) (character 2)) (end (line 381) (character 232))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "FeatureMembership") (range (start (line 381) (character 52)) (end (line 381) (character 69)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::StateSubactionMembership::kind"))) (kind "attribute") (name "kind") (declared-name "kind") (range (start (line 382) (character 3)) (end (line 382) (character 45))) (parent (node (document "d0") (qualified-name "SysML::Systems::StateSubactionMembership"))) (authored (membership (kind Feature)) (relationships (typing (reference "StateSubactionKind") (range none)))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::StateUsage"))) (kind "metadata def") (name "StateUsage") (declared-name "StateUsage") (range (start (line 387) (character 2)) (end (line 387) (character 472))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ActionUsage") (range (start (line 387) (character 38)) (end (line 387) (character 49)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::StateUsage::isParallel"))) (kind "attribute") (name "isParallel") (declared-name "isParallel") (range (start (line 388) (character 3)) (end (line 388) (character 40))) (parent (node (document "d0") (qualified-name "SysML::Systems::StateUsage"))) (authored (membership (kind Feature)) (relationships (typing (reference "Boolean") (range none)))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::SubjectMembership"))) (kind "metadata def") (name "SubjectMembership") (declared-name "SubjectMembership") (range (start (line 396) (character 2)) (end (line 396) (character 186))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ParameterMembership") (range (start (line 396) (character 45)) (end (line 396) (character 64)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::SuccessionAsUsage"))) (kind "metadata def") (name "SuccessionAsUsage") (declared-name "SuccessionAsUsage") (range (start (line 400) (character 2)) (end (line 400) (character 74))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ConnectorAsUsage") (range (start (line 400) (character 45)) (end (line 400) (character 61)))) (specializes (reference "Succession") (range (start (line 400) (character 63)) (end (line 400) (character 73)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::SuccessionFlowUsage"))) (kind "metadata def") (name "SuccessionFlowUsage") (declared-name "SuccessionFlowUsage") (range (start (line 402) (character 2)) (end (line 402) (character 73))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "SuccessionFlow") (range (start (line 402) (character 47)) (end (line 402) (character 61)))) (specializes (reference "FlowUsage") (range (start (line 402) (character 63)) (end (line 402) (character 72)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::TerminateActionUsage"))) (kind "metadata def") (name "TerminateActionUsage") (declared-name "TerminateActionUsage") (range (start (line 404) (character 2)) (end (line 404) (character 166))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ActionUsage") (range (start (line 404) (character 48)) (end (line 404) (character 59)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind"))) (kind "enum def") (name "TransitionFeatureKind") (declared-name "TransitionFeatureKind") (range (start (line 408) (character 2)) (end (line 408) (character 86))) (parent (node (document "d0") (qualified-name "SysML::Systems"))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind::effect"))) (kind "enumerated value") (name "effect") (declared-name "effect") (range (start (line 411) (character 8)) (end (line 411) (character 14))) (parent (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind"))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind::guard"))) (kind "enumerated value") (name "guard") (declared-name "guard") (range (start (line 410) (character 8)) (end (line 410) (character 13))) (parent (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind"))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind::trigger"))) (kind "enumerated value") (name "trigger") (declared-name "trigger") (range (start (line 409) (character 8)) (end (line 409) (character 15))) (parent (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind"))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureMembership"))) (kind "metadata def") (name "TransitionFeatureMembership") (declared-name "TransitionFeatureMembership") (range (start (line 414) (character 2)) (end (line 414) (character 240))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "FeatureMembership") (range (start (line 414) (character 55)) (end (line 414) (character 72)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureMembership::kind"))) (kind "attribute") (name "kind") (declared-name "kind") (range (start (line 415) (character 3)) (end (line 415) (character 48))) (parent (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureMembership"))) (authored (membership (kind Feature)) (relationships (typing (reference "TransitionFeatureKind") (range none)))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::TransitionUsage"))) (kind "metadata def") (name "TransitionUsage") (declared-name "TransitionUsage") (range (start (line 420) (character 2)) (end (line 420) (character 650))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "ActionUsage") (range (start (line 420) (character 43)) (end (line 420) (character 54)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::TriggerInvocationExpression"))) (kind "metadata def") (name "TriggerInvocationExpression") (declared-name "TriggerInvocationExpression") (range (start (line 429) (character 2)) (end (line 429) (character 120))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "InvocationExpression") (range (start (line 429) (character 55)) (end (line 429) (character 75)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::TriggerInvocationExpression::kind"))) (kind "attribute") (name "kind") (declared-name "kind") (range (start (line 430) (character 3)) (end (line 430) (character 38))) (parent (node (document "d0") (qualified-name "SysML::Systems::TriggerInvocationExpression"))) (authored (membership (kind Feature)) (relationships (typing (reference "TriggerKind") (range none)))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::TriggerKind"))) (kind "enum def") (name "TriggerKind") (declared-name "TriggerKind") (range (start (line 433) (character 2)) (end (line 433) (character 75))) (parent (node (document "d0") (qualified-name "SysML::Systems"))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::TriggerKind::after"))) (kind "enumerated value") (name "after") (declared-name "after") (range (start (line 436) (character 8)) (end (line 436) (character 15))) (parent (node (document "d0") (qualified-name "SysML::Systems::TriggerKind"))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::TriggerKind::at"))) (kind "enumerated value") (name "at") (declared-name "at") (range (start (line 435) (character 8)) (end (line 435) (character 12))) (parent (node (document "d0") (qualified-name "SysML::Systems::TriggerKind"))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::TriggerKind::when"))) (kind "enumerated value") (name "when") (declared-name "when") (range (start (line 434) (character 8)) (end (line 434) (character 14))) (parent (node (document "d0") (qualified-name "SysML::Systems::TriggerKind"))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::Usage"))) (kind "metadata def") (name "Usage") (declared-name "Usage") (range (start (line 439) (character 2)) (end (line 439) (character 4178))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Feature") (range (start (line 439) (character 33)) (end (line 439) (character 40)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::Usage::isReference"))) (kind "attribute") (name "isReference") (declared-name "isReference") (range (start (line 442) (character 3)) (end (line 442) (character 49))) (parent (node (document "d0") (qualified-name "SysML::Systems::Usage"))) (authored (membership (kind Feature)) (relationships (typing (reference "Boolean") (range none)))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::Usage::isVariation"))) (kind "attribute") (name "isVariation") (declared-name "isVariation") (range (start (line 440) (character 3)) (end (line 440) (character 41))) (parent (node (document "d0") (qualified-name "SysML::Systems::Usage"))) (authored (membership (kind Feature)) (relationships (typing (reference "Boolean") (range none)))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::Usage::mayTimeVary"))) (kind "attribute") (name "mayTimeVary") (declared-name "mayTimeVary") (range (start (line 441) (character 3)) (end (line 441) (character 70))) (parent (node (document "d0") (qualified-name "SysML::Systems::Usage"))) (authored (membership (kind Feature)) (relationships (typing (reference "Boolean") (range none)) (redefinition (reference "isVariable") (range (start (line 441) (character 59)) (end (line 441) (character 69)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::UseCaseDefinition"))) (kind "metadata def") (name "UseCaseDefinition") (declared-name "UseCaseDefinition") (range (start (line 480) (character 2)) (end (line 480) (character 163))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "CaseDefinition") (range (start (line 480) (character 45)) (end (line 480) (character 59)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::UseCaseUsage"))) (kind "metadata def") (name "UseCaseUsage") (declared-name "UseCaseUsage") (range (start (line 484) (character 2)) (end (line 484) (character 275))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "CaseUsage") (range (start (line 484) (character 40)) (end (line 484) (character 49)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::VariantMembership"))) (kind "metadata def") (name "VariantMembership") (declared-name "VariantMembership") (range (start (line 489) (character 2)) (end (line 489) (character 177))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "OwningMembership") (range (start (line 489) (character 45)) (end (line 489) (character 61)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::VerificationCaseDefinition"))) (kind "metadata def") (name "VerificationCaseDefinition") (declared-name "VerificationCaseDefinition") (range (start (line 493) (character 2)) (end (line 493) (character 180))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "CaseDefinition") (range (start (line 493) (character 54)) (end (line 493) (character 68)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::VerificationCaseUsage"))) (kind "metadata def") (name "VerificationCaseUsage") (declared-name "VerificationCaseUsage") (range (start (line 497) (character 2)) (end (line 497) (character 308))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "CaseUsage") (range (start (line 497) (character 49)) (end (line 497) (character 58)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ViewDefinition"))) (kind "metadata def") (name "ViewDefinition") (declared-name "ViewDefinition") (range (start (line 502) (character 2)) (end (line 502) (character 494))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "PartDefinition") (range (start (line 502) (character 42)) (end (line 502) (character 56)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ViewRenderingMembership"))) (kind "metadata def") (name "ViewRenderingMembership") (declared-name "ViewRenderingMembership") (range (start (line 509) (character 2)) (end (line 509) (character 286))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "FeatureMembership") (range (start (line 509) (character 51)) (end (line 509) (character 68)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ViewUsage"))) (kind "metadata def") (name "ViewUsage") (declared-name "ViewUsage") (range (start (line 514) (character 2)) (end (line 514) (character 608))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "PartUsage") (range (start (line 514) (character 37)) (end (line 514) (character 46)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ViewpointDefinition"))) (kind "metadata def") (name "ViewpointDefinition") (declared-name "ViewpointDefinition") (range (start (line 522) (character 2)) (end (line 522) (character 174))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "RequirementDefinition") (range (start (line 522) (character 47)) (end (line 522) (character 68)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::ViewpointUsage"))) (kind "metadata def") (name "ViewpointUsage") (declared-name "ViewpointUsage") (range (start (line 526) (character 2)) (end (line 526) (character 297))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "RequirementUsage") (range (start (line 526) (character 42)) (end (line 526) (character 58)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::Systems::WhileLoopActionUsage"))) (kind "metadata def") (name "WhileLoopActionUsage") (declared-name "WhileLoopActionUsage") (range (start (line 531) (character 2)) (end (line 531) (character 241))) (parent (node (document "d0") (qualified-name "SysML::Systems"))) (authored (membership (kind Owning)) (relationships (specializes (reference "LoopActionUsage") (range (start (line 531) (character 48)) (end (line 531) (character 63)))))))
+    (element (id (node (document "d0") (qualified-name "SysML::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 30788))) (parent (node (document "d0") (qualified-name "SysML"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "SysML::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (range (start (line 6) (character 16)) (end (line 6) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "Systems::*") (range (start (line 7) (character 15)) (end (line 7) (character 22))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "KerML::Kernel::*") (range (start (line 10) (character 16)) (end (line 10) (character 29))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::AcceptActionUsage"))) (kind specialization) (ordinal 0)) (authored-target "ActionUsage") (range (start (line 12) (character 45)) (end (line 12) (character 56))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ActionUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ActionDefinition"))) (kind specialization) (ordinal 0)) (authored-target "Behavior") (range (start (line 18) (character 44)) (end (line 18) (character 52))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ActionDefinition"))) (kind specialization) (ordinal 1)) (authored-target "OccurrenceDefinition") (range (start (line 18) (character 54)) (end (line 18) (character 74))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (kind specialization) (ordinal 0)) (authored-target "Step") (range (start (line 22) (character 39)) (end (line 22) (character 43))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (kind specialization) (ordinal 1)) (authored-target "OccurrenceUsage") (range (start (line 22) (character 45)) (end (line 22) (character 60))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ActorMembership"))) (kind specialization) (ordinal 0)) (authored-target "ParameterMembership") (range (start (line 26) (character 43)) (end (line 26) (character 62))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::AllocationDefinition"))) (kind specialization) (ordinal 0)) (authored-target "ConnectionDefinition") (range (start (line 30) (character 48)) (end (line 30) (character 68))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::AllocationUsage"))) (kind specialization) (ordinal 0)) (authored-target "ConnectionUsage") (range (start (line 34) (character 43)) (end (line 34) (character 58))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ConnectionUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::AnalysisCaseDefinition"))) (kind specialization) (ordinal 0)) (authored-target "CaseDefinition") (range (start (line 38) (character 50)) (end (line 38) (character 64))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::CaseDefinition")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::AnalysisCaseUsage"))) (kind specialization) (ordinal 0)) (authored-target "CaseUsage") (range (start (line 42) (character 45)) (end (line 42) (character 54))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::CaseUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::AssertConstraintUsage"))) (kind specialization) (ordinal 0)) (authored-target "ConstraintUsage") (range (start (line 47) (character 49)) (end (line 47) (character 64))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ConstraintUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::AssertConstraintUsage"))) (kind specialization) (ordinal 1)) (authored-target "Invariant") (range (start (line 47) (character 66)) (end (line 47) (character 75))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::AssignmentActionUsage"))) (kind specialization) (ordinal 0)) (authored-target "ActionUsage") (range (start (line 51) (character 49)) (end (line 51) (character 60))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ActionUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::AttributeDefinition"))) (kind specialization) (ordinal 0)) (authored-target "DataType") (range (start (line 57) (character 47)) (end (line 57) (character 55))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::AttributeDefinition"))) (kind specialization) (ordinal 1)) (authored-target "Definition") (range (start (line 57) (character 57)) (end (line 57) (character 67))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::Definition")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage"))) (kind specialization) (ordinal 0)) (authored-target "Usage") (range (start (line 59) (character 42)) (end (line 59) (character 47))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::Usage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage::isReference"))) (kind featureTyping) (ordinal 0)) (authored-target "Boolean") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage::isReference"))) (kind redefinition) (ordinal 0)) (authored-target "isReference") (range (start (line 60) (character 59)) (end (line 60) (character 70))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage::isReference")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::BindingConnectorAsUsage"))) (kind specialization) (ordinal 0)) (authored-target "BindingConnector") (range (start (line 65) (character 51)) (end (line 65) (character 67))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::BindingConnectorAsUsage"))) (kind specialization) (ordinal 1)) (authored-target "ConnectorAsUsage") (range (start (line 65) (character 69)) (end (line 65) (character 85))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::CalculationDefinition"))) (kind specialization) (ordinal 0)) (authored-target "Function") (range (start (line 67) (character 49)) (end (line 67) (character 57))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::CalculationDefinition"))) (kind specialization) (ordinal 1)) (authored-target "ActionDefinition") (range (start (line 67) (character 59)) (end (line 67) (character 75))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ActionDefinition")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::CalculationUsage"))) (kind specialization) (ordinal 0)) (authored-target "Expression") (range (start (line 71) (character 44)) (end (line 71) (character 54))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::CalculationUsage"))) (kind specialization) (ordinal 1)) (authored-target "ActionUsage") (range (start (line 71) (character 56)) (end (line 71) (character 67))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ActionUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::CaseDefinition"))) (kind specialization) (ordinal 0)) (authored-target "CalculationDefinition") (range (start (line 75) (character 42)) (end (line 75) (character 63))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::CalculationDefinition")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::CaseUsage"))) (kind specialization) (ordinal 0)) (authored-target "CalculationUsage") (range (start (line 81) (character 37)) (end (line 81) (character 53))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::CalculationUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ConcernDefinition"))) (kind specialization) (ordinal 0)) (authored-target "RequirementDefinition") (range (start (line 88) (character 45)) (end (line 88) (character 66))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ConcernUsage"))) (kind specialization) (ordinal 0)) (authored-target "RequirementUsage") (range (start (line 90) (character 40)) (end (line 90) (character 56))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ConjugatedPortDefinition"))) (kind specialization) (ordinal 0)) (authored-target "PortDefinition") (range (start (line 94) (character 52)) (end (line 94) (character 66))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::PortDefinition")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ConjugatedPortTyping"))) (kind specialization) (ordinal 0)) (authored-target "FeatureTyping") (range (start (line 99) (character 48)) (end (line 99) (character 61))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition"))) (kind specialization) (ordinal 0)) (authored-target "AssociationStructure") (range (start (line 104) (character 48)) (end (line 104) (character 68))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition"))) (kind specialization) (ordinal 1)) (authored-target "PartDefinition") (range (start (line 104) (character 70)) (end (line 104) (character 84))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::PartDefinition")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition::isSufficient"))) (kind featureTyping) (ordinal 0)) (authored-target "Boolean") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition::isSufficient"))) (kind redefinition) (ordinal 0)) (authored-target "isSufficient") (range (start (line 105) (character 52)) (end (line 105) (character 64))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition::isSufficient")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ConnectionUsage"))) (kind specialization) (ordinal 0)) (authored-target "ConnectorAsUsage") (range (start (line 110) (character 43)) (end (line 110) (character 59))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ConnectionUsage"))) (kind specialization) (ordinal 1)) (authored-target "PartUsage") (range (start (line 110) (character 61)) (end (line 110) (character 70))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::PartUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage"))) (kind specialization) (ordinal 0)) (authored-target "Usage") (range (start (line 114) (character 53)) (end (line 114) (character 58))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::Usage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage"))) (kind specialization) (ordinal 1)) (authored-target "Connector") (range (start (line 114) (character 60)) (end (line 114) (character 69))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ConstraintDefinition"))) (kind specialization) (ordinal 0)) (authored-target "OccurrenceDefinition") (range (start (line 116) (character 48)) (end (line 116) (character 68))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ConstraintDefinition"))) (kind specialization) (ordinal 1)) (authored-target "Predicate") (range (start (line 116) (character 70)) (end (line 116) (character 79))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ConstraintUsage"))) (kind specialization) (ordinal 0)) (authored-target "BooleanExpression") (range (start (line 118) (character 43)) (end (line 118) (character 60))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ConstraintUsage"))) (kind specialization) (ordinal 1)) (authored-target "OccurrenceUsage") (range (start (line 118) (character 62)) (end (line 118) (character 77))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ControlNode"))) (kind specialization) (ordinal 0)) (authored-target "ActionUsage") (range (start (line 122) (character 48)) (end (line 122) (character 59))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ActionUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::DecisionNode"))) (kind specialization) (ordinal 0)) (authored-target "ControlNode") (range (start (line 124) (character 40)) (end (line 124) (character 51))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ControlNode")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::Definition"))) (kind specialization) (ordinal 0)) (authored-target "Classifier") (range (start (line 126) (character 38)) (end (line 126) (character 48))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::Definition::isVariation"))) (kind featureTyping) (ordinal 0)) (authored-target "Boolean") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::EnumerationDefinition"))) (kind specialization) (ordinal 0)) (authored-target "AttributeDefinition") (range (start (line 162) (character 49)) (end (line 162) (character 68))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::AttributeDefinition")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::EnumerationDefinition::isVariation"))) (kind featureTyping) (ordinal 0)) (authored-target "Boolean") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::EnumerationDefinition::isVariation"))) (kind redefinition) (ordinal 0)) (authored-target "isVariation") (range (start (line 163) (character 51)) (end (line 163) (character 62))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::EnumerationDefinition::isVariation")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::EnumerationUsage"))) (kind specialization) (ordinal 0)) (authored-target "AttributeUsage") (range (start (line 168) (character 44)) (end (line 168) (character 58))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage"))) (kind specialization) (ordinal 0)) (authored-target "OccurrenceUsage") (range (start (line 172) (character 48)) (end (line 172) (character 63))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage::isReference"))) (kind featureTyping) (ordinal 0)) (authored-target "Boolean") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage::isReference"))) (kind redefinition) (ordinal 0)) (authored-target "isReference") (range (start (line 173) (character 59)) (end (line 173) (character 70))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage::isReference")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ExhibitStateUsage"))) (kind specialization) (ordinal 0)) (authored-target "StateUsage") (range (start (line 178) (character 45)) (end (line 178) (character 55))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::StateUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ExhibitStateUsage"))) (kind specialization) (ordinal 1)) (authored-target "PerformActionUsage") (range (start (line 178) (character 57)) (end (line 178) (character 75))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::PerformActionUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::Expose"))) (kind specialization) (ordinal 0)) (authored-target "Import") (range (start (line 182) (character 43)) (end (line 182) (character 49))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::Expose::isImportAll"))) (kind featureTyping) (ordinal 0)) (authored-target "Boolean") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::Expose::isImportAll"))) (kind redefinition) (ordinal 0)) (authored-target "isImportAll") (range (start (line 184) (character 51)) (end (line 184) (character 62))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::Expose::isImportAll")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::Expose::visibility"))) (kind featureTyping) (ordinal 0)) (authored-target "VisibilityKind") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::Expose::visibility"))) (kind redefinition) (ordinal 0)) (authored-target "visibility") (range (start (line 183) (character 57)) (end (line 183) (character 67))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::Expose::visibility")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::FlowDefinition"))) (kind specialization) (ordinal 0)) (authored-target "Interaction") (range (start (line 187) (character 42)) (end (line 187) (character 53))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::FlowDefinition"))) (kind specialization) (ordinal 1)) (authored-target "ActionDefinition") (range (start (line 187) (character 55)) (end (line 187) (character 71))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ActionDefinition")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::FlowUsage"))) (kind specialization) (ordinal 0)) (authored-target "ConnectorAsUsage") (range (start (line 191) (character 37)) (end (line 191) (character 53))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::FlowUsage"))) (kind specialization) (ordinal 1)) (authored-target "Flow") (range (start (line 191) (character 55)) (end (line 191) (character 59))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::FlowUsage"))) (kind specialization) (ordinal 2)) (authored-target "ActionUsage") (range (start (line 191) (character 61)) (end (line 191) (character 72))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ActionUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ForLoopActionUsage"))) (kind specialization) (ordinal 0)) (authored-target "LoopActionUsage") (range (start (line 195) (character 46)) (end (line 195) (character 61))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::LoopActionUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ForkNode"))) (kind specialization) (ordinal 0)) (authored-target "ControlNode") (range (start (line 200) (character 36)) (end (line 200) (character 47))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ControlNode")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership"))) (kind specialization) (ordinal 0)) (authored-target "RequirementConstraintMembership") (range (start (line 202) (character 51)) (end (line 202) (character 82))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership::kind"))) (kind featureTyping) (ordinal 0)) (authored-target "RequirementConstraintKind") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership::kind"))) (kind redefinition) (ordinal 0)) (authored-target "kind") (range (start (line 203) (character 62)) (end (line 203) (character 66))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership::kind")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::IfActionUsage"))) (kind specialization) (ordinal 0)) (authored-target "ActionUsage") (range (start (line 209) (character 41)) (end (line 209) (character 52))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ActionUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::IncludeUseCaseUsage"))) (kind specialization) (ordinal 0)) (authored-target "UseCaseUsage") (range (start (line 215) (character 47)) (end (line 215) (character 59))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::UseCaseUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::IncludeUseCaseUsage"))) (kind specialization) (ordinal 1)) (authored-target "PerformActionUsage") (range (start (line 215) (character 61)) (end (line 215) (character 79))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::PerformActionUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::InterfaceDefinition"))) (kind specialization) (ordinal 0)) (authored-target "ConnectionDefinition") (range (start (line 219) (character 47)) (end (line 219) (character 67))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::InterfaceUsage"))) (kind specialization) (ordinal 0)) (authored-target "ConnectionUsage") (range (start (line 223) (character 42)) (end (line 223) (character 57))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ConnectionUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ItemDefinition"))) (kind specialization) (ordinal 0)) (authored-target "Structure") (range (start (line 227) (character 42)) (end (line 227) (character 51))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ItemDefinition"))) (kind specialization) (ordinal 1)) (authored-target "OccurrenceDefinition") (range (start (line 227) (character 53)) (end (line 227) (character 73))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ItemUsage"))) (kind specialization) (ordinal 0)) (authored-target "OccurrenceUsage") (range (start (line 229) (character 37)) (end (line 229) (character 52))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::JoinNode"))) (kind specialization) (ordinal 0)) (authored-target "ControlNode") (range (start (line 233) (character 36)) (end (line 233) (character 47))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ControlNode")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::LoopActionUsage"))) (kind specialization) (ordinal 0)) (authored-target "ActionUsage") (range (start (line 235) (character 52)) (end (line 235) (character 63))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ActionUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::MembershipExpose"))) (kind specialization) (ordinal 0)) (authored-target "MembershipImport") (range (start (line 239) (character 44)) (end (line 239) (character 60))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::MembershipExpose"))) (kind specialization) (ordinal 1)) (authored-target "Expose") (range (start (line 239) (character 62)) (end (line 239) (character 68))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::Expose")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::MergeNode"))) (kind specialization) (ordinal 0)) (authored-target "ControlNode") (range (start (line 241) (character 37)) (end (line 241) (character 48))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ControlNode")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::MetadataDefinition"))) (kind specialization) (ordinal 0)) (authored-target "ItemDefinition") (range (start (line 243) (character 46)) (end (line 243) (character 60))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ItemDefinition")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::MetadataDefinition"))) (kind specialization) (ordinal 1)) (authored-target "Metaclass") (range (start (line 243) (character 62)) (end (line 243) (character 71))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::MetadataUsage"))) (kind specialization) (ordinal 0)) (authored-target "ItemUsage") (range (start (line 245) (character 41)) (end (line 245) (character 50))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ItemUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::MetadataUsage"))) (kind specialization) (ordinal 1)) (authored-target "MetadataFeature") (range (start (line 245) (character 52)) (end (line 245) (character 67))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::NamespaceExpose"))) (kind specialization) (ordinal 0)) (authored-target "Expose") (range (start (line 249) (character 43)) (end (line 249) (character 49))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::Expose")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::NamespaceExpose"))) (kind specialization) (ordinal 1)) (authored-target "NamespaceImport") (range (start (line 249) (character 51)) (end (line 249) (character 66))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ObjectiveMembership"))) (kind specialization) (ordinal 0)) (authored-target "FeatureMembership") (range (start (line 251) (character 47)) (end (line 251) (character 64))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition"))) (kind specialization) (ordinal 0)) (authored-target "Definition") (range (start (line 255) (character 48)) (end (line 255) (character 58))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::Definition")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition"))) (kind specialization) (ordinal 1)) (authored-target "Class") (range (start (line 255) (character 60)) (end (line 255) (character 65))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition::isIndividual"))) (kind featureTyping) (ordinal 0)) (authored-target "Boolean") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))) (kind specialization) (ordinal 0)) (authored-target "Usage") (range (start (line 259) (character 43)) (end (line 259) (character 48))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::Usage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage::isIndividual"))) (kind featureTyping) (ordinal 0)) (authored-target "Boolean") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage::portionKind"))) (kind featureTyping) (ordinal 0)) (authored-target "PortionKind") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::PortionKind")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::PartDefinition"))) (kind specialization) (ordinal 0)) (authored-target "ItemDefinition") (range (start (line 267) (character 42)) (end (line 267) (character 56))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ItemDefinition")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::PartUsage"))) (kind specialization) (ordinal 0)) (authored-target "ItemUsage") (range (start (line 269) (character 37)) (end (line 269) (character 46))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ItemUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::PerformActionUsage"))) (kind specialization) (ordinal 0)) (authored-target "ActionUsage") (range (start (line 273) (character 46)) (end (line 273) (character 57))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ActionUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::PerformActionUsage"))) (kind specialization) (ordinal 1)) (authored-target "EventOccurrenceUsage") (range (start (line 273) (character 59)) (end (line 273) (character 79))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::PortConjugation"))) (kind specialization) (ordinal 0)) (authored-target "Conjugation") (range (start (line 277) (character 43)) (end (line 277) (character 54))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::PortDefinition"))) (kind specialization) (ordinal 0)) (authored-target "OccurrenceDefinition") (range (start (line 282) (character 42)) (end (line 282) (character 62))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::PortDefinition"))) (kind specialization) (ordinal 1)) (authored-target "Structure") (range (start (line 282) (character 64)) (end (line 282) (character 73))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::PortUsage"))) (kind specialization) (ordinal 0)) (authored-target "OccurrenceUsage") (range (start (line 286) (character 37)) (end (line 286) (character 52))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ReferenceUsage"))) (kind specialization) (ordinal 0)) (authored-target "Usage") (range (start (line 295) (character 42)) (end (line 295) (character 47))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::Usage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ReferenceUsage::isReference"))) (kind featureTyping) (ordinal 0)) (authored-target "Boolean") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ReferenceUsage::isReference"))) (kind redefinition) (ordinal 0)) (authored-target "isReference") (range (start (line 296) (character 59)) (end (line 296) (character 70))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ReferenceUsage::isReference")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::RenderingDefinition"))) (kind specialization) (ordinal 0)) (authored-target "PartDefinition") (range (start (line 299) (character 47)) (end (line 299) (character 61))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::PartDefinition")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::RenderingUsage"))) (kind specialization) (ordinal 0)) (authored-target "PartUsage") (range (start (line 303) (character 42)) (end (line 303) (character 51))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::PartUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership"))) (kind specialization) (ordinal 0)) (authored-target "FeatureMembership") (range (start (line 312) (character 59)) (end (line 312) (character 76))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership::kind"))) (kind featureTyping) (ordinal 0)) (authored-target "RequirementConstraintKind") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition"))) (kind specialization) (ordinal 0)) (authored-target "ConstraintDefinition") (range (start (line 319) (character 49)) (end (line 319) (character 69))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ConstraintDefinition")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition::reqId"))) (kind featureTyping) (ordinal 0)) (authored-target "String") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition::reqId"))) (kind redefinition) (ordinal 0)) (authored-target "declaredShortName") (range (start (line 320) (character 44)) (end (line 320) (character 61))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition::text"))) (kind featureTyping) (ordinal 0)) (authored-target "String") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage"))) (kind specialization) (ordinal 0)) (authored-target "ConstraintUsage") (range (start (line 331) (character 44)) (end (line 331) (character 59))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ConstraintUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage::reqId"))) (kind featureTyping) (ordinal 0)) (authored-target "String") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage::reqId"))) (kind redefinition) (ordinal 0)) (authored-target "declaredShortName") (range (start (line 332) (character 44)) (end (line 332) (character 61))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage::text"))) (kind featureTyping) (ordinal 0)) (authored-target "String") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership"))) (kind specialization) (ordinal 0)) (authored-target "RequirementConstraintMembership") (range (start (line 344) (character 61)) (end (line 344) (character 92))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership::kind"))) (kind featureTyping) (ordinal 0)) (authored-target "RequirementConstraintKind") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership::kind"))) (kind redefinition) (ordinal 0)) (authored-target "kind") (range (start (line 345) (character 62)) (end (line 345) (character 66))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership::kind")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::SatisfyRequirementUsage"))) (kind specialization) (ordinal 0)) (authored-target "RequirementUsage") (range (start (line 351) (character 51)) (end (line 351) (character 67))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::SatisfyRequirementUsage"))) (kind specialization) (ordinal 1)) (authored-target "AssertConstraintUsage") (range (start (line 351) (character 69)) (end (line 351) (character 90))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::AssertConstraintUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::SendActionUsage"))) (kind specialization) (ordinal 0)) (authored-target "ActionUsage") (range (start (line 356) (character 43)) (end (line 356) (character 54))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ActionUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::StakeholderMembership"))) (kind specialization) (ordinal 0)) (authored-target "ParameterMembership") (range (start (line 362) (character 49)) (end (line 362) (character 68))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::StateDefinition"))) (kind specialization) (ordinal 0)) (authored-target "ActionDefinition") (range (start (line 366) (character 43)) (end (line 366) (character 59))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ActionDefinition")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::StateDefinition::isParallel"))) (kind featureTyping) (ordinal 0)) (authored-target "Boolean") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::StateSubactionMembership"))) (kind specialization) (ordinal 0)) (authored-target "FeatureMembership") (range (start (line 381) (character 52)) (end (line 381) (character 69))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::StateSubactionMembership::kind"))) (kind featureTyping) (ordinal 0)) (authored-target "StateSubactionKind") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::StateUsage"))) (kind specialization) (ordinal 0)) (authored-target "ActionUsage") (range (start (line 387) (character 38)) (end (line 387) (character 49))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ActionUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::StateUsage::isParallel"))) (kind featureTyping) (ordinal 0)) (authored-target "Boolean") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::SubjectMembership"))) (kind specialization) (ordinal 0)) (authored-target "ParameterMembership") (range (start (line 396) (character 45)) (end (line 396) (character 64))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::SuccessionAsUsage"))) (kind specialization) (ordinal 0)) (authored-target "ConnectorAsUsage") (range (start (line 400) (character 45)) (end (line 400) (character 61))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::SuccessionAsUsage"))) (kind specialization) (ordinal 1)) (authored-target "Succession") (range (start (line 400) (character 63)) (end (line 400) (character 73))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::SuccessionFlowUsage"))) (kind specialization) (ordinal 0)) (authored-target "SuccessionFlow") (range (start (line 402) (character 47)) (end (line 402) (character 61))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::SuccessionFlowUsage"))) (kind specialization) (ordinal 1)) (authored-target "FlowUsage") (range (start (line 402) (character 63)) (end (line 402) (character 72))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::FlowUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::TerminateActionUsage"))) (kind specialization) (ordinal 0)) (authored-target "ActionUsage") (range (start (line 404) (character 48)) (end (line 404) (character 59))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ActionUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureMembership"))) (kind specialization) (ordinal 0)) (authored-target "FeatureMembership") (range (start (line 414) (character 55)) (end (line 414) (character 72))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureMembership::kind"))) (kind featureTyping) (ordinal 0)) (authored-target "TransitionFeatureKind") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::TransitionUsage"))) (kind specialization) (ordinal 0)) (authored-target "ActionUsage") (range (start (line 420) (character 43)) (end (line 420) (character 54))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::ActionUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::TriggerInvocationExpression"))) (kind specialization) (ordinal 0)) (authored-target "InvocationExpression") (range (start (line 429) (character 55)) (end (line 429) (character 75))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::TriggerInvocationExpression::kind"))) (kind featureTyping) (ordinal 0)) (authored-target "TriggerKind") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::Usage"))) (kind specialization) (ordinal 0)) (authored-target "Feature") (range (start (line 439) (character 33)) (end (line 439) (character 40))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::Usage::isReference"))) (kind featureTyping) (ordinal 0)) (authored-target "Boolean") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::Usage::isVariation"))) (kind featureTyping) (ordinal 0)) (authored-target "Boolean") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::Usage::mayTimeVary"))) (kind featureTyping) (ordinal 0)) (authored-target "Boolean") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::Usage::mayTimeVary"))) (kind redefinition) (ordinal 0)) (authored-target "isVariable") (range (start (line 441) (character 59)) (end (line 441) (character 69))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::UseCaseDefinition"))) (kind specialization) (ordinal 0)) (authored-target "CaseDefinition") (range (start (line 480) (character 45)) (end (line 480) (character 59))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::CaseDefinition")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::UseCaseUsage"))) (kind specialization) (ordinal 0)) (authored-target "CaseUsage") (range (start (line 484) (character 40)) (end (line 484) (character 49))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::CaseUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::VariantMembership"))) (kind specialization) (ordinal 0)) (authored-target "OwningMembership") (range (start (line 489) (character 45)) (end (line 489) (character 61))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::VerificationCaseDefinition"))) (kind specialization) (ordinal 0)) (authored-target "CaseDefinition") (range (start (line 493) (character 54)) (end (line 493) (character 68))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::CaseDefinition")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::VerificationCaseUsage"))) (kind specialization) (ordinal 0)) (authored-target "CaseUsage") (range (start (line 497) (character 49)) (end (line 497) (character 58))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::CaseUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ViewDefinition"))) (kind specialization) (ordinal 0)) (authored-target "PartDefinition") (range (start (line 502) (character 42)) (end (line 502) (character 56))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::PartDefinition")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ViewRenderingMembership"))) (kind specialization) (ordinal 0)) (authored-target "FeatureMembership") (range (start (line 509) (character 51)) (end (line 509) (character 68))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ViewUsage"))) (kind specialization) (ordinal 0)) (authored-target "PartUsage") (range (start (line 514) (character 37)) (end (line 514) (character 46))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::PartUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ViewpointDefinition"))) (kind specialization) (ordinal 0)) (authored-target "RequirementDefinition") (range (start (line 522) (character 47)) (end (line 522) (character 68))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::ViewpointUsage"))) (kind specialization) (ordinal 0)) (authored-target "RequirementUsage") (range (start (line 526) (character 42)) (end (line 526) (character 58))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage")))))
+    (reference (id (source (node (document "d0") (qualified-name "SysML::Systems::WhileLoopActionUsage"))) (kind specialization) (ordinal 0)) (authored-target "LoopActionUsage") (range (start (line 531) (character 48)) (end (line 531) (character 63))) (outcome (status resolved) (target (node (document "d0") (qualified-name "SysML::Systems::LoopActionUsage")))))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "SysML::_documentation"))) (to (node (document "d0") (qualified-name "SysML"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage::isReference"))) (to (node (document "d0") (qualified-name "SysML::Systems::Usage::isReference"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::EnumerationDefinition::isVariation"))) (to (node (document "d0") (qualified-name "SysML::Systems::Definition::isVariation"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage::isReference"))) (to (node (document "d0") (qualified-name "SysML::Systems::Usage::isReference"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership::kind"))) (to (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership::kind"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ReferenceUsage::isReference"))) (to (node (document "d0") (qualified-name "SysML::Systems::Usage::isReference"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership::kind"))) (to (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership::kind"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::AcceptActionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ActionDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::AllocationDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::AllocationUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ConnectionUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::AnalysisCaseDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::CaseDefinition"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::AnalysisCaseUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::CaseUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::AssertConstraintUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ConstraintUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::AssignmentActionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::AttributeDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::Definition"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::Usage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::BindingConnectorAsUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::CalculationDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionDefinition"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::CalculationUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::CaseDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::CalculationDefinition"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::CaseUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::CalculationUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ConcernDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ConcernUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ConjugatedPortDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::PortDefinition"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::PartDefinition"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ConnectionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ConnectionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::PartUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::Usage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ConstraintDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ConstraintUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ControlNode"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::DecisionNode"))) (to (node (document "d0") (qualified-name "SysML::Systems::ControlNode"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::EnumerationDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::AttributeDefinition"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::EnumerationUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ExhibitStateUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::PerformActionUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ExhibitStateUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::StateUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::FlowDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionDefinition"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::FlowUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::FlowUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ForLoopActionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::LoopActionUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ForkNode"))) (to (node (document "d0") (qualified-name "SysML::Systems::ControlNode"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership"))) (to (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::IfActionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::IncludeUseCaseUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::PerformActionUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::IncludeUseCaseUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::UseCaseUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::InterfaceDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::InterfaceUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ConnectionUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ItemDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ItemUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::JoinNode"))) (to (node (document "d0") (qualified-name "SysML::Systems::ControlNode"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::LoopActionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::MembershipExpose"))) (to (node (document "d0") (qualified-name "SysML::Systems::Expose"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::MergeNode"))) (to (node (document "d0") (qualified-name "SysML::Systems::ControlNode"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::MetadataDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::ItemDefinition"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::MetadataUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ItemUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::NamespaceExpose"))) (to (node (document "d0") (qualified-name "SysML::Systems::Expose"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::Definition"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::Usage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::PartDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::ItemDefinition"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::PartUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ItemUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::PerformActionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::PerformActionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::PortDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::PortUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ReferenceUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::Usage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::RenderingDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::PartDefinition"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::RenderingUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::PartUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::ConstraintDefinition"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ConstraintUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership"))) (to (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::SatisfyRequirementUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::AssertConstraintUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::SatisfyRequirementUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::SendActionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::StateDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionDefinition"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::StateUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::SuccessionAsUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::SuccessionFlowUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::FlowUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::TerminateActionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::TransitionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::UseCaseDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::CaseDefinition"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::UseCaseUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::CaseUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::VerificationCaseDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::CaseDefinition"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::VerificationCaseUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::CaseUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ViewDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::PartDefinition"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ViewUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::PartUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ViewpointDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ViewpointUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage"))) (provenance authored))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::WhileLoopActionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::LoopActionUsage"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership::kind"))) (to (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage::portionKind"))) (to (node (document "d0") (qualified-name "SysML::Systems::PortionKind"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership::kind"))) (to (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership::kind"))) (to (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::StateSubactionMembership::kind"))) (to (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureMembership::kind"))) (to (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::TriggerInvocationExpression::kind"))) (to (node (document "d0") (qualified-name "SysML::Systems::TriggerKind"))) (provenance authored))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::AcceptActionUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::AcceptActionUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::ActionDefinition"))) (target (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::ActionDefinition"))) (kind specialization) (ordinal 1)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (kind specialization) (ordinal 1)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::AllocationDefinition"))) (target (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::AllocationDefinition"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::AllocationUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::ConnectionUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::AllocationUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::AnalysisCaseDefinition"))) (target (node (document "d0") (qualified-name "SysML::Systems::CaseDefinition"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::AnalysisCaseDefinition"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::AnalysisCaseUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::CaseUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::AnalysisCaseUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::AssertConstraintUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::ConstraintUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::AssertConstraintUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::AssignmentActionUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::AssignmentActionUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::AttributeDefinition"))) (target (node (document "d0") (qualified-name "SysML::Systems::Definition"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::AttributeDefinition"))) (kind specialization) (ordinal 1)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::Usage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage::isReference"))) (target (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage::isReference"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage::isReference"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::BindingConnectorAsUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::BindingConnectorAsUsage"))) (kind specialization) (ordinal 1)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::CalculationDefinition"))) (target (node (document "d0") (qualified-name "SysML::Systems::ActionDefinition"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::CalculationDefinition"))) (kind specialization) (ordinal 1)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::CalculationUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::CalculationUsage"))) (kind specialization) (ordinal 1)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::CaseDefinition"))) (target (node (document "d0") (qualified-name "SysML::Systems::CalculationDefinition"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::CaseDefinition"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::CaseUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::CalculationUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::CaseUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::ConcernDefinition"))) (target (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::ConcernDefinition"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::ConcernUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::ConcernUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::ConjugatedPortDefinition"))) (target (node (document "d0") (qualified-name "SysML::Systems::PortDefinition"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::ConjugatedPortDefinition"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition"))) (target (node (document "d0") (qualified-name "SysML::Systems::PartDefinition"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition"))) (kind specialization) (ordinal 1)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition::isSufficient"))) (target (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition::isSufficient"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition::isSufficient"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::ConnectionUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::ConnectionUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::ConnectionUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::PartUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::ConnectionUsage"))) (kind specialization) (ordinal 1)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::Usage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::ConstraintDefinition"))) (target (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::ConstraintDefinition"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::ConstraintUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::ConstraintUsage"))) (kind specialization) (ordinal 1)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::ControlNode"))) (target (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::ControlNode"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::DecisionNode"))) (target (node (document "d0") (qualified-name "SysML::Systems::ControlNode"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::DecisionNode"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::EnumerationDefinition"))) (target (node (document "d0") (qualified-name "SysML::Systems::AttributeDefinition"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::EnumerationDefinition"))) (kind specialization) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "SysML::Systems::EnumerationDefinition::isVariation"))) (target (node (document "d0") (qualified-name "SysML::Systems::EnumerationDefinition::isVariation"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::EnumerationDefinition::isVariation"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::EnumerationUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::EnumerationUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage::isReference"))) (target (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage::isReference"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage::isReference"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::ExhibitStateUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::PerformActionUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::ExhibitStateUsage"))) (kind specialization) (ordinal 1)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::ExhibitStateUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::StateUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::ExhibitStateUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "SysML::Systems::Expose::isImportAll"))) (target (node (document "d0") (qualified-name "SysML::Systems::Expose::isImportAll"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::Expose::isImportAll"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "SysML::Systems::Expose::visibility"))) (target (node (document "d0") (qualified-name "SysML::Systems::Expose::visibility"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::Expose::visibility"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::FlowDefinition"))) (target (node (document "d0") (qualified-name "SysML::Systems::ActionDefinition"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::FlowDefinition"))) (kind specialization) (ordinal 1)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::FlowUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::FlowUsage"))) (kind specialization) (ordinal 2)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::FlowUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::FlowUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::ForLoopActionUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::LoopActionUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::ForLoopActionUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::ForkNode"))) (target (node (document "d0") (qualified-name "SysML::Systems::ControlNode"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::ForkNode"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership"))) (target (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership::kind"))) (target (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership::kind"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership::kind"))) (target (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership::kind"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership::kind"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::IfActionUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::IfActionUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::IncludeUseCaseUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::PerformActionUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::IncludeUseCaseUsage"))) (kind specialization) (ordinal 1)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::IncludeUseCaseUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::UseCaseUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::IncludeUseCaseUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::InterfaceDefinition"))) (target (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::InterfaceDefinition"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::InterfaceUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::ConnectionUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::InterfaceUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::ItemDefinition"))) (target (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::ItemDefinition"))) (kind specialization) (ordinal 1)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::ItemUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::ItemUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::JoinNode"))) (target (node (document "d0") (qualified-name "SysML::Systems::ControlNode"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::JoinNode"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::LoopActionUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::LoopActionUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::MembershipExpose"))) (target (node (document "d0") (qualified-name "SysML::Systems::Expose"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::MembershipExpose"))) (kind specialization) (ordinal 1)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::MergeNode"))) (target (node (document "d0") (qualified-name "SysML::Systems::ControlNode"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::MergeNode"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::MetadataDefinition"))) (target (node (document "d0") (qualified-name "SysML::Systems::ItemDefinition"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::MetadataDefinition"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::MetadataUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::ItemUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::MetadataUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::NamespaceExpose"))) (target (node (document "d0") (qualified-name "SysML::Systems::Expose"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::NamespaceExpose"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition"))) (target (node (document "d0") (qualified-name "SysML::Systems::Definition"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::Usage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage::portionKind"))) (target (node (document "d0") (qualified-name "SysML::Systems::PortionKind"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage::portionKind"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::PartDefinition"))) (target (node (document "d0") (qualified-name "SysML::Systems::ItemDefinition"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::PartDefinition"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::PartUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::ItemUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::PartUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::PerformActionUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::PerformActionUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::PerformActionUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::PerformActionUsage"))) (kind specialization) (ordinal 1)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::PortDefinition"))) (target (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::PortDefinition"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::PortUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::PortUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::ReferenceUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::Usage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::ReferenceUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "SysML::Systems::ReferenceUsage::isReference"))) (target (node (document "d0") (qualified-name "SysML::Systems::ReferenceUsage::isReference"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::ReferenceUsage::isReference"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::RenderingDefinition"))) (target (node (document "d0") (qualified-name "SysML::Systems::PartDefinition"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::RenderingDefinition"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::RenderingUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::PartUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::RenderingUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition"))) (target (node (document "d0") (qualified-name "SysML::Systems::ConstraintDefinition"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::ConstraintUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership"))) (target (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership::kind"))) (target (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership::kind"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership::kind"))) (target (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership::kind"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership::kind"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::SatisfyRequirementUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::AssertConstraintUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::SatisfyRequirementUsage"))) (kind specialization) (ordinal 1)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::SatisfyRequirementUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::SatisfyRequirementUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::SendActionUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::SendActionUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::StateDefinition"))) (target (node (document "d0") (qualified-name "SysML::Systems::ActionDefinition"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::StateDefinition"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::StateUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::StateUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::SuccessionAsUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::SuccessionAsUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::SuccessionFlowUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::FlowUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::SuccessionFlowUsage"))) (kind specialization) (ordinal 1)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::TerminateActionUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::TerminateActionUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::TransitionUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::TransitionUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::UseCaseDefinition"))) (target (node (document "d0") (qualified-name "SysML::Systems::CaseDefinition"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::UseCaseDefinition"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::UseCaseUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::CaseUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::UseCaseUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::VerificationCaseDefinition"))) (target (node (document "d0") (qualified-name "SysML::Systems::CaseDefinition"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::VerificationCaseDefinition"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::VerificationCaseUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::CaseUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::VerificationCaseUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::ViewDefinition"))) (target (node (document "d0") (qualified-name "SysML::Systems::PartDefinition"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::ViewDefinition"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::ViewUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::PartUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::ViewUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::ViewpointDefinition"))) (target (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::ViewpointDefinition"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::ViewpointUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::ViewpointUsage"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "SysML::Systems::WhileLoopActionUsage"))) (target (node (document "d0") (qualified-name "SysML::Systems::LoopActionUsage"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "SysML::Systems::WhileLoopActionUsage"))) (kind specialization) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::AcceptActionUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ActionDefinition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ActorMembership"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::AllocationDefinition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::AllocationUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::AnalysisCaseDefinition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::AnalysisCaseUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::AssertConstraintUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::AssignmentActionUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::AttributeDefinition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage::isReference"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::BindingConnectorAsUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::CalculationDefinition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::CalculationUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::CaseDefinition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::CaseUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ConcernDefinition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ConcernUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ConjugatedPortDefinition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ConjugatedPortTyping"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition::isSufficient"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ConnectionUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ConstraintDefinition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ConstraintUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ControlNode"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::DecisionNode"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::Definition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::Definition::isVariation"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::EnumerationDefinition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::EnumerationDefinition::isVariation"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::EnumerationUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage::isReference"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ExhibitStateUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::Expose"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::Expose::isImportAll"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::Expose::visibility"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::FlowDefinition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::FlowUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ForLoopActionUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ForkNode"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership::kind"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::IfActionUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::IncludeUseCaseUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::InterfaceDefinition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::InterfaceUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ItemDefinition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ItemUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::JoinNode"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::LoopActionUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::MembershipExpose"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::MergeNode"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::MetadataDefinition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::MetadataUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::NamespaceExpose"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ObjectiveMembership"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition::isIndividual"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage::isIndividual"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage::portionKind"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::PartDefinition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::PartUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::PerformActionUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::PortConjugation"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::PortDefinition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::PortUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::PortionKind"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::PortionKind::snapshot"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::PortionKind::timeslice"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ReferenceUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ReferenceUsage::isReference"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::RenderingDefinition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::RenderingUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind::assumption"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind::requirement"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership::kind"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition::reqId"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition::text"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage::reqId"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage::text"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership::kind"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::SatisfyRequirementUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::SendActionUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::StakeholderMembership"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::StateDefinition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::StateDefinition::isParallel"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind::do"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind::entry"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind::exit"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::StateSubactionMembership"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::StateSubactionMembership::kind"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::StateUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::StateUsage::isParallel"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::SubjectMembership"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::SuccessionAsUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::SuccessionFlowUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::TerminateActionUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind::effect"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind::guard"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind::trigger"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureMembership"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureMembership::kind"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::TransitionUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::TriggerInvocationExpression"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::TriggerInvocationExpression::kind"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::TriggerKind"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::TriggerKind::after"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::TriggerKind::at"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::TriggerKind::when"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::Usage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::Usage::isReference"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::Usage::isVariation"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::Usage::mayTimeVary"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::UseCaseDefinition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::UseCaseUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::VariantMembership"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::VerificationCaseDefinition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::VerificationCaseUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ViewDefinition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ViewRenderingMembership"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ViewUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ViewpointDefinition"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::ViewpointUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SysML::Systems::WhileLoopActionUsage"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/sys_ml.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 6 16) (end 6 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 10 16) (end 10 29))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 18 2) (end 18 190))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 22 2) (end 22 202))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 26 2) (end 26 186))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 47 2) (end 47 177))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 57 2) (end 57 68))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 60 3) (end 60 71))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 65 2) (end 65 86))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 67 2) (end 67 208))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 71 2) (end 71 210))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 99 2) (end 99 276))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 104 2) (end 104 274))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 105 3) (end 105 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 105 3) (end 105 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 114 2) (end 114 70))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 116 2) (end 116 80))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 118 2) (end 118 195))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 126 2) (end 126 3700))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 127 3) (end 127 41))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 163 3) (end 163 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 173 3) (end 173 71))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 182 2) (end 182 188))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 183 3) (end 183 68))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 183 3) (end 183 68))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 184 3) (end 184 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 184 3) (end 184 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 187 2) (end 187 177))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 191 2) (end 191 214))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 227 2) (end 227 74))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 239 2) (end 239 69))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 243 2) (end 243 72))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 245 2) (end 245 199))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 249 2) (end 249 67))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 251 2) (end 251 199))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 255 2) (end 255 114))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 256 3) (end 256 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 260 3) (end 260 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 277 2) (end 277 306))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 282 2) (end 282 210))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 296 3) (end 296 71))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 312 2) (end 312 355))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 320 3) (end 320 62))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 332 3) (end 332 62))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 362 2) (end 362 198))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 367 3) (end 367 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 381 2) (end 381 232))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 388 3) (end 388 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 396 2) (end 396 186))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 400 2) (end 400 74))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 402 2) (end 402 73))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 414 2) (end 414 240))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 429 2) (end 429 120))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 439 2) (end 439 4178))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 440 3) (end 440 41))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 441 3) (end 441 70))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 441 3) (end 441 70))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 442 3) (end 442 49))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 489 2) (end 489 177))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 509 2) (end 509 286))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

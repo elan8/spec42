@@ -1175,645 +1175,656 @@ standard library package ISQSpaceTime {
 
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name '3dCoordinateFrame'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'LengthUnit'
-semantic.unresolved_name 'LengthUnit'
-semantic.unresolved_name 'LengthUnit'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'LengthUnit'
-semantic.unresolved_name 'isOrthogonal'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'transformation'
-semantic.unresolved_name 'LengthUnit'
-semantic.unresolved_name 'LengthUnit'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'isOrthogonal'
-semantic.unresolved_name 'LengthUnit'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'isOrthogonal'
-semantic.unresolved_name 'LengthUnit'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'isOrthogonal'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneUnit'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneUnit'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dCoordinateFrame'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'isOrthogonal'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dCoordinateFrame'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'isOrthogonal'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dCoordinateFrame'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'isOrthogonal'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dCoordinateFrame'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'isOrthogonal'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'DurationValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DurationValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'CountValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dCoordinateFrame'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'isOrthogonal'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name '3dCoordinateFrame'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'LengthUnit'
-semantic.unresolved_name 'LengthUnit'
-semantic.unresolved_name 'LengthUnit'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'LengthUnit'
-semantic.unresolved_name 'isOrthogonal'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'transformation'
-semantic.unresolved_name 'LengthUnit'
-semantic.unresolved_name 'LengthUnit'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'isOrthogonal'
-semantic.unresolved_name 'LengthUnit'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'isOrthogonal'
-semantic.unresolved_name 'LengthUnit'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'isOrthogonal'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneUnit'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneUnit'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dCoordinateFrame'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'isOrthogonal'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dCoordinateFrame'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'isOrthogonal'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dCoordinateFrame'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'isOrthogonal'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dCoordinateFrame'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'isOrthogonal'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'DurationValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DurationValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'CountValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name '3dVectorQuantityValue'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'vectorQuantities'
-semantic.unresolved_name '3dCoordinateFrame'
-semantic.unresolved_name 'isBound'
-semantic.unresolved_name 'isOrthogonal'
-semantic.unresolved_name 'mRefs'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "isq_space_time.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 14 19) (end 14 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 15 19) (end 15 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 16 19) (end 16 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 17 19) (end 17 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 23 4) (end 23 593))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 41 4) (end 41 746))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 61 4) (end 61 447))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 77 4) (end 77 475))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 93 4) (end 93 450))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 109 4) (end 109 724))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 127 4) (end 127 658))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 143 4) (end 143 782))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 160 4) (end 160 198))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 180 8) (end 180 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 181 8) (end 181 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 182 8) (end 182 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 183 8) (end 183 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 228 8) (end 228 50))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 230 8) (end 230 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 256 8) (end 256 50))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 297 8) (end 297 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 303 4) (end 303 722))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 323 8) (end 323 61))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 324 8) (end 324 61))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 325 8) (end 325 61))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 331 8) (end 331 81))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 333 8) (end 333 70))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 339 8) (end 339 78))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 349 8) (end 349 72))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 355 4) (end 355 756))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 375 8) (end 375 61))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 376 8) (end 376 61))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 377 8) (end 377 61))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 383 8) (end 383 81))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 385 8) (end 385 70))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 391 8) (end 391 78))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 399 4) (end 399 622))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 415 4) (end 415 597))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 434 4) (end 434 239))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 435 8) (end 435 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 440 4) (end 440 762))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 459 4) (end 459 233))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 460 8) (end 460 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 465 4) (end 465 708))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 484 4) (end 484 235))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 485 8) (end 485 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 490 4) (end 490 914))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 509 4) (end 509 64))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 551 4) (end 551 972))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 570 4) (end 570 69))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 581 4) (end 581 912))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 600 4) (end 600 208))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 607 4) (end 607 508))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 626 4) (end 626 354))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 627 8) (end 627 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 628 8) (end 628 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 633 4) (end 633 796))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 652 4) (end 652 361))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 653 8) (end 653 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 654 8) (end 654 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 658 4) (end 658 842))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 677 4) (end 677 219))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 684 4) (end 684 1001))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 703 4) (end 703 249))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 704 8) (end 704 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 708 4) (end 708 1047))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 727 4) (end 727 225))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 734 4) (end 734 766))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 753 4) (end 753 253))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 754 8) (end 754 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 758 4) (end 758 812))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 777 4) (end 777 233))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 784 4) (end 784 550))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 802 4) (end 802 757))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 818 4) (end 818 629))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 834 4) (end 834 590))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 853 4) (end 853 243))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 854 8) (end 854 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 875 4) (end 875 632))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 894 4) (end 894 250))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 895 8) (end 895 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 900 4) (end 900 457))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 916 4) (end 916 597))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 935 4) (end 935 239))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 936 8) (end 936 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 945 4) (end 945 639))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 964 4) (end 964 214))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 971 4) (end 971 654))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 990 4) (end 990 246))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 991 8) (end 991 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1000 4) (end 1000 948))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1019 4) (end 1019 362))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1020 8) (end 1020 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1021 8) (end 1021 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1048 4) (end 1048 573))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1067 4) (end 1067 252))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1068 8) (end 1068 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1073 4) (end 1073 515))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1090 4) (end 1090 773))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1109 4) (end 1109 241))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1110 8) (end 1110 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1119 4) (end 1119 756))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1138 4) (end 1138 246))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1139 8) (end 1139 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1144 4) (end 1144 782))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1163 4) (end 1163 252))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1164 8) (end 1164 103))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -2787,6 +2798,646 @@ CloseCurly,EndOfFile,
         (default_ref_usage :>> 'exponent' value))
       (attribute_usage :>> 'quantityDimension'
         (default_ref_usage :>> 'quantityPowerFactors' value)))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name '3dCoordinateFrame'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'LengthUnit'
+semantic.unresolved_name 'LengthUnit'
+semantic.unresolved_name 'LengthUnit'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'LengthUnit'
+semantic.unresolved_name 'isOrthogonal'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'transformation'
+semantic.unresolved_name 'LengthUnit'
+semantic.unresolved_name 'LengthUnit'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'isOrthogonal'
+semantic.unresolved_name 'LengthUnit'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'isOrthogonal'
+semantic.unresolved_name 'LengthUnit'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'isOrthogonal'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneUnit'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneUnit'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dCoordinateFrame'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'isOrthogonal'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dCoordinateFrame'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'isOrthogonal'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dCoordinateFrame'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'isOrthogonal'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dCoordinateFrame'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'isOrthogonal'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'DurationValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DurationValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'CountValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dCoordinateFrame'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'isOrthogonal'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name '3dCoordinateFrame'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'LengthUnit'
+semantic.unresolved_name 'LengthUnit'
+semantic.unresolved_name 'LengthUnit'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'LengthUnit'
+semantic.unresolved_name 'isOrthogonal'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'transformation'
+semantic.unresolved_name 'LengthUnit'
+semantic.unresolved_name 'LengthUnit'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'isOrthogonal'
+semantic.unresolved_name 'LengthUnit'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'isOrthogonal'
+semantic.unresolved_name 'LengthUnit'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'isOrthogonal'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneUnit'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneUnit'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dCoordinateFrame'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'isOrthogonal'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dCoordinateFrame'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'isOrthogonal'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dCoordinateFrame'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'isOrthogonal'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dCoordinateFrame'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'isOrthogonal'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'DurationValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DurationValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'CountValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name '3dVectorQuantityValue'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'vectorQuantities'
+semantic.unresolved_name '3dCoordinateFrame'
+semantic.unresolved_name 'isBound'
+semantic.unresolved_name 'isOrthogonal'
+semantic.unresolved_name 'mRefs'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
 ~~~
 # FORMAT
 ~~~sysml
@@ -3963,2370 +4614,899 @@ standard library package ISQSpaceTime {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ISQSpaceTime"))) (name "ISQSpaceTime") (declared-name "ISQSpaceTime")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQSpaceTime::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQSpaceTime::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQSpaceTime::*#import2"))) (name "*") (declared-name "*"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit"))) (name "AccelerationUnit") (declared-name "AccelerationUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue"))) (name "AccelerationValue") (declared-name "AccelerationValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit"))) (name "AngularAccelerationUnit") (declared-name "AngularAccelerationUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue"))) (name "AngularAccelerationValue") (declared-name "AngularAccelerationValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyUnit"))) (name "AngularFrequencyUnit") (declared-name "AngularFrequencyUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue"))) (name "AngularFrequencyValue") (declared-name "AngularFrequencyValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (name "AngularMeasureUnit") (declared-name "AngularMeasureUnit") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue"))) (name "AngularMeasureValue") (declared-name "AngularMeasureValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyUnit"))) (name "AngularRepetencyUnit") (declared-name "AngularRepetencyUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue"))) (name "AngularRepetencyValue") (declared-name "AngularRepetencyValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit"))) (name "AngularVelocityUnit") (declared-name "AngularVelocityUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue"))) (name "AngularVelocityValue") (declared-name "AngularVelocityValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue")))))
-          )
-        )
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularWavenumberUnit"))) (name "AngularWavenumberUnit") (declared-name "AngularWavenumberUnit"))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularWavenumberValue"))) (name "AngularWavenumberValue") (declared-name "AngularWavenumberValue"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::AreaUnit"))) (name "AreaUnit") (declared-name "AreaUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AreaUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AreaUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AreaUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AreaUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue"))) (name "AreaValue") (declared-name "AreaValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationUnit"))) (name "AttenuationUnit") (declared-name "AttenuationUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue"))) (name "AttenuationValue") (declared-name "AttenuationValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame"))) (name "CartesianAcceleration3dCoordinateFrame") (declared-name "CartesianAcceleration3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector"))) (name "CartesianAcceleration3dVector") (declared-name "CartesianAcceleration3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame"))) (name "CartesianAngularAcceleration3dCoordinateFrame") (declared-name "CartesianAngularAcceleration3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector"))) (name "CartesianAngularAcceleration3dVector") (declared-name "CartesianAngularAcceleration3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame"))) (name "CartesianAngularVelocity3dCoordinateFrame") (declared-name "CartesianAngularVelocity3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector"))) (name "CartesianAngularVelocity3dVector") (declared-name "CartesianAngularVelocity3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector"))) (name "CartesianDisplacement3dVector") (declared-name "CartesianDisplacement3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector::x"))) (name "x") (declared-name "x") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector::y"))) (name "y") (declared-name "y") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector::z"))) (name "z") (declared-name "z") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector"))) (name "CartesianPosition3dVector") (declared-name "CartesianPosition3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector::x"))) (name "x") (declared-name "x") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector::y"))) (name "y") (declared-name "y") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector::z"))) (name "z") (declared-name "z") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame"))) (name "CartesianSpatial3dCoordinateFrame") (declared-name "CartesianSpatial3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::xUnit"))) (name "xUnit") (declared-name "xUnit") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::yUnit"))) (name "yUnit") (declared-name "yUnit") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::zUnit"))) (name "zUnit") (declared-name "zUnit") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame"))) (name "CartesianVelocity3dCoordinateFrame") (declared-name "CartesianVelocity3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector"))) (name "CartesianVelocity3dVector") (declared-name "CartesianVelocity3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector"))) (name "CartesianWave3dVector") (declared-name "CartesianWave3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame"))) (name "CartesianWaveVector3dCoordinateFrame") (declared-name "CartesianWaveVector3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureUnit"))) (name "CurvatureUnit") (declared-name "CurvatureUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue"))) (name "CurvatureValue") (declared-name "CurvatureValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector"))) (name "CylindricalDisplacement3dVector") (declared-name "CylindricalDisplacement3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::azimuth"))) (name "azimuth") (declared-name "azimuth") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::height"))) (name "height") (declared-name "height") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::radialDistance"))) (name "radialDistance") (declared-name "radialDistance") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector"))) (name "CylindricalPosition3dVector") (declared-name "CylindricalPosition3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::azimuth"))) (name "azimuth") (declared-name "azimuth") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::height"))) (name "height") (declared-name "height") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::radialDistance"))) (name "radialDistance") (declared-name "radialDistance") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame"))) (name "CylindricalSpatial3dCoordinateFrame") (declared-name "CylindricalSpatial3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::azimuthUnit"))) (name "azimuthUnit") (declared-name "azimuthUnit") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::radialDistanceUnit"))) (name "radialDistanceUnit") (declared-name "radialDistanceUnit") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::zUnit"))) (name "zUnit") (declared-name "zUnit") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientUnit"))) (name "DampingCoefficientUnit") (declared-name "DampingCoefficientUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue"))) (name "DampingCoefficientValue") (declared-name "DampingCoefficientValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector"))) (name "Displacement3dVector") (declared-name "Displacement3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector")))))
-          )
-        )
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQSpaceTime::ExtinctionUnit"))) (name "ExtinctionUnit") (declared-name "ExtinctionUnit"))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQSpaceTime::ExtinctionValue"))) (name "ExtinctionValue") (declared-name "ExtinctionValue"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyUnit"))) (name "FrequencyUnit") (declared-name "FrequencyUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue"))) (name "FrequencyValue") (declared-name "FrequencyValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::LogarithmicDecrementValue"))) (name "LogarithmicDecrementValue") (declared-name "LogarithmicDecrementValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::LogarithmicDecrementValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::LogarithmicDecrementValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientUnit"))) (name "PhaseCoefficientUnit") (declared-name "PhaseCoefficientUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue"))) (name "PhaseCoefficientValue") (declared-name "PhaseCoefficientValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue")))))
-          )
-        )
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseSpeedUnit"))) (name "PhaseSpeedUnit") (declared-name "PhaseSpeedUnit"))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseSpeedValue"))) (name "PhaseSpeedValue") (declared-name "PhaseSpeedValue"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit"))) (name "PhaseVelocityUnit") (declared-name "PhaseVelocityUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue"))) (name "PhaseVelocityValue") (declared-name "PhaseVelocityValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue")))))
-          )
-        )
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQSpaceTime::PlaneAngleUnit"))) (name "PlaneAngleUnit") (declared-name "PlaneAngleUnit"))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQSpaceTime::PlaneAngleValue"))) (name "PlaneAngleValue") (declared-name "PlaneAngleValue"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector"))) (name "PlanetaryPosition3dVector") (declared-name "PlanetaryPosition3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::altitude"))) (name "altitude") (declared-name "altitude") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::latitude"))) (name "latitude") (declared-name "latitude") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::longitude"))) (name "longitude") (declared-name "longitude") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame"))) (name "PlanetarySpatial3dCoordinateFrame") (declared-name "PlanetarySpatial3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::altitudeUnit"))) (name "altitudeUnit") (declared-name "altitudeUnit") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::latitudeUnit"))) (name "latitudeUnit") (declared-name "latitudeUnit") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::longitudeUnit"))) (name "longitudeUnit") (declared-name "longitudeUnit") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector"))) (name "Position3dVector") (declared-name "Position3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientUnit"))) (name "PropagationCoefficientUnit") (declared-name "PropagationCoefficientUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue"))) (name "PropagationCoefficientValue") (declared-name "PropagationCoefficientValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQSpaceTime::Real"))) (name "Real") (declared-name "Real"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit"))) (name "RepetencyUnit") (declared-name "RepetencyUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue"))) (name "RepetencyValue") (declared-name "RepetencyValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureUnit"))) (name "SolidAngularMeasureUnit") (declared-name "SolidAngularMeasureUnit") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue"))) (name "SolidAngularMeasureValue") (declared-name "SolidAngularMeasureValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame"))) (name "Spatial3dCoordinateFrame") (declared-name "Spatial3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit"))) (name "SpeedUnit") (declared-name "SpeedUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue"))) (name "SpeedValue") (declared-name "SpeedValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector"))) (name "SphericalDisplacement3dVector") (declared-name "SphericalDisplacement3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::azimuth"))) (name "azimuth") (declared-name "azimuth") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::inclination"))) (name "inclination") (declared-name "inclination") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::radialDistance"))) (name "radialDistance") (declared-name "radialDistance") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector"))) (name "SphericalPosition3dVector") (declared-name "SphericalPosition3dVector") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::azimuth"))) (name "azimuth") (declared-name "azimuth") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::inclination"))) (name "inclination") (declared-name "inclination") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::radialDistance"))) (name "radialDistance") (declared-name "radialDistance") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame"))) (name "SphericalSpatial3dCoordinateFrame") (declared-name "SphericalSpatial3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::azimuthUnit"))) (name "azimuthUnit") (declared-name "azimuthUnit") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::inclinationUnit"))) (name "inclinationUnit") (declared-name "inclinationUnit") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::radialDistanceUnit"))) (name "radialDistanceUnit") (declared-name "radialDistanceUnit") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame")))))
-          )
-        )
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQSpaceTime::TimeUnit"))) (name "TimeUnit") (declared-name "TimeUnit"))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQSpaceTime::TimeValue"))) (name "TimeValue") (declared-name "TimeValue"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::VolumeUnit"))) (name "VolumeUnit") (declared-name "VolumeUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::VolumeUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::VolumeUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::VolumeUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::VolumeUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue"))) (name "VolumeValue") (declared-name "VolumeValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue")))))
-          )
-        )
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQSpaceTime::WavenumberUnit"))) (name "WavenumberUnit") (declared-name "WavenumberUnit"))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQSpaceTime::WavenumberValue"))) (name "WavenumberValue") (declared-name "WavenumberValue"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::_documentation"))) (name ""))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::acceleration"))) (name "acceleration") (declared-name "acceleration") (declared (properties (ordered false) (unique false))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQSpaceTime::altitude"))) (name "altitude") (declared-name "altitude"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::angularAcceleration"))) (name "angularAcceleration") (declared-name "angularAcceleration") (declared (properties (ordered false) (unique false))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQSpaceTime::angularDisplacement"))) (name "angularDisplacement") (declared-name "angularDisplacement"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::angularFrequency"))) (name "angularFrequency") (declared-name "angularFrequency") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::angularMeasure"))) (name "angularMeasure") (declared-name "angularMeasure") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::angularRepetency"))) (name "angularRepetency") (declared-name "angularRepetency") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::angularVelocity"))) (name "angularVelocity") (declared-name "angularVelocity") (declared (properties (ordered false) (unique false))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQSpaceTime::angularWavenumber"))) (name "angularWavenumber") (declared-name "angularWavenumber"))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQSpaceTime::arcLength"))) (name "arcLength") (declared-name "arcLength"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::area"))) (name "area") (declared-name "area") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::attenuation"))) (name "attenuation") (declared-name "attenuation") (declared (properties (ordered false) (unique false))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQSpaceTime::breadth"))) (name "breadth") (declared-name "breadth"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::cartesianAcceleration3dVector"))) (name "cartesianAcceleration3dVector") (declared-name "cartesianAcceleration3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::cartesianAngularAcceleration3dVector"))) (name "cartesianAngularAcceleration3dVector") (declared-name "cartesianAngularAcceleration3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::cartesianAngularVelocity3dVector"))) (name "cartesianAngularVelocity3dVector") (declared-name "cartesianAngularVelocity3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::cartesianDisplacement3dVector"))) (name "cartesianDisplacement3dVector") (declared-name "cartesianDisplacement3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::cartesianPosition3dVector"))) (name "cartesianPosition3dVector") (declared-name "cartesianPosition3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::cartesianVelocity3dVector"))) (name "cartesianVelocity3dVector") (declared-name "cartesianVelocity3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::cartesianWave3dVector"))) (name "cartesianWave3dVector") (declared-name "cartesianWave3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::curvature"))) (name "curvature") (declared-name "curvature") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::cylindricalDisplacement3dVector"))) (name "cylindricalDisplacement3dVector") (declared-name "cylindricalDisplacement3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::cylindricalPosition3dVector"))) (name "cylindricalPosition3dVector") (declared-name "cylindricalPosition3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::dampingCoefficient"))) (name "dampingCoefficient") (declared-name "dampingCoefficient") (declared (properties (ordered false) (unique false))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQSpaceTime::depth"))) (name "depth") (declared-name "depth"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::diameter"))) (name "diameter") (declared-name "diameter") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::diameter::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::diameter")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::displacement3dVector"))) (name "displacement3dVector") (declared-name "displacement3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::distance"))) (name "distance") (declared-name "distance") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::distance::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::distance")))))
-          )
-        )
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQSpaceTime::extinction"))) (name "extinction") (declared-name "extinction"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::frequency"))) (name "frequency") (declared-name "frequency") (declared (properties (ordered false) (unique false))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQSpaceTime::groupSpeed"))) (name "groupSpeed") (declared-name "groupSpeed"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::groupVelocity"))) (name "groupVelocity") (declared-name "groupVelocity") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::groupVelocity::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::groupVelocity")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::height"))) (name "height") (declared-name "height") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::height::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::height")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::logarithmicDecrement"))) (name "logarithmicDecrement") (declared-name "logarithmicDecrement") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::pathLength"))) (name "pathLength") (declared-name "pathLength") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::pathLength::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::pathLength")))))
-          )
-        )
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQSpaceTime::period"))) (name "period") (declared-name "period"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::periodDuration"))) (name "periodDuration") (declared-name "periodDuration") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::periodDuration::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::periodDuration")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::phaseAngle"))) (name "phaseAngle") (declared-name "phaseAngle") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::phaseAngle::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::phaseAngle")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::phaseCoefficient"))) (name "phaseCoefficient") (declared-name "phaseCoefficient") (declared (properties (ordered false) (unique false))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQSpaceTime::phaseSpeed"))) (name "phaseSpeed") (declared-name "phaseSpeed"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::phaseVelocity"))) (name "phaseVelocity") (declared-name "phaseVelocity") (declared (properties (ordered false) (unique false))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQSpaceTime::planeAngle"))) (name "planeAngle") (declared-name "planeAngle"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::planetaryPosition3dVector"))) (name "planetaryPosition3dVector") (declared-name "planetaryPosition3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::position3dVector"))) (name "position3dVector") (declared-name "position3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::propagationCoefficient"))) (name "propagationCoefficient") (declared-name "propagationCoefficient") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::radialDistance"))) (name "radialDistance") (declared-name "radialDistance") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::radialDistance::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::radialDistance")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::radius"))) (name "radius") (declared-name "radius") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::radius::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::radius")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::radiusOfCurvature"))) (name "radiusOfCurvature") (declared-name "radiusOfCurvature") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::radiusOfCurvature::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::radiusOfCurvature")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::repetency"))) (name "repetency") (declared-name "repetency") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::rotation"))) (name "rotation") (declared-name "rotation") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::rotation::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::rotation")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::rotationalDisplacement"))) (name "rotationalDisplacement") (declared-name "rotationalDisplacement") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::rotationalDisplacement::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::rotationalDisplacement")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::rotationalFrequency"))) (name "rotationalFrequency") (declared-name "rotationalFrequency") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::rotationalFrequency::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::rotationalFrequency")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::solidAngularMeasure"))) (name "solidAngularMeasure") (declared-name "solidAngularMeasure") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::speed"))) (name "speed") (declared-name "speed") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::sphericalDisplacement3dVector"))) (name "sphericalDisplacement3dVector") (declared-name "sphericalDisplacement3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::sphericalPosition3dVector"))) (name "sphericalPosition3dVector") (declared-name "sphericalPosition3dVector") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::thickness"))) (name "thickness") (declared-name "thickness") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::thickness::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::thickness")))))
-          )
-        )
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQSpaceTime::time"))) (name "time") (declared-name "time"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::timeConstant"))) (name "timeConstant") (declared-name "timeConstant") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::timeConstant::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::timeConstant")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame"))) (name "universalCartesianSpatial3dCoordinateFrame") (declared-name "universalCartesianSpatial3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame"))))
-              (contains
-                (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::mRefs::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame")))))
-              )
-            )
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::transformation"))) (name "transformation") (declared-name "transformation") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame"))))
-              (contains
-                (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::transformation::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame")))))
-              )
-            )
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::volume"))) (name "volume") (declared-name "volume") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::wavelength"))) (name "wavelength") (declared-name "wavelength") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::wavelength::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::wavelength")))))
-          )
-        )
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQSpaceTime::wavenumber"))) (name "wavenumber") (declared-name "wavenumber"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQSpaceTime::width"))) (name "width") (declared-name "width") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQSpaceTime::width::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQSpaceTime::width")))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6d1db49bb0c6d0ee1984e05d74acd3a43a6309fd9da2a34850cfdfa4613ffb09") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime"))) (kind "package") (name "ISQSpaceTime") (declared-name "ISQSpaceTime") (range (start (line 0) (character 0)) (end (line 0) (character 54699))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 15) (character 4)) (end (line 15) (character 33))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Import) (visibility "private") (import (reference "Quantities::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 15) (character 19)) (end (line 15) (character 29))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 16) (character 4)) (end (line 16) (character 44))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Import) (visibility "private") (import (reference "MeasurementReferences::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 16) (character 19)) (end (line 16) (character 40))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::*#import2"))) (kind "import") (name "*") (declared-name "*") (range (start (line 17) (character 4)) (end (line 17) (character 30))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQBase::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 17) (character 19)) (end (line 17) (character 26))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit"))) (kind "attribute def") (name "AccelerationUnit") (declared-name "AccelerationUnit") (range (start (line 652) (character 4)) (end (line 652) (character 361))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 654) (character 8)) (end (line 654) (character 105))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 653) (character 8)) (end (line 653) (character 102))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 655) (character 8)) (end (line 655) (character 94))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 655) (character 22)) (end (line 655) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue"))) (kind "attribute def") (name "AccelerationValue") (declared-name "AccelerationValue") (range (start (line 633) (character 4)) (end (line 633) (character 796))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::_documentation"))) (kind "documentation") (name "") (range (start (line 633) (character 4)) (end (line 633) (character 796))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 647) (character 8)) (end (line 647) (character 48))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "AccelerationUnit") (range none)) (redefinition (reference "mRef") (range (start (line 647) (character 22)) (end (line 647) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 646) (character 8)) (end (line 646) (character 32))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 646) (character 22)) (end (line 646) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit"))) (kind "attribute def") (name "AngularAccelerationUnit") (declared-name "AngularAccelerationUnit") (range (start (line 753) (character 4)) (end (line 753) (character 253))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 754) (character 8)) (end (line 754) (character 105))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 755) (character 8)) (end (line 755) (character 82))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 755) (character 22)) (end (line 755) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue"))) (kind "attribute def") (name "AngularAccelerationValue") (declared-name "AngularAccelerationValue") (range (start (line 734) (character 4)) (end (line 734) (character 766))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::_documentation"))) (kind "documentation") (name "") (range (start (line 734) (character 4)) (end (line 734) (character 766))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 748) (character 8)) (end (line 748) (character 55))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "AngularAccelerationUnit") (range none)) (redefinition (reference "mRef") (range (start (line 748) (character 22)) (end (line 748) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 747) (character 8)) (end (line 747) (character 32))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 747) (character 22)) (end (line 747) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyUnit"))) (kind "attribute def") (name "AngularFrequencyUnit") (declared-name "AngularFrequencyUnit") (range (start (line 894) (character 4)) (end (line 894) (character 250))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 895) (character 8)) (end (line 895) (character 105))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 896) (character 8)) (end (line 896) (character 82))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 896) (character 22)) (end (line 896) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue"))) (kind "attribute def") (name "AngularFrequencyValue") (declared-name "AngularFrequencyValue") (range (start (line 875) (character 4)) (end (line 875) (character 632))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::_documentation"))) (kind "documentation") (name "") (range (start (line 875) (character 4)) (end (line 875) (character 632))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 889) (character 8)) (end (line 889) (character 52))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "AngularFrequencyUnit") (range none)) (redefinition (reference "mRef") (range (start (line 889) (character 22)) (end (line 889) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 888) (character 8)) (end (line 888) (character 32))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 888) (character 22)) (end (line 888) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (kind "attribute def") (name "AngularMeasureUnit") (declared-name "AngularMeasureUnit") (range (start (line 509) (character 4)) (end (line 509) (character 64))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue"))) (kind "attribute def") (name "AngularMeasureValue") (declared-name "AngularMeasureValue") (range (start (line 490) (character 4)) (end (line 490) (character 914))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::_documentation"))) (kind "documentation") (name "") (range (start (line 490) (character 4)) (end (line 490) (character 914))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 504) (character 8)) (end (line 504) (character 50))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "AngularMeasureUnit") (range none)) (redefinition (reference "mRef") (range (start (line 504) (character 22)) (end (line 504) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 503) (character 8)) (end (line 503) (character 32))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 503) (character 22)) (end (line 503) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyUnit"))) (kind "attribute def") (name "AngularRepetencyUnit") (declared-name "AngularRepetencyUnit") (range (start (line 990) (character 4)) (end (line 990) (character 246))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 991) (character 8)) (end (line 991) (character 103))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 992) (character 8)) (end (line 992) (character 80))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 992) (character 22)) (end (line 992) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue"))) (kind "attribute def") (name "AngularRepetencyValue") (declared-name "AngularRepetencyValue") (range (start (line 971) (character 4)) (end (line 971) (character 654))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::_documentation"))) (kind "documentation") (name "") (range (start (line 971) (character 4)) (end (line 971) (character 654))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 985) (character 8)) (end (line 985) (character 52))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "AngularRepetencyUnit") (range none)) (redefinition (reference "mRef") (range (start (line 985) (character 22)) (end (line 985) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 984) (character 8)) (end (line 984) (character 32))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 984) (character 22)) (end (line 984) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit"))) (kind "attribute def") (name "AngularVelocityUnit") (declared-name "AngularVelocityUnit") (range (start (line 703) (character 4)) (end (line 703) (character 249))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 704) (character 8)) (end (line 704) (character 105))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 705) (character 8)) (end (line 705) (character 82))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 705) (character 22)) (end (line 705) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue"))) (kind "attribute def") (name "AngularVelocityValue") (declared-name "AngularVelocityValue") (range (start (line 684) (character 4)) (end (line 684) (character 1001))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::_documentation"))) (kind "documentation") (name "") (range (start (line 684) (character 4)) (end (line 684) (character 1001))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 698) (character 8)) (end (line 698) (character 51))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "AngularVelocityUnit") (range none)) (redefinition (reference "mRef") (range (start (line 698) (character 22)) (end (line 698) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 697) (character 8)) (end (line 697) (character 32))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 697) (character 22)) (end (line 697) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularWavenumberUnit"))) (kind "alias") (name "AngularWavenumberUnit") (declared-name "AngularWavenumberUnit") (range (start (line 995) (character 4)) (end (line 995) (character 57))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AngularWavenumberValue"))) (kind "alias") (name "AngularWavenumberValue") (declared-name "AngularWavenumberValue") (range (start (line 996) (character 4)) (end (line 996) (character 59))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AreaUnit"))) (kind "attribute def") (name "AreaUnit") (declared-name "AreaUnit") (range (start (line 459) (character 4)) (end (line 459) (character 233))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AreaUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 460) (character 8)) (end (line 460) (character 102))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AreaUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AreaUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 461) (character 8)) (end (line 461) (character 80))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AreaUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 461) (character 22)) (end (line 461) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue"))) (kind "attribute def") (name "AreaValue") (declared-name "AreaValue") (range (start (line 440) (character 4)) (end (line 440) (character 762))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::_documentation"))) (kind "documentation") (name "") (range (start (line 440) (character 4)) (end (line 440) (character 762))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 454) (character 8)) (end (line 454) (character 40))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "AreaUnit") (range none)) (redefinition (reference "mRef") (range (start (line 454) (character 22)) (end (line 454) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 453) (character 8)) (end (line 453) (character 32))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 453) (character 22)) (end (line 453) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationUnit"))) (kind "attribute def") (name "AttenuationUnit") (declared-name "AttenuationUnit") (range (start (line 1109) (character 4)) (end (line 1109) (character 241))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 1110) (character 8)) (end (line 1110) (character 103))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 1111) (character 8)) (end (line 1111) (character 80))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 1111) (character 22)) (end (line 1111) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue"))) (kind "attribute def") (name "AttenuationValue") (declared-name "AttenuationValue") (range (start (line 1090) (character 4)) (end (line 1090) (character 773))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1090) (character 4)) (end (line 1090) (character 773))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 1104) (character 8)) (end (line 1104) (character 47))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "AttenuationUnit") (range none)) (redefinition (reference "mRef") (range (start (line 1104) (character 22)) (end (line 1104) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 1103) (character 8)) (end (line 1103) (character 32))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 1103) (character 22)) (end (line 1103) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame"))) (kind "attribute def") (name "CartesianAcceleration3dCoordinateFrame") (declared-name "CartesianAcceleration3dCoordinateFrame") (range (start (line 677) (character 4)) (end (line 677) (character 219))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dCoordinateFrame") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 678) (character 8)) (end (line 678) (character 38))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 678) (character 22)) (end (line 678) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::isOrthogonal"))) (kind "attribute") (name "isOrthogonal") (declared-name "isOrthogonal") (range (start (line 679) (character 8)) (end (line 679) (character 42))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isOrthogonal") (range (start (line 679) (character 22)) (end (line 679) (character 34)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::mRefs"))) (kind "attribute") (name "mRefs") (declared-name "mRefs") (range (start (line 680) (character 8)) (end (line 680) (character 49))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (typing (reference "AccelerationUnit") (range none)) (redefinition (reference "mRefs") (range (start (line 680) (character 22)) (end (line 680) (character 27)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector"))) (kind "attribute def") (name "CartesianAcceleration3dVector") (declared-name "CartesianAcceleration3dVector") (range (start (line 658) (character 4)) (end (line 658) (character 842))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dVectorQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector::_documentation"))) (kind "documentation") (name "") (range (start (line 658) (character 4)) (end (line 658) (character 842))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 671) (character 8)) (end (line 671) (character 38))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 671) (character 22)) (end (line 671) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 672) (character 8)) (end (line 672) (character 70))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "CartesianAcceleration3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 672) (character 22)) (end (line 672) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame"))) (kind "attribute def") (name "CartesianAngularAcceleration3dCoordinateFrame") (declared-name "CartesianAngularAcceleration3dCoordinateFrame") (range (start (line 777) (character 4)) (end (line 777) (character 233))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dCoordinateFrame") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 778) (character 8)) (end (line 778) (character 38))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 778) (character 22)) (end (line 778) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::isOrthogonal"))) (kind "attribute") (name "isOrthogonal") (declared-name "isOrthogonal") (range (start (line 779) (character 8)) (end (line 779) (character 42))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isOrthogonal") (range (start (line 779) (character 22)) (end (line 779) (character 34)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::mRefs"))) (kind "attribute") (name "mRefs") (declared-name "mRefs") (range (start (line 780) (character 8)) (end (line 780) (character 56))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (typing (reference "AngularAccelerationUnit") (range none)) (redefinition (reference "mRefs") (range (start (line 780) (character 22)) (end (line 780) (character 27)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector"))) (kind "attribute def") (name "CartesianAngularAcceleration3dVector") (declared-name "CartesianAngularAcceleration3dVector") (range (start (line 758) (character 4)) (end (line 758) (character 812))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dVectorQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector::_documentation"))) (kind "documentation") (name "") (range (start (line 758) (character 4)) (end (line 758) (character 812))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 771) (character 8)) (end (line 771) (character 38))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 771) (character 22)) (end (line 771) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 772) (character 8)) (end (line 772) (character 77))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "CartesianAngularAcceleration3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 772) (character 22)) (end (line 772) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame"))) (kind "attribute def") (name "CartesianAngularVelocity3dCoordinateFrame") (declared-name "CartesianAngularVelocity3dCoordinateFrame") (range (start (line 727) (character 4)) (end (line 727) (character 225))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dCoordinateFrame") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 728) (character 8)) (end (line 728) (character 38))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 728) (character 22)) (end (line 728) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::isOrthogonal"))) (kind "attribute") (name "isOrthogonal") (declared-name "isOrthogonal") (range (start (line 729) (character 8)) (end (line 729) (character 42))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isOrthogonal") (range (start (line 729) (character 22)) (end (line 729) (character 34)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::mRefs"))) (kind "attribute") (name "mRefs") (declared-name "mRefs") (range (start (line 730) (character 8)) (end (line 730) (character 52))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (typing (reference "AngularVelocityUnit") (range none)) (redefinition (reference "mRefs") (range (start (line 730) (character 22)) (end (line 730) (character 27)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector"))) (kind "attribute def") (name "CartesianAngularVelocity3dVector") (declared-name "CartesianAngularVelocity3dVector") (range (start (line 708) (character 4)) (end (line 708) (character 1047))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dVectorQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector::_documentation"))) (kind "documentation") (name "") (range (start (line 708) (character 4)) (end (line 708) (character 1047))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 721) (character 8)) (end (line 721) (character 38))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 721) (character 22)) (end (line 721) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 722) (character 8)) (end (line 722) (character 73))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "CartesianAngularVelocity3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 722) (character 22)) (end (line 722) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector"))) (kind "attribute def") (name "CartesianDisplacement3dVector") (declared-name "CartesianDisplacement3dVector") (range (start (line 374) (character 4)) (end (line 374) (character 332))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "Displacement3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 378) (character 8)) (end (line 378) (character 66))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "CartesianSpatial3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 378) (character 22)) (end (line 378) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector::x"))) (kind "attribute") (name "x") (declared-name "x") (range (start (line 375) (character 8)) (end (line 375) (character 61))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector::y"))) (kind "attribute") (name "y") (declared-name "y") (range (start (line 376) (character 8)) (end (line 376) (character 61))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector::z"))) (kind "attribute") (name "z") (declared-name "z") (range (start (line 377) (character 8)) (end (line 377) (character 61))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector"))) (kind "attribute def") (name "CartesianPosition3dVector") (declared-name "CartesianPosition3dVector") (range (start (line 322) (character 4)) (end (line 322) (character 324))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "Position3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 326) (character 8)) (end (line 326) (character 66))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "CartesianSpatial3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 326) (character 22)) (end (line 326) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector::x"))) (kind "attribute") (name "x") (declared-name "x") (range (start (line 323) (character 8)) (end (line 323) (character 61))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector::y"))) (kind "attribute") (name "y") (declared-name "y") (range (start (line 324) (character 8)) (end (line 324) (character 61))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector::z"))) (kind "attribute") (name "z") (declared-name "z") (range (start (line 325) (character 8)) (end (line 325) (character 61))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame"))) (kind "attribute def") (name "CartesianSpatial3dCoordinateFrame") (declared-name "CartesianSpatial3dCoordinateFrame") (range (start (line 168) (character 4)) (end (line 168) (character 901))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "Spatial3dCoordinateFrame") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::_documentation"))) (kind "documentation") (name "") (range (start (line 168) (character 4)) (end (line 168) (character 901))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::isOrthogonal"))) (kind "attribute") (name "isOrthogonal") (declared-name "isOrthogonal") (range (start (line 184) (character 8)) (end (line 184) (character 42))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isOrthogonal") (range (start (line 184) (character 22)) (end (line 184) (character 34)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::mRefs"))) (kind "attribute") (name "mRefs") (declared-name "mRefs") (range (start (line 183) (character 8)) (end (line 183) (character 44))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthUnit") (range none)) (redefinition (reference "mRefs") (range (start (line 183) (character 22)) (end (line 183) (character 27)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::xUnit"))) (kind "attribute") (name "xUnit") (declared-name "xUnit") (range (start (line 180) (character 8)) (end (line 180) (character 49))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::yUnit"))) (kind "attribute") (name "yUnit") (declared-name "yUnit") (range (start (line 181) (character 8)) (end (line 181) (character 49))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::zUnit"))) (kind "attribute") (name "zUnit") (declared-name "zUnit") (range (start (line 182) (character 8)) (end (line 182) (character 49))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame"))) (kind "attribute def") (name "CartesianVelocity3dCoordinateFrame") (declared-name "CartesianVelocity3dCoordinateFrame") (range (start (line 600) (character 4)) (end (line 600) (character 208))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dCoordinateFrame") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 601) (character 8)) (end (line 601) (character 38))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 601) (character 22)) (end (line 601) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::isOrthogonal"))) (kind "attribute") (name "isOrthogonal") (declared-name "isOrthogonal") (range (start (line 602) (character 8)) (end (line 602) (character 42))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isOrthogonal") (range (start (line 602) (character 22)) (end (line 602) (character 34)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::mRefs"))) (kind "attribute") (name "mRefs") (declared-name "mRefs") (range (start (line 603) (character 8)) (end (line 603) (character 42))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (typing (reference "SpeedUnit") (range none)) (redefinition (reference "mRefs") (range (start (line 603) (character 22)) (end (line 603) (character 27)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector"))) (kind "attribute def") (name "CartesianVelocity3dVector") (declared-name "CartesianVelocity3dVector") (range (start (line 581) (character 4)) (end (line 581) (character 912))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dVectorQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector::_documentation"))) (kind "documentation") (name "") (range (start (line 581) (character 4)) (end (line 581) (character 912))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 594) (character 8)) (end (line 594) (character 38))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 594) (character 22)) (end (line 594) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 595) (character 8)) (end (line 595) (character 66))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "CartesianVelocity3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 595) (character 22)) (end (line 595) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector"))) (kind "attribute def") (name "CartesianWave3dVector") (declared-name "CartesianWave3dVector") (range (start (line 945) (character 4)) (end (line 945) (character 639))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dVectorQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector::_documentation"))) (kind "documentation") (name "") (range (start (line 945) (character 4)) (end (line 945) (character 639))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 958) (character 8)) (end (line 958) (character 38))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 958) (character 22)) (end (line 958) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 959) (character 8)) (end (line 959) (character 68))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "CartesianWaveVector3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 959) (character 22)) (end (line 959) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame"))) (kind "attribute def") (name "CartesianWaveVector3dCoordinateFrame") (declared-name "CartesianWaveVector3dCoordinateFrame") (range (start (line 964) (character 4)) (end (line 964) (character 214))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dCoordinateFrame") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 965) (character 8)) (end (line 965) (character 38))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 965) (character 22)) (end (line 965) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::isOrthogonal"))) (kind "attribute") (name "isOrthogonal") (declared-name "isOrthogonal") (range (start (line 966) (character 8)) (end (line 966) (character 42))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isOrthogonal") (range (start (line 966) (character 22)) (end (line 966) (character 34)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::mRefs"))) (kind "attribute") (name "mRefs") (declared-name "mRefs") (range (start (line 967) (character 8)) (end (line 967) (character 46))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (typing (reference "RepetencyUnit") (range none)) (redefinition (reference "mRefs") (range (start (line 967) (character 22)) (end (line 967) (character 27)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureUnit"))) (kind "attribute def") (name "CurvatureUnit") (declared-name "CurvatureUnit") (range (start (line 434) (character 4)) (end (line 434) (character 239))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 435) (character 8)) (end (line 435) (character 103))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 436) (character 8)) (end (line 436) (character 80))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 436) (character 22)) (end (line 436) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue"))) (kind "attribute def") (name "CurvatureValue") (declared-name "CurvatureValue") (range (start (line 415) (character 4)) (end (line 415) (character 597))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::_documentation"))) (kind "documentation") (name "") (range (start (line 415) (character 4)) (end (line 415) (character 597))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 429) (character 8)) (end (line 429) (character 45))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "CurvatureUnit") (range none)) (redefinition (reference "mRef") (range (start (line 429) (character 22)) (end (line 429) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 428) (character 8)) (end (line 428) (character 32))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 428) (character 22)) (end (line 428) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector"))) (kind "attribute def") (name "CylindricalDisplacement3dVector") (declared-name "CylindricalDisplacement3dVector") (range (start (line 382) (character 4)) (end (line 382) (character 385))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "Displacement3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::azimuth"))) (kind "attribute") (name "azimuth") (declared-name "azimuth") (range (start (line 384) (character 8)) (end (line 384) (character 81))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "AngularMeasureUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::height"))) (kind "attribute") (name "height") (declared-name "height") (range (start (line 385) (character 8)) (end (line 385) (character 70))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 386) (character 8)) (end (line 386) (character 68))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "CylindricalSpatial3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 386) (character 22)) (end (line 386) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::radialDistance"))) (kind "attribute") (name "radialDistance") (declared-name "radialDistance") (range (start (line 383) (character 8)) (end (line 383) (character 81))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector"))) (kind "attribute def") (name "CylindricalPosition3dVector") (declared-name "CylindricalPosition3dVector") (range (start (line 330) (character 4)) (end (line 330) (character 377))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "Position3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::azimuth"))) (kind "attribute") (name "azimuth") (declared-name "azimuth") (range (start (line 332) (character 8)) (end (line 332) (character 81))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "AngularMeasureUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::height"))) (kind "attribute") (name "height") (declared-name "height") (range (start (line 333) (character 8)) (end (line 333) (character 70))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 334) (character 8)) (end (line 334) (character 68))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "CylindricalSpatial3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 334) (character 22)) (end (line 334) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::radialDistance"))) (kind "attribute") (name "radialDistance") (declared-name "radialDistance") (range (start (line 331) (character 8)) (end (line 331) (character 81))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame"))) (kind "attribute def") (name "CylindricalSpatial3dCoordinateFrame") (declared-name "CylindricalSpatial3dCoordinateFrame") (range (start (line 207) (character 4)) (end (line 207) (character 1824))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "Spatial3dCoordinateFrame") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::_documentation"))) (kind "documentation") (name "") (range (start (line 207) (character 4)) (end (line 207) (character 1824))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::azimuthUnit"))) (kind "attribute") (name "azimuthUnit") (declared-name "azimuthUnit") (range (start (line 229) (character 8)) (end (line 229) (character 51))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (typing (reference "AngularMeasureUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::isOrthogonal"))) (kind "attribute") (name "isOrthogonal") (declared-name "isOrthogonal") (range (start (line 232) (character 8)) (end (line 232) (character 42))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isOrthogonal") (range (start (line 232) (character 22)) (end (line 232) (character 34)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::mRefs"))) (kind "attribute") (name "mRefs") (declared-name "mRefs") (range (start (line 231) (character 8)) (end (line 231) (character 71))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "mRefs") (range (start (line 231) (character 22)) (end (line 231) (character 27)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::radialDistanceUnit"))) (kind "attribute") (name "radialDistanceUnit") (declared-name "radialDistanceUnit") (range (start (line 228) (character 8)) (end (line 228) (character 50))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::zUnit"))) (kind "attribute") (name "zUnit") (declared-name "zUnit") (range (start (line 230) (character 8)) (end (line 230) (character 37))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientUnit"))) (kind "attribute def") (name "DampingCoefficientUnit") (declared-name "DampingCoefficientUnit") (range (start (line 1067) (character 4)) (end (line 1067) (character 252))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 1068) (character 8)) (end (line 1068) (character 105))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 1069) (character 8)) (end (line 1069) (character 82))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 1069) (character 22)) (end (line 1069) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue"))) (kind "attribute def") (name "DampingCoefficientValue") (declared-name "DampingCoefficientValue") (range (start (line 1048) (character 4)) (end (line 1048) (character 573))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1048) (character 4)) (end (line 1048) (character 573))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 1062) (character 8)) (end (line 1062) (character 54))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "DampingCoefficientUnit") (range none)) (redefinition (reference "mRef") (range (start (line 1062) (character 22)) (end (line 1062) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 1061) (character 8)) (end (line 1061) (character 32))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 1061) (character 22)) (end (line 1061) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector"))) (kind "attribute def") (name "Displacement3dVector") (declared-name "Displacement3dVector") (range (start (line 355) (character 4)) (end (line 355) (character 756))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dVectorQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::_documentation"))) (kind "documentation") (name "") (range (start (line 355) (character 4)) (end (line 355) (character 756))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 368) (character 8)) (end (line 368) (character 38))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 368) (character 22)) (end (line 368) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 369) (character 8)) (end (line 369) (character 56))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "Spatial3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 369) (character 22)) (end (line 369) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::ExtinctionUnit"))) (kind "alias") (name "ExtinctionUnit") (declared-name "ExtinctionUnit") (range (start (line 1114) (character 4)) (end (line 1114) (character 45))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::ExtinctionValue"))) (kind "alias") (name "ExtinctionValue") (declared-name "ExtinctionValue") (range (start (line 1115) (character 4)) (end (line 1115) (character 47))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyUnit"))) (kind "attribute def") (name "FrequencyUnit") (declared-name "FrequencyUnit") (range (start (line 853) (character 4)) (end (line 853) (character 243))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 854) (character 8)) (end (line 854) (character 105))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 855) (character 8)) (end (line 855) (character 82))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 855) (character 22)) (end (line 855) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue"))) (kind "attribute def") (name "FrequencyValue") (declared-name "FrequencyValue") (range (start (line 834) (character 4)) (end (line 834) (character 590))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::_documentation"))) (kind "documentation") (name "") (range (start (line 834) (character 4)) (end (line 834) (character 590))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 848) (character 8)) (end (line 848) (character 45))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "FrequencyUnit") (range none)) (redefinition (reference "mRef") (range (start (line 848) (character 22)) (end (line 848) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 847) (character 8)) (end (line 847) (character 32))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 847) (character 22)) (end (line 847) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::LogarithmicDecrementValue"))) (kind "attribute def") (name "LogarithmicDecrementValue") (declared-name "LogarithmicDecrementValue") (range (start (line 1073) (character 4)) (end (line 1073) (character 515))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::LogarithmicDecrementValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1073) (character 4)) (end (line 1073) (character 515))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::LogarithmicDecrementValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientUnit"))) (kind "attribute def") (name "PhaseCoefficientUnit") (declared-name "PhaseCoefficientUnit") (range (start (line 1138) (character 4)) (end (line 1138) (character 246))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 1139) (character 8)) (end (line 1139) (character 103))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 1140) (character 8)) (end (line 1140) (character 80))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 1140) (character 22)) (end (line 1140) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue"))) (kind "attribute def") (name "PhaseCoefficientValue") (declared-name "PhaseCoefficientValue") (range (start (line 1119) (character 4)) (end (line 1119) (character 756))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1119) (character 4)) (end (line 1119) (character 756))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 1133) (character 8)) (end (line 1133) (character 52))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "PhaseCoefficientUnit") (range none)) (redefinition (reference "mRef") (range (start (line 1133) (character 22)) (end (line 1133) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 1132) (character 8)) (end (line 1132) (character 32))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 1132) (character 22)) (end (line 1132) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseSpeedUnit"))) (kind "alias") (name "PhaseSpeedUnit") (declared-name "PhaseSpeedUnit") (range (start (line 1025) (character 4)) (end (line 1025) (character 47))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseSpeedValue"))) (kind "alias") (name "PhaseSpeedValue") (declared-name "PhaseSpeedValue") (range (start (line 1026) (character 4)) (end (line 1026) (character 49))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit"))) (kind "attribute def") (name "PhaseVelocityUnit") (declared-name "PhaseVelocityUnit") (range (start (line 1019) (character 4)) (end (line 1019) (character 362))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 1021) (character 8)) (end (line 1021) (character 105))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 1020) (character 8)) (end (line 1020) (character 102))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 1022) (character 8)) (end (line 1022) (character 94))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 1022) (character 22)) (end (line 1022) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue"))) (kind "attribute def") (name "PhaseVelocityValue") (declared-name "PhaseVelocityValue") (range (start (line 1000) (character 4)) (end (line 1000) (character 948))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1000) (character 4)) (end (line 1000) (character 948))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 1014) (character 8)) (end (line 1014) (character 49))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "PhaseVelocityUnit") (range none)) (redefinition (reference "mRef") (range (start (line 1014) (character 22)) (end (line 1014) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 1013) (character 8)) (end (line 1013) (character 32))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 1013) (character 22)) (end (line 1013) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PlaneAngleUnit"))) (kind "alias") (name "PlaneAngleUnit") (declared-name "PlaneAngleUnit") (range (start (line 512) (character 4)) (end (line 512) (character 48))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PlaneAngleValue"))) (kind "alias") (name "PlaneAngleValue") (declared-name "PlaneAngleValue") (range (start (line 513) (character 4)) (end (line 513) (character 50))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector"))) (kind "attribute def") (name "PlanetaryPosition3dVector") (declared-name "PlanetaryPosition3dVector") (range (start (line 346) (character 4)) (end (line 346) (character 377))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "Position3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::altitude"))) (kind "attribute") (name "altitude") (declared-name "altitude") (range (start (line 349) (character 8)) (end (line 349) (character 72))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::latitude"))) (kind "attribute") (name "latitude") (declared-name "latitude") (range (start (line 347) (character 8)) (end (line 347) (character 81))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "AngularMeasureUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::longitude"))) (kind "attribute") (name "longitude") (declared-name "longitude") (range (start (line 348) (character 8)) (end (line 348) (character 83))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "AngularMeasureUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 350) (character 8)) (end (line 350) (character 66))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "PlanetarySpatial3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 350) (character 22)) (end (line 350) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame"))) (kind "attribute def") (name "PlanetarySpatial3dCoordinateFrame") (declared-name "PlanetarySpatial3dCoordinateFrame") (range (start (line 263) (character 5)) (end (line 263) (character 3253))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "Spatial3dCoordinateFrame") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::_documentation"))) (kind "documentation") (name "") (range (start (line 263) (character 5)) (end (line 263) (character 3253))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::altitudeUnit"))) (kind "attribute") (name "altitudeUnit") (declared-name "altitudeUnit") (range (start (line 297) (character 8)) (end (line 297) (character 44))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::isOrthogonal"))) (kind "attribute") (name "isOrthogonal") (declared-name "isOrthogonal") (range (start (line 299) (character 8)) (end (line 299) (character 42))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isOrthogonal") (range (start (line 299) (character 22)) (end (line 299) (character 34)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::latitudeUnit"))) (kind "attribute") (name "latitudeUnit") (declared-name "latitudeUnit") (range (start (line 295) (character 8)) (end (line 295) (character 52))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (typing (reference "AngularMeasureUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::longitudeUnit"))) (kind "attribute") (name "longitudeUnit") (declared-name "longitudeUnit") (range (start (line 296) (character 8)) (end (line 296) (character 53))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (typing (reference "AngularMeasureUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::mRefs"))) (kind "attribute") (name "mRefs") (declared-name "mRefs") (range (start (line 298) (character 8)) (end (line 298) (character 74))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "mRefs") (range (start (line 298) (character 22)) (end (line 298) (character 27)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector"))) (kind "attribute def") (name "Position3dVector") (declared-name "Position3dVector") (range (start (line 303) (character 4)) (end (line 303) (character 722))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dVectorQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::_documentation"))) (kind "documentation") (name "") (range (start (line 303) (character 4)) (end (line 303) (character 722))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 316) (character 8)) (end (line 316) (character 37))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 316) (character 22)) (end (line 316) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 317) (character 8)) (end (line 317) (character 56))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "Spatial3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 317) (character 22)) (end (line 317) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientUnit"))) (kind "attribute def") (name "PropagationCoefficientUnit") (declared-name "PropagationCoefficientUnit") (range (start (line 1163) (character 4)) (end (line 1163) (character 252))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 1164) (character 8)) (end (line 1164) (character 103))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 1165) (character 8)) (end (line 1165) (character 80))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 1165) (character 22)) (end (line 1165) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue"))) (kind "attribute def") (name "PropagationCoefficientValue") (declared-name "PropagationCoefficientValue") (range (start (line 1144) (character 4)) (end (line 1144) (character 782))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1144) (character 4)) (end (line 1144) (character 782))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 1158) (character 8)) (end (line 1158) (character 58))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "PropagationCoefficientUnit") (range none)) (redefinition (reference "mRef") (range (start (line 1158) (character 22)) (end (line 1158) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 1157) (character 8)) (end (line 1157) (character 32))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 1157) (character 22)) (end (line 1157) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::Real"))) (kind "import") (name "Real") (declared-name "Real") (range (start (line 14) (character 4)) (end (line 14) (character 38))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 14) (character 19)) (end (line 14) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit"))) (kind "attribute def") (name "RepetencyUnit") (declared-name "RepetencyUnit") (range (start (line 935) (character 4)) (end (line 935) (character 239))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 936) (character 8)) (end (line 936) (character 103))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 937) (character 8)) (end (line 937) (character 80))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 937) (character 22)) (end (line 937) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue"))) (kind "attribute def") (name "RepetencyValue") (declared-name "RepetencyValue") (range (start (line 916) (character 4)) (end (line 916) (character 597))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::_documentation"))) (kind "documentation") (name "") (range (start (line 916) (character 4)) (end (line 916) (character 597))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 930) (character 8)) (end (line 930) (character 45))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "RepetencyUnit") (range none)) (redefinition (reference "mRef") (range (start (line 930) (character 22)) (end (line 930) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 929) (character 8)) (end (line 929) (character 32))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 929) (character 22)) (end (line 929) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureUnit"))) (kind "attribute def") (name "SolidAngularMeasureUnit") (declared-name "SolidAngularMeasureUnit") (range (start (line 570) (character 4)) (end (line 570) (character 69))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue"))) (kind "attribute def") (name "SolidAngularMeasureValue") (declared-name "SolidAngularMeasureValue") (range (start (line 551) (character 4)) (end (line 551) (character 972))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::_documentation"))) (kind "documentation") (name "") (range (start (line 551) (character 4)) (end (line 551) (character 972))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 565) (character 8)) (end (line 565) (character 55))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "SolidAngularMeasureUnit") (range none)) (redefinition (reference "mRef") (range (start (line 565) (character 22)) (end (line 565) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 564) (character 8)) (end (line 564) (character 32))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 564) (character 22)) (end (line 564) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame"))) (kind "attribute def") (name "Spatial3dCoordinateFrame") (declared-name "Spatial3dCoordinateFrame") (range (start (line 160) (character 4)) (end (line 160) (character 198))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "3dCoordinateFrame") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame::_documentation"))) (kind "documentation") (name "") (range (start (line 160) (character 4)) (end (line 160) (character 198))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame::isBound"))) (kind "attribute") (name "isBound") (declared-name "isBound") (range (start (line 165) (character 8)) (end (line 165) (character 37))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isBound") (range (start (line 165) (character 22)) (end (line 165) (character 29)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit"))) (kind "attribute def") (name "SpeedUnit") (declared-name "SpeedUnit") (range (start (line 626) (character 4)) (end (line 626) (character 354))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 628) (character 8)) (end (line 628) (character 105))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 627) (character 8)) (end (line 627) (character 102))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 629) (character 8)) (end (line 629) (character 94))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 629) (character 22)) (end (line 629) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue"))) (kind "attribute def") (name "SpeedValue") (declared-name "SpeedValue") (range (start (line 607) (character 4)) (end (line 607) (character 508))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::_documentation"))) (kind "documentation") (name "") (range (start (line 607) (character 4)) (end (line 607) (character 508))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 621) (character 8)) (end (line 621) (character 41))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "SpeedUnit") (range none)) (redefinition (reference "mRef") (range (start (line 621) (character 22)) (end (line 621) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 620) (character 8)) (end (line 620) (character 32))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 620) (character 22)) (end (line 620) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector"))) (kind "attribute def") (name "SphericalDisplacement3dVector") (declared-name "SphericalDisplacement3dVector") (range (start (line 390) (character 4)) (end (line 390) (character 393))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "Displacement3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::azimuth"))) (kind "attribute") (name "azimuth") (declared-name "azimuth") (range (start (line 393) (character 8)) (end (line 393) (character 81))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "AngularMeasureUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::inclination"))) (kind "attribute") (name "inclination") (declared-name "inclination") (range (start (line 392) (character 8)) (end (line 392) (character 85))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "AngularMeasureUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 394) (character 8)) (end (line 394) (character 66))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "SphericalSpatial3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 394) (character 22)) (end (line 394) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::radialDistance"))) (kind "attribute") (name "radialDistance") (declared-name "radialDistance") (range (start (line 391) (character 8)) (end (line 391) (character 78))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector"))) (kind "attribute def") (name "SphericalPosition3dVector") (declared-name "SphericalPosition3dVector") (range (start (line 338) (character 4)) (end (line 338) (character 385))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "Position3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::azimuth"))) (kind "attribute") (name "azimuth") (declared-name "azimuth") (range (start (line 341) (character 8)) (end (line 341) (character 81))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "AngularMeasureUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::inclination"))) (kind "attribute") (name "inclination") (declared-name "inclination") (range (start (line 340) (character 8)) (end (line 340) (character 85))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "AngularMeasureUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 342) (character 8)) (end (line 342) (character 66))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "SphericalSpatial3dCoordinateFrame") (range none)) (redefinition (reference "mRef") (range (start (line 342) (character 22)) (end (line 342) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::radialDistance"))) (kind "attribute") (name "radialDistance") (declared-name "radialDistance") (range (start (line 339) (character 8)) (end (line 339) (character 78))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame"))) (kind "attribute def") (name "SphericalSpatial3dCoordinateFrame") (declared-name "SphericalSpatial3dCoordinateFrame") (range (start (line 235) (character 4)) (end (line 235) (character 1950))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "Spatial3dCoordinateFrame") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::_documentation"))) (kind "documentation") (name "") (range (start (line 235) (character 4)) (end (line 235) (character 1950))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::azimuthUnit"))) (kind "attribute") (name "azimuthUnit") (declared-name "azimuthUnit") (range (start (line 258) (character 8)) (end (line 258) (character 51))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (typing (reference "AngularMeasureUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::inclinationUnit"))) (kind "attribute") (name "inclinationUnit") (declared-name "inclinationUnit") (range (start (line 257) (character 8)) (end (line 257) (character 55))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (typing (reference "AngularMeasureUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::isOrthogonal"))) (kind "attribute") (name "isOrthogonal") (declared-name "isOrthogonal") (range (start (line 260) (character 8)) (end (line 260) (character 42))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "isOrthogonal") (range (start (line 260) (character 22)) (end (line 260) (character 34)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::mRefs"))) (kind "attribute") (name "mRefs") (declared-name "mRefs") (range (start (line 259) (character 8)) (end (line 259) (character 81))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "mRefs") (range (start (line 259) (character 22)) (end (line 259) (character 27)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::radialDistanceUnit"))) (kind "attribute") (name "radialDistanceUnit") (declared-name "radialDistanceUnit") (range (start (line 256) (character 8)) (end (line 256) (character 50))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (typing (reference "LengthUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::TimeUnit"))) (kind "alias") (name "TimeUnit") (declared-name "TimeUnit") (range (start (line 576) (character 4)) (end (line 576) (character 36))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::TimeValue"))) (kind "alias") (name "TimeValue") (declared-name "TimeValue") (range (start (line 577) (character 4)) (end (line 577) (character 38))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::VolumeUnit"))) (kind "attribute def") (name "VolumeUnit") (declared-name "VolumeUnit") (range (start (line 484) (character 4)) (end (line 484) (character 235))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::VolumeUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 485) (character 8)) (end (line 485) (character 102))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::VolumeUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::VolumeUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 486) (character 8)) (end (line 486) (character 80))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::VolumeUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 486) (character 22)) (end (line 486) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue"))) (kind "attribute def") (name "VolumeValue") (declared-name "VolumeValue") (range (start (line 465) (character 4)) (end (line 465) (character 708))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::_documentation"))) (kind "documentation") (name "") (range (start (line 465) (character 4)) (end (line 465) (character 708))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 479) (character 8)) (end (line 479) (character 42))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "VolumeUnit") (range none)) (redefinition (reference "mRef") (range (start (line 479) (character 22)) (end (line 479) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 478) (character 8)) (end (line 478) (character 32))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 478) (character 22)) (end (line 478) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::WavenumberUnit"))) (kind "alias") (name "WavenumberUnit") (declared-name "WavenumberUnit") (range (start (line 940) (character 4)) (end (line 940) (character 43))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::WavenumberValue"))) (kind "alias") (name "WavenumberValue") (declared-name "WavenumberValue") (range (start (line 941) (character 4)) (end (line 941) (character 45))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 54699))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::acceleration"))) (kind "attribute def") (name "acceleration") (declared-name "acceleration") (range (start (line 650) (character 4)) (end (line 650) (character 79))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "AccelerationValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::altitude"))) (kind "alias") (name "altitude") (declared-name "altitude") (range (start (line 58) (character 4)) (end (line 58) (character 30))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::angularAcceleration"))) (kind "attribute def") (name "angularAcceleration") (declared-name "angularAcceleration") (range (start (line 751) (character 4)) (end (line 751) (character 93))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "AngularAccelerationValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::angularDisplacement"))) (kind "alias") (name "angularDisplacement") (declared-name "angularDisplacement") (range (start (line 532) (character 4)) (end (line 532) (character 57))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::angularFrequency"))) (kind "attribute def") (name "angularFrequency") (declared-name "angularFrequency") (range (start (line 892) (character 4)) (end (line 892) (character 87))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "AngularFrequencyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::angularMeasure"))) (kind "attribute def") (name "angularMeasure") (declared-name "angularMeasure") (range (start (line 507) (character 4)) (end (line 507) (character 83))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "AngularMeasureValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::angularRepetency"))) (kind "attribute def") (name "angularRepetency") (declared-name "angularRepetency") (range (start (line 988) (character 4)) (end (line 988) (character 87))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "AngularRepetencyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::angularVelocity"))) (kind "attribute def") (name "angularVelocity") (declared-name "angularVelocity") (range (start (line 701) (character 4)) (end (line 701) (character 85))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "AngularVelocityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::angularWavenumber"))) (kind "alias") (name "angularWavenumber") (declared-name "angularWavenumber") (range (start (line 997) (character 4)) (end (line 997) (character 49))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::arcLength"))) (kind "alias") (name "arcLength") (declared-name "arcLength") (range (start (line 124) (character 4)) (end (line 124) (character 35))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::area"))) (kind "attribute def") (name "area") (declared-name "area") (range (start (line 457) (character 4)) (end (line 457) (character 63))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "AreaValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::attenuation"))) (kind "attribute def") (name "attenuation") (declared-name "attenuation") (range (start (line 1107) (character 4)) (end (line 1107) (character 77))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "AttenuationValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::breadth"))) (kind "alias") (name "breadth") (declared-name "breadth") (range (start (line 38) (character 4)) (end (line 38) (character 28))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::cartesianAcceleration3dVector"))) (kind "attribute def") (name "cartesianAcceleration3dVector") (declared-name "cartesianAcceleration3dVector") (range (start (line 675) (character 4)) (end (line 675) (character 95))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "CartesianAcceleration3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::cartesianAngularAcceleration3dVector"))) (kind "attribute def") (name "cartesianAngularAcceleration3dVector") (declared-name "cartesianAngularAcceleration3dVector") (range (start (line 775) (character 4)) (end (line 775) (character 109))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "CartesianAngularAcceleration3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::cartesianAngularVelocity3dVector"))) (kind "attribute def") (name "cartesianAngularVelocity3dVector") (declared-name "cartesianAngularVelocity3dVector") (range (start (line 725) (character 4)) (end (line 725) (character 101))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "CartesianAngularVelocity3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::cartesianDisplacement3dVector"))) (kind "attribute def") (name "cartesianDisplacement3dVector") (declared-name "cartesianDisplacement3dVector") (range (start (line 380) (character 4)) (end (line 380) (character 100))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "CartesianDisplacement3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::cartesianPosition3dVector"))) (kind "attribute def") (name "cartesianPosition3dVector") (declared-name "cartesianPosition3dVector") (range (start (line 328) (character 4)) (end (line 328) (character 88))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "CartesianPosition3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::cartesianVelocity3dVector"))) (kind "attribute def") (name "cartesianVelocity3dVector") (declared-name "cartesianVelocity3dVector") (range (start (line 598) (character 4)) (end (line 598) (character 87))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "CartesianVelocity3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::cartesianWave3dVector"))) (kind "attribute def") (name "cartesianWave3dVector") (declared-name "cartesianWave3dVector") (range (start (line 962) (character 4)) (end (line 962) (character 79))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "CartesianWave3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::curvature"))) (kind "attribute def") (name "curvature") (declared-name "curvature") (range (start (line 432) (character 4)) (end (line 432) (character 73))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "CurvatureValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::cylindricalDisplacement3dVector"))) (kind "attribute def") (name "cylindricalDisplacement3dVector") (declared-name "cylindricalDisplacement3dVector") (range (start (line 388) (character 4)) (end (line 388) (character 104))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "CylindricalDisplacement3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::cylindricalPosition3dVector"))) (kind "attribute def") (name "cylindricalPosition3dVector") (declared-name "cylindricalPosition3dVector") (range (start (line 336) (character 4)) (end (line 336) (character 92))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "CylindricalPosition3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::dampingCoefficient"))) (kind "attribute def") (name "dampingCoefficient") (declared-name "dampingCoefficient") (range (start (line 1065) (character 4)) (end (line 1065) (character 91))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "DampingCoefficientValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::depth"))) (kind "alias") (name "depth") (declared-name "depth") (range (start (line 56) (character 4)) (end (line 56) (character 27))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::diameter"))) (kind "attribute def") (name "diameter") (declared-name "diameter") (range (start (line 77) (character 4)) (end (line 77) (character 475))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::diameter::_documentation"))) (kind "documentation") (name "") (range (start (line 77) (character 4)) (end (line 77) (character 475))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::diameter"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::displacement3dVector"))) (kind "attribute def") (name "displacement3dVector") (declared-name "displacement3dVector") (range (start (line 372) (character 4)) (end (line 372) (character 77))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "Displacement3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::distance"))) (kind "attribute def") (name "distance") (declared-name "distance") (range (start (line 127) (character 4)) (end (line 127) (character 658))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::distance::_documentation"))) (kind "documentation") (name "") (range (start (line 127) (character 4)) (end (line 127) (character 658))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::distance"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::extinction"))) (kind "alias") (name "extinction") (declared-name "extinction") (range (start (line 1116) (character 4)) (end (line 1116) (character 37))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::frequency"))) (kind "attribute def") (name "frequency") (declared-name "frequency") (range (start (line 851) (character 4)) (end (line 851) (character 73))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "FrequencyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::groupSpeed"))) (kind "alias") (name "groupSpeed") (declared-name "groupSpeed") (range (start (line 1045) (character 4)) (end (line 1045) (character 39))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::groupVelocity"))) (kind "attribute def") (name "groupVelocity") (declared-name "groupVelocity") (range (start (line 1030) (character 4)) (end (line 1030) (character 654))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "SpeedValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::groupVelocity::_documentation"))) (kind "documentation") (name "") (range (start (line 1030) (character 4)) (end (line 1030) (character 654))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::groupVelocity"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::height"))) (kind "attribute def") (name "height") (declared-name "height") (range (start (line 41) (character 4)) (end (line 41) (character 746))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::height::_documentation"))) (kind "documentation") (name "") (range (start (line 41) (character 4)) (end (line 41) (character 746))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::height"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::logarithmicDecrement"))) (kind "attribute def") (name "logarithmicDecrement") (declared-name "logarithmicDecrement") (range (start (line 1087) (character 4)) (end (line 1087) (character 82))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "LogarithmicDecrementValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::pathLength"))) (kind "attribute def") (name "pathLength") (declared-name "pathLength") (range (start (line 109) (character 4)) (end (line 109) (character 724))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::pathLength::_documentation"))) (kind "documentation") (name "") (range (start (line 109) (character 4)) (end (line 109) (character 724))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::pathLength"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::period"))) (kind "alias") (name "period") (declared-name "period") (range (start (line 799) (character 4)) (end (line 799) (character 36))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::periodDuration"))) (kind "attribute def") (name "periodDuration") (declared-name "periodDuration") (range (start (line 784) (character 4)) (end (line 784) (character 550))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "DurationValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::periodDuration::_documentation"))) (kind "documentation") (name "") (range (start (line 784) (character 4)) (end (line 784) (character 550))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::periodDuration"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::phaseAngle"))) (kind "attribute def") (name "phaseAngle") (declared-name "phaseAngle") (range (start (line 535) (character 4)) (end (line 535) (character 692))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "AngularMeasureValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::phaseAngle::_documentation"))) (kind "documentation") (name "") (range (start (line 535) (character 4)) (end (line 535) (character 692))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::phaseAngle"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::phaseCoefficient"))) (kind "attribute def") (name "phaseCoefficient") (declared-name "phaseCoefficient") (range (start (line 1136) (character 4)) (end (line 1136) (character 87))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "PhaseCoefficientValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::phaseSpeed"))) (kind "alias") (name "phaseSpeed") (declared-name "phaseSpeed") (range (start (line 1027) (character 4)) (end (line 1027) (character 39))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::phaseVelocity"))) (kind "attribute def") (name "phaseVelocity") (declared-name "phaseVelocity") (range (start (line 1017) (character 4)) (end (line 1017) (character 81))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "PhaseVelocityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::planeAngle"))) (kind "alias") (name "planeAngle") (declared-name "planeAngle") (range (start (line 514) (character 4)) (end (line 514) (character 40))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::planetaryPosition3dVector"))) (kind "attribute def") (name "planetaryPosition3dVector") (declared-name "planetaryPosition3dVector") (range (start (line 352) (character 4)) (end (line 352) (character 88))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "PlanetaryPosition3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::position3dVector"))) (kind "attribute def") (name "position3dVector") (declared-name "position3dVector") (range (start (line 320) (character 4)) (end (line 320) (character 69))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "Position3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::propagationCoefficient"))) (kind "attribute def") (name "propagationCoefficient") (declared-name "propagationCoefficient") (range (start (line 1161) (character 4)) (end (line 1161) (character 99))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "PropagationCoefficientValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::radialDistance"))) (kind "attribute def") (name "radialDistance") (declared-name "radialDistance") (range (start (line 143) (character 4)) (end (line 143) (character 782))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::radialDistance::_documentation"))) (kind "documentation") (name "") (range (start (line 143) (character 4)) (end (line 143) (character 782))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::radialDistance"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::radius"))) (kind "attribute def") (name "radius") (declared-name "radius") (range (start (line 93) (character 4)) (end (line 93) (character 450))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::radius::_documentation"))) (kind "documentation") (name "") (range (start (line 93) (character 4)) (end (line 93) (character 450))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::radius"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::radiusOfCurvature"))) (kind "attribute def") (name "radiusOfCurvature") (declared-name "radiusOfCurvature") (range (start (line 399) (character 4)) (end (line 399) (character 622))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::radiusOfCurvature::_documentation"))) (kind "documentation") (name "") (range (start (line 399) (character 4)) (end (line 399) (character 622))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::radiusOfCurvature"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::repetency"))) (kind "attribute def") (name "repetency") (declared-name "repetency") (range (start (line 933) (character 4)) (end (line 933) (character 73))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "RepetencyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::rotation"))) (kind "attribute def") (name "rotation") (declared-name "rotation") (range (start (line 818) (character 4)) (end (line 818) (character 629))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "CountValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::rotation::_documentation"))) (kind "documentation") (name "") (range (start (line 818) (character 4)) (end (line 818) (character 629))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::rotation"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::rotationalDisplacement"))) (kind "attribute def") (name "rotationalDisplacement") (declared-name "rotationalDisplacement") (range (start (line 517) (character 4)) (end (line 517) (character 1013))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "AngularMeasureValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::rotationalDisplacement::_documentation"))) (kind "documentation") (name "") (range (start (line 517) (character 4)) (end (line 517) (character 1013))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::rotationalDisplacement"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::rotationalFrequency"))) (kind "attribute def") (name "rotationalFrequency") (declared-name "rotationalFrequency") (range (start (line 859) (character 4)) (end (line 859) (character 621))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "FrequencyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::rotationalFrequency::_documentation"))) (kind "documentation") (name "") (range (start (line 859) (character 4)) (end (line 859) (character 621))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::rotationalFrequency"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::solidAngularMeasure"))) (kind "attribute def") (name "solidAngularMeasure") (declared-name "solidAngularMeasure") (range (start (line 568) (character 4)) (end (line 568) (character 93))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "SolidAngularMeasureValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::speed"))) (kind "attribute def") (name "speed") (declared-name "speed") (range (start (line 624) (character 4)) (end (line 624) (character 65))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "SpeedValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::sphericalDisplacement3dVector"))) (kind "attribute def") (name "sphericalDisplacement3dVector") (declared-name "sphericalDisplacement3dVector") (range (start (line 396) (character 4)) (end (line 396) (character 100))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "SphericalDisplacement3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::sphericalPosition3dVector"))) (kind "attribute def") (name "sphericalPosition3dVector") (declared-name "sphericalPosition3dVector") (range (start (line 344) (character 4)) (end (line 344) (character 88))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "SphericalPosition3dVector") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::thickness"))) (kind "attribute def") (name "thickness") (declared-name "thickness") (range (start (line 61) (character 4)) (end (line 61) (character 447))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::thickness::_documentation"))) (kind "documentation") (name "") (range (start (line 61) (character 4)) (end (line 61) (character 447))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::thickness"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::time"))) (kind "alias") (name "time") (declared-name "time") (range (start (line 578) (character 4)) (end (line 578) (character 28))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::timeConstant"))) (kind "attribute def") (name "timeConstant") (declared-name "timeConstant") (range (start (line 802) (character 4)) (end (line 802) (character 757))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "DurationValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::timeConstant::_documentation"))) (kind "documentation") (name "") (range (start (line 802) (character 4)) (end (line 802) (character 757))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::timeConstant"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame"))) (kind "attribute def") (name "universalCartesianSpatial3dCoordinateFrame") (declared-name "universalCartesianSpatial3dCoordinateFrame") (range (start (line 187) (character 4)) (end (line 187) (character 737))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "CartesianSpatial3dCoordinateFrame") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::_documentation"))) (kind "documentation") (name "") (range (start (line 187) (character 4)) (end (line 187) (character 737))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::mRefs"))) (kind "attribute") (name "mRefs") (declared-name "mRefs") (range (start (line 193) (character 8)) (end (line 193) (character 222))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "mRefs") (range (start (line 193) (character 22)) (end (line 193) (character 27)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::mRefs::_documentation"))) (kind "documentation") (name "") (range (start (line 193) (character 8)) (end (line 193) (character 222))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::mRefs"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::transformation"))) (kind "attribute") (name "transformation") (declared-name "transformation") (range (start (line 199) (character 8)) (end (line 199) (character 219))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "transformation") (range (start (line 199) (character 22)) (end (line 199) (character 36)))))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::transformation::_documentation"))) (kind "documentation") (name "") (range (start (line 199) (character 8)) (end (line 199) (character 219))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::transformation"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::volume"))) (kind "attribute def") (name "volume") (declared-name "volume") (range (start (line 482) (character 4)) (end (line 482) (character 67))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "VolumeValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::wavelength"))) (kind "attribute def") (name "wavelength") (declared-name "wavelength") (range (start (line 900) (character 4)) (end (line 900) (character 457))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::wavelength::_documentation"))) (kind "documentation") (name "") (range (start (line 900) (character 4)) (end (line 900) (character 457))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::wavelength"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::wavenumber"))) (kind "alias") (name "wavenumber") (declared-name "wavenumber") (range (start (line 942) (character 4)) (end (line 942) (character 35))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::width"))) (kind "attribute def") (name "width") (declared-name "width") (range (start (line 23) (character 4)) (end (line 23) (character 593))) (parent (node (document "d0") (qualified-name "ISQSpaceTime"))) (authored (membership (kind Owning)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQSpaceTime::width::_documentation"))) (kind "documentation") (name "") (range (start (line 23) (character 4)) (end (line 23) (character 593))) (parent (node (document "d0") (qualified-name "ISQSpaceTime::width"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Quantities::*") (range (start (line 15) (character 19)) (end (line 15) (character 29))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "MeasurementReferences::*") (range (start (line 16) (character 19)) (end (line 16) (character 40))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::*#import2"))) (kind namespaceImport) (ordinal 0)) (authored-target "ISQBase::*") (range (start (line 17) (character 19)) (end (line 17) (character 26))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 655) (character 22)) (end (line 655) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "AccelerationUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 647) (character 22)) (end (line 647) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 646) (character 22)) (end (line 646) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 755) (character 22)) (end (line 755) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularAccelerationUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 748) (character 22)) (end (line 748) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 747) (character 22)) (end (line 747) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 896) (character 22)) (end (line 896) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularFrequencyUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 889) (character 22)) (end (line 889) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 888) (character 22)) (end (line 888) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularMeasureUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 504) (character 22)) (end (line 504) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 503) (character 22)) (end (line 503) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 992) (character 22)) (end (line 992) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularRepetencyUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 985) (character 22)) (end (line 985) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 984) (character 22)) (end (line 984) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 705) (character 22)) (end (line 705) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularVelocityUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 698) (character 22)) (end (line 698) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 697) (character 22)) (end (line 697) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AreaUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AreaUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AreaUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 461) (character 22)) (end (line 461) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AreaUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "AreaUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AreaUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 454) (character 22)) (end (line 454) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 453) (character 22)) (end (line 453) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 1111) (character 22)) (end (line 1111) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "AttenuationUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 1104) (character 22)) (end (line 1104) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 1103) (character 22)) (end (line 1103) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame"))) (kind featureTyping) (ordinal 0)) (authored-target "3dCoordinateFrame") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 678) (character 22)) (end (line 678) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::isOrthogonal"))) (kind redefinition) (ordinal 0)) (authored-target "isOrthogonal") (range (start (line 679) (character 22)) (end (line 679) (character 34))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::isOrthogonal")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::mRefs"))) (kind featureTyping) (ordinal 0)) (authored-target "AccelerationUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)) (authored-target "mRefs") (range (start (line 680) (character 22)) (end (line 680) (character 27))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::mRefs")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "3dVectorQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 671) (character 22)) (end (line 671) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianAcceleration3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 672) (character 22)) (end (line 672) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame"))) (kind featureTyping) (ordinal 0)) (authored-target "3dCoordinateFrame") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 778) (character 22)) (end (line 778) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::isOrthogonal"))) (kind redefinition) (ordinal 0)) (authored-target "isOrthogonal") (range (start (line 779) (character 22)) (end (line 779) (character 34))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::isOrthogonal")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::mRefs"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularAccelerationUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)) (authored-target "mRefs") (range (start (line 780) (character 22)) (end (line 780) (character 27))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::mRefs")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "3dVectorQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 771) (character 22)) (end (line 771) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianAngularAcceleration3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 772) (character 22)) (end (line 772) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame"))) (kind featureTyping) (ordinal 0)) (authored-target "3dCoordinateFrame") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 728) (character 22)) (end (line 728) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::isOrthogonal"))) (kind redefinition) (ordinal 0)) (authored-target "isOrthogonal") (range (start (line 729) (character 22)) (end (line 729) (character 34))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::isOrthogonal")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::mRefs"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularVelocityUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)) (authored-target "mRefs") (range (start (line 730) (character 22)) (end (line 730) (character 27))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::mRefs")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "3dVectorQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 721) (character 22)) (end (line 721) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianAngularVelocity3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 722) (character 22)) (end (line 722) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "Displacement3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianSpatial3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 378) (character 22)) (end (line 378) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector::x"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector::y"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector::z"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "Position3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianSpatial3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 326) (character 22)) (end (line 326) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector::x"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector::y"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector::z"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame"))) (kind featureTyping) (ordinal 0)) (authored-target "Spatial3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::isOrthogonal"))) (kind redefinition) (ordinal 0)) (authored-target "isOrthogonal") (range (start (line 184) (character 22)) (end (line 184) (character 34))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::isOrthogonal")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::mRefs"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)) (authored-target "mRefs") (range (start (line 183) (character 22)) (end (line 183) (character 27))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::mRefs")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::xUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::yUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::zUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame"))) (kind featureTyping) (ordinal 0)) (authored-target "3dCoordinateFrame") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 601) (character 22)) (end (line 601) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::isOrthogonal"))) (kind redefinition) (ordinal 0)) (authored-target "isOrthogonal") (range (start (line 602) (character 22)) (end (line 602) (character 34))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::isOrthogonal")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::mRefs"))) (kind featureTyping) (ordinal 0)) (authored-target "SpeedUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)) (authored-target "mRefs") (range (start (line 603) (character 22)) (end (line 603) (character 27))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::mRefs")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "3dVectorQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 594) (character 22)) (end (line 594) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianVelocity3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 595) (character 22)) (end (line 595) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "3dVectorQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 958) (character 22)) (end (line 958) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianWaveVector3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 959) (character 22)) (end (line 959) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame"))) (kind featureTyping) (ordinal 0)) (authored-target "3dCoordinateFrame") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 965) (character 22)) (end (line 965) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::isOrthogonal"))) (kind redefinition) (ordinal 0)) (authored-target "isOrthogonal") (range (start (line 966) (character 22)) (end (line 966) (character 34))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::isOrthogonal")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::mRefs"))) (kind featureTyping) (ordinal 0)) (authored-target "RepetencyUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)) (authored-target "mRefs") (range (start (line 967) (character 22)) (end (line 967) (character 27))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::mRefs")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 436) (character 22)) (end (line 436) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CurvatureUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 429) (character 22)) (end (line 429) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 428) (character 22)) (end (line 428) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "Displacement3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::azimuth"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularMeasureUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::height"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CylindricalSpatial3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 386) (character 22)) (end (line 386) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::radialDistance"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "Position3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::azimuth"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularMeasureUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::height"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CylindricalSpatial3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 334) (character 22)) (end (line 334) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::radialDistance"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame"))) (kind featureTyping) (ordinal 0)) (authored-target "Spatial3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::azimuthUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularMeasureUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::isOrthogonal"))) (kind redefinition) (ordinal 0)) (authored-target "isOrthogonal") (range (start (line 232) (character 22)) (end (line 232) (character 34))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::isOrthogonal")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)) (authored-target "mRefs") (range (start (line 231) (character 22)) (end (line 231) (character 27))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::mRefs")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::radialDistanceUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::zUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 1069) (character 22)) (end (line 1069) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "DampingCoefficientUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 1062) (character 22)) (end (line 1062) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 1061) (character 22)) (end (line 1061) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "3dVectorQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 368) (character 22)) (end (line 368) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "Spatial3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 369) (character 22)) (end (line 369) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 855) (character 22)) (end (line 855) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "FrequencyUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 848) (character 22)) (end (line 848) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 847) (character 22)) (end (line 847) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::LogarithmicDecrementValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 1140) (character 22)) (end (line 1140) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "PhaseCoefficientUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 1133) (character 22)) (end (line 1133) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 1132) (character 22)) (end (line 1132) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 1022) (character 22)) (end (line 1022) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "PhaseVelocityUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 1014) (character 22)) (end (line 1014) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 1013) (character 22)) (end (line 1013) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "Position3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::altitude"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::latitude"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularMeasureUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::longitude"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularMeasureUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "PlanetarySpatial3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 350) (character 22)) (end (line 350) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame"))) (kind featureTyping) (ordinal 0)) (authored-target "Spatial3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::altitudeUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::isOrthogonal"))) (kind redefinition) (ordinal 0)) (authored-target "isOrthogonal") (range (start (line 299) (character 22)) (end (line 299) (character 34))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::isOrthogonal")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::latitudeUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularMeasureUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::longitudeUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularMeasureUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)) (authored-target "mRefs") (range (start (line 298) (character 22)) (end (line 298) (character 27))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::mRefs")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "3dVectorQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 316) (character 22)) (end (line 316) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "Spatial3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 317) (character 22)) (end (line 317) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 1165) (character 22)) (end (line 1165) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "PropagationCoefficientUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 1158) (character 22)) (end (line 1158) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 1157) (character 22)) (end (line 1157) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (range (start (line 14) (character 19)) (end (line 14) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 937) (character 22)) (end (line 937) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "RepetencyUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 930) (character 22)) (end (line 930) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 929) (character 22)) (end (line 929) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "SolidAngularMeasureUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 565) (character 22)) (end (line 565) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 564) (character 22)) (end (line 564) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame"))) (kind featureTyping) (ordinal 0)) (authored-target "3dCoordinateFrame") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame::isBound"))) (kind redefinition) (ordinal 0)) (authored-target "isBound") (range (start (line 165) (character 22)) (end (line 165) (character 29))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame::isBound")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 629) (character 22)) (end (line 629) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "SpeedUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 621) (character 22)) (end (line 621) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 620) (character 22)) (end (line 620) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "Displacement3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::azimuth"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularMeasureUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::inclination"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularMeasureUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "SphericalSpatial3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 394) (character 22)) (end (line 394) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::radialDistance"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "Position3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::azimuth"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularMeasureUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::inclination"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularMeasureUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "SphericalSpatial3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 342) (character 22)) (end (line 342) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::radialDistance"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame"))) (kind featureTyping) (ordinal 0)) (authored-target "Spatial3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::azimuthUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularMeasureUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::inclinationUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularMeasureUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::isOrthogonal"))) (kind redefinition) (ordinal 0)) (authored-target "isOrthogonal") (range (start (line 260) (character 22)) (end (line 260) (character 34))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::isOrthogonal")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)) (authored-target "mRefs") (range (start (line 259) (character 22)) (end (line 259) (character 27))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::mRefs")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::radialDistanceUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::VolumeUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::VolumeUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::VolumeUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 486) (character 22)) (end (line 486) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::VolumeUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "VolumeUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::VolumeUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 479) (character 22)) (end (line 479) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 478) (character 22)) (end (line 478) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::acceleration"))) (kind featureTyping) (ordinal 0)) (authored-target "AccelerationValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::angularAcceleration"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularAccelerationValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::angularFrequency"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularFrequencyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::angularMeasure"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularMeasureValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::angularRepetency"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularRepetencyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::angularVelocity"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularVelocityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::area"))) (kind featureTyping) (ordinal 0)) (authored-target "AreaValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::attenuation"))) (kind featureTyping) (ordinal 0)) (authored-target "AttenuationValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::cartesianAcceleration3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianAcceleration3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::cartesianAngularAcceleration3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianAngularAcceleration3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::cartesianAngularVelocity3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianAngularVelocity3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::cartesianDisplacement3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianDisplacement3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::cartesianPosition3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianPosition3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::cartesianVelocity3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianVelocity3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::cartesianWave3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianWave3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::curvature"))) (kind featureTyping) (ordinal 0)) (authored-target "CurvatureValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::cylindricalDisplacement3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "CylindricalDisplacement3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::cylindricalPosition3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "CylindricalPosition3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::dampingCoefficient"))) (kind featureTyping) (ordinal 0)) (authored-target "DampingCoefficientValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::diameter"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::displacement3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "Displacement3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::distance"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::frequency"))) (kind featureTyping) (ordinal 0)) (authored-target "FrequencyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::groupVelocity"))) (kind featureTyping) (ordinal 0)) (authored-target "SpeedValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::height"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::logarithmicDecrement"))) (kind featureTyping) (ordinal 0)) (authored-target "LogarithmicDecrementValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::LogarithmicDecrementValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::pathLength"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::periodDuration"))) (kind featureTyping) (ordinal 0)) (authored-target "DurationValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::phaseAngle"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularMeasureValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::phaseCoefficient"))) (kind featureTyping) (ordinal 0)) (authored-target "PhaseCoefficientValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::phaseVelocity"))) (kind featureTyping) (ordinal 0)) (authored-target "PhaseVelocityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::planetaryPosition3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "PlanetaryPosition3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::position3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "Position3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::propagationCoefficient"))) (kind featureTyping) (ordinal 0)) (authored-target "PropagationCoefficientValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::radialDistance"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::radius"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::radiusOfCurvature"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::repetency"))) (kind featureTyping) (ordinal 0)) (authored-target "RepetencyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::rotation"))) (kind featureTyping) (ordinal 0)) (authored-target "CountValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::rotationalDisplacement"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularMeasureValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::rotationalFrequency"))) (kind featureTyping) (ordinal 0)) (authored-target "FrequencyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::solidAngularMeasure"))) (kind featureTyping) (ordinal 0)) (authored-target "SolidAngularMeasureValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::speed"))) (kind featureTyping) (ordinal 0)) (authored-target "SpeedValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::sphericalDisplacement3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "SphericalDisplacement3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::sphericalPosition3dVector"))) (kind featureTyping) (ordinal 0)) (authored-target "SphericalPosition3dVector") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::thickness"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::timeConstant"))) (kind featureTyping) (ordinal 0)) (authored-target "DurationValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame"))) (kind featureTyping) (ordinal 0)) (authored-target "CartesianSpatial3dCoordinateFrame") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)) (authored-target "mRefs") (range (start (line 193) (character 22)) (end (line 193) (character 27))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::mRefs")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::transformation"))) (kind redefinition) (ordinal 0)) (authored-target "transformation") (range (start (line 199) (character 22)) (end (line 199) (character 36))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::transformation")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::volume"))) (kind featureTyping) (ordinal 0)) (authored-target "VolumeValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::wavelength"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQSpaceTime::width"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::LogarithmicDecrementValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::LogarithmicDecrementValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::diameter::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::diameter"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::distance::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::distance"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::groupVelocity::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::groupVelocity"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::height::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::height"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::pathLength::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::pathLength"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::periodDuration::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::periodDuration"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::phaseAngle::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::phaseAngle"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::radialDistance::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::radialDistance"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::radius::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::radius"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::radiusOfCurvature::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::radiusOfCurvature"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::rotation::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::rotation"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::rotationalDisplacement::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::rotationalDisplacement"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::rotationalFrequency::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::rotationalFrequency"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::thickness::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::thickness"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::timeConstant::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::timeConstant"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::mRefs::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::mRefs"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::transformation::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::transformation"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::wavelength::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::wavelength"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::width::_documentation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::width"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::mRef"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::mRef"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::mRef"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::mRef"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::mRef"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::mRef"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::mRef"))) (provenance authored))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::mRefs"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AreaUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::azimuth"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::azimuth"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::azimuthUnit"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::latitude"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::longitude"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::latitudeUnit"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::longitudeUnit"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::azimuth"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::inclination"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::azimuth"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::inclination"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::azimuthUnit"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::inclinationUnit"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::mRef"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::VolumeUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::acceleration"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::angularAcceleration"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::angularFrequency"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::angularMeasure"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::angularRepetency"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::angularVelocity"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::area"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::attenuation"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::cartesianAcceleration3dVector"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::cartesianAngularAcceleration3dVector"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::cartesianAngularVelocity3dVector"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::cartesianDisplacement3dVector"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::cartesianPosition3dVector"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::cartesianVelocity3dVector"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::cartesianWave3dVector"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::curvature"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::cylindricalDisplacement3dVector"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::cylindricalPosition3dVector"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::dampingCoefficient"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::displacement3dVector"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::frequency"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::groupVelocity"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::logarithmicDecrement"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::LogarithmicDecrementValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::phaseAngle"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::phaseCoefficient"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::phaseVelocity"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::planetaryPosition3dVector"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::position3dVector"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::propagationCoefficient"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::repetency"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::rotationalDisplacement"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::rotationalFrequency"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::solidAngularMeasure"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::speed"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::sphericalDisplacement3dVector"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::sphericalPosition3dVector"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQSpaceTime::volume"))) (to (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue"))) (provenance authored))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::AreaUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AreaUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AreaUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AreaUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::isBound"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::isOrthogonal"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::isOrthogonal"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::isOrthogonal"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::mRefs"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::mRefs"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::mRefs"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::mRefs"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector::isBound"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::isBound"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::isOrthogonal"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::isOrthogonal"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::isOrthogonal"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::mRefs"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::mRefs"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::mRefs"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::mRefs"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector::isBound"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::isBound"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::isOrthogonal"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::isOrthogonal"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::isOrthogonal"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::mRefs"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::mRefs"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::mRefs"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::mRefs"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector::isBound"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::isOrthogonal"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::isOrthogonal"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::isOrthogonal"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::mRefs"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::mRefs"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::isBound"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::isOrthogonal"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::isOrthogonal"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::isOrthogonal"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::mRefs"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::mRefs"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::mRefs"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::mRefs"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector::isBound"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector::isBound"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::isBound"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::isOrthogonal"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::isOrthogonal"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::isOrthogonal"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::mRefs"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::mRefs"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::mRefs"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::mRefs"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::azimuth"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::azimuth"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::azimuth"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::azimuth"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::azimuthUnit"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::azimuthUnit"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::isOrthogonal"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::isOrthogonal"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::isOrthogonal"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::mRefs"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::mRefs"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::isBound"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::latitude"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::latitude"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::longitude"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::longitude"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::isOrthogonal"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::isOrthogonal"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::isOrthogonal"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::latitudeUnit"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::latitudeUnit"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::longitudeUnit"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::longitudeUnit"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::mRefs"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::mRefs"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::isBound"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame::isBound"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame::isBound"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame::isBound"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::azimuth"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::azimuth"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::inclination"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::inclination"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::azimuth"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::azimuth"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::inclination"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::inclination"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::azimuthUnit"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::azimuthUnit"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::inclinationUnit"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::inclinationUnit"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::isOrthogonal"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::isOrthogonal"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::isOrthogonal"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::mRefs"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::mRefs"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::VolumeUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::VolumeUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::VolumeUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::VolumeUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::mRef"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::num"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::acceleration"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::acceleration"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::angularAcceleration"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::angularAcceleration"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::angularFrequency"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::angularFrequency"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::angularMeasure"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::angularMeasure"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::angularRepetency"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::angularRepetency"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::angularVelocity"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::angularVelocity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::area"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::area"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::attenuation"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::attenuation"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::cartesianAcceleration3dVector"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::cartesianAcceleration3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::cartesianAngularAcceleration3dVector"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::cartesianAngularAcceleration3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::cartesianAngularVelocity3dVector"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::cartesianAngularVelocity3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::cartesianDisplacement3dVector"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::cartesianDisplacement3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::cartesianPosition3dVector"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::cartesianPosition3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::cartesianVelocity3dVector"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::cartesianVelocity3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::cartesianWave3dVector"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::cartesianWave3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::curvature"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::curvature"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::cylindricalDisplacement3dVector"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::cylindricalDisplacement3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::cylindricalPosition3dVector"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::cylindricalPosition3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::dampingCoefficient"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::dampingCoefficient"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::displacement3dVector"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::displacement3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::frequency"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::frequency"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::groupVelocity"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::groupVelocity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::logarithmicDecrement"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::LogarithmicDecrementValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::logarithmicDecrement"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::phaseAngle"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::phaseAngle"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::phaseCoefficient"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::phaseCoefficient"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::phaseVelocity"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::phaseVelocity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::planetaryPosition3dVector"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::planetaryPosition3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::position3dVector"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::position3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::propagationCoefficient"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::propagationCoefficient"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::repetency"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::repetency"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::rotationalDisplacement"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::rotationalDisplacement"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::rotationalFrequency"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::rotationalFrequency"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::solidAngularMeasure"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::solidAngularMeasure"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::speed"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::speed"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::sphericalDisplacement3dVector"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::sphericalDisplacement3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::sphericalPosition3dVector"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::sphericalPosition3dVector"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::mRefs"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::mRefs"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::mRefs"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::transformation"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::transformation"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::transformation"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQSpaceTime::volume"))) (target (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQSpaceTime::volume"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AccelerationValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularAccelerationValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularFrequencyValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularMeasureValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularRepetencyValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AngularVelocityValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AreaUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AreaUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AreaUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AreaValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::AttenuationValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::isOrthogonal"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dCoordinateFrame::mRefs"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAcceleration3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::isOrthogonal"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dCoordinateFrame::mRefs"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularAcceleration3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::isOrthogonal"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dCoordinateFrame::mRefs"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianAngularVelocity3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector::x"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector::y"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianDisplacement3dVector::z"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector::x"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector::y"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianPosition3dVector::z"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::isOrthogonal"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::mRefs"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::xUnit"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::yUnit"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianSpatial3dCoordinateFrame::zUnit"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::isOrthogonal"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dCoordinateFrame::mRefs"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianVelocity3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWave3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::isOrthogonal"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CartesianWaveVector3dCoordinateFrame::mRefs"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CurvatureValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::azimuth"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::height"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalDisplacement3dVector::radialDistance"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::azimuth"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::height"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalPosition3dVector::radialDistance"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::azimuthUnit"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::isOrthogonal"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::mRefs"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::radialDistanceUnit"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::CylindricalSpatial3dCoordinateFrame::zUnit"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::DampingCoefficientValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::Displacement3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::FrequencyValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::LogarithmicDecrementValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PhaseCoefficientValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PhaseVelocityValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::altitude"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::latitude"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::longitude"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PlanetaryPosition3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::altitudeUnit"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::isOrthogonal"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::latitudeUnit"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::longitudeUnit"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PlanetarySpatial3dCoordinateFrame::mRefs"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::Position3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::PropagationCoefficientValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::RepetencyValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SolidAngularMeasureValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::Spatial3dCoordinateFrame::isBound"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SpeedUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SpeedValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::azimuth"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::inclination"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalDisplacement3dVector::radialDistance"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::azimuth"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::inclination"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalPosition3dVector::radialDistance"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::azimuthUnit"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::inclinationUnit"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::isOrthogonal"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::mRefs"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::SphericalSpatial3dCoordinateFrame::radialDistanceUnit"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::VolumeUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::VolumeUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::VolumeUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::VolumeValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::acceleration"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::angularAcceleration"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::angularFrequency"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::angularMeasure"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::angularRepetency"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::angularVelocity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::area"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::attenuation"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::cartesianAcceleration3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::cartesianAngularAcceleration3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::cartesianAngularVelocity3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::cartesianDisplacement3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::cartesianPosition3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::cartesianVelocity3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::cartesianWave3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::curvature"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::cylindricalDisplacement3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::cylindricalPosition3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::dampingCoefficient"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::diameter"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::displacement3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::distance"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::frequency"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::groupVelocity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::height"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::logarithmicDecrement"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::pathLength"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::periodDuration"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::phaseAngle"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::phaseCoefficient"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::phaseVelocity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::planetaryPosition3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::position3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::propagationCoefficient"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::radialDistance"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::radius"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::radiusOfCurvature"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::repetency"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::rotation"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::rotationalDisplacement"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::rotationalFrequency"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::solidAngularMeasure"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::speed"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::sphericalDisplacement3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::sphericalPosition3dVector"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::thickness"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::timeConstant"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::mRefs"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::universalCartesianSpatial3dCoordinateFrame::transformation"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::volume"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::wavelength"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQSpaceTime::width"))) (status missing-prerequisite) (target "Base::DataValue"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/isq_space_time.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 14 19) (end 14 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 15 19) (end 15 29))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 16 19) (end 16 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 17 19) (end 17 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 23 4) (end 23 593))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 41 4) (end 41 746))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 61 4) (end 61 447))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 77 4) (end 77 475))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 93 4) (end 93 450))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 109 4) (end 109 724))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 127 4) (end 127 658))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 143 4) (end 143 782))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 160 4) (end 160 198))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 165 8) (end 165 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 180 8) (end 180 49))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 181 8) (end 181 49))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 182 8) (end 182 49))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 183 8) (end 183 44))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 183 8) (end 183 44))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 184 8) (end 184 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 199 8) (end 199 219))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 228 8) (end 228 50))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 230 8) (end 230 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 231 8) (end 231 71))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 232 8) (end 232 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 256 8) (end 256 50))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 259 8) (end 259 81))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 260 8) (end 260 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 297 8) (end 297 44))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 298 8) (end 298 74))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 299 8) (end 299 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 303 4) (end 303 722))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 316 8) (end 316 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 317 8) (end 317 56))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 323 8) (end 323 61))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 324 8) (end 324 61))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 325 8) (end 325 61))
-      )
-      (diagnostic
-        (severity error)
-        (code "redefinition_type_incompatible")
-        (source "semantic")
-        (range (start 326 8) (end 326 66))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 331 8) (end 331 81))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 333 8) (end 333 70))
-      )
-      (diagnostic
-        (severity error)
-        (code "redefinition_type_incompatible")
-        (source "semantic")
-        (range (start 334 8) (end 334 68))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 339 8) (end 339 78))
-      )
-      (diagnostic
-        (severity error)
-        (code "redefinition_type_incompatible")
-        (source "semantic")
-        (range (start 342 8) (end 342 66))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 349 8) (end 349 72))
-      )
-      (diagnostic
-        (severity error)
-        (code "redefinition_type_incompatible")
-        (source "semantic")
-        (range (start 350 8) (end 350 66))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 355 4) (end 355 756))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 368 8) (end 368 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 369 8) (end 369 56))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 375 8) (end 375 61))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 376 8) (end 376 61))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 377 8) (end 377 61))
-      )
-      (diagnostic
-        (severity error)
-        (code "redefinition_type_incompatible")
-        (source "semantic")
-        (range (start 378 8) (end 378 66))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 383 8) (end 383 81))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 385 8) (end 385 70))
-      )
-      (diagnostic
-        (severity error)
-        (code "redefinition_type_incompatible")
-        (source "semantic")
-        (range (start 386 8) (end 386 68))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 391 8) (end 391 78))
-      )
-      (diagnostic
-        (severity error)
-        (code "redefinition_type_incompatible")
-        (source "semantic")
-        (range (start 394 8) (end 394 66))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 399 4) (end 399 622))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 415 4) (end 415 597))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 428 8) (end 428 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 428 8) (end 428 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 429 8) (end 429 45))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 434 4) (end 434 239))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 435 8) (end 435 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 436 8) (end 436 80))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 440 4) (end 440 762))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 453 8) (end 453 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 453 8) (end 453 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 454 8) (end 454 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 459 4) (end 459 233))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 460 8) (end 460 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 461 8) (end 461 80))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 465 4) (end 465 708))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 478 8) (end 478 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 478 8) (end 478 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 479 8) (end 479 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 484 4) (end 484 235))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 485 8) (end 485 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 486 8) (end 486 80))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 490 4) (end 490 914))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 503 8) (end 503 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 503 8) (end 503 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 504 8) (end 504 50))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 509 4) (end 509 64))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 551 4) (end 551 972))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 564 8) (end 564 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 564 8) (end 564 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 565 8) (end 565 55))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 570 4) (end 570 69))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 581 4) (end 581 912))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 594 8) (end 594 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 595 8) (end 595 66))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 600 4) (end 600 208))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 601 8) (end 601 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 602 8) (end 602 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 603 8) (end 603 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 607 4) (end 607 508))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 620 8) (end 620 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 620 8) (end 620 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 621 8) (end 621 41))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 626 4) (end 626 354))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 627 8) (end 627 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 628 8) (end 628 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 629 8) (end 629 94))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 633 4) (end 633 796))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 646 8) (end 646 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 646 8) (end 646 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 647 8) (end 647 48))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 652 4) (end 652 361))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 653 8) (end 653 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 654 8) (end 654 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 655 8) (end 655 94))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 658 4) (end 658 842))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 671 8) (end 671 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 672 8) (end 672 70))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 677 4) (end 677 219))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 678 8) (end 678 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 679 8) (end 679 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 680 8) (end 680 49))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 684 4) (end 684 1001))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 697 8) (end 697 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 697 8) (end 697 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 698 8) (end 698 51))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 703 4) (end 703 249))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 704 8) (end 704 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 705 8) (end 705 82))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 708 4) (end 708 1047))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 721 8) (end 721 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 722 8) (end 722 73))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 727 4) (end 727 225))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 728 8) (end 728 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 729 8) (end 729 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 730 8) (end 730 52))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 734 4) (end 734 766))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 747 8) (end 747 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 747 8) (end 747 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 748 8) (end 748 55))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 753 4) (end 753 253))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 754 8) (end 754 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 755 8) (end 755 82))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 758 4) (end 758 812))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 771 8) (end 771 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 772 8) (end 772 77))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 777 4) (end 777 233))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 778 8) (end 778 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 779 8) (end 779 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 780 8) (end 780 56))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 784 4) (end 784 550))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 802 4) (end 802 757))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 818 4) (end 818 629))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 834 4) (end 834 590))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 847 8) (end 847 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 847 8) (end 847 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 848 8) (end 848 45))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 853 4) (end 853 243))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 854 8) (end 854 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 855 8) (end 855 82))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 875 4) (end 875 632))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 888 8) (end 888 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 888 8) (end 888 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 889 8) (end 889 52))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 894 4) (end 894 250))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 895 8) (end 895 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 896 8) (end 896 82))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 900 4) (end 900 457))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 916 4) (end 916 597))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 929 8) (end 929 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 929 8) (end 929 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 930 8) (end 930 45))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 935 4) (end 935 239))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 936 8) (end 936 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 937 8) (end 937 80))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 945 4) (end 945 639))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 958 8) (end 958 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 959 8) (end 959 68))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 964 4) (end 964 214))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 965 8) (end 965 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 966 8) (end 966 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 967 8) (end 967 46))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 971 4) (end 971 654))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 984 8) (end 984 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 984 8) (end 984 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 985 8) (end 985 52))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 990 4) (end 990 246))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 991 8) (end 991 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 992 8) (end 992 80))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1000 4) (end 1000 948))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1013 8) (end 1013 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1013 8) (end 1013 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1014 8) (end 1014 49))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1019 4) (end 1019 362))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1020 8) (end 1020 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1021 8) (end 1021 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1022 8) (end 1022 94))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1048 4) (end 1048 573))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1061 8) (end 1061 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1061 8) (end 1061 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1062 8) (end 1062 54))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1067 4) (end 1067 252))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1068 8) (end 1068 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1069 8) (end 1069 82))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1073 4) (end 1073 515))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1090 4) (end 1090 773))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1103 8) (end 1103 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1103 8) (end 1103 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1104 8) (end 1104 47))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1109 4) (end 1109 241))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1110 8) (end 1110 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1111 8) (end 1111 80))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1119 4) (end 1119 756))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1132 8) (end 1132 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1132 8) (end 1132 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1133 8) (end 1133 52))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1138 4) (end 1138 246))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1139 8) (end 1139 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1140 8) (end 1140 80))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1144 4) (end 1144 782))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1157 8) (end 1157 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1157 8) (end 1157 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1158 8) (end 1158 58))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1163 4) (end 1163 252))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1164 8) (end 1164 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1165 8) (end 1165 80))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

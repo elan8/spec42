@@ -1262,1135 +1262,1040 @@ standard library package ISQThermodynamics {
 
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ThermodynamicTemperatureValue'
-semantic.unresolved_name 'scalarQuantities'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ThermodynamicTemperatureValue'
-semantic.unresolved_name 'scalarQuantities'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "isq_thermodynamics.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 14 19) (end 14 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 15 19) (end 15 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 16 19) (end 16 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 17 19) (end 17 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 30 4) (end 30 1261))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 49 4) (end 49 286))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 50 8) (end 50 123))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 55 4) (end 55 756))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 74 4) (end 74 295))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 75 8) (end 75 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 80 4) (end 80 806))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 99 4) (end 99 294))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 100 8) (end 100 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 105 4) (end 105 833))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 124 4) (end 124 296))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 125 8) (end 125 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 130 4) (end 130 737))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 149 4) (end 149 631))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 150 8) (end 150 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 151 8) (end 151 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 152 8) (end 152 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 153 8) (end 153 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 158 4) (end 158 855))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 177 4) (end 177 483))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 178 8) (end 178 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 179 8) (end 179 101))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 180 8) (end 180 104))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 185 4) (end 185 834))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 204 4) (end 204 483))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 205 8) (end 205 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 206 8) (end 206 101))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 207 8) (end 207 104))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 246 4) (end 246 559))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 265 4) (end 265 470))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 266 8) (end 266 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 267 8) (end 267 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 268 8) (end 268 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 273 4) (end 273 671))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 292 4) (end 292 366))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 293 8) (end 293 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 294 8) (end 294 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 299 4) (end 299 674))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 318 4) (end 318 630))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 319 8) (end 319 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 320 8) (end 320 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 321 8) (end 321 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 322 8) (end 322 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 327 4) (end 327 821))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 346 4) (end 346 523))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 347 8) (end 347 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 348 8) (end 348 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 349 8) (end 349 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 354 4) (end 354 941))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 373 4) (end 373 530))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 374 8) (end 374 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 375 8) (end 375 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 376 8) (end 376 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 381 4) (end 381 743))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 400 4) (end 400 513))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 401 8) (end 401 101))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 402 8) (end 402 104))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 403 8) (end 403 123))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 412 4) (end 412 630))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 431 4) (end 431 628))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 432 8) (end 432 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 433 8) (end 433 101))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 434 8) (end 434 104))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 435 8) (end 435 123))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 440 4) (end 440 713))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 459 4) (end 459 629))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 460 8) (end 460 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 461 8) (end 461 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 462 8) (end 462 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 463 8) (end 463 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 468 4) (end 468 769))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 487 4) (end 487 367))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 488 8) (end 488 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 489 8) (end 489 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 494 4) (end 494 781))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 513 4) (end 513 623))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 514 8) (end 514 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 515 8) (end 515 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 516 8) (end 516 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 517 8) (end 517 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 522 4) (end 522 729))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 541 4) (end 541 522))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 542 8) (end 542 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 543 8) (end 543 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 544 8) (end 544 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 549 4) (end 549 722))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 568 4) (end 568 540))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 569 8) (end 569 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 570 8) (end 570 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 571 8) (end 571 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 576 4) (end 576 713))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 595 4) (end 595 538))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 596 8) (end 596 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 597 8) (end 597 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 598 8) (end 598 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 603 4) (end 603 724))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 622 4) (end 622 547))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 623 8) (end 623 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 624 8) (end 624 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 625 8) (end 625 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 630 4) (end 630 877))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 647 4) (end 647 751))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 666 4) (end 666 716))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 685 4) (end 685 618))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 686 8) (end 686 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 687 8) (end 687 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 688 8) (end 688 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 689 8) (end 689 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 694 4) (end 694 688))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 713 4) (end 713 517))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 714 8) (end 714 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 715 8) (end 715 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 716 8) (end 716 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 721 4) (end 721 700))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 740 4) (end 740 464))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 741 8) (end 741 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 742 8) (end 742 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 743 8) (end 743 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 818 4) (end 818 597))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 837 4) (end 837 363))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 838 8) (end 838 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 839 8) (end 839 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 862 4) (end 862 609))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 881 4) (end 881 365))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 882 8) (end 882 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 883 8) (end 883 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 924 4) (end 924 678))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 943 4) (end 943 626))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 944 8) (end 944 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 945 8) (end 945 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 946 8) (end 946 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 947 8) (end 947 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 952 4) (end 952 664))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 971 4) (end 971 625))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 972 8) (end 972 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 973 8) (end 973 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 974 8) (end 974 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 975 8) (end 975 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 980 4) (end 980 812))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 999 4) (end 999 633))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1000 8) (end 1000 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1001 8) (end 1001 101))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1002 8) (end 1002 104))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1003 8) (end 1003 123))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1008 4) (end 1008 589))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1025 4) (end 1025 819))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1042 4) (end 1042 634))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1061 4) (end 1061 521))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1062 8) (end 1062 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1063 8) (end 1063 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1064 8) (end 1064 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1069 4) (end 1069 766))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1088 4) (end 1088 365))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1089 8) (end 1089 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1090 8) (end 1090 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1095 4) (end 1095 828))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1114 4) (end 1114 387))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1115 8) (end 1115 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1116 8) (end 1116 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1121 4) (end 1121 664))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1138 4) (end 1138 760))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1155 4) (end 1155 548))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1172 4) (end 1172 552))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1189 4) (end 1189 755))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1206 4) (end 1206 914))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1223 4) (end 1223 817))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1240 4) (end 1240 726))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -3640,6 +3545,1136 @@ CloseCurly,EndOfFile,
     (comment)
     (attribute_usage 'dewPointTemperature' : 'ThermodynamicTemperatureValue' :> 'scalarQuantities'
       (documentation))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ThermodynamicTemperatureValue'
+semantic.unresolved_name 'scalarQuantities'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ThermodynamicTemperatureValue'
+semantic.unresolved_name 'scalarQuantities'
 ~~~
 # FORMAT
 ~~~sysml
@@ -4902,2918 +5937,998 @@ standard library package ISQThermodynamics {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ISQThermodynamics"))) (name "ISQThermodynamics") (declared-name "ISQThermodynamics")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQThermodynamics::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQThermodynamics::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQThermodynamics::*#import2"))) (name "*") (declared-name "*"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit"))) (name "CelsiusTemperatureUnit") (declared-name "CelsiusTemperatureUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue"))) (name "CelsiusTemperatureValue") (declared-name "CelsiusTemperatureValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit"))) (name "CoefficientOfHeatTransferUnit") (declared-name "CoefficientOfHeatTransferUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue"))) (name "CoefficientOfHeatTransferValue") (declared-name "CoefficientOfHeatTransferValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue")))))
-          )
-        )
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfThermalInsulanceUnit"))) (name "CoefficientOfThermalInsulanceUnit") (declared-name "CoefficientOfThermalInsulanceUnit"))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfThermalInsulanceValue"))) (name "CoefficientOfThermalInsulanceValue") (declared-name "CoefficientOfThermalInsulanceValue"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit"))) (name "CubicExpansionCoefficientUnit") (declared-name "CubicExpansionCoefficientUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue"))) (name "CubicExpansionCoefficientValue") (declared-name "CubicExpansionCoefficientValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit"))) (name "DensityOfHeatFlowRateUnit") (declared-name "DensityOfHeatFlowRateUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue"))) (name "DensityOfHeatFlowRateValue") (declared-name "DensityOfHeatFlowRateValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit"))) (name "EnergyUnit") (declared-name "EnergyUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))) (name "EnergyValue") (declared-name "EnergyValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit"))) (name "EntropyUnit") (declared-name "EntropyUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue"))) (name "EntropyValue") (declared-name "EntropyValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit"))) (name "HeatCapacityUnit") (declared-name "HeatCapacityUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue"))) (name "HeatCapacityValue") (declared-name "HeatCapacityValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit"))) (name "HeatFlowRateUnit") (declared-name "HeatFlowRateUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue"))) (name "HeatFlowRateValue") (declared-name "HeatFlowRateValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit"))) (name "IsentropicCompressibilityUnit") (declared-name "IsentropicCompressibilityUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue"))) (name "IsentropicCompressibilityValue") (declared-name "IsentropicCompressibilityValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicExponentValue"))) (name "IsentropicExponentValue") (declared-name "IsentropicExponentValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicExponentValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicExponentValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit"))) (name "IsothermalCompressibilityUnit") (declared-name "IsothermalCompressibilityUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue"))) (name "IsothermalCompressibilityValue") (declared-name "IsothermalCompressibilityValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit"))) (name "JouleThomsonCoefficientUnit") (declared-name "JouleThomsonCoefficientUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue"))) (name "JouleThomsonCoefficientValue") (declared-name "JouleThomsonCoefficientValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit"))) (name "LinearExpansionCoefficientUnit") (declared-name "LinearExpansionCoefficientUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue"))) (name "LinearExpansionCoefficientValue") (declared-name "LinearExpansionCoefficientValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit"))) (name "MassConcentrationOfWaterUnit") (declared-name "MassConcentrationOfWaterUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue"))) (name "MassConcentrationOfWaterValue") (declared-name "MassConcentrationOfWaterValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit"))) (name "MassConcentrationOfWaterVapourAbsoluteHumidityUnit") (declared-name "MassConcentrationOfWaterVapourAbsoluteHumidityUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue"))) (name "MassConcentrationOfWaterVapourAbsoluteHumidityValue") (declared-name "MassConcentrationOfWaterVapourAbsoluteHumidityValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfDryMatterValue"))) (name "MassFractionOfDryMatterValue") (declared-name "MassFractionOfDryMatterValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfDryMatterValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfDryMatterValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfWaterValue"))) (name "MassFractionOfWaterValue") (declared-name "MassFractionOfWaterValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfWaterValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfWaterValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterToDryMatterValue"))) (name "MassRatioOfWaterToDryMatterValue") (declared-name "MassRatioOfWaterToDryMatterValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterToDryMatterValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterToDryMatterValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterVapourToDryGasValue"))) (name "MassRatioOfWaterVapourToDryGasValue") (declared-name "MassRatioOfWaterVapourToDryGasValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterVapourToDryGasValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterVapourToDryGasValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit"))) (name "MassieuFunctionUnit") (declared-name "MassieuFunctionUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue"))) (name "MassieuFunctionValue") (declared-name "MassieuFunctionValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::MaximumThermalEfficiencyValue"))) (name "MaximumThermalEfficiencyValue") (declared-name "MaximumThermalEfficiencyValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::MaximumThermalEfficiencyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MaximumThermalEfficiencyValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit"))) (name "PlanckFunctionUnit") (declared-name "PlanckFunctionUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue"))) (name "PlanckFunctionValue") (declared-name "PlanckFunctionValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit"))) (name "PressureCoefficientUnit") (declared-name "PressureCoefficientUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue"))) (name "PressureCoefficientValue") (declared-name "PressureCoefficientValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::RatioOfSpecificHeatCapacitiesValue"))) (name "RatioOfSpecificHeatCapacitiesValue") (declared-name "RatioOfSpecificHeatCapacitiesValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::RatioOfSpecificHeatCapacitiesValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::RatioOfSpecificHeatCapacitiesValue")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (name "Real") (declared-name "Real"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativeHumidityValue"))) (name "RelativeHumidityValue") (declared-name "RelativeHumidityValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativeHumidityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::RelativeHumidityValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassConcentrationOfVapourValue"))) (name "RelativeMassConcentrationOfVapourValue") (declared-name "RelativeMassConcentrationOfVapourValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassConcentrationOfVapourValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassConcentrationOfVapourValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassRatioOfVapourValue"))) (name "RelativeMassRatioOfVapourValue") (declared-name "RelativeMassRatioOfVapourValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassRatioOfVapourValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassRatioOfVapourValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit"))) (name "RelativePressureCoefficientUnit") (declared-name "RelativePressureCoefficientUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue"))) (name "RelativePressureCoefficientValue") (declared-name "RelativePressureCoefficientValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit"))) (name "SpecificEnergyUnit") (declared-name "SpecificEnergyUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue"))) (name "SpecificEnergyValue") (declared-name "SpecificEnergyValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit"))) (name "SpecificEnthalpyUnit") (declared-name "SpecificEnthalpyUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue"))) (name "SpecificEnthalpyValue") (declared-name "SpecificEnthalpyValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit"))) (name "SpecificEntropyUnit") (declared-name "SpecificEntropyUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue"))) (name "SpecificEntropyValue") (declared-name "SpecificEntropyValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit"))) (name "SpecificGasConstantUnit") (declared-name "SpecificGasConstantUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue"))) (name "SpecificGasConstantValue") (declared-name "SpecificGasConstantValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit"))) (name "SpecificHeatCapacityAtConstantPressureUnit") (declared-name "SpecificHeatCapacityAtConstantPressureUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue"))) (name "SpecificHeatCapacityAtConstantPressureValue") (declared-name "SpecificHeatCapacityAtConstantPressureValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit"))) (name "SpecificHeatCapacityAtConstantVolumeUnit") (declared-name "SpecificHeatCapacityAtConstantVolumeUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue"))) (name "SpecificHeatCapacityAtConstantVolumeValue") (declared-name "SpecificHeatCapacityAtConstantVolumeValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit"))) (name "SpecificHeatCapacityAtSaturatedVapourPressureUnit") (declared-name "SpecificHeatCapacityAtSaturatedVapourPressureUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue"))) (name "SpecificHeatCapacityAtSaturatedVapourPressureValue") (declared-name "SpecificHeatCapacityAtSaturatedVapourPressureValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit"))) (name "SpecificHeatCapacityUnit") (declared-name "SpecificHeatCapacityUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue"))) (name "SpecificHeatCapacityValue") (declared-name "SpecificHeatCapacityValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit"))) (name "SurfaceCoefficientOfHeatTransferUnit") (declared-name "SurfaceCoefficientOfHeatTransferUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue"))) (name "SurfaceCoefficientOfHeatTransferValue") (declared-name "SurfaceCoefficientOfHeatTransferValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue")))))
-          )
-        )
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::TemperatureUnit"))) (name "TemperatureUnit") (declared-name "TemperatureUnit"))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::TemperatureValue"))) (name "TemperatureValue") (declared-name "TemperatureValue"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit"))) (name "ThermalConductanceUnit") (declared-name "ThermalConductanceUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue"))) (name "ThermalConductanceValue") (declared-name "ThermalConductanceValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit"))) (name "ThermalConductivityUnit") (declared-name "ThermalConductivityUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue"))) (name "ThermalConductivityValue") (declared-name "ThermalConductivityValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit"))) (name "ThermalDiffusivityUnit") (declared-name "ThermalDiffusivityUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue"))) (name "ThermalDiffusivityValue") (declared-name "ThermalDiffusivityValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalEfficiencyValue"))) (name "ThermalEfficiencyValue") (declared-name "ThermalEfficiencyValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalEfficiencyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalEfficiencyValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit"))) (name "ThermalInsulanceUnit") (declared-name "ThermalInsulanceUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue"))) (name "ThermalInsulanceValue") (declared-name "ThermalInsulanceValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit"))) (name "ThermalResistanceUnit") (declared-name "ThermalResistanceUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue"))) (name "ThermalResistanceValue") (declared-name "ThermalResistanceValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue")))))
-          )
-        )
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::_documentation"))) (name ""))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::amountOfHeat"))) (name "amountOfHeat") (declared-name "amountOfHeat"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::celsiusTemperature"))) (name "celsiusTemperature") (declared-name "celsiusTemperature") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::coefficientOfHeatTransfer"))) (name "coefficientOfHeatTransfer") (declared-name "coefficientOfHeatTransfer") (declared (properties (ordered false) (unique false))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::coefficientOfThermalInsulance"))) (name "coefficientOfThermalInsulance") (declared-name "coefficientOfThermalInsulance"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::cubicExpansionCoefficient"))) (name "cubicExpansionCoefficient") (declared-name "cubicExpansionCoefficient") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::densityOfHeatFlowRate"))) (name "densityOfHeatFlowRate") (declared-name "densityOfHeatFlowRate") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::dewPointTemperature"))) (name "dewPointTemperature") (declared-name "dewPointTemperature") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::dewPointTemperature::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::dewPointTemperature")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::energy"))) (name "energy") (declared-name "energy") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::enthalpy"))) (name "enthalpy") (declared-name "enthalpy") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::enthalpy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::enthalpy")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::entropy"))) (name "entropy") (declared-name "entropy") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::gibbsEnergy"))) (name "gibbsEnergy") (declared-name "gibbsEnergy") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::gibbsEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::gibbsEnergy")))))
-          )
-        )
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::gibbsFunction"))) (name "gibbsFunction") (declared-name "gibbsFunction"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::heat"))) (name "heat") (declared-name "heat") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::heat::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::heat")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::heatCapacity"))) (name "heatCapacity") (declared-name "heatCapacity") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::heatFlowRate"))) (name "heatFlowRate") (declared-name "heatFlowRate") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::helmholtzEnergy"))) (name "helmholtzEnergy") (declared-name "helmholtzEnergy") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::helmholtzEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::helmholtzEnergy")))))
-          )
-        )
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::helmholtzFunction"))) (name "helmholtzFunction") (declared-name "helmholtzFunction"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::internalEnergy"))) (name "internalEnergy") (declared-name "internalEnergy") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::internalEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::internalEnergy")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::isentropicCompressibility"))) (name "isentropicCompressibility") (declared-name "isentropicCompressibility") (declared (properties (ordered false) (unique false))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::isentropicExpansionFactor"))) (name "isentropicExpansionFactor") (declared-name "isentropicExpansionFactor"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::isentropicExponent"))) (name "isentropicExponent") (declared-name "isentropicExponent") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::isothermalCompressibility"))) (name "isothermalCompressibility") (declared-name "isothermalCompressibility") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::jouleThomsonCoefficient"))) (name "jouleThomsonCoefficient") (declared-name "jouleThomsonCoefficient") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::latentHeat"))) (name "latentHeat") (declared-name "latentHeat") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::latentHeat::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::latentHeat")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::linearExpansionCoefficient"))) (name "linearExpansionCoefficient") (declared-name "linearExpansionCoefficient") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::massConcentrationOfWater"))) (name "massConcentrationOfWater") (declared-name "massConcentrationOfWater") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::massConcentrationOfWaterVapourAbsoluteHumidity"))) (name "massConcentrationOfWaterVapourAbsoluteHumidity") (declared-name "massConcentrationOfWaterVapourAbsoluteHumidity") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::massFractionOfDryMatter"))) (name "massFractionOfDryMatter") (declared-name "massFractionOfDryMatter") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::massFractionOfWater"))) (name "massFractionOfWater") (declared-name "massFractionOfWater") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::massRatioOfWaterToDryMatter"))) (name "massRatioOfWaterToDryMatter") (declared-name "massRatioOfWaterToDryMatter") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::massRatioOfWaterVapourToDryGas"))) (name "massRatioOfWaterVapourToDryGas") (declared-name "massRatioOfWaterVapourToDryGas") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::massieuFunction"))) (name "massieuFunction") (declared-name "massieuFunction") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::maximumThermalEfficiency"))) (name "maximumThermalEfficiency") (declared-name "maximumThermalEfficiency") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::planckFunction"))) (name "planckFunction") (declared-name "planckFunction") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::pressureCoefficient"))) (name "pressureCoefficient") (declared-name "pressureCoefficient") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::ratioOfSpecificHeatCapacities"))) (name "ratioOfSpecificHeatCapacities") (declared-name "ratioOfSpecificHeatCapacities") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::relativeHumidity"))) (name "relativeHumidity") (declared-name "relativeHumidity") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::relativeMassConcentrationOfVapour"))) (name "relativeMassConcentrationOfVapour") (declared-name "relativeMassConcentrationOfVapour") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::relativeMassRatioOfVapour"))) (name "relativeMassRatioOfVapour") (declared-name "relativeMassRatioOfVapour") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::relativePressureCoefficient"))) (name "relativePressureCoefficient") (declared-name "relativePressureCoefficient") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificEnergy"))) (name "specificEnergy") (declared-name "specificEnergy") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificEnthalpy"))) (name "specificEnthalpy") (declared-name "specificEnthalpy") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificEntropy"))) (name "specificEntropy") (declared-name "specificEntropy") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificGasConstant"))) (name "specificGasConstant") (declared-name "specificGasConstant") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificGibbsEnergy"))) (name "specificGibbsEnergy") (declared-name "specificGibbsEnergy") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificGibbsEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::specificGibbsEnergy")))))
-          )
-        )
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificGibbsFunction"))) (name "specificGibbsFunction") (declared-name "specificGibbsFunction"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacity"))) (name "specificHeatCapacity") (declared-name "specificHeatCapacity") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtConstantPressure"))) (name "specificHeatCapacityAtConstantPressure") (declared-name "specificHeatCapacityAtConstantPressure") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtConstantVolume"))) (name "specificHeatCapacityAtConstantVolume") (declared-name "specificHeatCapacityAtConstantVolume") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtSaturatedVapourPressure"))) (name "specificHeatCapacityAtSaturatedVapourPressure") (declared-name "specificHeatCapacityAtSaturatedVapourPressure") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificHelmholtzEnergy"))) (name "specificHelmholtzEnergy") (declared-name "specificHelmholtzEnergy") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificHelmholtzEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::specificHelmholtzEnergy")))))
-          )
-        )
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificHelmholtzFunction"))) (name "specificHelmholtzFunction") (declared-name "specificHelmholtzFunction"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificInternalEnergy"))) (name "specificInternalEnergy") (declared-name "specificInternalEnergy") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificInternalEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::specificInternalEnergy")))))
-          )
-        )
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificThermodynamicEnergy"))) (name "specificThermodynamicEnergy") (declared-name "specificThermodynamicEnergy"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::surfaceCoefficientOfHeatTransfer"))) (name "surfaceCoefficientOfHeatTransfer") (declared-name "surfaceCoefficientOfHeatTransfer") (declared (properties (ordered false) (unique false))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::temperature"))) (name "temperature") (declared-name "temperature"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::thermalConductance"))) (name "thermalConductance") (declared-name "thermalConductance") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::thermalConductivity"))) (name "thermalConductivity") (declared-name "thermalConductivity") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::thermalDiffusivity"))) (name "thermalDiffusivity") (declared-name "thermalDiffusivity") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::thermalEfficiency"))) (name "thermalEfficiency") (declared-name "thermalEfficiency") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::thermalInsulance"))) (name "thermalInsulance") (declared-name "thermalInsulance") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::thermalResistance"))) (name "thermalResistance") (declared-name "thermalResistance") (declared (properties (ordered false) (unique false))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::thermodynamicEnergy"))) (name "thermodynamicEnergy") (declared-name "thermodynamicEnergy"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "7601b9e40551755d3b1f395915bfad41e738b79b31195c9feaf111bf36b89cae") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics"))) (kind "package") (name "ISQThermodynamics") (declared-name "ISQThermodynamics") (range (start (line 0) (character 0)) (end (line 0) (character 64627))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 15) (character 4)) (end (line 15) (character 33))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Import) (visibility "private") (import (reference "Quantities::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 15) (character 19)) (end (line 15) (character 29))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 16) (character 4)) (end (line 16) (character 44))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Import) (visibility "private") (import (reference "MeasurementReferences::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 16) (character 19)) (end (line 16) (character 40))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::*#import2"))) (kind "import") (name "*") (declared-name "*") (range (start (line 17) (character 4)) (end (line 17) (character 30))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQBase::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 17) (character 19)) (end (line 17) (character 26))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit"))) (kind "attribute def") (name "CelsiusTemperatureUnit") (declared-name "CelsiusTemperatureUnit") (range (start (line 49) (character 4)) (end (line 49) (character 286))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 51) (character 8)) (end (line 51) (character 98))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 51) (character 22)) (end (line 51) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 50) (character 8)) (end (line 50) (character 123))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue"))) (kind "attribute def") (name "CelsiusTemperatureValue") (declared-name "CelsiusTemperatureValue") (range (start (line 30) (character 4)) (end (line 30) (character 1261))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::_documentation"))) (kind "documentation") (name "") (range (start (line 30) (character 4)) (end (line 30) (character 1261))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 44) (character 8)) (end (line 44) (character 54))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "CelsiusTemperatureUnit") (range none)) (redefinition (reference "mRef") (range (start (line 44) (character 22)) (end (line 44) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 43) (character 8)) (end (line 43) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 43) (character 22)) (end (line 43) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit"))) (kind "attribute def") (name "CoefficientOfHeatTransferUnit") (declared-name "CoefficientOfHeatTransferUnit") (range (start (line 346) (character 4)) (end (line 346) (character 523))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 348) (character 8)) (end (line 348) (character 105))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 347) (character 8)) (end (line 347) (character 100))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 350) (character 8)) (end (line 350) (character 120))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 350) (character 22)) (end (line 350) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 349) (character 8)) (end (line 349) (character 124))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue"))) (kind "attribute def") (name "CoefficientOfHeatTransferValue") (declared-name "CoefficientOfHeatTransferValue") (range (start (line 327) (character 4)) (end (line 327) (character 821))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::_documentation"))) (kind "documentation") (name "") (range (start (line 327) (character 4)) (end (line 327) (character 821))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 341) (character 8)) (end (line 341) (character 61))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "CoefficientOfHeatTransferUnit") (range none)) (redefinition (reference "mRef") (range (start (line 341) (character 22)) (end (line 341) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 340) (character 8)) (end (line 340) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 340) (character 22)) (end (line 340) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfThermalInsulanceUnit"))) (kind "alias") (name "CoefficientOfThermalInsulanceUnit") (declared-name "CoefficientOfThermalInsulanceUnit") (range (start (line 407) (character 4)) (end (line 407) (character 69))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfThermalInsulanceValue"))) (kind "alias") (name "CoefficientOfThermalInsulanceValue") (declared-name "CoefficientOfThermalInsulanceValue") (range (start (line 408) (character 4)) (end (line 408) (character 71))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit"))) (kind "attribute def") (name "CubicExpansionCoefficientUnit") (declared-name "CubicExpansionCoefficientUnit") (range (start (line 99) (character 4)) (end (line 99) (character 294))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 101) (character 8)) (end (line 101) (character 98))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 101) (character 22)) (end (line 101) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 100) (character 8)) (end (line 100) (character 124))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue"))) (kind "attribute def") (name "CubicExpansionCoefficientValue") (declared-name "CubicExpansionCoefficientValue") (range (start (line 80) (character 4)) (end (line 80) (character 806))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::_documentation"))) (kind "documentation") (name "") (range (start (line 80) (character 4)) (end (line 80) (character 806))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 94) (character 8)) (end (line 94) (character 61))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "CubicExpansionCoefficientUnit") (range none)) (redefinition (reference "mRef") (range (start (line 94) (character 22)) (end (line 94) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 93) (character 8)) (end (line 93) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 93) (character 22)) (end (line 93) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit"))) (kind "attribute def") (name "DensityOfHeatFlowRateUnit") (declared-name "DensityOfHeatFlowRateUnit") (range (start (line 292) (character 4)) (end (line 292) (character 366))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 294) (character 8)) (end (line 294) (character 105))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 293) (character 8)) (end (line 293) (character 100))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 295) (character 8)) (end (line 295) (character 92))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 295) (character 22)) (end (line 295) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue"))) (kind "attribute def") (name "DensityOfHeatFlowRateValue") (declared-name "DensityOfHeatFlowRateValue") (range (start (line 273) (character 4)) (end (line 273) (character 671))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::_documentation"))) (kind "documentation") (name "") (range (start (line 273) (character 4)) (end (line 273) (character 671))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 287) (character 8)) (end (line 287) (character 57))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "DensityOfHeatFlowRateUnit") (range none)) (redefinition (reference "mRef") (range (start (line 287) (character 22)) (end (line 287) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 286) (character 8)) (end (line 286) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 286) (character 22)) (end (line 286) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit"))) (kind "attribute def") (name "EnergyUnit") (declared-name "EnergyUnit") (range (start (line 740) (character 4)) (end (line 740) (character 464))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 743) (character 8)) (end (line 743) (character 105))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 741) (character 8)) (end (line 741) (character 102))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 742) (character 8)) (end (line 742) (character 100))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 744) (character 8)) (end (line 744) (character 102))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 744) (character 22)) (end (line 744) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))) (kind "attribute def") (name "EnergyValue") (declared-name "EnergyValue") (range (start (line 721) (character 4)) (end (line 721) (character 700))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::_documentation"))) (kind "documentation") (name "") (range (start (line 721) (character 4)) (end (line 721) (character 700))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 735) (character 8)) (end (line 735) (character 42))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "EnergyUnit") (range none)) (redefinition (reference "mRef") (range (start (line 735) (character 22)) (end (line 735) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 734) (character 8)) (end (line 734) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 734) (character 22)) (end (line 734) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit"))) (kind "attribute def") (name "EntropyUnit") (declared-name "EntropyUnit") (range (start (line 685) (character 4)) (end (line 685) (character 618))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 688) (character 8)) (end (line 688) (character 105))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 686) (character 8)) (end (line 686) (character 102))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 687) (character 8)) (end (line 687) (character 100))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 690) (character 8)) (end (line 690) (character 130))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 690) (character 22)) (end (line 690) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 689) (character 8)) (end (line 689) (character 124))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue"))) (kind "attribute def") (name "EntropyValue") (declared-name "EntropyValue") (range (start (line 666) (character 4)) (end (line 666) (character 716))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::_documentation"))) (kind "documentation") (name "") (range (start (line 666) (character 4)) (end (line 666) (character 716))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 680) (character 8)) (end (line 680) (character 43))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "EntropyUnit") (range none)) (redefinition (reference "mRef") (range (start (line 680) (character 22)) (end (line 680) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 679) (character 8)) (end (line 679) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 679) (character 22)) (end (line 679) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit"))) (kind "attribute def") (name "HeatCapacityUnit") (declared-name "HeatCapacityUnit") (range (start (line 513) (character 4)) (end (line 513) (character 623))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 516) (character 8)) (end (line 516) (character 105))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 514) (character 8)) (end (line 514) (character 102))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 515) (character 8)) (end (line 515) (character 100))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 518) (character 8)) (end (line 518) (character 130))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 518) (character 22)) (end (line 518) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 517) (character 8)) (end (line 517) (character 124))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue"))) (kind "attribute def") (name "HeatCapacityValue") (declared-name "HeatCapacityValue") (range (start (line 494) (character 4)) (end (line 494) (character 781))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::_documentation"))) (kind "documentation") (name "") (range (start (line 494) (character 4)) (end (line 494) (character 781))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 508) (character 8)) (end (line 508) (character 48))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "HeatCapacityUnit") (range none)) (redefinition (reference "mRef") (range (start (line 508) (character 22)) (end (line 508) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 507) (character 8)) (end (line 507) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 507) (character 22)) (end (line 507) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit"))) (kind "attribute def") (name "HeatFlowRateUnit") (declared-name "HeatFlowRateUnit") (range (start (line 265) (character 4)) (end (line 265) (character 470))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 268) (character 8)) (end (line 268) (character 105))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 266) (character 8)) (end (line 266) (character 102))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 267) (character 8)) (end (line 267) (character 100))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 269) (character 8)) (end (line 269) (character 102))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 269) (character 22)) (end (line 269) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue"))) (kind "attribute def") (name "HeatFlowRateValue") (declared-name "HeatFlowRateValue") (range (start (line 246) (character 4)) (end (line 246) (character 559))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::_documentation"))) (kind "documentation") (name "") (range (start (line 246) (character 4)) (end (line 246) (character 559))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 260) (character 8)) (end (line 260) (character 48))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "HeatFlowRateUnit") (range none)) (redefinition (reference "mRef") (range (start (line 260) (character 22)) (end (line 260) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 259) (character 8)) (end (line 259) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 259) (character 22)) (end (line 259) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit"))) (kind "attribute def") (name "IsentropicCompressibilityUnit") (declared-name "IsentropicCompressibilityUnit") (range (start (line 204) (character 4)) (end (line 204) (character 483))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 207) (character 8)) (end (line 207) (character 104))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 205) (character 8)) (end (line 205) (character 102))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 206) (character 8)) (end (line 206) (character 101))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 208) (character 8)) (end (line 208) (character 102))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 208) (character 22)) (end (line 208) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue"))) (kind "attribute def") (name "IsentropicCompressibilityValue") (declared-name "IsentropicCompressibilityValue") (range (start (line 185) (character 4)) (end (line 185) (character 834))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::_documentation"))) (kind "documentation") (name "") (range (start (line 185) (character 4)) (end (line 185) (character 834))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 199) (character 8)) (end (line 199) (character 61))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "IsentropicCompressibilityUnit") (range none)) (redefinition (reference "mRef") (range (start (line 199) (character 22)) (end (line 199) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 198) (character 8)) (end (line 198) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 198) (character 22)) (end (line 198) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicExponentValue"))) (kind "attribute def") (name "IsentropicExponentValue") (declared-name "IsentropicExponentValue") (range (start (line 647) (character 4)) (end (line 647) (character 751))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicExponentValue::_documentation"))) (kind "documentation") (name "") (range (start (line 647) (character 4)) (end (line 647) (character 751))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicExponentValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit"))) (kind "attribute def") (name "IsothermalCompressibilityUnit") (declared-name "IsothermalCompressibilityUnit") (range (start (line 177) (character 4)) (end (line 177) (character 483))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 180) (character 8)) (end (line 180) (character 104))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 178) (character 8)) (end (line 178) (character 102))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 179) (character 8)) (end (line 179) (character 101))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 181) (character 8)) (end (line 181) (character 102))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 181) (character 22)) (end (line 181) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue"))) (kind "attribute def") (name "IsothermalCompressibilityValue") (declared-name "IsothermalCompressibilityValue") (range (start (line 158) (character 4)) (end (line 158) (character 855))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::_documentation"))) (kind "documentation") (name "") (range (start (line 158) (character 4)) (end (line 158) (character 855))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 172) (character 8)) (end (line 172) (character 61))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "IsothermalCompressibilityUnit") (range none)) (redefinition (reference "mRef") (range (start (line 172) (character 22)) (end (line 172) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 171) (character 8)) (end (line 171) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 171) (character 22)) (end (line 171) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit"))) (kind "attribute def") (name "JouleThomsonCoefficientUnit") (declared-name "JouleThomsonCoefficientUnit") (range (start (line 999) (character 4)) (end (line 999) (character 633))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 1002) (character 8)) (end (line 1002) (character 104))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 1000) (character 8)) (end (line 1000) (character 102))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 1001) (character 8)) (end (line 1001) (character 101))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 1004) (character 8)) (end (line 1004) (character 130))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 1004) (character 22)) (end (line 1004) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 1003) (character 8)) (end (line 1003) (character 123))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue"))) (kind "attribute def") (name "JouleThomsonCoefficientValue") (declared-name "JouleThomsonCoefficientValue") (range (start (line 980) (character 4)) (end (line 980) (character 812))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::_documentation"))) (kind "documentation") (name "") (range (start (line 980) (character 4)) (end (line 980) (character 812))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 994) (character 8)) (end (line 994) (character 59))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "JouleThomsonCoefficientUnit") (range none)) (redefinition (reference "mRef") (range (start (line 994) (character 22)) (end (line 994) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 993) (character 8)) (end (line 993) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 993) (character 22)) (end (line 993) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit"))) (kind "attribute def") (name "LinearExpansionCoefficientUnit") (declared-name "LinearExpansionCoefficientUnit") (range (start (line 74) (character 4)) (end (line 74) (character 295))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 76) (character 8)) (end (line 76) (character 98))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 76) (character 22)) (end (line 76) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 75) (character 8)) (end (line 75) (character 124))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue"))) (kind "attribute def") (name "LinearExpansionCoefficientValue") (declared-name "LinearExpansionCoefficientValue") (range (start (line 55) (character 4)) (end (line 55) (character 756))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::_documentation"))) (kind "documentation") (name "") (range (start (line 55) (character 4)) (end (line 55) (character 756))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 69) (character 8)) (end (line 69) (character 62))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "LinearExpansionCoefficientUnit") (range none)) (redefinition (reference "mRef") (range (start (line 69) (character 22)) (end (line 69) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 68) (character 8)) (end (line 68) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 68) (character 22)) (end (line 68) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit"))) (kind "attribute def") (name "MassConcentrationOfWaterUnit") (declared-name "MassConcentrationOfWaterUnit") (range (start (line 1088) (character 4)) (end (line 1088) (character 365))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 1089) (character 8)) (end (line 1089) (character 103))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 1090) (character 8)) (end (line 1090) (character 100))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 1091) (character 8)) (end (line 1091) (character 90))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 1091) (character 22)) (end (line 1091) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue"))) (kind "attribute def") (name "MassConcentrationOfWaterValue") (declared-name "MassConcentrationOfWaterValue") (range (start (line 1069) (character 4)) (end (line 1069) (character 766))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1069) (character 4)) (end (line 1069) (character 766))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 1083) (character 8)) (end (line 1083) (character 60))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "MassConcentrationOfWaterUnit") (range none)) (redefinition (reference "mRef") (range (start (line 1083) (character 22)) (end (line 1083) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 1082) (character 8)) (end (line 1082) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 1082) (character 22)) (end (line 1082) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit"))) (kind "attribute def") (name "MassConcentrationOfWaterVapourAbsoluteHumidityUnit") (declared-name "MassConcentrationOfWaterVapourAbsoluteHumidityUnit") (range (start (line 1114) (character 4)) (end (line 1114) (character 387))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 1115) (character 8)) (end (line 1115) (character 103))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 1116) (character 8)) (end (line 1116) (character 100))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 1117) (character 8)) (end (line 1117) (character 90))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 1117) (character 22)) (end (line 1117) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue"))) (kind "attribute def") (name "MassConcentrationOfWaterVapourAbsoluteHumidityValue") (declared-name "MassConcentrationOfWaterVapourAbsoluteHumidityValue") (range (start (line 1095) (character 4)) (end (line 1095) (character 828))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1095) (character 4)) (end (line 1095) (character 828))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 1109) (character 8)) (end (line 1109) (character 82))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "MassConcentrationOfWaterVapourAbsoluteHumidityUnit") (range none)) (redefinition (reference "mRef") (range (start (line 1109) (character 22)) (end (line 1109) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 1108) (character 8)) (end (line 1108) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 1108) (character 22)) (end (line 1108) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfDryMatterValue"))) (kind "attribute def") (name "MassFractionOfDryMatterValue") (declared-name "MassFractionOfDryMatterValue") (range (start (line 1172) (character 4)) (end (line 1172) (character 552))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfDryMatterValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1172) (character 4)) (end (line 1172) (character 552))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfDryMatterValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfWaterValue"))) (kind "attribute def") (name "MassFractionOfWaterValue") (declared-name "MassFractionOfWaterValue") (range (start (line 1155) (character 4)) (end (line 1155) (character 548))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfWaterValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1155) (character 4)) (end (line 1155) (character 548))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfWaterValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterToDryMatterValue"))) (kind "attribute def") (name "MassRatioOfWaterToDryMatterValue") (declared-name "MassRatioOfWaterToDryMatterValue") (range (start (line 1121) (character 4)) (end (line 1121) (character 664))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterToDryMatterValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1121) (character 4)) (end (line 1121) (character 664))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterToDryMatterValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterVapourToDryGasValue"))) (kind "attribute def") (name "MassRatioOfWaterVapourToDryGasValue") (declared-name "MassRatioOfWaterVapourToDryGasValue") (range (start (line 1138) (character 4)) (end (line 1138) (character 760))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterVapourToDryGasValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1138) (character 4)) (end (line 1138) (character 760))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterVapourToDryGasValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit"))) (kind "attribute def") (name "MassieuFunctionUnit") (declared-name "MassieuFunctionUnit") (range (start (line 943) (character 4)) (end (line 943) (character 626))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 946) (character 8)) (end (line 946) (character 105))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 944) (character 8)) (end (line 944) (character 102))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 945) (character 8)) (end (line 945) (character 100))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 948) (character 8)) (end (line 948) (character 130))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 948) (character 22)) (end (line 948) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 947) (character 8)) (end (line 947) (character 124))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue"))) (kind "attribute def") (name "MassieuFunctionValue") (declared-name "MassieuFunctionValue") (range (start (line 924) (character 4)) (end (line 924) (character 678))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::_documentation"))) (kind "documentation") (name "") (range (start (line 924) (character 4)) (end (line 924) (character 678))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 938) (character 8)) (end (line 938) (character 51))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "MassieuFunctionUnit") (range none)) (redefinition (reference "mRef") (range (start (line 938) (character 22)) (end (line 938) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 937) (character 8)) (end (line 937) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 937) (character 22)) (end (line 937) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MaximumThermalEfficiencyValue"))) (kind "attribute def") (name "MaximumThermalEfficiencyValue") (declared-name "MaximumThermalEfficiencyValue") (range (start (line 1025) (character 4)) (end (line 1025) (character 819))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::MaximumThermalEfficiencyValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1025) (character 4)) (end (line 1025) (character 819))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::MaximumThermalEfficiencyValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit"))) (kind "attribute def") (name "PlanckFunctionUnit") (declared-name "PlanckFunctionUnit") (range (start (line 971) (character 4)) (end (line 971) (character 625))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 974) (character 8)) (end (line 974) (character 105))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 972) (character 8)) (end (line 972) (character 102))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 973) (character 8)) (end (line 973) (character 100))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 976) (character 8)) (end (line 976) (character 130))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 976) (character 22)) (end (line 976) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 975) (character 8)) (end (line 975) (character 124))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue"))) (kind "attribute def") (name "PlanckFunctionValue") (declared-name "PlanckFunctionValue") (range (start (line 952) (character 4)) (end (line 952) (character 664))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::_documentation"))) (kind "documentation") (name "") (range (start (line 952) (character 4)) (end (line 952) (character 664))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 966) (character 8)) (end (line 966) (character 50))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "PlanckFunctionUnit") (range none)) (redefinition (reference "mRef") (range (start (line 966) (character 22)) (end (line 966) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 965) (character 8)) (end (line 965) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 965) (character 22)) (end (line 965) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit"))) (kind "attribute def") (name "PressureCoefficientUnit") (declared-name "PressureCoefficientUnit") (range (start (line 149) (character 4)) (end (line 149) (character 631))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 152) (character 8)) (end (line 152) (character 105))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 150) (character 8)) (end (line 150) (character 103))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 151) (character 8)) (end (line 151) (character 100))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 154) (character 8)) (end (line 154) (character 130))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 154) (character 22)) (end (line 154) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 153) (character 8)) (end (line 153) (character 124))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue"))) (kind "attribute def") (name "PressureCoefficientValue") (declared-name "PressureCoefficientValue") (range (start (line 130) (character 4)) (end (line 130) (character 737))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::_documentation"))) (kind "documentation") (name "") (range (start (line 130) (character 4)) (end (line 130) (character 737))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 144) (character 8)) (end (line 144) (character 55))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "PressureCoefficientUnit") (range none)) (redefinition (reference "mRef") (range (start (line 144) (character 22)) (end (line 144) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 143) (character 8)) (end (line 143) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 143) (character 22)) (end (line 143) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::RatioOfSpecificHeatCapacitiesValue"))) (kind "attribute def") (name "RatioOfSpecificHeatCapacitiesValue") (declared-name "RatioOfSpecificHeatCapacitiesValue") (range (start (line 630) (character 4)) (end (line 630) (character 877))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::RatioOfSpecificHeatCapacitiesValue::_documentation"))) (kind "documentation") (name "") (range (start (line 630) (character 4)) (end (line 630) (character 877))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::RatioOfSpecificHeatCapacitiesValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (kind "import") (name "Real") (declared-name "Real") (range (start (line 14) (character 4)) (end (line 14) (character 38))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 14) (character 19)) (end (line 14) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativeHumidityValue"))) (kind "attribute def") (name "RelativeHumidityValue") (declared-name "RelativeHumidityValue") (range (start (line 1189) (character 4)) (end (line 1189) (character 755))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativeHumidityValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1189) (character 4)) (end (line 1189) (character 755))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::RelativeHumidityValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassConcentrationOfVapourValue"))) (kind "attribute def") (name "RelativeMassConcentrationOfVapourValue") (declared-name "RelativeMassConcentrationOfVapourValue") (range (start (line 1206) (character 4)) (end (line 1206) (character 914))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassConcentrationOfVapourValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1206) (character 4)) (end (line 1206) (character 914))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassConcentrationOfVapourValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassRatioOfVapourValue"))) (kind "attribute def") (name "RelativeMassRatioOfVapourValue") (declared-name "RelativeMassRatioOfVapourValue") (range (start (line 1223) (character 4)) (end (line 1223) (character 817))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassRatioOfVapourValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1223) (character 4)) (end (line 1223) (character 817))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassRatioOfVapourValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit"))) (kind "attribute def") (name "RelativePressureCoefficientUnit") (declared-name "RelativePressureCoefficientUnit") (range (start (line 124) (character 4)) (end (line 124) (character 296))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 126) (character 8)) (end (line 126) (character 98))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 126) (character 22)) (end (line 126) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 125) (character 8)) (end (line 125) (character 124))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue"))) (kind "attribute def") (name "RelativePressureCoefficientValue") (declared-name "RelativePressureCoefficientValue") (range (start (line 105) (character 4)) (end (line 105) (character 833))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::_documentation"))) (kind "documentation") (name "") (range (start (line 105) (character 4)) (end (line 105) (character 833))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 119) (character 8)) (end (line 119) (character 63))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "RelativePressureCoefficientUnit") (range none)) (redefinition (reference "mRef") (range (start (line 119) (character 22)) (end (line 119) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 118) (character 8)) (end (line 118) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 118) (character 22)) (end (line 118) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit"))) (kind "attribute def") (name "SpecificEnergyUnit") (declared-name "SpecificEnergyUnit") (range (start (line 837) (character 4)) (end (line 837) (character 363))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 839) (character 8)) (end (line 839) (character 105))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 838) (character 8)) (end (line 838) (character 102))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 840) (character 8)) (end (line 840) (character 94))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 840) (character 22)) (end (line 840) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue"))) (kind "attribute def") (name "SpecificEnergyValue") (declared-name "SpecificEnergyValue") (range (start (line 818) (character 4)) (end (line 818) (character 597))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::_documentation"))) (kind "documentation") (name "") (range (start (line 818) (character 4)) (end (line 818) (character 597))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 832) (character 8)) (end (line 832) (character 50))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "SpecificEnergyUnit") (range none)) (redefinition (reference "mRef") (range (start (line 832) (character 22)) (end (line 832) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 831) (character 8)) (end (line 831) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 831) (character 22)) (end (line 831) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit"))) (kind "attribute def") (name "SpecificEnthalpyUnit") (declared-name "SpecificEnthalpyUnit") (range (start (line 881) (character 4)) (end (line 881) (character 365))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 883) (character 8)) (end (line 883) (character 105))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 882) (character 8)) (end (line 882) (character 102))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 884) (character 8)) (end (line 884) (character 94))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 884) (character 22)) (end (line 884) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue"))) (kind "attribute def") (name "SpecificEnthalpyValue") (declared-name "SpecificEnthalpyValue") (range (start (line 862) (character 4)) (end (line 862) (character 609))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::_documentation"))) (kind "documentation") (name "") (range (start (line 862) (character 4)) (end (line 862) (character 609))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 876) (character 8)) (end (line 876) (character 52))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "SpecificEnthalpyUnit") (range none)) (redefinition (reference "mRef") (range (start (line 876) (character 22)) (end (line 876) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 875) (character 8)) (end (line 875) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 875) (character 22)) (end (line 875) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit"))) (kind "attribute def") (name "SpecificEntropyUnit") (declared-name "SpecificEntropyUnit") (range (start (line 713) (character 4)) (end (line 713) (character 517))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 715) (character 8)) (end (line 715) (character 105))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 714) (character 8)) (end (line 714) (character 102))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 717) (character 8)) (end (line 717) (character 122))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 717) (character 22)) (end (line 717) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 716) (character 8)) (end (line 716) (character 124))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue"))) (kind "attribute def") (name "SpecificEntropyValue") (declared-name "SpecificEntropyValue") (range (start (line 694) (character 4)) (end (line 694) (character 688))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::_documentation"))) (kind "documentation") (name "") (range (start (line 694) (character 4)) (end (line 694) (character 688))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 708) (character 8)) (end (line 708) (character 51))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "SpecificEntropyUnit") (range none)) (redefinition (reference "mRef") (range (start (line 708) (character 22)) (end (line 708) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 707) (character 8)) (end (line 707) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 707) (character 22)) (end (line 707) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit"))) (kind "attribute def") (name "SpecificGasConstantUnit") (declared-name "SpecificGasConstantUnit") (range (start (line 1061) (character 4)) (end (line 1061) (character 521))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 1063) (character 8)) (end (line 1063) (character 105))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 1062) (character 8)) (end (line 1062) (character 102))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 1065) (character 8)) (end (line 1065) (character 122))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 1065) (character 22)) (end (line 1065) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 1064) (character 8)) (end (line 1064) (character 124))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue"))) (kind "attribute def") (name "SpecificGasConstantValue") (declared-name "SpecificGasConstantValue") (range (start (line 1042) (character 4)) (end (line 1042) (character 634))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1042) (character 4)) (end (line 1042) (character 634))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 1056) (character 8)) (end (line 1056) (character 55))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "SpecificGasConstantUnit") (range none)) (redefinition (reference "mRef") (range (start (line 1056) (character 22)) (end (line 1056) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 1055) (character 8)) (end (line 1055) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 1055) (character 22)) (end (line 1055) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit"))) (kind "attribute def") (name "SpecificHeatCapacityAtConstantPressureUnit") (declared-name "SpecificHeatCapacityAtConstantPressureUnit") (range (start (line 568) (character 4)) (end (line 568) (character 540))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 570) (character 8)) (end (line 570) (character 105))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 569) (character 8)) (end (line 569) (character 102))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 572) (character 8)) (end (line 572) (character 122))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 572) (character 22)) (end (line 572) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 571) (character 8)) (end (line 571) (character 124))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue"))) (kind "attribute def") (name "SpecificHeatCapacityAtConstantPressureValue") (declared-name "SpecificHeatCapacityAtConstantPressureValue") (range (start (line 549) (character 4)) (end (line 549) (character 722))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::_documentation"))) (kind "documentation") (name "") (range (start (line 549) (character 4)) (end (line 549) (character 722))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 563) (character 8)) (end (line 563) (character 74))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "SpecificHeatCapacityAtConstantPressureUnit") (range none)) (redefinition (reference "mRef") (range (start (line 563) (character 22)) (end (line 563) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 562) (character 8)) (end (line 562) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 562) (character 22)) (end (line 562) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit"))) (kind "attribute def") (name "SpecificHeatCapacityAtConstantVolumeUnit") (declared-name "SpecificHeatCapacityAtConstantVolumeUnit") (range (start (line 595) (character 4)) (end (line 595) (character 538))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 597) (character 8)) (end (line 597) (character 105))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 596) (character 8)) (end (line 596) (character 102))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 599) (character 8)) (end (line 599) (character 122))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 599) (character 22)) (end (line 599) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 598) (character 8)) (end (line 598) (character 124))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue"))) (kind "attribute def") (name "SpecificHeatCapacityAtConstantVolumeValue") (declared-name "SpecificHeatCapacityAtConstantVolumeValue") (range (start (line 576) (character 4)) (end (line 576) (character 713))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::_documentation"))) (kind "documentation") (name "") (range (start (line 576) (character 4)) (end (line 576) (character 713))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 590) (character 8)) (end (line 590) (character 72))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "SpecificHeatCapacityAtConstantVolumeUnit") (range none)) (redefinition (reference "mRef") (range (start (line 590) (character 22)) (end (line 590) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 589) (character 8)) (end (line 589) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 589) (character 22)) (end (line 589) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit"))) (kind "attribute def") (name "SpecificHeatCapacityAtSaturatedVapourPressureUnit") (declared-name "SpecificHeatCapacityAtSaturatedVapourPressureUnit") (range (start (line 622) (character 4)) (end (line 622) (character 547))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 624) (character 8)) (end (line 624) (character 105))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 623) (character 8)) (end (line 623) (character 102))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 626) (character 8)) (end (line 626) (character 122))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 626) (character 22)) (end (line 626) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 625) (character 8)) (end (line 625) (character 124))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue"))) (kind "attribute def") (name "SpecificHeatCapacityAtSaturatedVapourPressureValue") (declared-name "SpecificHeatCapacityAtSaturatedVapourPressureValue") (range (start (line 603) (character 4)) (end (line 603) (character 724))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::_documentation"))) (kind "documentation") (name "") (range (start (line 603) (character 4)) (end (line 603) (character 724))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 617) (character 8)) (end (line 617) (character 81))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "SpecificHeatCapacityAtSaturatedVapourPressureUnit") (range none)) (redefinition (reference "mRef") (range (start (line 617) (character 22)) (end (line 617) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 616) (character 8)) (end (line 616) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 616) (character 22)) (end (line 616) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit"))) (kind "attribute def") (name "SpecificHeatCapacityUnit") (declared-name "SpecificHeatCapacityUnit") (range (start (line 541) (character 4)) (end (line 541) (character 522))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 543) (character 8)) (end (line 543) (character 105))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 542) (character 8)) (end (line 542) (character 102))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 545) (character 8)) (end (line 545) (character 122))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 545) (character 22)) (end (line 545) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 544) (character 8)) (end (line 544) (character 124))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue"))) (kind "attribute def") (name "SpecificHeatCapacityValue") (declared-name "SpecificHeatCapacityValue") (range (start (line 522) (character 4)) (end (line 522) (character 729))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::_documentation"))) (kind "documentation") (name "") (range (start (line 522) (character 4)) (end (line 522) (character 729))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 536) (character 8)) (end (line 536) (character 56))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "SpecificHeatCapacityUnit") (range none)) (redefinition (reference "mRef") (range (start (line 536) (character 22)) (end (line 536) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 535) (character 8)) (end (line 535) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 535) (character 22)) (end (line 535) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit"))) (kind "attribute def") (name "SurfaceCoefficientOfHeatTransferUnit") (declared-name "SurfaceCoefficientOfHeatTransferUnit") (range (start (line 373) (character 4)) (end (line 373) (character 530))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 375) (character 8)) (end (line 375) (character 105))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 374) (character 8)) (end (line 374) (character 100))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 377) (character 8)) (end (line 377) (character 120))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 377) (character 22)) (end (line 377) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 376) (character 8)) (end (line 376) (character 124))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue"))) (kind "attribute def") (name "SurfaceCoefficientOfHeatTransferValue") (declared-name "SurfaceCoefficientOfHeatTransferValue") (range (start (line 354) (character 4)) (end (line 354) (character 941))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::_documentation"))) (kind "documentation") (name "") (range (start (line 354) (character 4)) (end (line 354) (character 941))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 368) (character 8)) (end (line 368) (character 68))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "SurfaceCoefficientOfHeatTransferUnit") (range none)) (redefinition (reference "mRef") (range (start (line 368) (character 22)) (end (line 368) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 367) (character 8)) (end (line 367) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 367) (character 22)) (end (line 367) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::TemperatureUnit"))) (kind "alias") (name "TemperatureUnit") (declared-name "TemperatureUnit") (range (start (line 25) (character 4)) (end (line 25) (character 59))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::TemperatureValue"))) (kind "alias") (name "TemperatureValue") (declared-name "TemperatureValue") (range (start (line 26) (character 4)) (end (line 26) (character 61))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit"))) (kind "attribute def") (name "ThermalConductanceUnit") (declared-name "ThermalConductanceUnit") (range (start (line 459) (character 4)) (end (line 459) (character 629))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 462) (character 8)) (end (line 462) (character 105))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 460) (character 8)) (end (line 460) (character 102))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 461) (character 8)) (end (line 461) (character 100))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 464) (character 8)) (end (line 464) (character 130))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 464) (character 22)) (end (line 464) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 463) (character 8)) (end (line 463) (character 124))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue"))) (kind "attribute def") (name "ThermalConductanceValue") (declared-name "ThermalConductanceValue") (range (start (line 440) (character 4)) (end (line 440) (character 713))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::_documentation"))) (kind "documentation") (name "") (range (start (line 440) (character 4)) (end (line 440) (character 713))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 454) (character 8)) (end (line 454) (character 54))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "ThermalConductanceUnit") (range none)) (redefinition (reference "mRef") (range (start (line 454) (character 22)) (end (line 454) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 453) (character 8)) (end (line 453) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 453) (character 22)) (end (line 453) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit"))) (kind "attribute def") (name "ThermalConductivityUnit") (declared-name "ThermalConductivityUnit") (range (start (line 318) (character 4)) (end (line 318) (character 630))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 321) (character 8)) (end (line 321) (character 105))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 319) (character 8)) (end (line 319) (character 102))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 320) (character 8)) (end (line 320) (character 100))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 323) (character 8)) (end (line 323) (character 130))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 323) (character 22)) (end (line 323) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 322) (character 8)) (end (line 322) (character 124))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue"))) (kind "attribute def") (name "ThermalConductivityValue") (declared-name "ThermalConductivityValue") (range (start (line 299) (character 4)) (end (line 299) (character 674))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::_documentation"))) (kind "documentation") (name "") (range (start (line 299) (character 4)) (end (line 299) (character 674))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 313) (character 8)) (end (line 313) (character 55))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "ThermalConductivityUnit") (range none)) (redefinition (reference "mRef") (range (start (line 313) (character 22)) (end (line 313) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 312) (character 8)) (end (line 312) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 312) (character 22)) (end (line 312) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit"))) (kind "attribute def") (name "ThermalDiffusivityUnit") (declared-name "ThermalDiffusivityUnit") (range (start (line 487) (character 4)) (end (line 487) (character 367))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 489) (character 8)) (end (line 489) (character 105))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 488) (character 8)) (end (line 488) (character 102))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 490) (character 8)) (end (line 490) (character 94))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 490) (character 22)) (end (line 490) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue"))) (kind "attribute def") (name "ThermalDiffusivityValue") (declared-name "ThermalDiffusivityValue") (range (start (line 468) (character 4)) (end (line 468) (character 769))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::_documentation"))) (kind "documentation") (name "") (range (start (line 468) (character 4)) (end (line 468) (character 769))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 482) (character 8)) (end (line 482) (character 54))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "ThermalDiffusivityUnit") (range none)) (redefinition (reference "mRef") (range (start (line 482) (character 22)) (end (line 482) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 481) (character 8)) (end (line 481) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 481) (character 22)) (end (line 481) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalEfficiencyValue"))) (kind "attribute def") (name "ThermalEfficiencyValue") (declared-name "ThermalEfficiencyValue") (range (start (line 1008) (character 4)) (end (line 1008) (character 589))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalEfficiencyValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1008) (character 4)) (end (line 1008) (character 589))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalEfficiencyValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit"))) (kind "attribute def") (name "ThermalInsulanceUnit") (declared-name "ThermalInsulanceUnit") (range (start (line 400) (character 4)) (end (line 400) (character 513))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 402) (character 8)) (end (line 402) (character 104))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 401) (character 8)) (end (line 401) (character 101))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 404) (character 8)) (end (line 404) (character 120))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 404) (character 22)) (end (line 404) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 403) (character 8)) (end (line 403) (character 123))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue"))) (kind "attribute def") (name "ThermalInsulanceValue") (declared-name "ThermalInsulanceValue") (range (start (line 381) (character 4)) (end (line 381) (character 743))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::_documentation"))) (kind "documentation") (name "") (range (start (line 381) (character 4)) (end (line 381) (character 743))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 395) (character 8)) (end (line 395) (character 52))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "ThermalInsulanceUnit") (range none)) (redefinition (reference "mRef") (range (start (line 395) (character 22)) (end (line 395) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 394) (character 8)) (end (line 394) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 394) (character 22)) (end (line 394) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit"))) (kind "attribute def") (name "ThermalResistanceUnit") (declared-name "ThermalResistanceUnit") (range (start (line 431) (character 4)) (end (line 431) (character 628))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 434) (character 8)) (end (line 434) (character 104))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 432) (character 8)) (end (line 432) (character 103))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 433) (character 8)) (end (line 433) (character 101))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 436) (character 8)) (end (line 436) (character 130))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 436) (character 22)) (end (line 436) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 435) (character 8)) (end (line 435) (character 123))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue"))) (kind "attribute def") (name "ThermalResistanceValue") (declared-name "ThermalResistanceValue") (range (start (line 412) (character 4)) (end (line 412) (character 630))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::_documentation"))) (kind "documentation") (name "") (range (start (line 412) (character 4)) (end (line 412) (character 630))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 426) (character 8)) (end (line 426) (character 53))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "ThermalResistanceUnit") (range none)) (redefinition (reference "mRef") (range (start (line 426) (character 22)) (end (line 426) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 425) (character 8)) (end (line 425) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 425) (character 22)) (end (line 425) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 64627))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::amountOfHeat"))) (kind "alias") (name "amountOfHeat") (declared-name "amountOfHeat") (range (start (line 227) (character 4)) (end (line 227) (character 32))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::celsiusTemperature"))) (kind "attribute def") (name "celsiusTemperature") (declared-name "celsiusTemperature") (range (start (line 47) (character 4)) (end (line 47) (character 91))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "CelsiusTemperatureValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::coefficientOfHeatTransfer"))) (kind "attribute def") (name "coefficientOfHeatTransfer") (declared-name "coefficientOfHeatTransfer") (range (start (line 344) (character 4)) (end (line 344) (character 105))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "CoefficientOfHeatTransferValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::coefficientOfThermalInsulance"))) (kind "alias") (name "coefficientOfThermalInsulance") (declared-name "coefficientOfThermalInsulance") (range (start (line 409) (character 4)) (end (line 409) (character 61))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::cubicExpansionCoefficient"))) (kind "attribute def") (name "cubicExpansionCoefficient") (declared-name "cubicExpansionCoefficient") (range (start (line 97) (character 4)) (end (line 97) (character 105))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "CubicExpansionCoefficientValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::densityOfHeatFlowRate"))) (kind "attribute def") (name "densityOfHeatFlowRate") (declared-name "densityOfHeatFlowRate") (range (start (line 290) (character 4)) (end (line 290) (character 97))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "DensityOfHeatFlowRateValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::dewPointTemperature"))) (kind "attribute def") (name "dewPointTemperature") (declared-name "dewPointTemperature") (range (start (line 1240) (character 4)) (end (line 1240) (character 726))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ThermodynamicTemperatureValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::dewPointTemperature::_documentation"))) (kind "documentation") (name "") (range (start (line 1240) (character 4)) (end (line 1240) (character 726))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::dewPointTemperature"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::energy"))) (kind "attribute def") (name "energy") (declared-name "energy") (range (start (line 738) (character 4)) (end (line 738) (character 67))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "EnergyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::enthalpy"))) (kind "attribute def") (name "enthalpy") (declared-name "enthalpy") (range (start (line 766) (character 4)) (end (line 766) (character 627))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "EnergyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::enthalpy::_documentation"))) (kind "documentation") (name "") (range (start (line 766) (character 4)) (end (line 766) (character 627))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::enthalpy"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::entropy"))) (kind "attribute def") (name "entropy") (declared-name "entropy") (range (start (line 683) (character 4)) (end (line 683) (character 69))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "EntropyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::gibbsEnergy"))) (kind "attribute def") (name "gibbsEnergy") (declared-name "gibbsEnergy") (range (start (line 800) (character 4)) (end (line 800) (character 741))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "EnergyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::gibbsEnergy::_documentation"))) (kind "documentation") (name "") (range (start (line 800) (character 4)) (end (line 800) (character 741))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::gibbsEnergy"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::gibbsFunction"))) (kind "alias") (name "gibbsFunction") (declared-name "gibbsFunction") (range (start (line 815) (character 4)) (end (line 815) (character 40))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::heat"))) (kind "attribute def") (name "heat") (declared-name "heat") (range (start (line 212) (character 4)) (end (line 212) (character 1050))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "EnergyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::heat::_documentation"))) (kind "documentation") (name "") (range (start (line 212) (character 4)) (end (line 212) (character 1050))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::heat"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::heatCapacity"))) (kind "attribute def") (name "heatCapacity") (declared-name "heatCapacity") (range (start (line 511) (character 4)) (end (line 511) (character 79))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "HeatCapacityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::heatFlowRate"))) (kind "attribute def") (name "heatFlowRate") (declared-name "heatFlowRate") (range (start (line 263) (character 4)) (end (line 263) (character 79))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "HeatFlowRateValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::helmholtzEnergy"))) (kind "attribute def") (name "helmholtzEnergy") (declared-name "helmholtzEnergy") (range (start (line 782) (character 4)) (end (line 782) (character 791))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "EnergyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::helmholtzEnergy::_documentation"))) (kind "documentation") (name "") (range (start (line 782) (character 4)) (end (line 782) (character 791))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::helmholtzEnergy"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::helmholtzFunction"))) (kind "alias") (name "helmholtzFunction") (declared-name "helmholtzFunction") (range (start (line 797) (character 4)) (end (line 797) (character 48))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::internalEnergy"))) (kind "attribute def") (name "internalEnergy") (declared-name "internalEnergy") (range (start (line 748) (character 4)) (end (line 748) (character 791))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "EnergyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::internalEnergy::_documentation"))) (kind "documentation") (name "") (range (start (line 748) (character 4)) (end (line 748) (character 791))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::internalEnergy"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::isentropicCompressibility"))) (kind "attribute def") (name "isentropicCompressibility") (declared-name "isentropicCompressibility") (range (start (line 202) (character 4)) (end (line 202) (character 105))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "IsentropicCompressibilityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::isentropicExpansionFactor"))) (kind "alias") (name "isentropicExpansionFactor") (declared-name "isentropicExpansionFactor") (range (start (line 663) (character 4)) (end (line 663) (character 59))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::isentropicExponent"))) (kind "attribute def") (name "isentropicExponent") (declared-name "isentropicExponent") (range (start (line 661) (character 4)) (end (line 661) (character 78))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "IsentropicExponentValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::isothermalCompressibility"))) (kind "attribute def") (name "isothermalCompressibility") (declared-name "isothermalCompressibility") (range (start (line 175) (character 4)) (end (line 175) (character 105))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "IsothermalCompressibilityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::jouleThomsonCoefficient"))) (kind "attribute def") (name "jouleThomsonCoefficient") (declared-name "jouleThomsonCoefficient") (range (start (line 997) (character 4)) (end (line 997) (character 101))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "JouleThomsonCoefficientValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::latentHeat"))) (kind "attribute def") (name "latentHeat") (declared-name "latentHeat") (range (start (line 230) (character 4)) (end (line 230) (character 598))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "EnergyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::latentHeat::_documentation"))) (kind "documentation") (name "") (range (start (line 230) (character 4)) (end (line 230) (character 598))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::latentHeat"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::linearExpansionCoefficient"))) (kind "attribute def") (name "linearExpansionCoefficient") (declared-name "linearExpansionCoefficient") (range (start (line 72) (character 4)) (end (line 72) (character 107))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "LinearExpansionCoefficientValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::massConcentrationOfWater"))) (kind "attribute def") (name "massConcentrationOfWater") (declared-name "massConcentrationOfWater") (range (start (line 1086) (character 4)) (end (line 1086) (character 103))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "MassConcentrationOfWaterValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::massConcentrationOfWaterVapourAbsoluteHumidity"))) (kind "attribute def") (name "massConcentrationOfWaterVapourAbsoluteHumidity") (declared-name "massConcentrationOfWaterVapourAbsoluteHumidity") (range (start (line 1112) (character 4)) (end (line 1112) (character 147))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "MassConcentrationOfWaterVapourAbsoluteHumidityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::massFractionOfDryMatter"))) (kind "attribute def") (name "massFractionOfDryMatter") (declared-name "massFractionOfDryMatter") (range (start (line 1186) (character 4)) (end (line 1186) (character 88))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "MassFractionOfDryMatterValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::massFractionOfWater"))) (kind "attribute def") (name "massFractionOfWater") (declared-name "massFractionOfWater") (range (start (line 1169) (character 4)) (end (line 1169) (character 80))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "MassFractionOfWaterValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::massRatioOfWaterToDryMatter"))) (kind "attribute def") (name "massRatioOfWaterToDryMatter") (declared-name "massRatioOfWaterToDryMatter") (range (start (line 1135) (character 4)) (end (line 1135) (character 96))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "MassRatioOfWaterToDryMatterValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::massRatioOfWaterVapourToDryGas"))) (kind "attribute def") (name "massRatioOfWaterVapourToDryGas") (declared-name "massRatioOfWaterVapourToDryGas") (range (start (line 1152) (character 4)) (end (line 1152) (character 102))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "MassRatioOfWaterVapourToDryGasValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::massieuFunction"))) (kind "attribute def") (name "massieuFunction") (declared-name "massieuFunction") (range (start (line 941) (character 4)) (end (line 941) (character 85))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "MassieuFunctionValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::maximumThermalEfficiency"))) (kind "attribute def") (name "maximumThermalEfficiency") (declared-name "maximumThermalEfficiency") (range (start (line 1039) (character 4)) (end (line 1039) (character 90))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "MaximumThermalEfficiencyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::planckFunction"))) (kind "attribute def") (name "planckFunction") (declared-name "planckFunction") (range (start (line 969) (character 4)) (end (line 969) (character 83))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "PlanckFunctionValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::pressureCoefficient"))) (kind "attribute def") (name "pressureCoefficient") (declared-name "pressureCoefficient") (range (start (line 147) (character 4)) (end (line 147) (character 93))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "PressureCoefficientValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::ratioOfSpecificHeatCapacities"))) (kind "attribute def") (name "ratioOfSpecificHeatCapacities") (declared-name "ratioOfSpecificHeatCapacities") (range (start (line 644) (character 4)) (end (line 644) (character 100))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "RatioOfSpecificHeatCapacitiesValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::relativeHumidity"))) (kind "attribute def") (name "relativeHumidity") (declared-name "relativeHumidity") (range (start (line 1203) (character 4)) (end (line 1203) (character 74))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "RelativeHumidityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::relativeMassConcentrationOfVapour"))) (kind "attribute def") (name "relativeMassConcentrationOfVapour") (declared-name "relativeMassConcentrationOfVapour") (range (start (line 1220) (character 4)) (end (line 1220) (character 108))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "RelativeMassConcentrationOfVapourValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::relativeMassRatioOfVapour"))) (kind "attribute def") (name "relativeMassRatioOfVapour") (declared-name "relativeMassRatioOfVapour") (range (start (line 1237) (character 4)) (end (line 1237) (character 92))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "RelativeMassRatioOfVapourValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::relativePressureCoefficient"))) (kind "attribute def") (name "relativePressureCoefficient") (declared-name "relativePressureCoefficient") (range (start (line 122) (character 4)) (end (line 122) (character 109))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "RelativePressureCoefficientValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::specificEnergy"))) (kind "attribute def") (name "specificEnergy") (declared-name "specificEnergy") (range (start (line 835) (character 4)) (end (line 835) (character 83))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "SpecificEnergyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::specificEnthalpy"))) (kind "attribute def") (name "specificEnthalpy") (declared-name "specificEnthalpy") (range (start (line 879) (character 4)) (end (line 879) (character 87))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "SpecificEnthalpyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::specificEntropy"))) (kind "attribute def") (name "specificEntropy") (declared-name "specificEntropy") (range (start (line 711) (character 4)) (end (line 711) (character 85))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "SpecificEntropyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::specificGasConstant"))) (kind "attribute def") (name "specificGasConstant") (declared-name "specificGasConstant") (range (start (line 1059) (character 4)) (end (line 1059) (character 93))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "SpecificGasConstantValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::specificGibbsEnergy"))) (kind "attribute def") (name "specificGibbsEnergy") (declared-name "specificGibbsEnergy") (range (start (line 906) (character 4)) (end (line 906) (character 687))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "SpecificEnergyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::specificGibbsEnergy::_documentation"))) (kind "documentation") (name "") (range (start (line 906) (character 4)) (end (line 906) (character 687))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::specificGibbsEnergy"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::specificGibbsFunction"))) (kind "alias") (name "specificGibbsFunction") (declared-name "specificGibbsFunction") (range (start (line 921) (character 4)) (end (line 921) (character 56))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacity"))) (kind "attribute def") (name "specificHeatCapacity") (declared-name "specificHeatCapacity") (range (start (line 539) (character 4)) (end (line 539) (character 95))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "SpecificHeatCapacityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtConstantPressure"))) (kind "attribute def") (name "specificHeatCapacityAtConstantPressure") (declared-name "specificHeatCapacityAtConstantPressure") (range (start (line 566) (character 4)) (end (line 566) (character 131))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "SpecificHeatCapacityAtConstantPressureValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtConstantVolume"))) (kind "attribute def") (name "specificHeatCapacityAtConstantVolume") (declared-name "specificHeatCapacityAtConstantVolume") (range (start (line 593) (character 4)) (end (line 593) (character 127))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "SpecificHeatCapacityAtConstantVolumeValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtSaturatedVapourPressure"))) (kind "attribute def") (name "specificHeatCapacityAtSaturatedVapourPressure") (declared-name "specificHeatCapacityAtSaturatedVapourPressure") (range (start (line 620) (character 4)) (end (line 620) (character 145))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "SpecificHeatCapacityAtSaturatedVapourPressureValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::specificHelmholtzEnergy"))) (kind "attribute def") (name "specificHelmholtzEnergy") (declared-name "specificHelmholtzEnergy") (range (start (line 888) (character 4)) (end (line 888) (character 716))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "SpecificEnergyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::specificHelmholtzEnergy::_documentation"))) (kind "documentation") (name "") (range (start (line 888) (character 4)) (end (line 888) (character 716))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::specificHelmholtzEnergy"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::specificHelmholtzFunction"))) (kind "alias") (name "specificHelmholtzFunction") (declared-name "specificHelmholtzFunction") (range (start (line 903) (character 4)) (end (line 903) (character 64))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::specificInternalEnergy"))) (kind "attribute def") (name "specificInternalEnergy") (declared-name "specificInternalEnergy") (range (start (line 844) (character 4)) (end (line 844) (character 625))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "SpecificEnergyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::specificInternalEnergy::_documentation"))) (kind "documentation") (name "") (range (start (line 844) (character 4)) (end (line 844) (character 625))) (parent (node (document "d0") (qualified-name "ISQThermodynamics::specificInternalEnergy"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::specificThermodynamicEnergy"))) (kind "alias") (name "specificThermodynamicEnergy") (declared-name "specificThermodynamicEnergy") (range (start (line 859) (character 4)) (end (line 859) (character 65))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::surfaceCoefficientOfHeatTransfer"))) (kind "attribute def") (name "surfaceCoefficientOfHeatTransfer") (declared-name "surfaceCoefficientOfHeatTransfer") (range (start (line 371) (character 4)) (end (line 371) (character 119))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "SurfaceCoefficientOfHeatTransferValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::temperature"))) (kind "alias") (name "temperature") (declared-name "temperature") (range (start (line 27) (character 4)) (end (line 27) (character 51))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::thermalConductance"))) (kind "attribute def") (name "thermalConductance") (declared-name "thermalConductance") (range (start (line 457) (character 4)) (end (line 457) (character 91))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ThermalConductanceValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::thermalConductivity"))) (kind "attribute def") (name "thermalConductivity") (declared-name "thermalConductivity") (range (start (line 316) (character 4)) (end (line 316) (character 93))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ThermalConductivityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::thermalDiffusivity"))) (kind "attribute def") (name "thermalDiffusivity") (declared-name "thermalDiffusivity") (range (start (line 485) (character 4)) (end (line 485) (character 91))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ThermalDiffusivityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::thermalEfficiency"))) (kind "attribute def") (name "thermalEfficiency") (declared-name "thermalEfficiency") (range (start (line 1022) (character 4)) (end (line 1022) (character 76))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ThermalEfficiencyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::thermalInsulance"))) (kind "attribute def") (name "thermalInsulance") (declared-name "thermalInsulance") (range (start (line 398) (character 4)) (end (line 398) (character 87))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ThermalInsulanceValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::thermalResistance"))) (kind "attribute def") (name "thermalResistance") (declared-name "thermalResistance") (range (start (line 429) (character 4)) (end (line 429) (character 89))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))) (authored (membership (kind Owning)) (relationships (typing (reference "ThermalResistanceValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQThermodynamics::thermodynamicEnergy"))) (kind "alias") (name "thermodynamicEnergy") (declared-name "thermodynamicEnergy") (range (start (line 763) (character 4)) (end (line 763) (character 49))) (parent (node (document "d0") (qualified-name "ISQThermodynamics"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Quantities::*") (range (start (line 15) (character 19)) (end (line 15) (character 29))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "MeasurementReferences::*") (range (start (line 16) (character 19)) (end (line 16) (character 40))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::*#import2"))) (kind namespaceImport) (ordinal 0)) (authored-target "ISQBase::*") (range (start (line 17) (character 19)) (end (line 17) (character 26))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 51) (character 22)) (end (line 51) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CelsiusTemperatureUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 44) (character 22)) (end (line 44) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 43) (character 22)) (end (line 43) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 350) (character 22)) (end (line 350) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CoefficientOfHeatTransferUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 341) (character 22)) (end (line 341) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 340) (character 22)) (end (line 340) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 101) (character 22)) (end (line 101) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "CubicExpansionCoefficientUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 94) (character 22)) (end (line 94) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 93) (character 22)) (end (line 93) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 295) (character 22)) (end (line 295) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "DensityOfHeatFlowRateUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 287) (character 22)) (end (line 287) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 286) (character 22)) (end (line 286) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 744) (character 22)) (end (line 744) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "EnergyUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 735) (character 22)) (end (line 735) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 734) (character 22)) (end (line 734) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 690) (character 22)) (end (line 690) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "EntropyUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 680) (character 22)) (end (line 680) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 679) (character 22)) (end (line 679) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 518) (character 22)) (end (line 518) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "HeatCapacityUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 508) (character 22)) (end (line 508) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 507) (character 22)) (end (line 507) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 269) (character 22)) (end (line 269) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "HeatFlowRateUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 260) (character 22)) (end (line 260) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 259) (character 22)) (end (line 259) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 208) (character 22)) (end (line 208) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "IsentropicCompressibilityUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 199) (character 22)) (end (line 199) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 198) (character 22)) (end (line 198) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicExponentValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 181) (character 22)) (end (line 181) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "IsothermalCompressibilityUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 172) (character 22)) (end (line 172) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 171) (character 22)) (end (line 171) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 1004) (character 22)) (end (line 1004) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "JouleThomsonCoefficientUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 994) (character 22)) (end (line 994) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 993) (character 22)) (end (line 993) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 76) (character 22)) (end (line 76) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "LinearExpansionCoefficientUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 69) (character 22)) (end (line 69) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 68) (character 22)) (end (line 68) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 1091) (character 22)) (end (line 1091) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "MassConcentrationOfWaterUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 1083) (character 22)) (end (line 1083) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 1082) (character 22)) (end (line 1082) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 1117) (character 22)) (end (line 1117) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "MassConcentrationOfWaterVapourAbsoluteHumidityUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 1109) (character 22)) (end (line 1109) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 1108) (character 22)) (end (line 1108) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfDryMatterValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfWaterValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterToDryMatterValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterVapourToDryGasValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 948) (character 22)) (end (line 948) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "MassieuFunctionUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 938) (character 22)) (end (line 938) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 937) (character 22)) (end (line 937) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::MaximumThermalEfficiencyValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 976) (character 22)) (end (line 976) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "PlanckFunctionUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 966) (character 22)) (end (line 966) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 965) (character 22)) (end (line 965) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 154) (character 22)) (end (line 154) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "PressureCoefficientUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 144) (character 22)) (end (line 144) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 143) (character 22)) (end (line 143) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::RatioOfSpecificHeatCapacitiesValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (range (start (line 14) (character 19)) (end (line 14) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::RelativeHumidityValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassConcentrationOfVapourValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassRatioOfVapourValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 126) (character 22)) (end (line 126) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "RelativePressureCoefficientUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 119) (character 22)) (end (line 119) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 118) (character 22)) (end (line 118) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 840) (character 22)) (end (line 840) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "SpecificEnergyUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 832) (character 22)) (end (line 832) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 831) (character 22)) (end (line 831) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 884) (character 22)) (end (line 884) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "SpecificEnthalpyUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 876) (character 22)) (end (line 876) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 875) (character 22)) (end (line 875) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 717) (character 22)) (end (line 717) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "SpecificEntropyUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 708) (character 22)) (end (line 708) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 707) (character 22)) (end (line 707) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 1065) (character 22)) (end (line 1065) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "SpecificGasConstantUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 1056) (character 22)) (end (line 1056) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 1055) (character 22)) (end (line 1055) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 572) (character 22)) (end (line 572) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "SpecificHeatCapacityAtConstantPressureUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 563) (character 22)) (end (line 563) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 562) (character 22)) (end (line 562) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 599) (character 22)) (end (line 599) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "SpecificHeatCapacityAtConstantVolumeUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 590) (character 22)) (end (line 590) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 589) (character 22)) (end (line 589) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 626) (character 22)) (end (line 626) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "SpecificHeatCapacityAtSaturatedVapourPressureUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 617) (character 22)) (end (line 617) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 616) (character 22)) (end (line 616) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 545) (character 22)) (end (line 545) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "SpecificHeatCapacityUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 536) (character 22)) (end (line 536) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 535) (character 22)) (end (line 535) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 377) (character 22)) (end (line 377) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "SurfaceCoefficientOfHeatTransferUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 368) (character 22)) (end (line 368) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 367) (character 22)) (end (line 367) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 464) (character 22)) (end (line 464) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "ThermalConductanceUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 454) (character 22)) (end (line 454) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 453) (character 22)) (end (line 453) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 323) (character 22)) (end (line 323) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "ThermalConductivityUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 313) (character 22)) (end (line 313) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 312) (character 22)) (end (line 312) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 490) (character 22)) (end (line 490) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "ThermalDiffusivityUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 482) (character 22)) (end (line 482) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 481) (character 22)) (end (line 481) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalEfficiencyValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 404) (character 22)) (end (line 404) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "ThermalInsulanceUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 395) (character 22)) (end (line 395) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 394) (character 22)) (end (line 394) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 436) (character 22)) (end (line 436) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "ThermalResistanceUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 426) (character 22)) (end (line 426) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 425) (character 22)) (end (line 425) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::celsiusTemperature"))) (kind featureTyping) (ordinal 0)) (authored-target "CelsiusTemperatureValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::coefficientOfHeatTransfer"))) (kind featureTyping) (ordinal 0)) (authored-target "CoefficientOfHeatTransferValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::cubicExpansionCoefficient"))) (kind featureTyping) (ordinal 0)) (authored-target "CubicExpansionCoefficientValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::densityOfHeatFlowRate"))) (kind featureTyping) (ordinal 0)) (authored-target "DensityOfHeatFlowRateValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::dewPointTemperature"))) (kind featureTyping) (ordinal 0)) (authored-target "ThermodynamicTemperatureValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::energy"))) (kind featureTyping) (ordinal 0)) (authored-target "EnergyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::enthalpy"))) (kind featureTyping) (ordinal 0)) (authored-target "EnergyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::entropy"))) (kind featureTyping) (ordinal 0)) (authored-target "EntropyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::gibbsEnergy"))) (kind featureTyping) (ordinal 0)) (authored-target "EnergyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::heat"))) (kind featureTyping) (ordinal 0)) (authored-target "EnergyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::heatCapacity"))) (kind featureTyping) (ordinal 0)) (authored-target "HeatCapacityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::heatFlowRate"))) (kind featureTyping) (ordinal 0)) (authored-target "HeatFlowRateValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::helmholtzEnergy"))) (kind featureTyping) (ordinal 0)) (authored-target "EnergyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::internalEnergy"))) (kind featureTyping) (ordinal 0)) (authored-target "EnergyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::isentropicCompressibility"))) (kind featureTyping) (ordinal 0)) (authored-target "IsentropicCompressibilityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::isentropicExponent"))) (kind featureTyping) (ordinal 0)) (authored-target "IsentropicExponentValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicExponentValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::isothermalCompressibility"))) (kind featureTyping) (ordinal 0)) (authored-target "IsothermalCompressibilityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::jouleThomsonCoefficient"))) (kind featureTyping) (ordinal 0)) (authored-target "JouleThomsonCoefficientValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::latentHeat"))) (kind featureTyping) (ordinal 0)) (authored-target "EnergyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::linearExpansionCoefficient"))) (kind featureTyping) (ordinal 0)) (authored-target "LinearExpansionCoefficientValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::massConcentrationOfWater"))) (kind featureTyping) (ordinal 0)) (authored-target "MassConcentrationOfWaterValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::massConcentrationOfWaterVapourAbsoluteHumidity"))) (kind featureTyping) (ordinal 0)) (authored-target "MassConcentrationOfWaterVapourAbsoluteHumidityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::massFractionOfDryMatter"))) (kind featureTyping) (ordinal 0)) (authored-target "MassFractionOfDryMatterValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfDryMatterValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::massFractionOfWater"))) (kind featureTyping) (ordinal 0)) (authored-target "MassFractionOfWaterValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfWaterValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::massRatioOfWaterToDryMatter"))) (kind featureTyping) (ordinal 0)) (authored-target "MassRatioOfWaterToDryMatterValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterToDryMatterValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::massRatioOfWaterVapourToDryGas"))) (kind featureTyping) (ordinal 0)) (authored-target "MassRatioOfWaterVapourToDryGasValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterVapourToDryGasValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::massieuFunction"))) (kind featureTyping) (ordinal 0)) (authored-target "MassieuFunctionValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::maximumThermalEfficiency"))) (kind featureTyping) (ordinal 0)) (authored-target "MaximumThermalEfficiencyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::MaximumThermalEfficiencyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::planckFunction"))) (kind featureTyping) (ordinal 0)) (authored-target "PlanckFunctionValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::pressureCoefficient"))) (kind featureTyping) (ordinal 0)) (authored-target "PressureCoefficientValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::ratioOfSpecificHeatCapacities"))) (kind featureTyping) (ordinal 0)) (authored-target "RatioOfSpecificHeatCapacitiesValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::RatioOfSpecificHeatCapacitiesValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::relativeHumidity"))) (kind featureTyping) (ordinal 0)) (authored-target "RelativeHumidityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::RelativeHumidityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::relativeMassConcentrationOfVapour"))) (kind featureTyping) (ordinal 0)) (authored-target "RelativeMassConcentrationOfVapourValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassConcentrationOfVapourValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::relativeMassRatioOfVapour"))) (kind featureTyping) (ordinal 0)) (authored-target "RelativeMassRatioOfVapourValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassRatioOfVapourValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::relativePressureCoefficient"))) (kind featureTyping) (ordinal 0)) (authored-target "RelativePressureCoefficientValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::specificEnergy"))) (kind featureTyping) (ordinal 0)) (authored-target "SpecificEnergyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::specificEnthalpy"))) (kind featureTyping) (ordinal 0)) (authored-target "SpecificEnthalpyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::specificEntropy"))) (kind featureTyping) (ordinal 0)) (authored-target "SpecificEntropyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::specificGasConstant"))) (kind featureTyping) (ordinal 0)) (authored-target "SpecificGasConstantValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::specificGibbsEnergy"))) (kind featureTyping) (ordinal 0)) (authored-target "SpecificEnergyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacity"))) (kind featureTyping) (ordinal 0)) (authored-target "SpecificHeatCapacityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtConstantPressure"))) (kind featureTyping) (ordinal 0)) (authored-target "SpecificHeatCapacityAtConstantPressureValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtConstantVolume"))) (kind featureTyping) (ordinal 0)) (authored-target "SpecificHeatCapacityAtConstantVolumeValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtSaturatedVapourPressure"))) (kind featureTyping) (ordinal 0)) (authored-target "SpecificHeatCapacityAtSaturatedVapourPressureValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::specificHelmholtzEnergy"))) (kind featureTyping) (ordinal 0)) (authored-target "SpecificEnergyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::specificInternalEnergy"))) (kind featureTyping) (ordinal 0)) (authored-target "SpecificEnergyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::surfaceCoefficientOfHeatTransfer"))) (kind featureTyping) (ordinal 0)) (authored-target "SurfaceCoefficientOfHeatTransferValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::thermalConductance"))) (kind featureTyping) (ordinal 0)) (authored-target "ThermalConductanceValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::thermalConductivity"))) (kind featureTyping) (ordinal 0)) (authored-target "ThermalConductivityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::thermalDiffusivity"))) (kind featureTyping) (ordinal 0)) (authored-target "ThermalDiffusivityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::thermalEfficiency"))) (kind featureTyping) (ordinal 0)) (authored-target "ThermalEfficiencyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalEfficiencyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::thermalInsulance"))) (kind featureTyping) (ordinal 0)) (authored-target "ThermalInsulanceValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQThermodynamics::thermalResistance"))) (kind featureTyping) (ordinal 0)) (authored-target "ThermalResistanceValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue")))))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicExponentValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicExponentValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfDryMatterValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfDryMatterValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfWaterValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfWaterValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterToDryMatterValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterToDryMatterValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterVapourToDryGasValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterVapourToDryGasValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::MaximumThermalEfficiencyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MaximumThermalEfficiencyValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::RatioOfSpecificHeatCapacitiesValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::RatioOfSpecificHeatCapacitiesValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::RelativeHumidityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::RelativeHumidityValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassConcentrationOfVapourValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassConcentrationOfVapourValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassRatioOfVapourValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassRatioOfVapourValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalEfficiencyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalEfficiencyValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::dewPointTemperature::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::dewPointTemperature"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::enthalpy::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::enthalpy"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::gibbsEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::gibbsEnergy"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::heat::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::heat"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::helmholtzEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::helmholtzEnergy"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::internalEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::internalEnergy"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::latentHeat::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::latentHeat"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificGibbsEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::specificGibbsEnergy"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificHelmholtzEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::specificHelmholtzEnergy"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificInternalEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::specificInternalEnergy"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::celsiusTemperature"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::coefficientOfHeatTransfer"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::cubicExpansionCoefficient"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::densityOfHeatFlowRate"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::energy"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::enthalpy"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::entropy"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::gibbsEnergy"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::heat"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::heatCapacity"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::heatFlowRate"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::helmholtzEnergy"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::internalEnergy"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::isentropicCompressibility"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::isentropicExponent"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicExponentValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::isothermalCompressibility"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::jouleThomsonCoefficient"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::latentHeat"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::linearExpansionCoefficient"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::massConcentrationOfWater"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::massConcentrationOfWaterVapourAbsoluteHumidity"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::massFractionOfDryMatter"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfDryMatterValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::massFractionOfWater"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfWaterValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::massRatioOfWaterToDryMatter"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterToDryMatterValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::massRatioOfWaterVapourToDryGas"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterVapourToDryGasValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::massieuFunction"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::maximumThermalEfficiency"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MaximumThermalEfficiencyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::planckFunction"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::pressureCoefficient"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::ratioOfSpecificHeatCapacities"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::RatioOfSpecificHeatCapacitiesValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::relativeHumidity"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::RelativeHumidityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::relativeMassConcentrationOfVapour"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassConcentrationOfVapourValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::relativeMassRatioOfVapour"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassRatioOfVapourValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::relativePressureCoefficient"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificEnergy"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificEnthalpy"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificEntropy"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificGasConstant"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificGibbsEnergy"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacity"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtConstantPressure"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtConstantVolume"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtSaturatedVapourPressure"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificHelmholtzEnergy"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificInternalEnergy"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::surfaceCoefficientOfHeatTransfer"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::thermalConductance"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::thermalConductivity"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::thermalDiffusivity"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::thermalEfficiency"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalEfficiencyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::thermalInsulance"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::thermalResistance"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue"))) (provenance authored))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::mRef"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::num"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::celsiusTemperature"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::celsiusTemperature"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::coefficientOfHeatTransfer"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::coefficientOfHeatTransfer"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::cubicExpansionCoefficient"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::cubicExpansionCoefficient"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::densityOfHeatFlowRate"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::densityOfHeatFlowRate"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::energy"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::energy"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::enthalpy"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::enthalpy"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::entropy"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::entropy"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::gibbsEnergy"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::gibbsEnergy"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::heat"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::heat"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::heatCapacity"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::heatCapacity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::heatFlowRate"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::heatFlowRate"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::helmholtzEnergy"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::helmholtzEnergy"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::internalEnergy"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::internalEnergy"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::isentropicCompressibility"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::isentropicCompressibility"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::isentropicExponent"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicExponentValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::isentropicExponent"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::isothermalCompressibility"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::isothermalCompressibility"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::jouleThomsonCoefficient"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::jouleThomsonCoefficient"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::latentHeat"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::latentHeat"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::linearExpansionCoefficient"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::linearExpansionCoefficient"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::massConcentrationOfWater"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::massConcentrationOfWater"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::massConcentrationOfWaterVapourAbsoluteHumidity"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::massConcentrationOfWaterVapourAbsoluteHumidity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::massFractionOfDryMatter"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfDryMatterValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::massFractionOfDryMatter"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::massFractionOfWater"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfWaterValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::massFractionOfWater"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::massRatioOfWaterToDryMatter"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterToDryMatterValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::massRatioOfWaterToDryMatter"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::massRatioOfWaterVapourToDryGas"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterVapourToDryGasValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::massRatioOfWaterVapourToDryGas"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::massieuFunction"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::massieuFunction"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::maximumThermalEfficiency"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::MaximumThermalEfficiencyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::maximumThermalEfficiency"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::planckFunction"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::planckFunction"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::pressureCoefficient"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::pressureCoefficient"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::ratioOfSpecificHeatCapacities"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::RatioOfSpecificHeatCapacitiesValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::ratioOfSpecificHeatCapacities"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::relativeHumidity"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::RelativeHumidityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::relativeHumidity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::relativeMassConcentrationOfVapour"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassConcentrationOfVapourValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::relativeMassConcentrationOfVapour"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::relativeMassRatioOfVapour"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassRatioOfVapourValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::relativeMassRatioOfVapour"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::relativePressureCoefficient"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::relativePressureCoefficient"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::specificEnergy"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::specificEnergy"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::specificEnthalpy"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::specificEnthalpy"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::specificEntropy"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::specificEntropy"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::specificGasConstant"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::specificGasConstant"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::specificGibbsEnergy"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::specificGibbsEnergy"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacity"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtConstantPressure"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtConstantPressure"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtConstantVolume"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtConstantVolume"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtSaturatedVapourPressure"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtSaturatedVapourPressure"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::specificHelmholtzEnergy"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::specificHelmholtzEnergy"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::specificInternalEnergy"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::specificInternalEnergy"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::surfaceCoefficientOfHeatTransfer"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::surfaceCoefficientOfHeatTransfer"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::thermalConductance"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::thermalConductance"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::thermalConductivity"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::thermalConductivity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::thermalDiffusivity"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::thermalDiffusivity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::thermalEfficiency"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalEfficiencyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::thermalEfficiency"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::thermalInsulance"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::thermalInsulance"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQThermodynamics::thermalResistance"))) (target (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQThermodynamics::thermalResistance"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicExponentValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfDryMatterValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfWaterValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterToDryMatterValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterVapourToDryGasValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::MaximumThermalEfficiencyValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::RatioOfSpecificHeatCapacitiesValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::RelativeHumidityValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassConcentrationOfVapourValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassRatioOfVapourValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalEfficiencyValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::celsiusTemperature"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::coefficientOfHeatTransfer"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::cubicExpansionCoefficient"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::densityOfHeatFlowRate"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::dewPointTemperature"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::energy"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::enthalpy"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::entropy"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::gibbsEnergy"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::heat"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::heatCapacity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::heatFlowRate"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::helmholtzEnergy"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::internalEnergy"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::isentropicCompressibility"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::isentropicExponent"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::isothermalCompressibility"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::jouleThomsonCoefficient"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::latentHeat"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::linearExpansionCoefficient"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::massConcentrationOfWater"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::massConcentrationOfWaterVapourAbsoluteHumidity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::massFractionOfDryMatter"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::massFractionOfWater"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::massRatioOfWaterToDryMatter"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::massRatioOfWaterVapourToDryGas"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::massieuFunction"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::maximumThermalEfficiency"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::planckFunction"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::pressureCoefficient"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::ratioOfSpecificHeatCapacities"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::relativeHumidity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::relativeMassConcentrationOfVapour"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::relativeMassRatioOfVapour"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::relativePressureCoefficient"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::specificEnergy"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::specificEnthalpy"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::specificEntropy"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::specificGasConstant"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::specificGibbsEnergy"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtConstantPressure"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtConstantVolume"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtSaturatedVapourPressure"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::specificHelmholtzEnergy"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::specificInternalEnergy"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::surfaceCoefficientOfHeatTransfer"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::thermalConductance"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::thermalConductivity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::thermalDiffusivity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::thermalEfficiency"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::thermalInsulance"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQThermodynamics::thermalResistance"))) (status missing-prerequisite) (target "Base::DataValue"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/isq_thermodynamics.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 14 19) (end 14 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 15 19) (end 15 29))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 16 19) (end 16 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 17 19) (end 17 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 30 4) (end 30 1261))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 43 8) (end 43 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 43 8) (end 43 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 44 8) (end 44 54))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 49 4) (end 49 286))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 50 8) (end 50 123))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 51 8) (end 51 98))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 55 4) (end 55 756))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 68 8) (end 68 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 68 8) (end 68 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 69 8) (end 69 62))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 74 4) (end 74 295))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 75 8) (end 75 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 76 8) (end 76 98))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 80 4) (end 80 806))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 93 8) (end 93 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 93 8) (end 93 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 94 8) (end 94 61))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 99 4) (end 99 294))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 100 8) (end 100 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 101 8) (end 101 98))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 105 4) (end 105 833))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 118 8) (end 118 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 118 8) (end 118 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 119 8) (end 119 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 124 4) (end 124 296))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 125 8) (end 125 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 126 8) (end 126 98))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 130 4) (end 130 737))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 143 8) (end 143 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 143 8) (end 143 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 144 8) (end 144 55))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 149 4) (end 149 631))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 150 8) (end 150 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 151 8) (end 151 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 152 8) (end 152 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 153 8) (end 153 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 154 8) (end 154 130))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 158 4) (end 158 855))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 171 8) (end 171 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 171 8) (end 171 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 172 8) (end 172 61))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 177 4) (end 177 483))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 178 8) (end 178 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 179 8) (end 179 101))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 180 8) (end 180 104))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 181 8) (end 181 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 185 4) (end 185 834))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 198 8) (end 198 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 198 8) (end 198 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 199 8) (end 199 61))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 204 4) (end 204 483))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 205 8) (end 205 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 206 8) (end 206 101))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 207 8) (end 207 104))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 208 8) (end 208 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 246 4) (end 246 559))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 259 8) (end 259 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 259 8) (end 259 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 260 8) (end 260 48))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 265 4) (end 265 470))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 266 8) (end 266 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 267 8) (end 267 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 268 8) (end 268 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 269 8) (end 269 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 273 4) (end 273 671))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 286 8) (end 286 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 286 8) (end 286 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 287 8) (end 287 57))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 292 4) (end 292 366))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 293 8) (end 293 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 294 8) (end 294 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 295 8) (end 295 92))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 299 4) (end 299 674))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 312 8) (end 312 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 312 8) (end 312 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 313 8) (end 313 55))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 318 4) (end 318 630))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 319 8) (end 319 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 320 8) (end 320 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 321 8) (end 321 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 322 8) (end 322 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 323 8) (end 323 130))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 327 4) (end 327 821))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 340 8) (end 340 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 340 8) (end 340 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 341 8) (end 341 61))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 346 4) (end 346 523))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 347 8) (end 347 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 348 8) (end 348 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 349 8) (end 349 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 350 8) (end 350 120))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 354 4) (end 354 941))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 367 8) (end 367 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 367 8) (end 367 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 368 8) (end 368 68))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 373 4) (end 373 530))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 374 8) (end 374 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 375 8) (end 375 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 376 8) (end 376 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 377 8) (end 377 120))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 381 4) (end 381 743))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 394 8) (end 394 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 394 8) (end 394 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 395 8) (end 395 52))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 400 4) (end 400 513))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 401 8) (end 401 101))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 402 8) (end 402 104))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 403 8) (end 403 123))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 404 8) (end 404 120))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 412 4) (end 412 630))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 425 8) (end 425 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 425 8) (end 425 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 426 8) (end 426 53))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 431 4) (end 431 628))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 432 8) (end 432 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 433 8) (end 433 101))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 434 8) (end 434 104))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 435 8) (end 435 123))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 436 8) (end 436 130))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 440 4) (end 440 713))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 453 8) (end 453 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 453 8) (end 453 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 454 8) (end 454 54))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 459 4) (end 459 629))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 460 8) (end 460 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 461 8) (end 461 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 462 8) (end 462 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 463 8) (end 463 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 464 8) (end 464 130))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 468 4) (end 468 769))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 481 8) (end 481 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 481 8) (end 481 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 482 8) (end 482 54))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 487 4) (end 487 367))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 488 8) (end 488 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 489 8) (end 489 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 490 8) (end 490 94))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 494 4) (end 494 781))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 507 8) (end 507 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 507 8) (end 507 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 508 8) (end 508 48))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 513 4) (end 513 623))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 514 8) (end 514 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 515 8) (end 515 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 516 8) (end 516 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 517 8) (end 517 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 518 8) (end 518 130))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 522 4) (end 522 729))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 535 8) (end 535 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 535 8) (end 535 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 536 8) (end 536 56))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 541 4) (end 541 522))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 542 8) (end 542 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 543 8) (end 543 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 544 8) (end 544 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 545 8) (end 545 122))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 549 4) (end 549 722))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 562 8) (end 562 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 562 8) (end 562 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 563 8) (end 563 74))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 568 4) (end 568 540))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 569 8) (end 569 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 570 8) (end 570 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 571 8) (end 571 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 572 8) (end 572 122))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 576 4) (end 576 713))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 589 8) (end 589 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 589 8) (end 589 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 590 8) (end 590 72))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 595 4) (end 595 538))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 596 8) (end 596 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 597 8) (end 597 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 598 8) (end 598 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 599 8) (end 599 122))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 603 4) (end 603 724))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 616 8) (end 616 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 616 8) (end 616 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 617 8) (end 617 81))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 622 4) (end 622 547))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 623 8) (end 623 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 624 8) (end 624 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 625 8) (end 625 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 626 8) (end 626 122))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 630 4) (end 630 877))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 647 4) (end 647 751))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 666 4) (end 666 716))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 679 8) (end 679 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 679 8) (end 679 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 680 8) (end 680 43))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 685 4) (end 685 618))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 686 8) (end 686 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 687 8) (end 687 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 688 8) (end 688 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 689 8) (end 689 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 690 8) (end 690 130))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 694 4) (end 694 688))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 707 8) (end 707 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 707 8) (end 707 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 708 8) (end 708 51))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 713 4) (end 713 517))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 714 8) (end 714 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 715 8) (end 715 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 716 8) (end 716 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 717 8) (end 717 122))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 721 4) (end 721 700))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 734 8) (end 734 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 734 8) (end 734 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 735 8) (end 735 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 740 4) (end 740 464))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 741 8) (end 741 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 742 8) (end 742 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 743 8) (end 743 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 744 8) (end 744 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 818 4) (end 818 597))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 831 8) (end 831 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 831 8) (end 831 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 832 8) (end 832 50))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 837 4) (end 837 363))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 838 8) (end 838 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 839 8) (end 839 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 840 8) (end 840 94))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 862 4) (end 862 609))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 875 8) (end 875 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 875 8) (end 875 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 876 8) (end 876 52))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 881 4) (end 881 365))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 882 8) (end 882 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 883 8) (end 883 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 884 8) (end 884 94))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 924 4) (end 924 678))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 937 8) (end 937 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 937 8) (end 937 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 938 8) (end 938 51))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 943 4) (end 943 626))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 944 8) (end 944 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 945 8) (end 945 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 946 8) (end 946 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 947 8) (end 947 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 948 8) (end 948 130))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 952 4) (end 952 664))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 965 8) (end 965 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 965 8) (end 965 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 966 8) (end 966 50))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 971 4) (end 971 625))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 972 8) (end 972 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 973 8) (end 973 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 974 8) (end 974 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 975 8) (end 975 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 976 8) (end 976 130))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 980 4) (end 980 812))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 993 8) (end 993 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 993 8) (end 993 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 994 8) (end 994 59))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 999 4) (end 999 633))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1000 8) (end 1000 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1001 8) (end 1001 101))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1002 8) (end 1002 104))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1003 8) (end 1003 123))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1004 8) (end 1004 130))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1008 4) (end 1008 589))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1025 4) (end 1025 819))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1042 4) (end 1042 634))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1055 8) (end 1055 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1055 8) (end 1055 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1056 8) (end 1056 55))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1061 4) (end 1061 521))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1062 8) (end 1062 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1063 8) (end 1063 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1064 8) (end 1064 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1065 8) (end 1065 122))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1069 4) (end 1069 766))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1082 8) (end 1082 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1082 8) (end 1082 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1083 8) (end 1083 60))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1088 4) (end 1088 365))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1089 8) (end 1089 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1090 8) (end 1090 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1091 8) (end 1091 90))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1095 4) (end 1095 828))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1108 8) (end 1108 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1108 8) (end 1108 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1109 8) (end 1109 82))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1114 4) (end 1114 387))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1115 8) (end 1115 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1116 8) (end 1116 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1117 8) (end 1117 90))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1121 4) (end 1121 664))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1138 4) (end 1138 760))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1155 4) (end 1155 548))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1172 4) (end 1172 552))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1189 4) (end 1189 755))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1206 4) (end 1206 914))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1223 4) (end 1223 817))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1240 4) (end 1240 726))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

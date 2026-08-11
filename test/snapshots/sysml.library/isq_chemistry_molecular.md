@@ -1359,1107 +1359,1076 @@ standard library package ISQChemistryMolecular {
 
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'CountValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneUnit'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'EnergyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'AmountOfSubstanceValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'CountValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'CountValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'AngularMeasureValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'CountValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneUnit'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'EnergyValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'AmountOfSubstanceValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'CountValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'CountValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'LengthValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'AngularMeasureValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
-semantic.unresolved_name 'ScalarQuantityValue'
-semantic.unresolved_name 'num'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'mRef'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DerivedUnit'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'QuantityPowerFactor'
-semantic.unresolved_name 'quantity'
-semantic.unresolved_name 'exponent'
-semantic.unresolved_name 'quantityDimension'
-semantic.unresolved_name 'quantityPowerFactors'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "isq_chemistry_molecular.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 14 19) (end 14 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 15 19) (end 15 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 16 19) (end 16 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 17 19) (end 17 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 20 19) (end 20 52))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 21 19) (end 21 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 24 4) (end 24 786))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 47 4) (end 47 1010))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 64 4) (end 64 590))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 83 4) (end 83 372))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 84 8) (end 84 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 85 8) (end 85 114))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 90 4) (end 90 592))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 109 4) (end 109 378))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 110 8) (end 110 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 111 8) (end 111 114))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 116 4) (end 116 703))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 135 4) (end 135 613))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 136 8) (end 136 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 137 8) (end 137 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 138 8) (end 138 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 139 8) (end 139 114))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 144 4) (end 144 671))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 163 4) (end 163 607))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 164 8) (end 164 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 165 8) (end 165 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 166 8) (end 166 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 167 8) (end 167 114))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 172 4) (end 172 712))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 191 4) (end 191 614))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 192 8) (end 192 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 193 8) (end 193 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 194 8) (end 194 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 195 8) (end 195 114))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 200 4) (end 200 692))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 219 4) (end 219 610))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 220 8) (end 220 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 221 8) (end 221 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 222 8) (end 222 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 223 8) (end 223 114))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 228 4) (end 228 696))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 247 4) (end 247 764))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 248 8) (end 248 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 249 8) (end 249 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 250 8) (end 250 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 251 8) (end 251 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 252 8) (end 252 114))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 257 4) (end 257 669))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 276 4) (end 276 759))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 277 8) (end 277 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 278 8) (end 278 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 279 8) (end 279 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 280 8) (end 280 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 281 8) (end 281 114))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 286 4) (end 286 635))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 305 4) (end 305 251))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 306 8) (end 306 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 327 4) (end 327 748))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 346 4) (end 346 358))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 347 8) (end 347 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 348 8) (end 348 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 353 4) (end 353 552))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 370 4) (end 370 1103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 389 4) (end 389 397))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 390 8) (end 390 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 391 8) (end 391 113))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 412 4) (end 412 977))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 429 4) (end 429 1052))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 448 4) (end 448 64))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 452 4) (end 452 842))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 471 4) (end 471 371))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 472 8) (end 472 101))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 473 8) (end 473 113))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 496 4) (end 496 935))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 515 4) (end 515 611))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 516 8) (end 516 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 517 8) (end 517 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 518 8) (end 518 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 519 8) (end 519 114))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 524 4) (end 524 657))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 541 4) (end 541 670))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 560 4) (end 560 474))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 561 8) (end 561 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 562 8) (end 562 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 563 8) (end 563 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 568 4) (end 568 922))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 587 4) (end 587 467))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 588 8) (end 588 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 589 8) (end 589 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 590 8) (end 590 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 595 4) (end 595 989))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 614 4) (end 614 619))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 615 8) (end 615 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 616 8) (end 616 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 617 8) (end 617 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 618 8) (end 618 114))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 623 4) (end 623 966))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 640 4) (end 640 768))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 657 4) (end 657 1369))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 676 4) (end 676 772))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 693 4) (end 693 886))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 710 4) (end 710 703))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 729 4) (end 729 899))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 748 4) (end 748 693))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 765 4) (end 765 669))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 784 4) (end 784 474))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 785 8) (end 785 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 786 8) (end 786 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 787 8) (end 787 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 792 4) (end 792 845))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 809 4) (end 809 1223))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 828 4) (end 828 621))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 829 8) (end 829 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 830 8) (end 830 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 831 8) (end 831 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 832 8) (end 832 114))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 837 4) (end 837 705))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 853 4) (end 853 951))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 872 4) (end 872 774))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 891 4) (end 891 493))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 892 8) (end 892 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 893 8) (end 893 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 894 8) (end 894 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 899 4) (end 899 787))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 918 4) (end 918 406))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 919 8) (end 919 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 920 8) (end 920 113))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 925 4) (end 925 695))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 941 4) (end 941 713))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 958 4) (end 958 921))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 977 4) (end 977 778))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 996 4) (end 996 501))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1012 4) (end 1012 518))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1031 4) (end 1031 650))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1050 4) (end 1050 763))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1051 8) (end 1051 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1052 8) (end 1052 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1053 8) (end 1053 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1054 8) (end 1054 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1055 8) (end 1055 114))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1063 4) (end 1063 525))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1079 4) (end 1079 861))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1098 4) (end 1098 369))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1099 8) (end 1099 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1100 8) (end 1100 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1105 4) (end 1105 796))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1122 4) (end 1122 651))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1139 4) (end 1139 661))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1158 4) (end 1158 376))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1159 8) (end 1159 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1160 8) (end 1160 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1165 4) (end 1165 674))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1184 4) (end 1184 376))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1185 8) (end 1185 101))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1186 8) (end 1186 113))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1191 4) (end 1191 585))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1210 4) (end 1210 796))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1229 4) (end 1229 614))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1230 8) (end 1230 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1231 8) (end 1231 101))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1232 8) (end 1232 104))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1233 8) (end 1233 111))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1238 4) (end 1238 682))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1257 4) (end 1257 629))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1258 8) (end 1258 101))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1259 8) (end 1259 104))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1260 8) (end 1260 111))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1261 8) (end 1261 114))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1266 4) (end 1266 655))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1301 4) (end 1301 818))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1320 4) (end 1320 392))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1321 8) (end 1321 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1322 8) (end 1322 114))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1327 4) (end 1327 816))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1346 4) (end 1346 369))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1347 8) (end 1347 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1348 8) (end 1348 101))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -3734,6 +3703,1108 @@ CloseCurly,EndOfFile,
         (default_ref_usage :>> 'exponent' value))
       (attribute_usage :>> 'quantityDimension'
         (default_ref_usage :>> 'quantityPowerFactors' value)))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'CountValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneUnit'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'EnergyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'AmountOfSubstanceValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'CountValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'CountValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'AngularMeasureValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'CountValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneUnit'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'EnergyValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'AmountOfSubstanceValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'CountValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'CountValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'LengthValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'AngularMeasureValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
+semantic.unresolved_name 'ScalarQuantityValue'
+semantic.unresolved_name 'num'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'mRef'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DerivedUnit'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'QuantityPowerFactor'
+semantic.unresolved_name 'quantity'
+semantic.unresolved_name 'exponent'
+semantic.unresolved_name 'quantityDimension'
+semantic.unresolved_name 'quantityPowerFactors'
 ~~~
 # FORMAT
 ~~~sysml
@@ -5094,2904 +6165,983 @@ standard library package ISQChemistryMolecular {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (name "ISQChemistryMolecular") (declared-name "ISQChemistryMolecular")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::*#import2"))) (name "*") (declared-name "*"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AbsoluteActivityValue"))) (name "AbsoluteActivityValue") (declared-name "AbsoluteActivityValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AbsoluteActivityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::AbsoluteActivityValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityCoefficientValue"))) (name "ActivityCoefficientValue") (declared-name "ActivityCoefficientValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityCoefficientValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityFactorValue"))) (name "ActivityFactorValue") (declared-name "ActivityFactorValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityFactorValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSoluteValue"))) (name "ActivityOfSoluteValue") (declared-name "ActivityOfSoluteValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSoluteValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSoluteValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSolventValue"))) (name "ActivityOfSolventValue") (declared-name "ActivityOfSolventValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSolventValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSolventValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit"))) (name "AffinityOfAChemicalReactionUnit") (declared-name "AffinityOfAChemicalReactionUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit::amountOfSubstancePF"))) (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue"))) (name "AffinityOfAChemicalReactionValue") (declared-name "AffinityOfAChemicalReactionValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit"))) (name "AmountOfSubstanceConcentrationUnit") (declared-name "AmountOfSubstanceConcentrationUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit::amountOfSubstancePF"))) (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue"))) (name "AmountOfSubstanceConcentrationValue") (declared-name "AmountOfSubstanceConcentrationValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceFractionMoleFractionValue"))) (name "AmountOfSubstanceFractionMoleFractionValue") (declared-name "AmountOfSubstanceFractionMoleFractionValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceFractionMoleFractionValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceFractionMoleFractionValue")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AngularMeasureValue"))) (name "AngularMeasureValue") (declared-name "AngularMeasureValue"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::CanonicalPartitionFunctionValue"))) (name "CanonicalPartitionFunctionValue") (declared-name "CanonicalPartitionFunctionValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::CanonicalPartitionFunctionValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::CanonicalPartitionFunctionValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit"))) (name "ChemicalPotentialUnit") (declared-name "ChemicalPotentialUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit::amountOfSubstancePF"))) (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue"))) (name "ChemicalPotentialValue") (declared-name "ChemicalPotentialValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::DegeneracyValue"))) (name "DegeneracyValue") (declared-name "DegeneracyValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::DegeneracyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::DegeneracyValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::DegreeOfDissociationValue"))) (name "DegreeOfDissociationValue") (declared-name "DegreeOfDissociationValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::DegreeOfDissociationValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::DegreeOfDissociationValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit"))) (name "DiffusionCoefficientUnit") (declared-name "DiffusionCoefficientUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue"))) (name "DiffusionCoefficientValue") (declared-name "DiffusionCoefficientValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit"))) (name "ElectrolyticConductivityUnit") (declared-name "ElectrolyticConductivityUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue"))) (name "ElectrolyticConductivityValue") (declared-name "ElectrolyticConductivityValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EnergyValue"))) (name "EnergyValue") (declared-name "EnergyValue"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit"))) (name "EquilibriumConstantOnConcentrationBasisUnit") (declared-name "EquilibriumConstantOnConcentrationBasisUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit::amountOfSubstancePF"))) (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue"))) (name "EquilibriumConstantOnConcentrationBasisValue") (declared-name "EquilibriumConstantOnConcentrationBasisValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit"))) (name "EquilibriumConstantOnPressureBasisUnit") (declared-name "EquilibriumConstantOnPressureBasisUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue"))) (name "EquilibriumConstantOnPressureBasisValue") (declared-name "EquilibriumConstantOnPressureBasisValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit"))) (name "FugacityUnit") (declared-name "FugacityUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue"))) (name "FugacityValue") (declared-name "FugacityValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::GrandCanonicalPartitionFunctionValue"))) (name "GrandCanonicalPartitionFunctionValue") (declared-name "GrandCanonicalPartitionFunctionValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::GrandCanonicalPartitionFunctionValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::GrandCanonicalPartitionFunctionValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit"))) (name "IonicStrengthUnit") (declared-name "IonicStrengthUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit::amountOfSubstancePF"))) (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue"))) (name "IonicStrengthValue") (declared-name "IonicStrengthValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit"))) (name "MassConcentrationUnit") (declared-name "MassConcentrationUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue"))) (name "MassConcentrationValue") (declared-name "MassConcentrationValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MassFractionValue"))) (name "MassFractionValue") (declared-name "MassFractionValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MassFractionValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MassFractionValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit"))) (name "MolalityUnit") (declared-name "MolalityUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit::amountOfSubstancePF"))) (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue"))) (name "MolalityValue") (declared-name "MolalityValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit"))) (name "MolarConductivityUnit") (declared-name "MolarConductivityUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit::amountOfSubstancePF"))) (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue"))) (name "MolarConductivityValue") (declared-name "MolarConductivityValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit"))) (name "MolarEnthalpyUnit") (declared-name "MolarEnthalpyUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit::amountOfSubstancePF"))) (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue"))) (name "MolarEnthalpyValue") (declared-name "MolarEnthalpyValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit"))) (name "MolarEntropyUnit") (declared-name "MolarEntropyUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::amountOfSubstancePF"))) (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue"))) (name "MolarEntropyValue") (declared-name "MolarEntropyValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit"))) (name "MolarGasConstantUnit") (declared-name "MolarGasConstantUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::amountOfSubstancePF"))) (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue"))) (name "MolarGasConstantValue") (declared-name "MolarGasConstantValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit"))) (name "MolarGibbsEnergyUnit") (declared-name "MolarGibbsEnergyUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit::amountOfSubstancePF"))) (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue"))) (name "MolarGibbsEnergyValue") (declared-name "MolarGibbsEnergyValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit"))) (name "MolarHeatCapacityUnit") (declared-name "MolarHeatCapacityUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::amountOfSubstancePF"))) (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue"))) (name "MolarHeatCapacityValue") (declared-name "MolarHeatCapacityValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit"))) (name "MolarHelmholtzEnergyUnit") (declared-name "MolarHelmholtzEnergyUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit::amountOfSubstancePF"))) (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue"))) (name "MolarHelmholtzEnergyValue") (declared-name "MolarHelmholtzEnergyValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit"))) (name "MolarInternalEnergyUnit") (declared-name "MolarInternalEnergyUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit::amountOfSubstancePF"))) (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue"))) (name "MolarInternalEnergyValue") (declared-name "MolarInternalEnergyValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit"))) (name "MolarMassUnit") (declared-name "MolarMassUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit::amountOfSubstancePF"))) (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue"))) (name "MolarMassValue") (declared-name "MolarMassValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit"))) (name "MolarOpticalRotatoryPowerUnit") (declared-name "MolarOpticalRotatoryPowerUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit::amountOfSubstancePF"))) (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue"))) (name "MolarOpticalRotatoryPowerValue") (declared-name "MolarOpticalRotatoryPowerValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit"))) (name "MolarVolumeUnit") (declared-name "MolarVolumeUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit::amountOfSubstancePF"))) (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue"))) (name "MolarVolumeValue") (declared-name "MolarVolumeValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolecularPartitionFunctionValue"))) (name "MolecularPartitionFunctionValue") (declared-name "MolecularPartitionFunctionValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolecularPartitionFunctionValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::MolecularPartitionFunctionValue")))))
-          )
-        )
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::NumberOfMolesUnit"))) (name "NumberOfMolesUnit") (declared-name "NumberOfMolesUnit"))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::NumberOfMolesValue"))) (name "NumberOfMolesValue") (declared-name "NumberOfMolesValue"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticFactorOfSolventValue"))) (name "OsmoticFactorOfSolventValue") (declared-name "OsmoticFactorOfSolventValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticFactorOfSolventValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticFactorOfSolventValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit"))) (name "OsmoticPressureUnit") (declared-name "OsmoticPressureUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue"))) (name "OsmoticPressureValue") (declared-name "OsmoticPressureValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit"))) (name "PartialPressureUnit") (declared-name "PartialPressureUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue"))) (name "PartialPressureValue") (declared-name "PartialPressureValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationUnit"))) (name "ParticleConcentrationUnit") (declared-name "ParticleConcentrationUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue"))) (name "ParticleConcentrationValue") (declared-name "ParticleConcentrationValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (name "Real") (declared-name "Real"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::RelativeAtomicMassValue"))) (name "RelativeAtomicMassValue") (declared-name "RelativeAtomicMassValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::RelativeAtomicMassValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::RelativeAtomicMassValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit"))) (name "SpecificOpticalRotatoryPowerUnit") (declared-name "SpecificOpticalRotatoryPowerUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue"))) (name "SpecificOpticalRotatoryPowerValue") (declared-name "SpecificOpticalRotatoryPowerValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInMixtureValue"))) (name "StandardAbsoluteActivityInMixtureValue") (declared-name "StandardAbsoluteActivityInMixtureValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInMixtureValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInMixtureValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInSolutionValue"))) (name "StandardAbsoluteActivityInSolutionValue") (declared-name "StandardAbsoluteActivityInSolutionValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInSolutionValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInSolutionValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityOfSolventValue"))) (name "StandardAbsoluteActivityOfSolventValue") (declared-name "StandardAbsoluteActivityOfSolventValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityOfSolventValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityOfSolventValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit"))) (name "StandardChemicalPotentialUnit") (declared-name "StandardChemicalPotentialUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit::amountOfSubstancePF"))) (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue"))) (name "StandardChemicalPotentialValue") (declared-name "StandardChemicalPotentialValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardEquilibriumConstantValue"))) (name "StandardEquilibriumConstantValue") (declared-name "StandardEquilibriumConstantValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardEquilibriumConstantValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardEquilibriumConstantValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StoichiometricNumberOfSubstanceValue"))) (name "StoichiometricNumberOfSubstanceValue") (declared-name "StoichiometricNumberOfSubstanceValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StoichiometricNumberOfSubstanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::StoichiometricNumberOfSubstanceValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit"))) (name "ThermalDiffusionCoefficientUnit") (declared-name "ThermalDiffusionCoefficientUnit") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue"))) (name "ThermalDiffusionCoefficientValue") (declared-name "ThermalDiffusionCoefficientValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionFactorValue"))) (name "ThermalDiffusionFactorValue") (declared-name "ThermalDiffusionFactorValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionFactorValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionRatioValue"))) (name "ThermalDiffusionRatioValue") (declared-name "ThermalDiffusionRatioValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionRatioValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionRatioValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::TransportNumberOfTheIonBValue"))) (name "TransportNumberOfTheIonBValue") (declared-name "TransportNumberOfTheIonBValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::TransportNumberOfTheIonBValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::TransportNumberOfTheIonBValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionUnit"))) (name "VolumeFractionUnit") (declared-name "VolumeFractionUnit") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue"))) (name "VolumeFractionValue") (declared-name "VolumeFractionValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue")))))
-          )
-        )
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::_documentation"))) (name ""))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::absoluteActivity"))) (name "absoluteActivity") (declared-name "absoluteActivity") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::activityCoefficient"))) (name "activityCoefficient") (declared-name "activityCoefficient") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::activityFactor"))) (name "activityFactor") (declared-name "activityFactor") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::activityOfSolute"))) (name "activityOfSolute") (declared-name "activityOfSolute") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::activityOfSolvent"))) (name "activityOfSolvent") (declared-name "activityOfSolvent") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::affinityOfAChemicalReaction"))) (name "affinityOfAChemicalReaction") (declared-name "affinityOfAChemicalReaction") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::amountOfSubstanceConcentration"))) (name "amountOfSubstanceConcentration") (declared-name "amountOfSubstanceConcentration") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::amountOfSubstanceFractionMoleFraction"))) (name "amountOfSubstanceFractionMoleFraction") (declared-name "amountOfSubstanceFractionMoleFraction") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::angleOfOpticalRotation"))) (name "angleOfOpticalRotation") (declared-name "angleOfOpticalRotation") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::angleOfOpticalRotation::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::angleOfOpticalRotation")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::canonicalPartitionFunction"))) (name "canonicalPartitionFunction") (declared-name "canonicalPartitionFunction") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::chemicalPotential"))) (name "chemicalPotential") (declared-name "chemicalPotential") (declared (properties (ordered false) (unique false))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::currentFractionOfTheIonB"))) (name "currentFractionOfTheIonB") (declared-name "currentFractionOfTheIonB"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::degeneracy"))) (name "degeneracy") (declared-name "degeneracy") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::degreeOfDissociation"))) (name "degreeOfDissociation") (declared-name "degreeOfDissociation") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::diffusionCoefficient"))) (name "diffusionCoefficient") (declared-name "diffusionCoefficient") (declared (properties (ordered false) (unique false))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::dissociationFraction"))) (name "dissociationFraction") (declared-name "dissociationFraction"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::electrolyticConductivity"))) (name "electrolyticConductivity") (declared-name "electrolyticConductivity") (declared (properties (ordered false) (unique false))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::enthalpyOfPhaseTransition"))) (name "enthalpyOfPhaseTransition") (declared-name "enthalpyOfPhaseTransition"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::equilibriumConstantOnConcentrationBasis"))) (name "equilibriumConstantOnConcentrationBasis") (declared-name "equilibriumConstantOnConcentrationBasis") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::equilibriumConstantOnPressureBasis"))) (name "equilibriumConstantOnPressureBasis") (declared-name "equilibriumConstantOnPressureBasis") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::extentOfReaction"))) (name "extentOfReaction") (declared-name "extentOfReaction") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::extentOfReaction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::extentOfReaction")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::fugacity"))) (name "fugacity") (declared-name "fugacity") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::grandCanonicalPartitionFunction"))) (name "grandCanonicalPartitionFunction") (declared-name "grandCanonicalPartitionFunction") (declared (properties (ordered false) (unique true))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::grandPartitionFunction"))) (name "grandPartitionFunction") (declared-name "grandPartitionFunction"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ionicStrength"))) (name "ionicStrength") (declared-name "ionicStrength") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::latentHeatOfPhaseTransition"))) (name "latentHeatOfPhaseTransition") (declared-name "latentHeatOfPhaseTransition") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::latentHeatOfPhaseTransition::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::latentHeatOfPhaseTransition")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::massConcentration"))) (name "massConcentration") (declared-name "massConcentration") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::massFraction"))) (name "massFraction") (declared-name "massFraction") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::meanFreePath"))) (name "meanFreePath") (declared-name "meanFreePath") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::meanFreePath::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::meanFreePath")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::microcanonicalPartitionFunction"))) (name "microcanonicalPartitionFunction") (declared-name "microcanonicalPartitionFunction") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::microcanonicalPartitionFunction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::microcanonicalPartitionFunction")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molality"))) (name "molality") (declared-name "molality") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molarConductivity"))) (name "molarConductivity") (declared-name "molarConductivity") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molarEnthalpy"))) (name "molarEnthalpy") (declared-name "molarEnthalpy") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molarEntropy"))) (name "molarEntropy") (declared-name "molarEntropy") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molarGasConstant"))) (name "molarGasConstant") (declared-name "molarGasConstant") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molarGibbsEnergy"))) (name "molarGibbsEnergy") (declared-name "molarGibbsEnergy") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molarHeatCapacity"))) (name "molarHeatCapacity") (declared-name "molarHeatCapacity") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molarHelmholtzEnergy"))) (name "molarHelmholtzEnergy") (declared-name "molarHelmholtzEnergy") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molarInternalEnergy"))) (name "molarInternalEnergy") (declared-name "molarInternalEnergy") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molarMass"))) (name "molarMass") (declared-name "molarMass") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molarOpticalRotatoryPower"))) (name "molarOpticalRotatoryPower") (declared-name "molarOpticalRotatoryPower") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molarVolume"))) (name "molarVolume") (declared-name "molarVolume") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molecularConcentration"))) (name "molecularConcentration") (declared-name "molecularConcentration") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molecularConcentration::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::molecularConcentration")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molecularPartitionFunction"))) (name "molecularPartitionFunction") (declared-name "molecularPartitionFunction") (declared (properties (ordered false) (unique true))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::multiplicity"))) (name "multiplicity") (declared-name "multiplicity"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::numberOfEntities"))) (name "numberOfEntities") (declared-name "numberOfEntities") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::numberOfEntities::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::numberOfEntities")))))
-          )
-        )
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::numberOfMoles"))) (name "numberOfMoles") (declared-name "numberOfMoles"))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::osmoticCoefficientOfSolventA"))) (name "osmoticCoefficientOfSolventA") (declared-name "osmoticCoefficientOfSolventA"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::osmoticFactorOfSolvent"))) (name "osmoticFactorOfSolvent") (declared-name "osmoticFactorOfSolvent") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::osmoticPressure"))) (name "osmoticPressure") (declared-name "osmoticPressure") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::partialPressure"))) (name "partialPressure") (declared-name "partialPressure") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::particleConcentration"))) (name "particleConcentration") (declared-name "particleConcentration") (declared (properties (ordered false) (unique false))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::partitionFunctionOfAMolecule"))) (name "partitionFunctionOfAMolecule") (declared-name "partitionFunctionOfAMolecule"))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::relativeActivityOfSolute"))) (name "relativeActivityOfSolute") (declared-name "relativeActivityOfSolute"))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::relativeActivityOfSolvent"))) (name "relativeActivityOfSolvent") (declared-name "relativeActivityOfSolvent"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::relativeAtomicMass"))) (name "relativeAtomicMass") (declared-name "relativeAtomicMass") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::specificOpticalRotatoryPower"))) (name "specificOpticalRotatoryPower") (declared-name "specificOpticalRotatoryPower") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAbsoluteActivityInMixture"))) (name "standardAbsoluteActivityInMixture") (declared-name "standardAbsoluteActivityInMixture") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAbsoluteActivityInSolution"))) (name "standardAbsoluteActivityInSolution") (declared-name "standardAbsoluteActivityInSolution") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAbsoluteActivityOfSolvent"))) (name "standardAbsoluteActivityOfSolvent") (declared-name "standardAbsoluteActivityOfSolvent") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAmountOfSubstanceConcentration"))) (name "standardAmountOfSubstanceConcentration") (declared-name "standardAmountOfSubstanceConcentration") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAmountOfSubstanceConcentration::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAmountOfSubstanceConcentration")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::standardChemicalPotential"))) (name "standardChemicalPotential") (declared-name "standardChemicalPotential") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::standardEquilibriumConstant"))) (name "standardEquilibriumConstant") (declared-name "standardEquilibriumConstant") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::statisticalWeightOfSubsystem"))) (name "statisticalWeightOfSubsystem") (declared-name "statisticalWeightOfSubsystem") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::statisticalWeightOfSubsystem::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQChemistryMolecular::statisticalWeightOfSubsystem")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::stoichiometricNumberOfSubstance"))) (name "stoichiometricNumberOfSubstance") (declared-name "stoichiometricNumberOfSubstance") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::thermalDiffusionCoefficient"))) (name "thermalDiffusionCoefficient") (declared-name "thermalDiffusionCoefficient") (declared (properties (ordered false) (unique false))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::thermalDiffusionFactor"))) (name "thermalDiffusionFactor") (declared-name "thermalDiffusionFactor") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::thermalDiffusionRatio"))) (name "thermalDiffusionRatio") (declared-name "thermalDiffusionRatio") (declared (properties (ordered false) (unique true))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::thermodynamicEquilibriumConstant"))) (name "thermodynamicEquilibriumConstant") (declared-name "thermodynamicEquilibriumConstant"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::transportNumberOfTheIonB"))) (name "transportNumberOfTheIonB") (declared-name "transportNumberOfTheIonB") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQChemistryMolecular::volumeFraction"))) (name "volumeFraction") (declared-name "volumeFraction") (declared (properties (ordered false) (unique false))))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "58fe379c5e9c785c10ef6b1b3019dd37a87afe10c387b9c723696d0afabb832c") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (kind "package") (name "ISQChemistryMolecular") (declared-name "ISQChemistryMolecular") (range (start (line 0) (character 0)) (end (line 0) (character 71442))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 15) (character 4)) (end (line 15) (character 33))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Import) (visibility "private") (import (reference "Quantities::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 15) (character 19)) (end (line 15) (character 29))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 16) (character 4)) (end (line 16) (character 44))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Import) (visibility "private") (import (reference "MeasurementReferences::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 16) (character 19)) (end (line 16) (character 40))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::*#import2"))) (kind "import") (name "*") (declared-name "*") (range (start (line 17) (character 4)) (end (line 17) (character 30))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQBase::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 17) (character 19)) (end (line 17) (character 26))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AbsoluteActivityValue"))) (kind "attribute def") (name "AbsoluteActivityValue") (declared-name "AbsoluteActivityValue") (range (start (line 524) (character 4)) (end (line 524) (character 657))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AbsoluteActivityValue::_documentation"))) (kind "documentation") (name "") (range (start (line 524) (character 4)) (end (line 524) (character 657))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::AbsoluteActivityValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityCoefficientValue"))) (kind "attribute def") (name "ActivityCoefficientValue") (declared-name "ActivityCoefficientValue") (range (start (line 676) (character 4)) (end (line 676) (character 772))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityCoefficientValue::_documentation"))) (kind "documentation") (name "") (range (start (line 676) (character 4)) (end (line 676) (character 772))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityCoefficientValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityFactorValue"))) (kind "attribute def") (name "ActivityFactorValue") (declared-name "ActivityFactorValue") (range (start (line 623) (character 4)) (end (line 623) (character 966))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityFactorValue::_documentation"))) (kind "documentation") (name "") (range (start (line 623) (character 4)) (end (line 623) (character 966))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityFactorValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSoluteValue"))) (kind "attribute def") (name "ActivityOfSoluteValue") (declared-name "ActivityOfSoluteValue") (range (start (line 657) (character 4)) (end (line 657) (character 1369))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSoluteValue::_documentation"))) (kind "documentation") (name "") (range (start (line 657) (character 4)) (end (line 657) (character 1369))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSoluteValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSolventValue"))) (kind "attribute def") (name "ActivityOfSolventValue") (declared-name "ActivityOfSolventValue") (range (start (line 710) (character 4)) (end (line 710) (character 703))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSolventValue::_documentation"))) (kind "documentation") (name "") (range (start (line 710) (character 4)) (end (line 710) (character 703))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSolventValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit"))) (kind "attribute def") (name "AffinityOfAChemicalReactionUnit") (declared-name "AffinityOfAChemicalReactionUnit") (range (start (line 828) (character 4)) (end (line 828) (character 621))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit::amountOfSubstancePF"))) (kind "attribute") (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (range (start (line 832) (character 8)) (end (line 832) (character 114))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 831) (character 8)) (end (line 831) (character 105))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 829) (character 8)) (end (line 829) (character 102))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 830) (character 8)) (end (line 830) (character 100))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 833) (character 8)) (end (line 833) (character 123))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 833) (character 22)) (end (line 833) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue"))) (kind "attribute def") (name "AffinityOfAChemicalReactionValue") (declared-name "AffinityOfAChemicalReactionValue") (range (start (line 809) (character 4)) (end (line 809) (character 1223))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::_documentation"))) (kind "documentation") (name "") (range (start (line 809) (character 4)) (end (line 809) (character 1223))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 823) (character 8)) (end (line 823) (character 63))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "AffinityOfAChemicalReactionUnit") (range none)) (redefinition (reference "mRef") (range (start (line 823) (character 22)) (end (line 823) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 822) (character 8)) (end (line 822) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 822) (character 22)) (end (line 822) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit"))) (kind "attribute def") (name "AmountOfSubstanceConcentrationUnit") (declared-name "AmountOfSubstanceConcentrationUnit") (range (start (line 389) (character 4)) (end (line 389) (character 397))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit::amountOfSubstancePF"))) (kind "attribute") (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (range (start (line 391) (character 8)) (end (line 391) (character 113))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 390) (character 8)) (end (line 390) (character 103))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 392) (character 8)) (end (line 392) (character 103))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 392) (character 22)) (end (line 392) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue"))) (kind "attribute def") (name "AmountOfSubstanceConcentrationValue") (declared-name "AmountOfSubstanceConcentrationValue") (range (start (line 370) (character 4)) (end (line 370) (character 1103))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::_documentation"))) (kind "documentation") (name "") (range (start (line 370) (character 4)) (end (line 370) (character 1103))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 384) (character 8)) (end (line 384) (character 66))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "AmountOfSubstanceConcentrationUnit") (range none)) (redefinition (reference "mRef") (range (start (line 384) (character 22)) (end (line 384) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 383) (character 8)) (end (line 383) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 383) (character 22)) (end (line 383) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceFractionMoleFractionValue"))) (kind "attribute def") (name "AmountOfSubstanceFractionMoleFractionValue") (declared-name "AmountOfSubstanceFractionMoleFractionValue") (range (start (line 412) (character 4)) (end (line 412) (character 977))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceFractionMoleFractionValue::_documentation"))) (kind "documentation") (name "") (range (start (line 412) (character 4)) (end (line 412) (character 977))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceFractionMoleFractionValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::AngularMeasureValue"))) (kind "import") (name "AngularMeasureValue") (declared-name "AngularMeasureValue") (range (start (line 20) (character 4)) (end (line 20) (character 53))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQSpaceTime::AngularMeasureValue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 20) (character 19)) (end (line 20) (character 52))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::CanonicalPartitionFunctionValue"))) (kind "attribute def") (name "CanonicalPartitionFunctionValue") (declared-name "CanonicalPartitionFunctionValue") (range (start (line 941) (character 4)) (end (line 941) (character 713))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::CanonicalPartitionFunctionValue::_documentation"))) (kind "documentation") (name "") (range (start (line 941) (character 4)) (end (line 941) (character 713))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::CanonicalPartitionFunctionValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit"))) (kind "attribute def") (name "ChemicalPotentialUnit") (declared-name "ChemicalPotentialUnit") (range (start (line 515) (character 4)) (end (line 515) (character 611))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit::amountOfSubstancePF"))) (kind "attribute") (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (range (start (line 519) (character 8)) (end (line 519) (character 114))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 518) (character 8)) (end (line 518) (character 105))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 516) (character 8)) (end (line 516) (character 102))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 517) (character 8)) (end (line 517) (character 100))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 520) (character 8)) (end (line 520) (character 123))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 520) (character 22)) (end (line 520) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue"))) (kind "attribute def") (name "ChemicalPotentialValue") (declared-name "ChemicalPotentialValue") (range (start (line 496) (character 4)) (end (line 496) (character 935))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::_documentation"))) (kind "documentation") (name "") (range (start (line 496) (character 4)) (end (line 496) (character 935))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 510) (character 8)) (end (line 510) (character 53))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "ChemicalPotentialUnit") (range none)) (redefinition (reference "mRef") (range (start (line 510) (character 22)) (end (line 510) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 509) (character 8)) (end (line 509) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 509) (character 22)) (end (line 509) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::DegeneracyValue"))) (kind "attribute def") (name "DegeneracyValue") (declared-name "DegeneracyValue") (range (start (line 1012) (character 4)) (end (line 1012) (character 518))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::DegeneracyValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1012) (character 4)) (end (line 1012) (character 518))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::DegeneracyValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::DegreeOfDissociationValue"))) (kind "attribute def") (name "DegreeOfDissociationValue") (declared-name "DegreeOfDissociationValue") (range (start (line 1191) (character 4)) (end (line 1191) (character 585))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::DegreeOfDissociationValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1191) (character 4)) (end (line 1191) (character 585))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::DegreeOfDissociationValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit"))) (kind "attribute def") (name "DiffusionCoefficientUnit") (declared-name "DiffusionCoefficientUnit") (range (start (line 1098) (character 4)) (end (line 1098) (character 369))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 1100) (character 8)) (end (line 1100) (character 105))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 1099) (character 8)) (end (line 1099) (character 102))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 1101) (character 8)) (end (line 1101) (character 94))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 1101) (character 22)) (end (line 1101) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue"))) (kind "attribute def") (name "DiffusionCoefficientValue") (declared-name "DiffusionCoefficientValue") (range (start (line 1079) (character 4)) (end (line 1079) (character 861))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1079) (character 4)) (end (line 1079) (character 861))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 1093) (character 8)) (end (line 1093) (character 56))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "DiffusionCoefficientUnit") (range none)) (redefinition (reference "mRef") (range (start (line 1093) (character 22)) (end (line 1093) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 1092) (character 8)) (end (line 1092) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 1092) (character 22)) (end (line 1092) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit"))) (kind "attribute def") (name "ElectrolyticConductivityUnit") (declared-name "ElectrolyticConductivityUnit") (range (start (line 1229) (character 4)) (end (line 1229) (character 614))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 1232) (character 8)) (end (line 1232) (character 104))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit::electricCurrentPF"))) (kind "attribute") (name "electricCurrentPF") (declared-name "electricCurrentPF") (range (start (line 1233) (character 8)) (end (line 1233) (character 111))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 1230) (character 8)) (end (line 1230) (character 103))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 1231) (character 8)) (end (line 1231) (character 101))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 1234) (character 8)) (end (line 1234) (character 121))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 1234) (character 22)) (end (line 1234) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue"))) (kind "attribute def") (name "ElectrolyticConductivityValue") (declared-name "ElectrolyticConductivityValue") (range (start (line 1210) (character 4)) (end (line 1210) (character 796))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1210) (character 4)) (end (line 1210) (character 796))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 1224) (character 8)) (end (line 1224) (character 60))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "ElectrolyticConductivityUnit") (range none)) (redefinition (reference "mRef") (range (start (line 1224) (character 22)) (end (line 1224) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 1223) (character 8)) (end (line 1223) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 1223) (character 22)) (end (line 1223) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EnergyValue"))) (kind "import") (name "EnergyValue") (declared-name "EnergyValue") (range (start (line 21) (character 4)) (end (line 21) (character 50))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQThermodynamics::EnergyValue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 21) (character 19)) (end (line 21) (character 49))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit"))) (kind "attribute def") (name "EquilibriumConstantOnConcentrationBasisUnit") (declared-name "EquilibriumConstantOnConcentrationBasisUnit") (range (start (line 918) (character 4)) (end (line 918) (character 406))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit::amountOfSubstancePF"))) (kind "attribute") (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (range (start (line 920) (character 8)) (end (line 920) (character 113))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 919) (character 8)) (end (line 919) (character 103))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 921) (character 8)) (end (line 921) (character 103))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 921) (character 22)) (end (line 921) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue"))) (kind "attribute def") (name "EquilibriumConstantOnConcentrationBasisValue") (declared-name "EquilibriumConstantOnConcentrationBasisValue") (range (start (line 899) (character 4)) (end (line 899) (character 787))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::_documentation"))) (kind "documentation") (name "") (range (start (line 899) (character 4)) (end (line 899) (character 787))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 913) (character 8)) (end (line 913) (character 75))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "EquilibriumConstantOnConcentrationBasisUnit") (range none)) (redefinition (reference "mRef") (range (start (line 913) (character 22)) (end (line 913) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 912) (character 8)) (end (line 912) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 912) (character 22)) (end (line 912) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit"))) (kind "attribute def") (name "EquilibriumConstantOnPressureBasisUnit") (declared-name "EquilibriumConstantOnPressureBasisUnit") (range (start (line 891) (character 4)) (end (line 891) (character 493))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 894) (character 8)) (end (line 894) (character 105))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 892) (character 8)) (end (line 892) (character 103))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 893) (character 8)) (end (line 893) (character 100))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 895) (character 8)) (end (line 895) (character 102))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 895) (character 22)) (end (line 895) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue"))) (kind "attribute def") (name "EquilibriumConstantOnPressureBasisValue") (declared-name "EquilibriumConstantOnPressureBasisValue") (range (start (line 872) (character 4)) (end (line 872) (character 774))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::_documentation"))) (kind "documentation") (name "") (range (start (line 872) (character 4)) (end (line 872) (character 774))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 886) (character 8)) (end (line 886) (character 70))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "EquilibriumConstantOnPressureBasisUnit") (range none)) (redefinition (reference "mRef") (range (start (line 886) (character 22)) (end (line 886) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 885) (character 8)) (end (line 885) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 885) (character 22)) (end (line 885) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit"))) (kind "attribute def") (name "FugacityUnit") (declared-name "FugacityUnit") (range (start (line 587) (character 4)) (end (line 587) (character 467))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 590) (character 8)) (end (line 590) (character 105))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 588) (character 8)) (end (line 588) (character 103))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 589) (character 8)) (end (line 589) (character 100))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 591) (character 8)) (end (line 591) (character 102))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 591) (character 22)) (end (line 591) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue"))) (kind "attribute def") (name "FugacityValue") (declared-name "FugacityValue") (range (start (line 568) (character 4)) (end (line 568) (character 922))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::_documentation"))) (kind "documentation") (name "") (range (start (line 568) (character 4)) (end (line 568) (character 922))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 582) (character 8)) (end (line 582) (character 44))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "FugacityUnit") (range none)) (redefinition (reference "mRef") (range (start (line 582) (character 22)) (end (line 582) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 581) (character 8)) (end (line 581) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 581) (character 22)) (end (line 581) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::GrandCanonicalPartitionFunctionValue"))) (kind "attribute def") (name "GrandCanonicalPartitionFunctionValue") (declared-name "GrandCanonicalPartitionFunctionValue") (range (start (line 958) (character 4)) (end (line 958) (character 921))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::GrandCanonicalPartitionFunctionValue::_documentation"))) (kind "documentation") (name "") (range (start (line 958) (character 4)) (end (line 958) (character 921))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::GrandCanonicalPartitionFunctionValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit"))) (kind "attribute def") (name "IonicStrengthUnit") (declared-name "IonicStrengthUnit") (range (start (line 1184) (character 4)) (end (line 1184) (character 376))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit::amountOfSubstancePF"))) (kind "attribute") (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (range (start (line 1186) (character 8)) (end (line 1186) (character 113))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 1185) (character 8)) (end (line 1185) (character 101))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 1187) (character 8)) (end (line 1187) (character 101))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 1187) (character 22)) (end (line 1187) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue"))) (kind "attribute def") (name "IonicStrengthValue") (declared-name "IonicStrengthValue") (range (start (line 1165) (character 4)) (end (line 1165) (character 674))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1165) (character 4)) (end (line 1165) (character 674))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 1179) (character 8)) (end (line 1179) (character 49))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "IonicStrengthUnit") (range none)) (redefinition (reference "mRef") (range (start (line 1179) (character 22)) (end (line 1179) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 1178) (character 8)) (end (line 1178) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 1178) (character 22)) (end (line 1178) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit"))) (kind "attribute def") (name "MassConcentrationUnit") (declared-name "MassConcentrationUnit") (range (start (line 346) (character 4)) (end (line 346) (character 358))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 347) (character 8)) (end (line 347) (character 103))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 348) (character 8)) (end (line 348) (character 100))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 349) (character 8)) (end (line 349) (character 90))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 349) (character 22)) (end (line 349) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue"))) (kind "attribute def") (name "MassConcentrationValue") (declared-name "MassConcentrationValue") (range (start (line 327) (character 4)) (end (line 327) (character 748))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::_documentation"))) (kind "documentation") (name "") (range (start (line 327) (character 4)) (end (line 327) (character 748))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 341) (character 8)) (end (line 341) (character 53))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "MassConcentrationUnit") (range none)) (redefinition (reference "mRef") (range (start (line 341) (character 22)) (end (line 341) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 340) (character 8)) (end (line 340) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 340) (character 22)) (end (line 340) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MassFractionValue"))) (kind "attribute def") (name "MassFractionValue") (declared-name "MassFractionValue") (range (start (line 353) (character 4)) (end (line 353) (character 552))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MassFractionValue::_documentation"))) (kind "documentation") (name "") (range (start (line 353) (character 4)) (end (line 353) (character 552))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MassFractionValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit"))) (kind "attribute def") (name "MolalityUnit") (declared-name "MolalityUnit") (range (start (line 471) (character 4)) (end (line 471) (character 371))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit::amountOfSubstancePF"))) (kind "attribute") (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (range (start (line 473) (character 8)) (end (line 473) (character 113))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 472) (character 8)) (end (line 472) (character 101))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 474) (character 8)) (end (line 474) (character 101))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 474) (character 22)) (end (line 474) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue"))) (kind "attribute def") (name "MolalityValue") (declared-name "MolalityValue") (range (start (line 452) (character 4)) (end (line 452) (character 842))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::_documentation"))) (kind "documentation") (name "") (range (start (line 452) (character 4)) (end (line 452) (character 842))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 466) (character 8)) (end (line 466) (character 44))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "MolalityUnit") (range none)) (redefinition (reference "mRef") (range (start (line 466) (character 22)) (end (line 466) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 465) (character 8)) (end (line 465) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 465) (character 22)) (end (line 465) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit"))) (kind "attribute def") (name "MolarConductivityUnit") (declared-name "MolarConductivityUnit") (range (start (line 1257) (character 4)) (end (line 1257) (character 629))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit::amountOfSubstancePF"))) (kind "attribute") (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (range (start (line 1261) (character 8)) (end (line 1261) (character 114))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 1259) (character 8)) (end (line 1259) (character 104))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit::electricCurrentPF"))) (kind "attribute") (name "electricCurrentPF") (declared-name "electricCurrentPF") (range (start (line 1260) (character 8)) (end (line 1260) (character 111))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 1258) (character 8)) (end (line 1258) (character 101))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 1262) (character 8)) (end (line 1262) (character 132))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 1262) (character 22)) (end (line 1262) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue"))) (kind "attribute def") (name "MolarConductivityValue") (declared-name "MolarConductivityValue") (range (start (line 1238) (character 4)) (end (line 1238) (character 682))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1238) (character 4)) (end (line 1238) (character 682))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 1252) (character 8)) (end (line 1252) (character 53))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "MolarConductivityUnit") (range none)) (redefinition (reference "mRef") (range (start (line 1252) (character 22)) (end (line 1252) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 1251) (character 8)) (end (line 1251) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 1251) (character 22)) (end (line 1251) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit"))) (kind "attribute def") (name "MolarEnthalpyUnit") (declared-name "MolarEnthalpyUnit") (range (start (line 163) (character 4)) (end (line 163) (character 607))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit::amountOfSubstancePF"))) (kind "attribute") (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (range (start (line 167) (character 8)) (end (line 167) (character 114))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 166) (character 8)) (end (line 166) (character 105))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 164) (character 8)) (end (line 164) (character 102))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 165) (character 8)) (end (line 165) (character 100))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 168) (character 8)) (end (line 168) (character 123))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 168) (character 22)) (end (line 168) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue"))) (kind "attribute def") (name "MolarEnthalpyValue") (declared-name "MolarEnthalpyValue") (range (start (line 144) (character 4)) (end (line 144) (character 671))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::_documentation"))) (kind "documentation") (name "") (range (start (line 144) (character 4)) (end (line 144) (character 671))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 158) (character 8)) (end (line 158) (character 49))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "MolarEnthalpyUnit") (range none)) (redefinition (reference "mRef") (range (start (line 158) (character 22)) (end (line 158) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 157) (character 8)) (end (line 157) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 157) (character 22)) (end (line 157) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit"))) (kind "attribute def") (name "MolarEntropyUnit") (declared-name "MolarEntropyUnit") (range (start (line 276) (character 4)) (end (line 276) (character 759))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::amountOfSubstancePF"))) (kind "attribute") (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (range (start (line 281) (character 8)) (end (line 281) (character 114))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 279) (character 8)) (end (line 279) (character 105))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 277) (character 8)) (end (line 277) (character 102))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 278) (character 8)) (end (line 278) (character 100))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 282) (character 8)) (end (line 282) (character 151))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 282) (character 22)) (end (line 282) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 280) (character 8)) (end (line 280) (character 124))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue"))) (kind "attribute def") (name "MolarEntropyValue") (declared-name "MolarEntropyValue") (range (start (line 257) (character 4)) (end (line 257) (character 669))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::_documentation"))) (kind "documentation") (name "") (range (start (line 257) (character 4)) (end (line 257) (character 669))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 271) (character 8)) (end (line 271) (character 48))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "MolarEntropyUnit") (range none)) (redefinition (reference "mRef") (range (start (line 271) (character 22)) (end (line 271) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 270) (character 8)) (end (line 270) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 270) (character 22)) (end (line 270) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit"))) (kind "attribute def") (name "MolarGasConstantUnit") (declared-name "MolarGasConstantUnit") (range (start (line 1050) (character 4)) (end (line 1050) (character 763))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::amountOfSubstancePF"))) (kind "attribute") (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (range (start (line 1055) (character 8)) (end (line 1055) (character 114))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 1053) (character 8)) (end (line 1053) (character 105))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 1051) (character 8)) (end (line 1051) (character 102))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 1052) (character 8)) (end (line 1052) (character 100))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 1056) (character 8)) (end (line 1056) (character 151))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 1056) (character 22)) (end (line 1056) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 1054) (character 8)) (end (line 1054) (character 124))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue"))) (kind "attribute def") (name "MolarGasConstantValue") (declared-name "MolarGasConstantValue") (range (start (line 1031) (character 4)) (end (line 1031) (character 650))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1031) (character 4)) (end (line 1031) (character 650))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 1045) (character 8)) (end (line 1045) (character 52))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "MolarGasConstantUnit") (range none)) (redefinition (reference "mRef") (range (start (line 1045) (character 22)) (end (line 1045) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 1044) (character 8)) (end (line 1044) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 1044) (character 22)) (end (line 1044) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit"))) (kind "attribute def") (name "MolarGibbsEnergyUnit") (declared-name "MolarGibbsEnergyUnit") (range (start (line 219) (character 4)) (end (line 219) (character 610))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit::amountOfSubstancePF"))) (kind "attribute") (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (range (start (line 223) (character 8)) (end (line 223) (character 114))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 222) (character 8)) (end (line 222) (character 105))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 220) (character 8)) (end (line 220) (character 102))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 221) (character 8)) (end (line 221) (character 100))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 224) (character 8)) (end (line 224) (character 123))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 224) (character 22)) (end (line 224) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue"))) (kind "attribute def") (name "MolarGibbsEnergyValue") (declared-name "MolarGibbsEnergyValue") (range (start (line 200) (character 4)) (end (line 200) (character 692))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::_documentation"))) (kind "documentation") (name "") (range (start (line 200) (character 4)) (end (line 200) (character 692))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 214) (character 8)) (end (line 214) (character 52))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "MolarGibbsEnergyUnit") (range none)) (redefinition (reference "mRef") (range (start (line 214) (character 22)) (end (line 214) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 213) (character 8)) (end (line 213) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 213) (character 22)) (end (line 213) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit"))) (kind "attribute def") (name "MolarHeatCapacityUnit") (declared-name "MolarHeatCapacityUnit") (range (start (line 247) (character 4)) (end (line 247) (character 764))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::amountOfSubstancePF"))) (kind "attribute") (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (range (start (line 252) (character 8)) (end (line 252) (character 114))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 250) (character 8)) (end (line 250) (character 105))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 248) (character 8)) (end (line 248) (character 102))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 249) (character 8)) (end (line 249) (character 100))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 253) (character 8)) (end (line 253) (character 151))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 253) (character 22)) (end (line 253) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::thermodynamicTemperaturePF"))) (kind "attribute") (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (range (start (line 251) (character 8)) (end (line 251) (character 124))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue"))) (kind "attribute def") (name "MolarHeatCapacityValue") (declared-name "MolarHeatCapacityValue") (range (start (line 228) (character 4)) (end (line 228) (character 696))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::_documentation"))) (kind "documentation") (name "") (range (start (line 228) (character 4)) (end (line 228) (character 696))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 242) (character 8)) (end (line 242) (character 53))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "MolarHeatCapacityUnit") (range none)) (redefinition (reference "mRef") (range (start (line 242) (character 22)) (end (line 242) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 241) (character 8)) (end (line 241) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 241) (character 22)) (end (line 241) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit"))) (kind "attribute def") (name "MolarHelmholtzEnergyUnit") (declared-name "MolarHelmholtzEnergyUnit") (range (start (line 191) (character 4)) (end (line 191) (character 614))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit::amountOfSubstancePF"))) (kind "attribute") (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (range (start (line 195) (character 8)) (end (line 195) (character 114))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 194) (character 8)) (end (line 194) (character 105))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 192) (character 8)) (end (line 192) (character 102))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 193) (character 8)) (end (line 193) (character 100))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 196) (character 8)) (end (line 196) (character 123))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 196) (character 22)) (end (line 196) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue"))) (kind "attribute def") (name "MolarHelmholtzEnergyValue") (declared-name "MolarHelmholtzEnergyValue") (range (start (line 172) (character 4)) (end (line 172) (character 712))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::_documentation"))) (kind "documentation") (name "") (range (start (line 172) (character 4)) (end (line 172) (character 712))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 186) (character 8)) (end (line 186) (character 56))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "MolarHelmholtzEnergyUnit") (range none)) (redefinition (reference "mRef") (range (start (line 186) (character 22)) (end (line 186) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 185) (character 8)) (end (line 185) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 185) (character 22)) (end (line 185) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit"))) (kind "attribute def") (name "MolarInternalEnergyUnit") (declared-name "MolarInternalEnergyUnit") (range (start (line 135) (character 4)) (end (line 135) (character 613))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit::amountOfSubstancePF"))) (kind "attribute") (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (range (start (line 139) (character 8)) (end (line 139) (character 114))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 138) (character 8)) (end (line 138) (character 105))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 136) (character 8)) (end (line 136) (character 102))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 137) (character 8)) (end (line 137) (character 100))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 140) (character 8)) (end (line 140) (character 123))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 140) (character 22)) (end (line 140) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue"))) (kind "attribute def") (name "MolarInternalEnergyValue") (declared-name "MolarInternalEnergyValue") (range (start (line 116) (character 4)) (end (line 116) (character 703))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::_documentation"))) (kind "documentation") (name "") (range (start (line 116) (character 4)) (end (line 116) (character 703))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 130) (character 8)) (end (line 130) (character 55))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "MolarInternalEnergyUnit") (range none)) (redefinition (reference "mRef") (range (start (line 130) (character 22)) (end (line 130) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 129) (character 8)) (end (line 129) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 129) (character 22)) (end (line 129) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit"))) (kind "attribute def") (name "MolarMassUnit") (declared-name "MolarMassUnit") (range (start (line 83) (character 4)) (end (line 83) (character 372))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit::amountOfSubstancePF"))) (kind "attribute") (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (range (start (line 85) (character 8)) (end (line 85) (character 114))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 84) (character 8)) (end (line 84) (character 100))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 86) (character 8)) (end (line 86) (character 101))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 86) (character 22)) (end (line 86) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue"))) (kind "attribute def") (name "MolarMassValue") (declared-name "MolarMassValue") (range (start (line 64) (character 4)) (end (line 64) (character 590))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::_documentation"))) (kind "documentation") (name "") (range (start (line 64) (character 4)) (end (line 64) (character 590))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 78) (character 8)) (end (line 78) (character 45))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "MolarMassUnit") (range none)) (redefinition (reference "mRef") (range (start (line 78) (character 22)) (end (line 78) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 77) (character 8)) (end (line 77) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 77) (character 22)) (end (line 77) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit"))) (kind "attribute def") (name "MolarOpticalRotatoryPowerUnit") (declared-name "MolarOpticalRotatoryPowerUnit") (range (start (line 1320) (character 4)) (end (line 1320) (character 392))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit::amountOfSubstancePF"))) (kind "attribute") (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (range (start (line 1322) (character 8)) (end (line 1322) (character 114))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 1321) (character 8)) (end (line 1321) (character 102))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 1323) (character 8)) (end (line 1323) (character 103))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 1323) (character 22)) (end (line 1323) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue"))) (kind "attribute def") (name "MolarOpticalRotatoryPowerValue") (declared-name "MolarOpticalRotatoryPowerValue") (range (start (line 1301) (character 4)) (end (line 1301) (character 818))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1301) (character 4)) (end (line 1301) (character 818))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 1315) (character 8)) (end (line 1315) (character 61))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "MolarOpticalRotatoryPowerUnit") (range none)) (redefinition (reference "mRef") (range (start (line 1315) (character 22)) (end (line 1315) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 1314) (character 8)) (end (line 1314) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 1314) (character 22)) (end (line 1314) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit"))) (kind "attribute def") (name "MolarVolumeUnit") (declared-name "MolarVolumeUnit") (range (start (line 109) (character 4)) (end (line 109) (character 378))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit::amountOfSubstancePF"))) (kind "attribute") (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (range (start (line 111) (character 8)) (end (line 111) (character 114))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 110) (character 8)) (end (line 110) (character 102))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 112) (character 8)) (end (line 112) (character 103))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 112) (character 22)) (end (line 112) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue"))) (kind "attribute def") (name "MolarVolumeValue") (declared-name "MolarVolumeValue") (range (start (line 90) (character 4)) (end (line 90) (character 592))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::_documentation"))) (kind "documentation") (name "") (range (start (line 90) (character 4)) (end (line 90) (character 592))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 104) (character 8)) (end (line 104) (character 47))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "MolarVolumeUnit") (range none)) (redefinition (reference "mRef") (range (start (line 104) (character 22)) (end (line 104) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 103) (character 8)) (end (line 103) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 103) (character 22)) (end (line 103) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolecularPartitionFunctionValue"))) (kind "attribute def") (name "MolecularPartitionFunctionValue") (declared-name "MolecularPartitionFunctionValue") (range (start (line 977) (character 4)) (end (line 977) (character 778))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::MolecularPartitionFunctionValue::_documentation"))) (kind "documentation") (name "") (range (start (line 977) (character 4)) (end (line 977) (character 778))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::MolecularPartitionFunctionValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::NumberOfMolesUnit"))) (kind "alias") (name "NumberOfMolesUnit") (declared-name "NumberOfMolesUnit") (range (start (line 42) (character 4)) (end (line 42) (character 54))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::NumberOfMolesValue"))) (kind "alias") (name "NumberOfMolesValue") (declared-name "NumberOfMolesValue") (range (start (line 43) (character 4)) (end (line 43) (character 56))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticFactorOfSolventValue"))) (kind "attribute def") (name "OsmoticFactorOfSolventValue") (declared-name "OsmoticFactorOfSolventValue") (range (start (line 729) (character 4)) (end (line 729) (character 899))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticFactorOfSolventValue::_documentation"))) (kind "documentation") (name "") (range (start (line 729) (character 4)) (end (line 729) (character 899))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticFactorOfSolventValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit"))) (kind "attribute def") (name "OsmoticPressureUnit") (declared-name "OsmoticPressureUnit") (range (start (line 784) (character 4)) (end (line 784) (character 474))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 787) (character 8)) (end (line 787) (character 105))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 785) (character 8)) (end (line 785) (character 103))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 786) (character 8)) (end (line 786) (character 100))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 788) (character 8)) (end (line 788) (character 102))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 788) (character 22)) (end (line 788) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue"))) (kind "attribute def") (name "OsmoticPressureValue") (declared-name "OsmoticPressureValue") (range (start (line 765) (character 4)) (end (line 765) (character 669))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::_documentation"))) (kind "documentation") (name "") (range (start (line 765) (character 4)) (end (line 765) (character 669))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 779) (character 8)) (end (line 779) (character 51))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "OsmoticPressureUnit") (range none)) (redefinition (reference "mRef") (range (start (line 779) (character 22)) (end (line 779) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 778) (character 8)) (end (line 778) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 778) (character 22)) (end (line 778) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit"))) (kind "attribute def") (name "PartialPressureUnit") (declared-name "PartialPressureUnit") (range (start (line 560) (character 4)) (end (line 560) (character 474))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 563) (character 8)) (end (line 563) (character 105))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 561) (character 8)) (end (line 561) (character 103))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 562) (character 8)) (end (line 562) (character 100))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 564) (character 8)) (end (line 564) (character 102))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 564) (character 22)) (end (line 564) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue"))) (kind "attribute def") (name "PartialPressureValue") (declared-name "PartialPressureValue") (range (start (line 541) (character 4)) (end (line 541) (character 670))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::_documentation"))) (kind "documentation") (name "") (range (start (line 541) (character 4)) (end (line 541) (character 670))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 555) (character 8)) (end (line 555) (character 51))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "PartialPressureUnit") (range none)) (redefinition (reference "mRef") (range (start (line 555) (character 22)) (end (line 555) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 554) (character 8)) (end (line 554) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 554) (character 22)) (end (line 554) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationUnit"))) (kind "attribute def") (name "ParticleConcentrationUnit") (declared-name "ParticleConcentrationUnit") (range (start (line 305) (character 4)) (end (line 305) (character 251))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 306) (character 8)) (end (line 306) (character 103))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 307) (character 8)) (end (line 307) (character 80))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 307) (character 22)) (end (line 307) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue"))) (kind "attribute def") (name "ParticleConcentrationValue") (declared-name "ParticleConcentrationValue") (range (start (line 286) (character 4)) (end (line 286) (character 635))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::_documentation"))) (kind "documentation") (name "") (range (start (line 286) (character 4)) (end (line 286) (character 635))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 300) (character 8)) (end (line 300) (character 57))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "ParticleConcentrationUnit") (range none)) (redefinition (reference "mRef") (range (start (line 300) (character 22)) (end (line 300) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 299) (character 8)) (end (line 299) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 299) (character 22)) (end (line 299) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (kind "import") (name "Real") (declared-name "Real") (range (start (line 14) (character 4)) (end (line 14) (character 38))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 14) (character 19)) (end (line 14) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::RelativeAtomicMassValue"))) (kind "attribute def") (name "RelativeAtomicMassValue") (declared-name "RelativeAtomicMassValue") (range (start (line 47) (character 4)) (end (line 47) (character 1010))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::RelativeAtomicMassValue::_documentation"))) (kind "documentation") (name "") (range (start (line 47) (character 4)) (end (line 47) (character 1010))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::RelativeAtomicMassValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit"))) (kind "attribute def") (name "SpecificOpticalRotatoryPowerUnit") (declared-name "SpecificOpticalRotatoryPowerUnit") (range (start (line 1346) (character 4)) (end (line 1346) (character 369))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 1347) (character 8)) (end (line 1347) (character 102))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 1348) (character 8)) (end (line 1348) (character 101))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 1349) (character 8)) (end (line 1349) (character 90))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 1349) (character 22)) (end (line 1349) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue"))) (kind "attribute def") (name "SpecificOpticalRotatoryPowerValue") (declared-name "SpecificOpticalRotatoryPowerValue") (range (start (line 1327) (character 4)) (end (line 1327) (character 816))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1327) (character 4)) (end (line 1327) (character 816))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 1341) (character 8)) (end (line 1341) (character 64))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "SpecificOpticalRotatoryPowerUnit") (range none)) (redefinition (reference "mRef") (range (start (line 1341) (character 22)) (end (line 1341) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 1340) (character 8)) (end (line 1340) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 1340) (character 22)) (end (line 1340) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInMixtureValue"))) (kind "attribute def") (name "StandardAbsoluteActivityInMixtureValue") (declared-name "StandardAbsoluteActivityInMixtureValue") (range (start (line 640) (character 4)) (end (line 640) (character 768))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInMixtureValue::_documentation"))) (kind "documentation") (name "") (range (start (line 640) (character 4)) (end (line 640) (character 768))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInMixtureValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInSolutionValue"))) (kind "attribute def") (name "StandardAbsoluteActivityInSolutionValue") (declared-name "StandardAbsoluteActivityInSolutionValue") (range (start (line 693) (character 4)) (end (line 693) (character 886))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInSolutionValue::_documentation"))) (kind "documentation") (name "") (range (start (line 693) (character 4)) (end (line 693) (character 886))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInSolutionValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityOfSolventValue"))) (kind "attribute def") (name "StandardAbsoluteActivityOfSolventValue") (declared-name "StandardAbsoluteActivityOfSolventValue") (range (start (line 748) (character 4)) (end (line 748) (character 693))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityOfSolventValue::_documentation"))) (kind "documentation") (name "") (range (start (line 748) (character 4)) (end (line 748) (character 693))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityOfSolventValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit"))) (kind "attribute def") (name "StandardChemicalPotentialUnit") (declared-name "StandardChemicalPotentialUnit") (range (start (line 614) (character 4)) (end (line 614) (character 619))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit::amountOfSubstancePF"))) (kind "attribute") (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (range (start (line 618) (character 8)) (end (line 618) (character 114))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 617) (character 8)) (end (line 617) (character 105))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 615) (character 8)) (end (line 615) (character 102))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit::massPF"))) (kind "attribute") (name "massPF") (declared-name "massPF") (range (start (line 616) (character 8)) (end (line 616) (character 100))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 619) (character 8)) (end (line 619) (character 123))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 619) (character 22)) (end (line 619) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue"))) (kind "attribute def") (name "StandardChemicalPotentialValue") (declared-name "StandardChemicalPotentialValue") (range (start (line 595) (character 4)) (end (line 595) (character 989))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::_documentation"))) (kind "documentation") (name "") (range (start (line 595) (character 4)) (end (line 595) (character 989))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 609) (character 8)) (end (line 609) (character 61))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "StandardChemicalPotentialUnit") (range none)) (redefinition (reference "mRef") (range (start (line 609) (character 22)) (end (line 609) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 608) (character 8)) (end (line 608) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 608) (character 22)) (end (line 608) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardEquilibriumConstantValue"))) (kind "attribute def") (name "StandardEquilibriumConstantValue") (declared-name "StandardEquilibriumConstantValue") (range (start (line 853) (character 4)) (end (line 853) (character 951))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardEquilibriumConstantValue::_documentation"))) (kind "documentation") (name "") (range (start (line 853) (character 4)) (end (line 853) (character 951))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardEquilibriumConstantValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StoichiometricNumberOfSubstanceValue"))) (kind "attribute def") (name "StoichiometricNumberOfSubstanceValue") (declared-name "StoichiometricNumberOfSubstanceValue") (range (start (line 792) (character 4)) (end (line 792) (character 845))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::StoichiometricNumberOfSubstanceValue::_documentation"))) (kind "documentation") (name "") (range (start (line 792) (character 4)) (end (line 792) (character 845))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::StoichiometricNumberOfSubstanceValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit"))) (kind "attribute def") (name "ThermalDiffusionCoefficientUnit") (declared-name "ThermalDiffusionCoefficientUnit") (range (start (line 1158) (character 4)) (end (line 1158) (character 376))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DerivedUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit::durationPF"))) (kind "attribute") (name "durationPF") (declared-name "durationPF") (range (start (line 1160) (character 8)) (end (line 1160) (character 105))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit::lengthPF"))) (kind "attribute") (name "lengthPF") (declared-name "lengthPF") (range (start (line 1159) (character 8)) (end (line 1159) (character 102))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit"))) (authored (membership (kind Feature) (visibility "private")) (relationships (typing (reference "QuantityPowerFactor") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit::quantityDimension"))) (kind "attribute") (name "quantityDimension") (declared-name "quantityDimension") (range (start (line 1161) (character 8)) (end (line 1161) (character 94))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "quantityDimension") (range (start (line 1161) (character 22)) (end (line 1161) (character 39)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue"))) (kind "attribute def") (name "ThermalDiffusionCoefficientValue") (declared-name "ThermalDiffusionCoefficientValue") (range (start (line 1139) (character 4)) (end (line 1139) (character 661))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1139) (character 4)) (end (line 1139) (character 661))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 1153) (character 8)) (end (line 1153) (character 63))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "ThermalDiffusionCoefficientUnit") (range none)) (redefinition (reference "mRef") (range (start (line 1153) (character 22)) (end (line 1153) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 1152) (character 8)) (end (line 1152) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 1152) (character 22)) (end (line 1152) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionFactorValue"))) (kind "attribute def") (name "ThermalDiffusionFactorValue") (declared-name "ThermalDiffusionFactorValue") (range (start (line 1122) (character 4)) (end (line 1122) (character 651))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionFactorValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1122) (character 4)) (end (line 1122) (character 651))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionFactorValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionRatioValue"))) (kind "attribute def") (name "ThermalDiffusionRatioValue") (declared-name "ThermalDiffusionRatioValue") (range (start (line 1105) (character 4)) (end (line 1105) (character 796))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionRatioValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1105) (character 4)) (end (line 1105) (character 796))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionRatioValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::TransportNumberOfTheIonBValue"))) (kind "attribute def") (name "TransportNumberOfTheIonBValue") (declared-name "TransportNumberOfTheIonBValue") (range (start (line 1266) (character 4)) (end (line 1266) (character 655))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::TransportNumberOfTheIonBValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1266) (character 4)) (end (line 1266) (character 655))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::TransportNumberOfTheIonBValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionUnit"))) (kind "attribute def") (name "VolumeFractionUnit") (declared-name "VolumeFractionUnit") (range (start (line 448) (character 4)) (end (line 448) (character 64))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneUnit") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue"))) (kind "attribute def") (name "VolumeFractionValue") (declared-name "VolumeFractionValue") (range (start (line 429) (character 4)) (end (line 429) (character 1052))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ScalarQuantityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::_documentation"))) (kind "documentation") (name "") (range (start (line 429) (character 4)) (end (line 429) (character 1052))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::mRef"))) (kind "attribute") (name "mRef") (declared-name "mRef") (range (start (line 443) (character 8)) (end (line 443) (character 50))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "VolumeFractionUnit") (range none)) (redefinition (reference "mRef") (range (start (line 443) (character 22)) (end (line 443) (character 26)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::num"))) (kind "attribute") (name "num") (declared-name "num") (range (start (line 442) (character 8)) (end (line 442) (character 32))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (redefinition (reference "num") (range (start (line 442) (character 22)) (end (line 442) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 71442))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::absoluteActivity"))) (kind "attribute def") (name "absoluteActivity") (declared-name "absoluteActivity") (range (start (line 538) (character 4)) (end (line 538) (character 74))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "AbsoluteActivityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::activityCoefficient"))) (kind "attribute def") (name "activityCoefficient") (declared-name "activityCoefficient") (range (start (line 690) (character 4)) (end (line 690) (character 80))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ActivityCoefficientValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::activityFactor"))) (kind "attribute def") (name "activityFactor") (declared-name "activityFactor") (range (start (line 637) (character 4)) (end (line 637) (character 70))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ActivityFactorValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::activityOfSolute"))) (kind "attribute def") (name "activityOfSolute") (declared-name "activityOfSolute") (range (start (line 671) (character 4)) (end (line 671) (character 74))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ActivityOfSoluteValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::activityOfSolvent"))) (kind "attribute def") (name "activityOfSolvent") (declared-name "activityOfSolvent") (range (start (line 724) (character 4)) (end (line 724) (character 76))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ActivityOfSolventValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::affinityOfAChemicalReaction"))) (kind "attribute def") (name "affinityOfAChemicalReaction") (declared-name "affinityOfAChemicalReaction") (range (start (line 826) (character 4)) (end (line 826) (character 109))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "AffinityOfAChemicalReactionValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::amountOfSubstanceConcentration"))) (kind "attribute def") (name "amountOfSubstanceConcentration") (declared-name "amountOfSubstanceConcentration") (range (start (line 387) (character 4)) (end (line 387) (character 115))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "AmountOfSubstanceConcentrationValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::amountOfSubstanceFractionMoleFraction"))) (kind "attribute def") (name "amountOfSubstanceFractionMoleFraction") (declared-name "amountOfSubstanceFractionMoleFraction") (range (start (line 426) (character 4)) (end (line 426) (character 116))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "AmountOfSubstanceFractionMoleFractionValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::angleOfOpticalRotation"))) (kind "attribute def") (name "angleOfOpticalRotation") (declared-name "angleOfOpticalRotation") (range (start (line 1285) (character 4)) (end (line 1285) (character 603))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "AngularMeasureValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::angleOfOpticalRotation::_documentation"))) (kind "documentation") (name "") (range (start (line 1285) (character 4)) (end (line 1285) (character 603))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::angleOfOpticalRotation"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::canonicalPartitionFunction"))) (kind "attribute def") (name "canonicalPartitionFunction") (declared-name "canonicalPartitionFunction") (range (start (line 955) (character 4)) (end (line 955) (character 94))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "CanonicalPartitionFunctionValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::chemicalPotential"))) (kind "attribute def") (name "chemicalPotential") (declared-name "chemicalPotential") (range (start (line 513) (character 4)) (end (line 513) (character 89))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ChemicalPotentialValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::currentFractionOfTheIonB"))) (kind "alias") (name "currentFractionOfTheIonB") (declared-name "currentFractionOfTheIonB") (range (start (line 1282) (character 4)) (end (line 1282) (character 64))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::degeneracy"))) (kind "attribute def") (name "degeneracy") (declared-name "degeneracy") (range (start (line 1026) (character 4)) (end (line 1026) (character 62))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DegeneracyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::degreeOfDissociation"))) (kind "attribute def") (name "degreeOfDissociation") (declared-name "degreeOfDissociation") (range (start (line 1205) (character 4)) (end (line 1205) (character 82))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DegreeOfDissociationValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::diffusionCoefficient"))) (kind "attribute def") (name "diffusionCoefficient") (declared-name "diffusionCoefficient") (range (start (line 1096) (character 4)) (end (line 1096) (character 95))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "DiffusionCoefficientValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::dissociationFraction"))) (kind "alias") (name "dissociationFraction") (declared-name "dissociationFraction") (range (start (line 1207) (character 4)) (end (line 1207) (character 56))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::electrolyticConductivity"))) (kind "attribute def") (name "electrolyticConductivity") (declared-name "electrolyticConductivity") (range (start (line 1227) (character 4)) (end (line 1227) (character 103))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ElectrolyticConductivityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::enthalpyOfPhaseTransition"))) (kind "alias") (name "enthalpyOfPhaseTransition") (declared-name "enthalpyOfPhaseTransition") (range (start (line 493) (character 4)) (end (line 493) (character 68))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::equilibriumConstantOnConcentrationBasis"))) (kind "attribute def") (name "equilibriumConstantOnConcentrationBasis") (declared-name "equilibriumConstantOnConcentrationBasis") (range (start (line 916) (character 4)) (end (line 916) (character 133))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "EquilibriumConstantOnConcentrationBasisValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::equilibriumConstantOnPressureBasis"))) (kind "attribute def") (name "equilibriumConstantOnPressureBasis") (declared-name "equilibriumConstantOnPressureBasis") (range (start (line 889) (character 4)) (end (line 889) (character 123))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "EquilibriumConstantOnPressureBasisValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::extentOfReaction"))) (kind "attribute def") (name "extentOfReaction") (declared-name "extentOfReaction") (range (start (line 837) (character 4)) (end (line 837) (character 705))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "AmountOfSubstanceValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::extentOfReaction::_documentation"))) (kind "documentation") (name "") (range (start (line 837) (character 4)) (end (line 837) (character 705))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::extentOfReaction"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::fugacity"))) (kind "attribute def") (name "fugacity") (declared-name "fugacity") (range (start (line 585) (character 4)) (end (line 585) (character 71))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "FugacityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::grandCanonicalPartitionFunction"))) (kind "attribute def") (name "grandCanonicalPartitionFunction") (declared-name "grandCanonicalPartitionFunction") (range (start (line 972) (character 4)) (end (line 972) (character 104))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "GrandCanonicalPartitionFunctionValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::grandPartitionFunction"))) (kind "alias") (name "grandPartitionFunction") (declared-name "grandPartitionFunction") (range (start (line 974) (character 4)) (end (line 974) (character 69))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::ionicStrength"))) (kind "attribute def") (name "ionicStrength") (declared-name "ionicStrength") (range (start (line 1182) (character 4)) (end (line 1182) (character 81))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "IonicStrengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::latentHeatOfPhaseTransition"))) (kind "attribute def") (name "latentHeatOfPhaseTransition") (declared-name "latentHeatOfPhaseTransition") (range (start (line 478) (character 4)) (end (line 478) (character 939))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "EnergyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::latentHeatOfPhaseTransition::_documentation"))) (kind "documentation") (name "") (range (start (line 478) (character 4)) (end (line 478) (character 939))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::latentHeatOfPhaseTransition"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::massConcentration"))) (kind "attribute def") (name "massConcentration") (declared-name "massConcentration") (range (start (line 344) (character 4)) (end (line 344) (character 89))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "MassConcentrationValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::massFraction"))) (kind "attribute def") (name "massFraction") (declared-name "massFraction") (range (start (line 367) (character 4)) (end (line 367) (character 66))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "MassFractionValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::meanFreePath"))) (kind "attribute def") (name "meanFreePath") (declared-name "meanFreePath") (range (start (line 1063) (character 4)) (end (line 1063) (character 525))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "LengthValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::meanFreePath::_documentation"))) (kind "documentation") (name "") (range (start (line 1063) (character 4)) (end (line 1063) (character 525))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::meanFreePath"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::microcanonicalPartitionFunction"))) (kind "attribute def") (name "microcanonicalPartitionFunction") (declared-name "microcanonicalPartitionFunction") (range (start (line 925) (character 4)) (end (line 925) (character 695))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "CountValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::microcanonicalPartitionFunction::_documentation"))) (kind "documentation") (name "") (range (start (line 925) (character 4)) (end (line 925) (character 695))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::microcanonicalPartitionFunction"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molality"))) (kind "attribute def") (name "molality") (declared-name "molality") (range (start (line 469) (character 4)) (end (line 469) (character 71))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "MolalityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molarConductivity"))) (kind "attribute def") (name "molarConductivity") (declared-name "molarConductivity") (range (start (line 1255) (character 4)) (end (line 1255) (character 89))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "MolarConductivityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molarEnthalpy"))) (kind "attribute def") (name "molarEnthalpy") (declared-name "molarEnthalpy") (range (start (line 161) (character 4)) (end (line 161) (character 81))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "MolarEnthalpyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molarEntropy"))) (kind "attribute def") (name "molarEntropy") (declared-name "molarEntropy") (range (start (line 274) (character 4)) (end (line 274) (character 79))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "MolarEntropyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molarGasConstant"))) (kind "attribute def") (name "molarGasConstant") (declared-name "molarGasConstant") (range (start (line 1048) (character 4)) (end (line 1048) (character 87))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "MolarGasConstantValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molarGibbsEnergy"))) (kind "attribute def") (name "molarGibbsEnergy") (declared-name "molarGibbsEnergy") (range (start (line 217) (character 4)) (end (line 217) (character 87))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "MolarGibbsEnergyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molarHeatCapacity"))) (kind "attribute def") (name "molarHeatCapacity") (declared-name "molarHeatCapacity") (range (start (line 245) (character 4)) (end (line 245) (character 89))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "MolarHeatCapacityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molarHelmholtzEnergy"))) (kind "attribute def") (name "molarHelmholtzEnergy") (declared-name "molarHelmholtzEnergy") (range (start (line 189) (character 4)) (end (line 189) (character 95))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "MolarHelmholtzEnergyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molarInternalEnergy"))) (kind "attribute def") (name "molarInternalEnergy") (declared-name "molarInternalEnergy") (range (start (line 133) (character 4)) (end (line 133) (character 93))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "MolarInternalEnergyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molarMass"))) (kind "attribute def") (name "molarMass") (declared-name "molarMass") (range (start (line 81) (character 4)) (end (line 81) (character 73))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "MolarMassValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molarOpticalRotatoryPower"))) (kind "attribute def") (name "molarOpticalRotatoryPower") (declared-name "molarOpticalRotatoryPower") (range (start (line 1318) (character 4)) (end (line 1318) (character 105))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "MolarOpticalRotatoryPowerValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molarVolume"))) (kind "attribute def") (name "molarVolume") (declared-name "molarVolume") (range (start (line 107) (character 4)) (end (line 107) (character 77))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "MolarVolumeValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molecularConcentration"))) (kind "attribute def") (name "molecularConcentration") (declared-name "molecularConcentration") (range (start (line 311) (character 4)) (end (line 311) (character 627))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ParticleConcentrationValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molecularConcentration::_documentation"))) (kind "documentation") (name "") (range (start (line 311) (character 4)) (end (line 311) (character 627))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::molecularConcentration"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::molecularPartitionFunction"))) (kind "attribute def") (name "molecularPartitionFunction") (declared-name "molecularPartitionFunction") (range (start (line 991) (character 4)) (end (line 991) (character 94))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "MolecularPartitionFunctionValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::multiplicity"))) (kind "alias") (name "multiplicity") (declared-name "multiplicity") (range (start (line 1028) (character 4)) (end (line 1028) (character 38))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::numberOfEntities"))) (kind "attribute def") (name "numberOfEntities") (declared-name "numberOfEntities") (range (start (line 24) (character 4)) (end (line 24) (character 786))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "CountValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::numberOfEntities::_documentation"))) (kind "documentation") (name "") (range (start (line 24) (character 4)) (end (line 24) (character 786))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::numberOfEntities"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::numberOfMoles"))) (kind "alias") (name "numberOfMoles") (declared-name "numberOfMoles") (range (start (line 44) (character 4)) (end (line 44) (character 46))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::osmoticCoefficientOfSolventA"))) (kind "alias") (name "osmoticCoefficientOfSolventA") (declared-name "osmoticCoefficientOfSolventA") (range (start (line 745) (character 4)) (end (line 745) (character 66))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::osmoticFactorOfSolvent"))) (kind "attribute def") (name "osmoticFactorOfSolvent") (declared-name "osmoticFactorOfSolvent") (range (start (line 743) (character 4)) (end (line 743) (character 86))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "OsmoticFactorOfSolventValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::osmoticPressure"))) (kind "attribute def") (name "osmoticPressure") (declared-name "osmoticPressure") (range (start (line 782) (character 4)) (end (line 782) (character 85))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "OsmoticPressureValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::partialPressure"))) (kind "attribute def") (name "partialPressure") (declared-name "partialPressure") (range (start (line 558) (character 4)) (end (line 558) (character 85))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "PartialPressureValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::particleConcentration"))) (kind "attribute def") (name "particleConcentration") (declared-name "particleConcentration") (range (start (line 303) (character 4)) (end (line 303) (character 97))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ParticleConcentrationValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::partitionFunctionOfAMolecule"))) (kind "alias") (name "partitionFunctionOfAMolecule") (declared-name "partitionFunctionOfAMolecule") (range (start (line 993) (character 4)) (end (line 993) (character 70))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::relativeActivityOfSolute"))) (kind "alias") (name "relativeActivityOfSolute") (declared-name "relativeActivityOfSolute") (range (start (line 673) (character 4)) (end (line 673) (character 56))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::relativeActivityOfSolvent"))) (kind "alias") (name "relativeActivityOfSolvent") (declared-name "relativeActivityOfSolvent") (range (start (line 726) (character 4)) (end (line 726) (character 58))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::relativeAtomicMass"))) (kind "attribute def") (name "relativeAtomicMass") (declared-name "relativeAtomicMass") (range (start (line 61) (character 4)) (end (line 61) (character 78))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "RelativeAtomicMassValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::specificOpticalRotatoryPower"))) (kind "attribute def") (name "specificOpticalRotatoryPower") (declared-name "specificOpticalRotatoryPower") (range (start (line 1344) (character 4)) (end (line 1344) (character 111))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "SpecificOpticalRotatoryPowerValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAbsoluteActivityInMixture"))) (kind "attribute def") (name "standardAbsoluteActivityInMixture") (declared-name "standardAbsoluteActivityInMixture") (range (start (line 654) (character 4)) (end (line 654) (character 108))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "StandardAbsoluteActivityInMixtureValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAbsoluteActivityInSolution"))) (kind "attribute def") (name "standardAbsoluteActivityInSolution") (declared-name "standardAbsoluteActivityInSolution") (range (start (line 707) (character 4)) (end (line 707) (character 110))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "StandardAbsoluteActivityInSolutionValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAbsoluteActivityOfSolvent"))) (kind "attribute def") (name "standardAbsoluteActivityOfSolvent") (declared-name "standardAbsoluteActivityOfSolvent") (range (start (line 762) (character 4)) (end (line 762) (character 108))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "StandardAbsoluteActivityOfSolventValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAmountOfSubstanceConcentration"))) (kind "attribute def") (name "standardAmountOfSubstanceConcentration") (declared-name "standardAmountOfSubstanceConcentration") (range (start (line 396) (character 4)) (end (line 396) (character 686))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "AmountOfSubstanceConcentrationValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAmountOfSubstanceConcentration::_documentation"))) (kind "documentation") (name "") (range (start (line 396) (character 4)) (end (line 396) (character 686))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAmountOfSubstanceConcentration"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::standardChemicalPotential"))) (kind "attribute def") (name "standardChemicalPotential") (declared-name "standardChemicalPotential") (range (start (line 612) (character 4)) (end (line 612) (character 105))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "StandardChemicalPotentialValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::standardEquilibriumConstant"))) (kind "attribute def") (name "standardEquilibriumConstant") (declared-name "standardEquilibriumConstant") (range (start (line 867) (character 4)) (end (line 867) (character 96))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "StandardEquilibriumConstantValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::statisticalWeightOfSubsystem"))) (kind "attribute def") (name "statisticalWeightOfSubsystem") (declared-name "statisticalWeightOfSubsystem") (range (start (line 996) (character 4)) (end (line 996) (character 501))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "CountValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::statisticalWeightOfSubsystem::_documentation"))) (kind "documentation") (name "") (range (start (line 996) (character 4)) (end (line 996) (character 501))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular::statisticalWeightOfSubsystem"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::stoichiometricNumberOfSubstance"))) (kind "attribute def") (name "stoichiometricNumberOfSubstance") (declared-name "stoichiometricNumberOfSubstance") (range (start (line 806) (character 4)) (end (line 806) (character 104))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "StoichiometricNumberOfSubstanceValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::thermalDiffusionCoefficient"))) (kind "attribute def") (name "thermalDiffusionCoefficient") (declared-name "thermalDiffusionCoefficient") (range (start (line 1156) (character 4)) (end (line 1156) (character 109))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ThermalDiffusionCoefficientValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::thermalDiffusionFactor"))) (kind "attribute def") (name "thermalDiffusionFactor") (declared-name "thermalDiffusionFactor") (range (start (line 1136) (character 4)) (end (line 1136) (character 86))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ThermalDiffusionFactorValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::thermalDiffusionRatio"))) (kind "attribute def") (name "thermalDiffusionRatio") (declared-name "thermalDiffusionRatio") (range (start (line 1119) (character 4)) (end (line 1119) (character 84))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "ThermalDiffusionRatioValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::thermodynamicEquilibriumConstant"))) (kind "alias") (name "thermodynamicEquilibriumConstant") (declared-name "thermodynamicEquilibriumConstant") (range (start (line 869) (character 4)) (end (line 869) (character 75))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::transportNumberOfTheIonB"))) (kind "attribute def") (name "transportNumberOfTheIonB") (declared-name "transportNumberOfTheIonB") (range (start (line 1280) (character 4)) (end (line 1280) (character 90))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "TransportNumberOfTheIonBValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQChemistryMolecular::volumeFraction"))) (kind "attribute def") (name "volumeFraction") (declared-name "volumeFraction") (range (start (line 446) (character 4)) (end (line 446) (character 83))) (parent (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (authored (membership (kind Owning)) (relationships (typing (reference "VolumeFractionValue") (range none)))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Quantities::*") (range (start (line 15) (character 19)) (end (line 15) (character 29))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "MeasurementReferences::*") (range (start (line 16) (character 19)) (end (line 16) (character 40))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::*#import2"))) (kind namespaceImport) (ordinal 0)) (authored-target "ISQBase::*") (range (start (line 17) (character 19)) (end (line 17) (character 26))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AbsoluteActivityValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityCoefficientValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityFactorValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSoluteValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSolventValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit::amountOfSubstancePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 833) (character 22)) (end (line 833) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "AffinityOfAChemicalReactionUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 823) (character 22)) (end (line 823) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 822) (character 22)) (end (line 822) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit::amountOfSubstancePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 392) (character 22)) (end (line 392) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "AmountOfSubstanceConcentrationUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 384) (character 22)) (end (line 384) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 383) (character 22)) (end (line 383) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceFractionMoleFractionValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AngularMeasureValue"))) (kind membershipImport) (ordinal 0)) (authored-target "ISQSpaceTime::AngularMeasureValue") (range (start (line 20) (character 19)) (end (line 20) (character 52))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::CanonicalPartitionFunctionValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit::amountOfSubstancePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 520) (character 22)) (end (line 520) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "ChemicalPotentialUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 510) (character 22)) (end (line 510) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 509) (character 22)) (end (line 509) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::DegeneracyValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::DegreeOfDissociationValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 1101) (character 22)) (end (line 1101) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "DiffusionCoefficientUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 1093) (character 22)) (end (line 1093) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 1092) (character 22)) (end (line 1092) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit::electricCurrentPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 1234) (character 22)) (end (line 1234) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "ElectrolyticConductivityUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 1224) (character 22)) (end (line 1224) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 1223) (character 22)) (end (line 1223) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EnergyValue"))) (kind membershipImport) (ordinal 0)) (authored-target "ISQThermodynamics::EnergyValue") (range (start (line 21) (character 19)) (end (line 21) (character 49))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit::amountOfSubstancePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 921) (character 22)) (end (line 921) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "EquilibriumConstantOnConcentrationBasisUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 913) (character 22)) (end (line 913) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 912) (character 22)) (end (line 912) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 895) (character 22)) (end (line 895) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "EquilibriumConstantOnPressureBasisUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 886) (character 22)) (end (line 886) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 885) (character 22)) (end (line 885) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 591) (character 22)) (end (line 591) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "FugacityUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 582) (character 22)) (end (line 582) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 581) (character 22)) (end (line 581) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::GrandCanonicalPartitionFunctionValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit::amountOfSubstancePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 1187) (character 22)) (end (line 1187) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "IonicStrengthUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 1179) (character 22)) (end (line 1179) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 1178) (character 22)) (end (line 1178) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 349) (character 22)) (end (line 349) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "MassConcentrationUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 341) (character 22)) (end (line 341) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 340) (character 22)) (end (line 340) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MassFractionValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit::amountOfSubstancePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 474) (character 22)) (end (line 474) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "MolalityUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 466) (character 22)) (end (line 466) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 465) (character 22)) (end (line 465) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit::amountOfSubstancePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit::electricCurrentPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 1262) (character 22)) (end (line 1262) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "MolarConductivityUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 1252) (character 22)) (end (line 1252) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 1251) (character 22)) (end (line 1251) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit::amountOfSubstancePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 168) (character 22)) (end (line 168) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "MolarEnthalpyUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 158) (character 22)) (end (line 158) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 157) (character 22)) (end (line 157) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::amountOfSubstancePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 282) (character 22)) (end (line 282) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "MolarEntropyUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 271) (character 22)) (end (line 271) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 270) (character 22)) (end (line 270) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::amountOfSubstancePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 1056) (character 22)) (end (line 1056) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "MolarGasConstantUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 1045) (character 22)) (end (line 1045) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 1044) (character 22)) (end (line 1044) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit::amountOfSubstancePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 224) (character 22)) (end (line 224) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "MolarGibbsEnergyUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 214) (character 22)) (end (line 214) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 213) (character 22)) (end (line 213) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::amountOfSubstancePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 253) (character 22)) (end (line 253) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::thermodynamicTemperaturePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "MolarHeatCapacityUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 242) (character 22)) (end (line 242) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 241) (character 22)) (end (line 241) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit::amountOfSubstancePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 196) (character 22)) (end (line 196) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "MolarHelmholtzEnergyUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 186) (character 22)) (end (line 186) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 185) (character 22)) (end (line 185) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit::amountOfSubstancePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 140) (character 22)) (end (line 140) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "MolarInternalEnergyUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 130) (character 22)) (end (line 130) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 129) (character 22)) (end (line 129) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit::amountOfSubstancePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 86) (character 22)) (end (line 86) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "MolarMassUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 78) (character 22)) (end (line 78) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 77) (character 22)) (end (line 77) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit::amountOfSubstancePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 1323) (character 22)) (end (line 1323) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "MolarOpticalRotatoryPowerUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 1315) (character 22)) (end (line 1315) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 1314) (character 22)) (end (line 1314) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit::amountOfSubstancePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 112) (character 22)) (end (line 112) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "MolarVolumeUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 104) (character 22)) (end (line 104) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 103) (character 22)) (end (line 103) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolecularPartitionFunctionValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticFactorOfSolventValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 788) (character 22)) (end (line 788) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "OsmoticPressureUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 779) (character 22)) (end (line 779) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 778) (character 22)) (end (line 778) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 564) (character 22)) (end (line 564) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "PartialPressureUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 555) (character 22)) (end (line 555) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 554) (character 22)) (end (line 554) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 307) (character 22)) (end (line 307) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "ParticleConcentrationUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 300) (character 22)) (end (line 300) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 299) (character 22)) (end (line 299) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (range (start (line 14) (character 19)) (end (line 14) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::RelativeAtomicMassValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 1349) (character 22)) (end (line 1349) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "SpecificOpticalRotatoryPowerUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 1341) (character 22)) (end (line 1341) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 1340) (character 22)) (end (line 1340) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInMixtureValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInSolutionValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityOfSolventValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit::amountOfSubstancePF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit::massPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 619) (character 22)) (end (line 619) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "StandardChemicalPotentialUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 609) (character 22)) (end (line 609) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 608) (character 22)) (end (line 608) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardEquilibriumConstantValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StoichiometricNumberOfSubstanceValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DerivedUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit::durationPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit::lengthPF"))) (kind featureTyping) (ordinal 0)) (authored-target "QuantityPowerFactor") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)) (authored-target "quantityDimension") (range (start (line 1161) (character 22)) (end (line 1161) (character 39))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit::quantityDimension")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "ThermalDiffusionCoefficientUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 1153) (character 22)) (end (line 1153) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 1152) (character 22)) (end (line 1152) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionFactorValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionRatioValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::TransportNumberOfTheIonBValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionUnit"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneUnit") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue"))) (kind featureTyping) (ordinal 0)) (authored-target "ScalarQuantityValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::mRef"))) (kind featureTyping) (ordinal 0)) (authored-target "VolumeFractionUnit") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionUnit")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::mRef"))) (kind redefinition) (ordinal 0)) (authored-target "mRef") (range (start (line 443) (character 22)) (end (line 443) (character 26))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::mRef")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::num"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::num"))) (kind redefinition) (ordinal 0)) (authored-target "num") (range (start (line 442) (character 22)) (end (line 442) (character 25))) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::num")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::absoluteActivity"))) (kind featureTyping) (ordinal 0)) (authored-target "AbsoluteActivityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AbsoluteActivityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::activityCoefficient"))) (kind featureTyping) (ordinal 0)) (authored-target "ActivityCoefficientValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityCoefficientValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::activityFactor"))) (kind featureTyping) (ordinal 0)) (authored-target "ActivityFactorValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityFactorValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::activityOfSolute"))) (kind featureTyping) (ordinal 0)) (authored-target "ActivityOfSoluteValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSoluteValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::activityOfSolvent"))) (kind featureTyping) (ordinal 0)) (authored-target "ActivityOfSolventValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSolventValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::affinityOfAChemicalReaction"))) (kind featureTyping) (ordinal 0)) (authored-target "AffinityOfAChemicalReactionValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::amountOfSubstanceConcentration"))) (kind featureTyping) (ordinal 0)) (authored-target "AmountOfSubstanceConcentrationValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::amountOfSubstanceFractionMoleFraction"))) (kind featureTyping) (ordinal 0)) (authored-target "AmountOfSubstanceFractionMoleFractionValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceFractionMoleFractionValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::angleOfOpticalRotation"))) (kind featureTyping) (ordinal 0)) (authored-target "AngularMeasureValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AngularMeasureValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::canonicalPartitionFunction"))) (kind featureTyping) (ordinal 0)) (authored-target "CanonicalPartitionFunctionValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::CanonicalPartitionFunctionValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::chemicalPotential"))) (kind featureTyping) (ordinal 0)) (authored-target "ChemicalPotentialValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::degeneracy"))) (kind featureTyping) (ordinal 0)) (authored-target "DegeneracyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::DegeneracyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::degreeOfDissociation"))) (kind featureTyping) (ordinal 0)) (authored-target "DegreeOfDissociationValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::DegreeOfDissociationValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::diffusionCoefficient"))) (kind featureTyping) (ordinal 0)) (authored-target "DiffusionCoefficientValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::electrolyticConductivity"))) (kind featureTyping) (ordinal 0)) (authored-target "ElectrolyticConductivityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::equilibriumConstantOnConcentrationBasis"))) (kind featureTyping) (ordinal 0)) (authored-target "EquilibriumConstantOnConcentrationBasisValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::equilibriumConstantOnPressureBasis"))) (kind featureTyping) (ordinal 0)) (authored-target "EquilibriumConstantOnPressureBasisValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::extentOfReaction"))) (kind featureTyping) (ordinal 0)) (authored-target "AmountOfSubstanceValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::fugacity"))) (kind featureTyping) (ordinal 0)) (authored-target "FugacityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::grandCanonicalPartitionFunction"))) (kind featureTyping) (ordinal 0)) (authored-target "GrandCanonicalPartitionFunctionValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::GrandCanonicalPartitionFunctionValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ionicStrength"))) (kind featureTyping) (ordinal 0)) (authored-target "IonicStrengthValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::latentHeatOfPhaseTransition"))) (kind featureTyping) (ordinal 0)) (authored-target "EnergyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::EnergyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::massConcentration"))) (kind featureTyping) (ordinal 0)) (authored-target "MassConcentrationValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::massFraction"))) (kind featureTyping) (ordinal 0)) (authored-target "MassFractionValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MassFractionValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::meanFreePath"))) (kind featureTyping) (ordinal 0)) (authored-target "LengthValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::microcanonicalPartitionFunction"))) (kind featureTyping) (ordinal 0)) (authored-target "CountValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molality"))) (kind featureTyping) (ordinal 0)) (authored-target "MolalityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarConductivity"))) (kind featureTyping) (ordinal 0)) (authored-target "MolarConductivityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarEnthalpy"))) (kind featureTyping) (ordinal 0)) (authored-target "MolarEnthalpyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarEntropy"))) (kind featureTyping) (ordinal 0)) (authored-target "MolarEntropyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarGasConstant"))) (kind featureTyping) (ordinal 0)) (authored-target "MolarGasConstantValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarGibbsEnergy"))) (kind featureTyping) (ordinal 0)) (authored-target "MolarGibbsEnergyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarHeatCapacity"))) (kind featureTyping) (ordinal 0)) (authored-target "MolarHeatCapacityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarHelmholtzEnergy"))) (kind featureTyping) (ordinal 0)) (authored-target "MolarHelmholtzEnergyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarInternalEnergy"))) (kind featureTyping) (ordinal 0)) (authored-target "MolarInternalEnergyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarMass"))) (kind featureTyping) (ordinal 0)) (authored-target "MolarMassValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarOpticalRotatoryPower"))) (kind featureTyping) (ordinal 0)) (authored-target "MolarOpticalRotatoryPowerValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarVolume"))) (kind featureTyping) (ordinal 0)) (authored-target "MolarVolumeValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molecularConcentration"))) (kind featureTyping) (ordinal 0)) (authored-target "ParticleConcentrationValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molecularPartitionFunction"))) (kind featureTyping) (ordinal 0)) (authored-target "MolecularPartitionFunctionValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolecularPartitionFunctionValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::numberOfEntities"))) (kind featureTyping) (ordinal 0)) (authored-target "CountValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::osmoticFactorOfSolvent"))) (kind featureTyping) (ordinal 0)) (authored-target "OsmoticFactorOfSolventValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticFactorOfSolventValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::osmoticPressure"))) (kind featureTyping) (ordinal 0)) (authored-target "OsmoticPressureValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::partialPressure"))) (kind featureTyping) (ordinal 0)) (authored-target "PartialPressureValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::particleConcentration"))) (kind featureTyping) (ordinal 0)) (authored-target "ParticleConcentrationValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::relativeAtomicMass"))) (kind featureTyping) (ordinal 0)) (authored-target "RelativeAtomicMassValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::RelativeAtomicMassValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::specificOpticalRotatoryPower"))) (kind featureTyping) (ordinal 0)) (authored-target "SpecificOpticalRotatoryPowerValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAbsoluteActivityInMixture"))) (kind featureTyping) (ordinal 0)) (authored-target "StandardAbsoluteActivityInMixtureValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInMixtureValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAbsoluteActivityInSolution"))) (kind featureTyping) (ordinal 0)) (authored-target "StandardAbsoluteActivityInSolutionValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInSolutionValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAbsoluteActivityOfSolvent"))) (kind featureTyping) (ordinal 0)) (authored-target "StandardAbsoluteActivityOfSolventValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityOfSolventValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAmountOfSubstanceConcentration"))) (kind featureTyping) (ordinal 0)) (authored-target "AmountOfSubstanceConcentrationValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::standardChemicalPotential"))) (kind featureTyping) (ordinal 0)) (authored-target "StandardChemicalPotentialValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::standardEquilibriumConstant"))) (kind featureTyping) (ordinal 0)) (authored-target "StandardEquilibriumConstantValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardEquilibriumConstantValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::statisticalWeightOfSubsystem"))) (kind featureTyping) (ordinal 0)) (authored-target "CountValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::stoichiometricNumberOfSubstance"))) (kind featureTyping) (ordinal 0)) (authored-target "StoichiometricNumberOfSubstanceValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::StoichiometricNumberOfSubstanceValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::thermalDiffusionCoefficient"))) (kind featureTyping) (ordinal 0)) (authored-target "ThermalDiffusionCoefficientValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::thermalDiffusionFactor"))) (kind featureTyping) (ordinal 0)) (authored-target "ThermalDiffusionFactorValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionFactorValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::thermalDiffusionRatio"))) (kind featureTyping) (ordinal 0)) (authored-target "ThermalDiffusionRatioValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionRatioValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::transportNumberOfTheIonB"))) (kind featureTyping) (ordinal 0)) (authored-target "TransportNumberOfTheIonBValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::TransportNumberOfTheIonBValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQChemistryMolecular::volumeFraction"))) (kind featureTyping) (ordinal 0)) (authored-target "VolumeFractionValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue")))))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::AbsoluteActivityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::AbsoluteActivityValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityCoefficientValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityFactorValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSoluteValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSoluteValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSolventValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSolventValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceFractionMoleFractionValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceFractionMoleFractionValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::CanonicalPartitionFunctionValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::CanonicalPartitionFunctionValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::DegeneracyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::DegeneracyValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::DegreeOfDissociationValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::DegreeOfDissociationValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::GrandCanonicalPartitionFunctionValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::GrandCanonicalPartitionFunctionValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MassFractionValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MassFractionValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolecularPartitionFunctionValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolecularPartitionFunctionValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticFactorOfSolventValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticFactorOfSolventValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::RelativeAtomicMassValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::RelativeAtomicMassValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInMixtureValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInMixtureValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInSolutionValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInSolutionValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityOfSolventValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityOfSolventValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardEquilibriumConstantValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardEquilibriumConstantValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::StoichiometricNumberOfSubstanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::StoichiometricNumberOfSubstanceValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionFactorValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionRatioValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionRatioValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::TransportNumberOfTheIonBValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::TransportNumberOfTheIonBValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::angleOfOpticalRotation::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::angleOfOpticalRotation"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::extentOfReaction::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::extentOfReaction"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::latentHeatOfPhaseTransition::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::latentHeatOfPhaseTransition"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::meanFreePath::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::meanFreePath"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::microcanonicalPartitionFunction::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::microcanonicalPartitionFunction"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molecularConcentration::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::molecularConcentration"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::numberOfEntities::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::numberOfEntities"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAmountOfSubstanceConcentration::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAmountOfSubstanceConcentration"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::statisticalWeightOfSubsystem::_documentation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::statisticalWeightOfSubsystem"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::mRef"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionUnit"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::absoluteActivity"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::AbsoluteActivityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::activityCoefficient"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityCoefficientValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::activityFactor"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityFactorValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::activityOfSolute"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSoluteValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::activityOfSolvent"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSolventValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::affinityOfAChemicalReaction"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::amountOfSubstanceConcentration"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::amountOfSubstanceFractionMoleFraction"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceFractionMoleFractionValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::canonicalPartitionFunction"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::CanonicalPartitionFunctionValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::chemicalPotential"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::degeneracy"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::DegeneracyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::degreeOfDissociation"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::DegreeOfDissociationValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::diffusionCoefficient"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::electrolyticConductivity"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::equilibriumConstantOnConcentrationBasis"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::equilibriumConstantOnPressureBasis"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::fugacity"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::grandCanonicalPartitionFunction"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::GrandCanonicalPartitionFunctionValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ionicStrength"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::massConcentration"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::massFraction"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MassFractionValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molality"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molarConductivity"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molarEnthalpy"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molarEntropy"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molarGasConstant"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molarGibbsEnergy"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molarHeatCapacity"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molarHelmholtzEnergy"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molarInternalEnergy"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molarMass"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molarOpticalRotatoryPower"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molarVolume"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molecularConcentration"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molecularPartitionFunction"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::MolecularPartitionFunctionValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::osmoticFactorOfSolvent"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticFactorOfSolventValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::osmoticPressure"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::partialPressure"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::particleConcentration"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::relativeAtomicMass"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::RelativeAtomicMassValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::specificOpticalRotatoryPower"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAbsoluteActivityInMixture"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInMixtureValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAbsoluteActivityInSolution"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInSolutionValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAbsoluteActivityOfSolvent"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityOfSolventValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAmountOfSubstanceConcentration"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::standardChemicalPotential"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::standardEquilibriumConstant"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardEquilibriumConstantValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::stoichiometricNumberOfSubstance"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::StoichiometricNumberOfSubstanceValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::thermalDiffusionCoefficient"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::thermalDiffusionFactor"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionFactorValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::thermalDiffusionRatio"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionRatioValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::transportNumberOfTheIonB"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::TransportNumberOfTheIonBValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQChemistryMolecular::volumeFraction"))) (to (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue"))) (provenance authored))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit::quantityDimension"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit::quantityDimension"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit::quantityDimension"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionUnit"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::mRef"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::mRef"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::mRef"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::mRef"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::num"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::num"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::num"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::num"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::absoluteActivity"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AbsoluteActivityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::absoluteActivity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::activityCoefficient"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityCoefficientValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::activityCoefficient"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::activityFactor"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityFactorValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::activityFactor"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::activityOfSolute"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSoluteValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::activityOfSolute"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::activityOfSolvent"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSolventValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::activityOfSolvent"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::affinityOfAChemicalReaction"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::affinityOfAChemicalReaction"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::amountOfSubstanceConcentration"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::amountOfSubstanceConcentration"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::amountOfSubstanceFractionMoleFraction"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceFractionMoleFractionValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::amountOfSubstanceFractionMoleFraction"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::angleOfOpticalRotation"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AngularMeasureValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::angleOfOpticalRotation"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::canonicalPartitionFunction"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::CanonicalPartitionFunctionValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::canonicalPartitionFunction"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::chemicalPotential"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::chemicalPotential"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::degeneracy"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::DegeneracyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::degeneracy"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::degreeOfDissociation"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::DegreeOfDissociationValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::degreeOfDissociation"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::diffusionCoefficient"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::diffusionCoefficient"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::electrolyticConductivity"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::electrolyticConductivity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::equilibriumConstantOnConcentrationBasis"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::equilibriumConstantOnConcentrationBasis"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::equilibriumConstantOnPressureBasis"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::equilibriumConstantOnPressureBasis"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::fugacity"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::fugacity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::grandCanonicalPartitionFunction"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::GrandCanonicalPartitionFunctionValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::grandCanonicalPartitionFunction"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ionicStrength"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::ionicStrength"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::latentHeatOfPhaseTransition"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::EnergyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::latentHeatOfPhaseTransition"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::massConcentration"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::massConcentration"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::massFraction"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MassFractionValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::massFraction"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molality"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molality"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarConductivity"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarConductivity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarEnthalpy"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarEnthalpy"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarEntropy"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarEntropy"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarGasConstant"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarGasConstant"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarGibbsEnergy"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarGibbsEnergy"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarHeatCapacity"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarHeatCapacity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarHelmholtzEnergy"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarHelmholtzEnergy"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarInternalEnergy"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarInternalEnergy"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarMass"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarMass"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarOpticalRotatoryPower"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarOpticalRotatoryPower"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarVolume"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molarVolume"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molecularConcentration"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molecularConcentration"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molecularPartitionFunction"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::MolecularPartitionFunctionValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::molecularPartitionFunction"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::osmoticFactorOfSolvent"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticFactorOfSolventValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::osmoticFactorOfSolvent"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::osmoticPressure"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::osmoticPressure"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::partialPressure"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::partialPressure"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::particleConcentration"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::particleConcentration"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::relativeAtomicMass"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::RelativeAtomicMassValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::relativeAtomicMass"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::specificOpticalRotatoryPower"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::specificOpticalRotatoryPower"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAbsoluteActivityInMixture"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInMixtureValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAbsoluteActivityInMixture"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAbsoluteActivityInSolution"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInSolutionValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAbsoluteActivityInSolution"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAbsoluteActivityOfSolvent"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityOfSolventValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAbsoluteActivityOfSolvent"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAmountOfSubstanceConcentration"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAmountOfSubstanceConcentration"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::standardChemicalPotential"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::standardChemicalPotential"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::standardEquilibriumConstant"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardEquilibriumConstantValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::standardEquilibriumConstant"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::stoichiometricNumberOfSubstance"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::StoichiometricNumberOfSubstanceValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::stoichiometricNumberOfSubstance"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::thermalDiffusionCoefficient"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::thermalDiffusionCoefficient"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::thermalDiffusionFactor"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionFactorValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::thermalDiffusionFactor"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::thermalDiffusionRatio"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionRatioValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::thermalDiffusionRatio"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::transportNumberOfTheIonB"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::TransportNumberOfTheIonBValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::transportNumberOfTheIonB"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQChemistryMolecular::volumeFraction"))) (target (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQChemistryMolecular::volumeFraction"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::AbsoluteActivityValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityCoefficientValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityFactorValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSoluteValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ActivityOfSolventValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit::amountOfSubstancePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::AffinityOfAChemicalReactionValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit::amountOfSubstancePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceConcentrationValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::AmountOfSubstanceFractionMoleFractionValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::CanonicalPartitionFunctionValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit::amountOfSubstancePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ChemicalPotentialValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::DegeneracyValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::DegreeOfDissociationValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::DiffusionCoefficientValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit::electricCurrentPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ElectrolyticConductivityValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit::amountOfSubstancePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnConcentrationBasisValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::EquilibriumConstantOnPressureBasisValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::FugacityValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::GrandCanonicalPartitionFunctionValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit::amountOfSubstancePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::IonicStrengthValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MassConcentrationValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MassFractionValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit::amountOfSubstancePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolalityValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit::amountOfSubstancePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit::electricCurrentPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarConductivityValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit::amountOfSubstancePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEnthalpyValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::amountOfSubstancePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarEntropyValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::amountOfSubstancePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGasConstantValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit::amountOfSubstancePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarGibbsEnergyValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::amountOfSubstancePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHeatCapacityValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit::amountOfSubstancePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarHelmholtzEnergyValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit::amountOfSubstancePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarInternalEnergyValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit::amountOfSubstancePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarMassValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit::amountOfSubstancePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarOpticalRotatoryPowerValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit::amountOfSubstancePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolarVolumeValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::MolecularPartitionFunctionValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticFactorOfSolventValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::OsmoticPressureValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::PartialPressureValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ParticleConcentrationValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::RelativeAtomicMassValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::SpecificOpticalRotatoryPowerValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInMixtureValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityInSolutionValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardAbsoluteActivityOfSolventValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit::amountOfSubstancePF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit::massPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardChemicalPotentialValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::StandardEquilibriumConstantValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::StoichiometricNumberOfSubstanceValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit::durationPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit::lengthPF"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionCoefficientValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionFactorValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ThermalDiffusionRatioValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::TransportNumberOfTheIonBValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::VolumeFractionValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::absoluteActivity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::activityCoefficient"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::activityFactor"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::activityOfSolute"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::activityOfSolvent"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::affinityOfAChemicalReaction"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::amountOfSubstanceConcentration"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::amountOfSubstanceFractionMoleFraction"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::angleOfOpticalRotation"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::canonicalPartitionFunction"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::chemicalPotential"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::degeneracy"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::degreeOfDissociation"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::diffusionCoefficient"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::electrolyticConductivity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::equilibriumConstantOnConcentrationBasis"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::equilibriumConstantOnPressureBasis"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::extentOfReaction"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::fugacity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::grandCanonicalPartitionFunction"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::ionicStrength"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::latentHeatOfPhaseTransition"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::massConcentration"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::massFraction"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::meanFreePath"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::microcanonicalPartitionFunction"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molality"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molarConductivity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molarEnthalpy"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molarEntropy"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molarGasConstant"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molarGibbsEnergy"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molarHeatCapacity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molarHelmholtzEnergy"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molarInternalEnergy"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molarMass"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molarOpticalRotatoryPower"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molarVolume"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molecularConcentration"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::molecularPartitionFunction"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::numberOfEntities"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::osmoticFactorOfSolvent"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::osmoticPressure"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::partialPressure"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::particleConcentration"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::relativeAtomicMass"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::specificOpticalRotatoryPower"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAbsoluteActivityInMixture"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAbsoluteActivityInSolution"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAbsoluteActivityOfSolvent"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::standardAmountOfSubstanceConcentration"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::standardChemicalPotential"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::standardEquilibriumConstant"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::statisticalWeightOfSubsystem"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::stoichiometricNumberOfSubstance"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::thermalDiffusionCoefficient"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::thermalDiffusionFactor"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::thermalDiffusionRatio"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::transportNumberOfTheIonB"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQChemistryMolecular::volumeFraction"))) (status missing-prerequisite) (target "Base::DataValue"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/isq_chemistry_molecular.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 14 19) (end 14 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 15 19) (end 15 29))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 16 19) (end 16 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 17 19) (end 17 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 20 19) (end 20 52))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 21 19) (end 21 49))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 24 4) (end 24 786))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 47 4) (end 47 1010))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 64 4) (end 64 590))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 77 8) (end 77 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 77 8) (end 77 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 78 8) (end 78 45))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 83 4) (end 83 372))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 84 8) (end 84 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 85 8) (end 85 114))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 86 8) (end 86 101))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 90 4) (end 90 592))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 103 8) (end 103 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 103 8) (end 103 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 104 8) (end 104 47))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 109 4) (end 109 378))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 110 8) (end 110 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 111 8) (end 111 114))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 112 8) (end 112 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 116 4) (end 116 703))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 129 8) (end 129 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 129 8) (end 129 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 130 8) (end 130 55))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 135 4) (end 135 613))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 136 8) (end 136 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 137 8) (end 137 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 138 8) (end 138 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 139 8) (end 139 114))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 140 8) (end 140 123))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 144 4) (end 144 671))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 157 8) (end 157 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 157 8) (end 157 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 158 8) (end 158 49))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 163 4) (end 163 607))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 164 8) (end 164 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 165 8) (end 165 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 166 8) (end 166 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 167 8) (end 167 114))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 168 8) (end 168 123))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 172 4) (end 172 712))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 185 8) (end 185 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 185 8) (end 185 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 186 8) (end 186 56))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 191 4) (end 191 614))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 192 8) (end 192 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 193 8) (end 193 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 194 8) (end 194 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 195 8) (end 195 114))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 196 8) (end 196 123))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 200 4) (end 200 692))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 213 8) (end 213 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 213 8) (end 213 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 214 8) (end 214 52))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 219 4) (end 219 610))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 220 8) (end 220 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 221 8) (end 221 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 222 8) (end 222 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 223 8) (end 223 114))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 224 8) (end 224 123))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 228 4) (end 228 696))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 241 8) (end 241 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 241 8) (end 241 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 242 8) (end 242 53))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 247 4) (end 247 764))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 248 8) (end 248 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 249 8) (end 249 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 250 8) (end 250 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 251 8) (end 251 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 252 8) (end 252 114))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 253 8) (end 253 151))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 257 4) (end 257 669))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 270 8) (end 270 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 270 8) (end 270 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 271 8) (end 271 48))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 276 4) (end 276 759))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 277 8) (end 277 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 278 8) (end 278 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 279 8) (end 279 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 280 8) (end 280 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 281 8) (end 281 114))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 282 8) (end 282 151))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 286 4) (end 286 635))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 299 8) (end 299 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 299 8) (end 299 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 300 8) (end 300 57))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 305 4) (end 305 251))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 306 8) (end 306 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 307 8) (end 307 80))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 327 4) (end 327 748))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 340 8) (end 340 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 340 8) (end 340 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 341 8) (end 341 53))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 346 4) (end 346 358))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 347 8) (end 347 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 348 8) (end 348 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 349 8) (end 349 90))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 353 4) (end 353 552))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 370 4) (end 370 1103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 383 8) (end 383 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 383 8) (end 383 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 384 8) (end 384 66))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 389 4) (end 389 397))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 390 8) (end 390 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 391 8) (end 391 113))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 392 8) (end 392 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 412 4) (end 412 977))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 429 4) (end 429 1052))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 442 8) (end 442 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 442 8) (end 442 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 443 8) (end 443 50))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 448 4) (end 448 64))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 452 4) (end 452 842))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 465 8) (end 465 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 465 8) (end 465 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 466 8) (end 466 44))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 471 4) (end 471 371))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 472 8) (end 472 101))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 473 8) (end 473 113))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 474 8) (end 474 101))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 478 4) (end 478 939))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 496 4) (end 496 935))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 509 8) (end 509 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 509 8) (end 509 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 510 8) (end 510 53))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 515 4) (end 515 611))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 516 8) (end 516 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 517 8) (end 517 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 518 8) (end 518 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 519 8) (end 519 114))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 520 8) (end 520 123))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 524 4) (end 524 657))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 541 4) (end 541 670))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 554 8) (end 554 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 554 8) (end 554 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 555 8) (end 555 51))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 560 4) (end 560 474))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 561 8) (end 561 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 562 8) (end 562 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 563 8) (end 563 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 564 8) (end 564 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 568 4) (end 568 922))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 581 8) (end 581 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 581 8) (end 581 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 582 8) (end 582 44))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 587 4) (end 587 467))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 588 8) (end 588 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 589 8) (end 589 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 590 8) (end 590 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 591 8) (end 591 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 595 4) (end 595 989))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 608 8) (end 608 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 608 8) (end 608 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 609 8) (end 609 61))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 614 4) (end 614 619))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 615 8) (end 615 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 616 8) (end 616 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 617 8) (end 617 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 618 8) (end 618 114))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 619 8) (end 619 123))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 623 4) (end 623 966))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 640 4) (end 640 768))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 657 4) (end 657 1369))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 676 4) (end 676 772))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 693 4) (end 693 886))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 710 4) (end 710 703))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 729 4) (end 729 899))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 748 4) (end 748 693))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 765 4) (end 765 669))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 778 8) (end 778 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 778 8) (end 778 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 779 8) (end 779 51))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 784 4) (end 784 474))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 785 8) (end 785 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 786 8) (end 786 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 787 8) (end 787 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 788 8) (end 788 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 792 4) (end 792 845))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 809 4) (end 809 1223))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 822 8) (end 822 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 822 8) (end 822 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 823 8) (end 823 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 828 4) (end 828 621))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 829 8) (end 829 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 830 8) (end 830 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 831 8) (end 831 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 832 8) (end 832 114))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 833 8) (end 833 123))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 837 4) (end 837 705))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 853 4) (end 853 951))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 872 4) (end 872 774))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 885 8) (end 885 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 885 8) (end 885 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 886 8) (end 886 70))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 891 4) (end 891 493))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 892 8) (end 892 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 893 8) (end 893 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 894 8) (end 894 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 895 8) (end 895 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 899 4) (end 899 787))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 912 8) (end 912 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 912 8) (end 912 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 913 8) (end 913 75))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 918 4) (end 918 406))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 919 8) (end 919 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 920 8) (end 920 113))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 921 8) (end 921 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 925 4) (end 925 695))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 941 4) (end 941 713))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 958 4) (end 958 921))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 977 4) (end 977 778))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 996 4) (end 996 501))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1012 4) (end 1012 518))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1031 4) (end 1031 650))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1044 8) (end 1044 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1044 8) (end 1044 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1045 8) (end 1045 52))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1050 4) (end 1050 763))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1051 8) (end 1051 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1052 8) (end 1052 100))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1053 8) (end 1053 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1054 8) (end 1054 124))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1055 8) (end 1055 114))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1056 8) (end 1056 151))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1063 4) (end 1063 525))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1079 4) (end 1079 861))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1092 8) (end 1092 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1092 8) (end 1092 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1093 8) (end 1093 56))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1098 4) (end 1098 369))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1099 8) (end 1099 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1100 8) (end 1100 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1101 8) (end 1101 94))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1105 4) (end 1105 796))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1122 4) (end 1122 651))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1139 4) (end 1139 661))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1152 8) (end 1152 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1152 8) (end 1152 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1153 8) (end 1153 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1158 4) (end 1158 376))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1159 8) (end 1159 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1160 8) (end 1160 105))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1161 8) (end 1161 94))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1165 4) (end 1165 674))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1178 8) (end 1178 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1178 8) (end 1178 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1179 8) (end 1179 49))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1184 4) (end 1184 376))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1185 8) (end 1185 101))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1186 8) (end 1186 113))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1187 8) (end 1187 101))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1191 4) (end 1191 585))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1210 4) (end 1210 796))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1223 8) (end 1223 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1223 8) (end 1223 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1224 8) (end 1224 60))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1229 4) (end 1229 614))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1230 8) (end 1230 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1231 8) (end 1231 101))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1232 8) (end 1232 104))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1233 8) (end 1233 111))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1234 8) (end 1234 121))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1238 4) (end 1238 682))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1251 8) (end 1251 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1251 8) (end 1251 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1252 8) (end 1252 53))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1257 4) (end 1257 629))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1258 8) (end 1258 101))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1259 8) (end 1259 104))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1260 8) (end 1260 111))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1261 8) (end 1261 114))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1262 8) (end 1262 132))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1266 4) (end 1266 655))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1285 4) (end 1285 603))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1301 4) (end 1301 818))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1314 8) (end 1314 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1314 8) (end 1314 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1315 8) (end 1315 61))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1320 4) (end 1320 392))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1321 8) (end 1321 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1322 8) (end 1322 114))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1323 8) (end 1323 103))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1327 4) (end 1327 816))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1340 8) (end 1340 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1340 8) (end 1340 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1341 8) (end 1341 64))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1346 4) (end 1346 369))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1347 8) (end 1347 102))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1348 8) (end 1348 101))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 1349 8) (end 1349 90))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

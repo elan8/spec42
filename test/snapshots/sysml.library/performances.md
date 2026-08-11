@@ -299,65 +299,98 @@ standard library package Performances {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Occurrence::self'
-semantic.unresolved_name 'Object'
-semantic.unresolved_name 'Object'
-semantic.unresolved_name 'isDispatch'
-semantic.unresolved_name 'dispatchScope'
-semantic.unresolved_name 'timeEnclosedOccurrences'
-semantic.unresolved_name 'HappensDuring'
-semantic.unresolved_name 'suboccurrences'
-semantic.unresolved_name 'this'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Metaobject'
-semantic.unresolved_name 'ScalarValue'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'BinaryLink'
-semantic.unresolved_name 'Object'
-semantic.unresolved_name 'source'
-semantic.unresolved_name 'target'
-semantic.unresolved_name 'involvedObject::involvingPerformances'
-semantic.unresolved_name 'Object'
-semantic.unresolved_name 'performerObject::enactedPerformances'
-semantic.unresolved_name 'occurrences'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Occurrence::self'
-semantic.unresolved_name 'Object'
-semantic.unresolved_name 'Object'
-semantic.unresolved_name 'isDispatch'
-semantic.unresolved_name 'dispatchScope'
-semantic.unresolved_name 'timeEnclosedOccurrences'
-semantic.unresolved_name 'HappensDuring'
-semantic.unresolved_name 'suboccurrences'
-semantic.unresolved_name 'this'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Metaobject'
-semantic.unresolved_name 'ScalarValue'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'BinaryLink'
-semantic.unresolved_name 'Object'
-semantic.unresolved_name 'source'
-semantic.unresolved_name 'target'
-semantic.unresolved_name 'involvedObject::involvingPerformances'
-semantic.unresolved_name 'Object'
-semantic.unresolved_name 'performerObject::enactedPerformances'
-semantic.unresolved_name 'occurrences'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "performances.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 16) (end 6 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 16) (end 8 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 16) (end 9 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 16) (end 10 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 11 16) (end 11 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 12 16) (end 12 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 13 16) (end 13 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 14 16) (end 14 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 15 16) (end 15 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 16 16) (end 16 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 17 16) (end 17 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 18 16) (end 18 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 19 16) (end 19 43))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -641,6 +674,66 @@ CloseCurly,EndOfFile,
       (documentation))
     (expression_def
       (documentation))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence::self'
+semantic.unresolved_name 'Object'
+semantic.unresolved_name 'Object'
+semantic.unresolved_name 'isDispatch'
+semantic.unresolved_name 'dispatchScope'
+semantic.unresolved_name 'timeEnclosedOccurrences'
+semantic.unresolved_name 'HappensDuring'
+semantic.unresolved_name 'suboccurrences'
+semantic.unresolved_name 'this'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Metaobject'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'BinaryLink'
+semantic.unresolved_name 'Object'
+semantic.unresolved_name 'source'
+semantic.unresolved_name 'target'
+semantic.unresolved_name 'involvedObject::involvingPerformances'
+semantic.unresolved_name 'Object'
+semantic.unresolved_name 'performerObject::enactedPerformances'
+semantic.unresolved_name 'occurrences'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence::self'
+semantic.unresolved_name 'Object'
+semantic.unresolved_name 'Object'
+semantic.unresolved_name 'isDispatch'
+semantic.unresolved_name 'dispatchScope'
+semantic.unresolved_name 'timeEnclosedOccurrences'
+semantic.unresolved_name 'HappensDuring'
+semantic.unresolved_name 'suboccurrences'
+semantic.unresolved_name 'this'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Metaobject'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'BinaryLink'
+semantic.unresolved_name 'Object'
+semantic.unresolved_name 'source'
+semantic.unresolved_name 'target'
+semantic.unresolved_name 'involvedObject::involvingPerformances'
+semantic.unresolved_name 'Object'
+semantic.unresolved_name 'performerObject::enactedPerformances'
+semantic.unresolved_name 'occurrences'
 ~~~
 # FORMAT
 ~~~sysml
@@ -940,158 +1033,70 @@ standard library package Performances {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Performances"))) (name "Performances") (declared-name "Performances")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::Anything"))) (name "Anything") (declared-name "Anything"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::BinaryLink"))) (name "BinaryLink") (declared-name "BinaryLink"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::BooleanEvaluation"))) (name "BooleanEvaluation") (declared-name "BooleanEvaluation"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::Evaluation"))) (name "Evaluation") (declared-name "Evaluation"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::HappensDuring"))) (name "HappensDuring") (declared-name "HappensDuring"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::LiteralBooleanEvaluation"))) (name "LiteralBooleanEvaluation") (declared-name "LiteralBooleanEvaluation"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::LiteralEvaluation"))) (name "LiteralEvaluation") (declared-name "LiteralEvaluation"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::LiteralIntegerEvaluation"))) (name "LiteralIntegerEvaluation") (declared-name "LiteralIntegerEvaluation"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::LiteralRationalEvaluation"))) (name "LiteralRationalEvaluation") (declared-name "LiteralRationalEvaluation"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::LiteralStringEvaluation"))) (name "LiteralStringEvaluation") (declared-name "LiteralStringEvaluation"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::MetadataAccessEvaluation"))) (name "MetadataAccessEvaluation") (declared-name "MetadataAccessEvaluation"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::Metaobject"))) (name "Metaobject") (declared-name "Metaobject"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::NullEvaluation"))) (name "NullEvaluation") (declared-name "NullEvaluation"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::Object"))) (name "Object") (declared-name "Object"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::Performance"))) (name "Performance") (declared-name "Performance"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::Transfer"))) (name "Transfer") (declared-name "Transfer"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::TransferBefore"))) (name "TransferBefore") (declared-name "TransferBefore"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "Performances::_documentation"))) (name ""))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::all"))) (name "all") (declared-name "all"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::all#kermlDecl"))) (name "all") (declared-name "all"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::booleanEvaluations"))) (name "booleanEvaluations") (declared-name "booleanEvaluations"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::constructorEvaluations"))) (name "constructorEvaluations") (declared-name "constructorEvaluations"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::evaluations"))) (name "evaluations") (declared-name "evaluations"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::falseEvaluations"))) (name "falseEvaluations") (declared-name "falseEvaluations"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::includes"))) (name "includes") (declared-name "includes"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::literalBooleanEvaluations"))) (name "literalBooleanEvaluations") (declared-name "literalBooleanEvaluations"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::literalEvaluations"))) (name "literalEvaluations") (declared-name "literalEvaluations"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::literalIntegerEvaluations"))) (name "literalIntegerEvaluations") (declared-name "literalIntegerEvaluations"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::literalRationalEvaluations"))) (name "literalRationalEvaluations") (declared-name "literalRationalEvaluations"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::literalStringEvaluations"))) (name "literalStringEvaluations") (declared-name "literalStringEvaluations"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::metadataAccessEvaluations"))) (name "metadataAccessEvaluations") (declared-name "metadataAccessEvaluations"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::nullEvaluations"))) (name "nullEvaluations") (declared-name "nullEvaluations"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::occurrences"))) (name "occurrences") (declared-name "occurrences"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::performances"))) (name "performances") (declared-name "performances"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::things"))) (name "things") (declared-name "things"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::transfers"))) (name "transfers") (declared-name "transfers"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::transfersBefore"))) (name "transfersBefore") (declared-name "transfersBefore"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::trueEvaluations"))) (name "trueEvaluations") (declared-name "trueEvaluations"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "425eade4ebc32454ca6ae0e2fce0098d305d66bcdad2249a176010cec7f7c0b5") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Performances"))) (kind "package") (name "Performances") (declared-name "Performances") (range (start (line 0) (character 0)) (end (line 0) (character 8925))))
+    (element (id (node (document "d0") (qualified-name "Performances::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 18) (character 1)) (end (line 18) (character 32))) (parent (node (document "d0") (qualified-name "Performances"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 18) (character 16)) (end (line 18) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "Performances::Anything"))) (kind "import") (name "Anything") (declared-name "Anything") (range (start (line 6) (character 1)) (end (line 6) (character 31))) (parent (node (document "d0") (qualified-name "Performances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::Anything") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 30))))))
+    (element (id (node (document "d0") (qualified-name "Performances::BinaryLink"))) (kind "import") (name "BinaryLink") (declared-name "BinaryLink") (range (start (line 12) (character 1)) (end (line 12) (character 34))) (parent (node (document "d0") (qualified-name "Performances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Links::BinaryLink") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 12) (character 16)) (end (line 12) (character 33))))))
+    (element (id (node (document "d0") (qualified-name "Performances::BooleanEvaluation"))) (kind "kermlDecl") (name "BooleanEvaluation") (declared-name "BooleanEvaluation") (range (start (line 93) (character 1)) (end (line 93) (character 271))) (parent (node (document "d0") (qualified-name "Performances"))))
+    (element (id (node (document "d0") (qualified-name "Performances::Evaluation"))) (kind "kermlDecl") (name "Evaluation") (declared-name "Evaluation") (range (start (line 83) (character 1)) (end (line 83) (character 224))) (parent (node (document "d0") (qualified-name "Performances"))))
+    (element (id (node (document "d0") (qualified-name "Performances::HappensDuring"))) (kind "import") (name "HappensDuring") (declared-name "HappensDuring") (range (start (line 10) (character 1)) (end (line 10) (character 43))) (parent (node (document "d0") (qualified-name "Performances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::HappensDuring") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 10) (character 16)) (end (line 10) (character 42))))))
+    (element (id (node (document "d0") (qualified-name "Performances::LiteralBooleanEvaluation"))) (kind "kermlDecl") (name "LiteralBooleanEvaluation") (declared-name "LiteralBooleanEvaluation") (range (start (line 121) (character 1)) (end (line 121) (character 372))) (parent (node (document "d0") (qualified-name "Performances"))))
+    (element (id (node (document "d0") (qualified-name "Performances::LiteralEvaluation"))) (kind "kermlDecl") (name "LiteralEvaluation") (declared-name "LiteralEvaluation") (range (start (line 112) (character 1)) (end (line 112) (character 204))) (parent (node (document "d0") (qualified-name "Performances"))))
+    (element (id (node (document "d0") (qualified-name "Performances::LiteralIntegerEvaluation"))) (kind "kermlDecl") (name "LiteralIntegerEvaluation") (declared-name "LiteralIntegerEvaluation") (range (start (line 131) (character 1)) (end (line 131) (character 225))) (parent (node (document "d0") (qualified-name "Performances"))))
+    (element (id (node (document "d0") (qualified-name "Performances::LiteralRationalEvaluation"))) (kind "kermlDecl") (name "LiteralRationalEvaluation") (declared-name "LiteralRationalEvaluation") (range (start (line 140) (character 1)) (end (line 140) (character 341))) (parent (node (document "d0") (qualified-name "Performances"))))
+    (element (id (node (document "d0") (qualified-name "Performances::LiteralStringEvaluation"))) (kind "kermlDecl") (name "LiteralStringEvaluation") (declared-name "LiteralStringEvaluation") (range (start (line 150) (character 1)) (end (line 150) (character 221))) (parent (node (document "d0") (qualified-name "Performances"))))
+    (element (id (node (document "d0") (qualified-name "Performances::MetadataAccessEvaluation"))) (kind "kermlDecl") (name "MetadataAccessEvaluation") (declared-name "MetadataAccessEvaluation") (range (start (line 103) (character 1)) (end (line 103) (character 227))) (parent (node (document "d0") (qualified-name "Performances"))))
+    (element (id (node (document "d0") (qualified-name "Performances::Metaobject"))) (kind "import") (name "Metaobject") (declared-name "Metaobject") (range (start (line 13) (character 1)) (end (line 13) (character 40))) (parent (node (document "d0") (qualified-name "Performances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Metaobjects::Metaobject") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 13) (character 16)) (end (line 13) (character 39))))))
+    (element (id (node (document "d0") (qualified-name "Performances::NullEvaluation"))) (kind "kermlDecl") (name "NullEvaluation") (declared-name "NullEvaluation") (range (start (line 159) (character 1)) (end (line 159) (character 186))) (parent (node (document "d0") (qualified-name "Performances"))))
+    (element (id (node (document "d0") (qualified-name "Performances::Object"))) (kind "import") (name "Object") (declared-name "Object") (range (start (line 11) (character 1)) (end (line 11) (character 32))) (parent (node (document "d0") (qualified-name "Performances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Objects::Object") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 11) (character 16)) (end (line 11) (character 31))))))
+    (element (id (node (document "d0") (qualified-name "Performances::Occurrence"))) (kind "import") (name "Occurrence") (declared-name "Occurrence") (range (start (line 8) (character 1)) (end (line 8) (character 40))) (parent (node (document "d0") (qualified-name "Performances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::Occurrence") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 39))))))
+    (element (id (node (document "d0") (qualified-name "Performances::Performance"))) (kind "kermlDecl") (name "Performance") (declared-name "Performance") (range (start (line 21) (character 1)) (end (line 21) (character 1878))) (parent (node (document "d0") (qualified-name "Performances"))))
+    (element (id (node (document "d0") (qualified-name "Performances::Transfer"))) (kind "import") (name "Transfer") (declared-name "Transfer") (range (start (line 14) (character 1)) (end (line 14) (character 36))) (parent (node (document "d0") (qualified-name "Performances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Transfers::Transfer") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 14) (character 16)) (end (line 14) (character 35))))))
+    (element (id (node (document "d0") (qualified-name "Performances::TransferBefore"))) (kind "import") (name "TransferBefore") (declared-name "TransferBefore") (range (start (line 16) (character 1)) (end (line 16) (character 42))) (parent (node (document "d0") (qualified-name "Performances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Transfers::TransferBefore") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 16) (character 16)) (end (line 16) (character 41))))))
+    (element (id (node (document "d0") (qualified-name "Performances::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 8925))) (parent (node (document "d0") (qualified-name "Performances"))))
+    (element (id (node (document "d0") (qualified-name "Performances::all"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 168) (character 1)) (end (line 168) (character 405))) (parent (node (document "d0") (qualified-name "Performances"))))
+    (element (id (node (document "d0") (qualified-name "Performances::all#kermlDecl"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 179) (character 1)) (end (line 179) (character 372))) (parent (node (document "d0") (qualified-name "Performances"))))
+    (element (id (node (document "d0") (qualified-name "Performances::booleanEvaluations"))) (kind "kermlDecl") (name "booleanEvaluations") (declared-name "booleanEvaluations") (range (start (line 213) (character 1)) (end (line 213) (character 207))) (parent (node (document "d0") (qualified-name "Performances"))))
+    (element (id (node (document "d0") (qualified-name "Performances::constructorEvaluations"))) (kind "kermlDecl") (name "constructorEvaluations") (declared-name "constructorEvaluations") (range (start (line 203) (character 1)) (end (line 203) (character 344))) (parent (node (document "d0") (qualified-name "Performances"))))
+    (element (id (node (document "d0") (qualified-name "Performances::evaluations"))) (kind "kermlDecl") (name "evaluations") (declared-name "evaluations") (range (start (line 196) (character 1)) (end (line 196) (character 180))) (parent (node (document "d0") (qualified-name "Performances"))))
+    (element (id (node (document "d0") (qualified-name "Performances::falseEvaluations"))) (kind "kermlDecl") (name "falseEvaluations") (declared-name "falseEvaluations") (range (start (line 231) (character 1)) (end (line 231) (character 309))) (parent (node (document "d0") (qualified-name "Performances"))))
+    (element (id (node (document "d0") (qualified-name "Performances::includes"))) (kind "import") (name "includes") (declared-name "includes") (range (start (line 19) (character 1)) (end (line 19) (character 44))) (parent (node (document "d0") (qualified-name "Performances"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::includes") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 19) (character 16)) (end (line 19) (character 43))))))
+    (element (id (node (document "d0") (qualified-name "Performances::literalBooleanEvaluations"))) (kind "kermlDecl") (name "literalBooleanEvaluations") (declared-name "literalBooleanEvaluations") (range (start (line 256) (character 1)) (end (line 256) (character 350))) (parent (node (document "d0") (qualified-name "Performances"))))
+    (element (id (node (document "d0") (qualified-name "Performances::literalEvaluations"))) (kind "kermlDecl") (name "literalEvaluations") (declared-name "literalEvaluations") (range (start (line 249) (character 1)) (end (line 249) (character 207))) (parent (node (document "d0") (qualified-name "Performances"))))
+    (element (id (node (document "d0") (qualified-name "Performances::literalIntegerEvaluations"))) (kind "kermlDecl") (name "literalIntegerEvaluations") (declared-name "literalIntegerEvaluations") (range (start (line 265) (character 1)) (end (line 265) (character 228))) (parent (node (document "d0") (qualified-name "Performances"))))
+    (element (id (node (document "d0") (qualified-name "Performances::literalRationalEvaluations"))) (kind "kermlDecl") (name "literalRationalEvaluations") (declared-name "literalRationalEvaluations") (range (start (line 272) (character 1)) (end (line 272) (character 253))) (parent (node (document "d0") (qualified-name "Performances"))))
+    (element (id (node (document "d0") (qualified-name "Performances::literalStringEvaluations"))) (kind "kermlDecl") (name "literalStringEvaluations") (declared-name "literalStringEvaluations") (range (start (line 279) (character 1)) (end (line 279) (character 245))) (parent (node (document "d0") (qualified-name "Performances"))))
+    (element (id (node (document "d0") (qualified-name "Performances::metadataAccessEvaluations"))) (kind "kermlDecl") (name "metadataAccessEvaluations") (declared-name "metadataAccessEvaluations") (range (start (line 242) (character 1)) (end (line 242) (character 236))) (parent (node (document "d0") (qualified-name "Performances"))))
+    (element (id (node (document "d0") (qualified-name "Performances::nullEvaluations"))) (kind "kermlDecl") (name "nullEvaluations") (declared-name "nullEvaluations") (range (start (line 286) (character 1)) (end (line 286) (character 195))) (parent (node (document "d0") (qualified-name "Performances"))))
+    (element (id (node (document "d0") (qualified-name "Performances::occurrences"))) (kind "import") (name "occurrences") (declared-name "occurrences") (range (start (line 9) (character 1)) (end (line 9) (character 41))) (parent (node (document "d0") (qualified-name "Performances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::occurrences") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 9) (character 16)) (end (line 9) (character 40))))))
+    (element (id (node (document "d0") (qualified-name "Performances::performances"))) (kind "kermlDecl") (name "performances") (declared-name "performances") (range (start (line 189) (character 1)) (end (line 189) (character 175))) (parent (node (document "d0") (qualified-name "Performances"))))
+    (element (id (node (document "d0") (qualified-name "Performances::things"))) (kind "import") (name "things") (declared-name "things") (range (start (line 7) (character 1)) (end (line 7) (character 29))) (parent (node (document "d0") (qualified-name "Performances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::things") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "Performances::transfers"))) (kind "import") (name "transfers") (declared-name "transfers") (range (start (line 15) (character 1)) (end (line 15) (character 37))) (parent (node (document "d0") (qualified-name "Performances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Transfers::transfers") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 15) (character 16)) (end (line 15) (character 36))))))
+    (element (id (node (document "d0") (qualified-name "Performances::transfersBefore"))) (kind "import") (name "transfersBefore") (declared-name "transfersBefore") (range (start (line 17) (character 1)) (end (line 17) (character 43))) (parent (node (document "d0") (qualified-name "Performances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Transfers::transfersBefore") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 17) (character 16)) (end (line 17) (character 42))))))
+    (element (id (node (document "d0") (qualified-name "Performances::trueEvaluations"))) (kind "kermlDecl") (name "trueEvaluations") (declared-name "trueEvaluations") (range (start (line 220) (character 1)) (end (line 220) (character 296))) (parent (node (document "d0") (qualified-name "Performances"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Performances::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (range (start (line 18) (character 16)) (end (line 18) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Performances::Anything"))) (kind membershipImport) (ordinal 0)) (authored-target "Base::Anything") (range (start (line 6) (character 16)) (end (line 6) (character 30))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Performances::BinaryLink"))) (kind membershipImport) (ordinal 0)) (authored-target "Links::BinaryLink") (range (start (line 12) (character 16)) (end (line 12) (character 33))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Performances::HappensDuring"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::HappensDuring") (range (start (line 10) (character 16)) (end (line 10) (character 42))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Performances::Metaobject"))) (kind membershipImport) (ordinal 0)) (authored-target "Metaobjects::Metaobject") (range (start (line 13) (character 16)) (end (line 13) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Performances::Object"))) (kind membershipImport) (ordinal 0)) (authored-target "Objects::Object") (range (start (line 11) (character 16)) (end (line 11) (character 31))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Performances::Occurrence"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::Occurrence") (range (start (line 8) (character 16)) (end (line 8) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Performances::Transfer"))) (kind membershipImport) (ordinal 0)) (authored-target "Transfers::Transfer") (range (start (line 14) (character 16)) (end (line 14) (character 35))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Performances::TransferBefore"))) (kind membershipImport) (ordinal 0)) (authored-target "Transfers::TransferBefore") (range (start (line 16) (character 16)) (end (line 16) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Performances::includes"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::includes") (range (start (line 19) (character 16)) (end (line 19) (character 43))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Performances::occurrences"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::occurrences") (range (start (line 9) (character 16)) (end (line 9) (character 40))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Performances::things"))) (kind membershipImport) (ordinal 0)) (authored-target "Base::things") (range (start (line 7) (character 16)) (end (line 7) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Performances::transfers"))) (kind membershipImport) (ordinal 0)) (authored-target "Transfers::transfers") (range (start (line 15) (character 16)) (end (line 15) (character 36))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Performances::transfersBefore"))) (kind membershipImport) (ordinal 0)) (authored-target "Transfers::transfersBefore") (range (start (line 17) (character 16)) (end (line 17) (character 42))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Performances::_documentation"))) (to (node (document "d0") (qualified-name "Performances"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/performances.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 6 16) (end 6 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 16) (end 7 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 16) (end 8 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 9 16) (end 9 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 10 16) (end 10 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 11 16) (end 11 31))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 12 16) (end 12 33))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 13 16) (end 13 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 14 16) (end 14 35))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 15 16) (end 15 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 16 16) (end 16 41))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 17 16) (end 17 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 18 16) (end 18 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 19 16) (end 19 43))
-      )
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 179 1) (end 179 372))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

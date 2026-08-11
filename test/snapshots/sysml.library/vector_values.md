@@ -63,23 +63,32 @@ standard library package VectorValues {
     }
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Array'
-semantic.unresolved_name 'dimensions'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'Real'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Array'
-semantic.unresolved_name 'dimensions'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'Real'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "vector_values.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 19) (end 7 47))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 19) (end 8 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 19) (end 9 37))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -131,6 +140,24 @@ CloseCurly,EndOfFile,
       (feature_def :>> 'dimension' value))
     (datatype_def 'CartesianThreeVectorValue' :> 'CartesianVectorValue', 'ThreeVectorValue' intersects 'CartesianVectorValue', 'ThreeVectorValue'
       (documentation))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Array'
+semantic.unresolved_name 'dimensions'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'Real'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Array'
+semantic.unresolved_name 'dimensions'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'Real'
 ~~~
 # FORMAT
 ~~~sysml
@@ -195,55 +222,28 @@ standard library package VectorValues {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "VectorValues"))) (name "VectorValues") (declared-name "VectorValues")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "VectorValues::Array"))) (name "Array") (declared-name "Array"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorValues::CartesianThreeVectorValue"))) (name "CartesianThreeVectorValue") (declared-name "CartesianThreeVectorValue"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorValues::CartesianVectorValue"))) (name "CartesianVectorValue") (declared-name "CartesianVectorValue"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "VectorValues::NumericalValue"))) (name "NumericalValue") (declared-name "NumericalValue"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorValues::NumericalVectorValue"))) (name "NumericalVectorValue") (declared-name "NumericalVectorValue"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "VectorValues::Real"))) (name "Real") (declared-name "Real"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorValues::ThreeVectorValue"))) (name "ThreeVectorValue") (declared-name "ThreeVectorValue"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorValues::VectorValue"))) (name "VectorValue") (declared-name "VectorValue"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "VectorValues::_documentation"))) (name ""))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d45cf328e28fcc0aa649ea7ca16c774de9f9f43f8016a1d00728437c058e5fa5") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "VectorValues"))) (kind "package") (name "VectorValues") (declared-name "VectorValues") (range (start (line 0) (character 0)) (end (line 0) (character 1962))))
+    (element (id (node (document "d0") (qualified-name "VectorValues::Array"))) (kind "import") (name "Array") (declared-name "Array") (range (start (line 9) (character 4)) (end (line 9) (character 38))) (parent (node (document "d0") (qualified-name "VectorValues"))) (authored (membership (kind Import) (visibility "private") (import (reference "Collections::Array") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 9) (character 19)) (end (line 9) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "VectorValues::CartesianThreeVectorValue"))) (kind "kermlDecl") (name "CartesianThreeVectorValue") (declared-name "CartesianThreeVectorValue") (range (start (line 50) (character 4)) (end (line 50) (character 267))) (parent (node (document "d0") (qualified-name "VectorValues"))))
+    (element (id (node (document "d0") (qualified-name "VectorValues::CartesianVectorValue"))) (kind "kermlDecl") (name "CartesianVectorValue") (declared-name "CartesianVectorValue") (range (start (line 30) (character 4)) (end (line 30) (character 429))) (parent (node (document "d0") (qualified-name "VectorValues"))))
+    (element (id (node (document "d0") (qualified-name "VectorValues::NumericalValue"))) (kind "import") (name "NumericalValue") (declared-name "NumericalValue") (range (start (line 7) (character 4)) (end (line 7) (character 48))) (parent (node (document "d0") (qualified-name "VectorValues"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::NumericalValue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 19)) (end (line 7) (character 47))))))
+    (element (id (node (document "d0") (qualified-name "VectorValues::NumericalVectorValue"))) (kind "kermlDecl") (name "NumericalVectorValue") (declared-name "NumericalVectorValue") (range (start (line 18) (character 4)) (end (line 18) (character 501))) (parent (node (document "d0") (qualified-name "VectorValues"))))
+    (element (id (node (document "d0") (qualified-name "VectorValues::Real"))) (kind "import") (name "Real") (declared-name "Real") (range (start (line 8) (character 4)) (end (line 8) (character 38))) (parent (node (document "d0") (qualified-name "VectorValues"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 8) (character 19)) (end (line 8) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "VectorValues::ThreeVectorValue"))) (kind "kermlDecl") (name "ThreeVectorValue") (declared-name "ThreeVectorValue") (range (start (line 42) (character 4)) (end (line 42) (character 190))) (parent (node (document "d0") (qualified-name "VectorValues"))))
+    (element (id (node (document "d0") (qualified-name "VectorValues::VectorValue"))) (kind "kermlDecl") (name "VectorValue") (declared-name "VectorValue") (range (start (line 11) (character 4)) (end (line 11) (character 166))) (parent (node (document "d0") (qualified-name "VectorValues"))))
+    (element (id (node (document "d0") (qualified-name "VectorValues::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 1962))) (parent (node (document "d0") (qualified-name "VectorValues"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "VectorValues::Array"))) (kind membershipImport) (ordinal 0)) (authored-target "Collections::Array") (range (start (line 9) (character 19)) (end (line 9) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorValues::NumericalValue"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::NumericalValue") (range (start (line 7) (character 19)) (end (line 7) (character 47))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorValues::Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (range (start (line 8) (character 19)) (end (line 8) (character 37))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VectorValues::_documentation"))) (to (node (document "d0") (qualified-name "VectorValues"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/vector_values.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 19) (end 7 47))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 19) (end 8 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 9 19) (end 9 37))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

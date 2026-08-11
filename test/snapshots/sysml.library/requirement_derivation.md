@@ -45,39 +45,62 @@ standard library package RequirementDerivation {
 	}	
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'SemanticMetadata'
-semantic.unresolved_name 'annotatedElement'
-semantic.unresolved_name 'SysML::Usage'
-semantic.unresolved_name 'baseType'
-semantic.unresolved_name 'SemanticMetadata'
-semantic.unresolved_name 'annotatedElement'
-semantic.unresolved_name 'SysML::Usage'
-semantic.unresolved_name 'baseType'
-semantic.unresolved_name 'SemanticMetadata'
-semantic.unresolved_name 'annotatedElement'
-semantic.unresolved_name 'SysML::ConnectionDefinition'
-semantic.unresolved_name 'annotatedElement'
-semantic.unresolved_name 'SysML::ConnectionUsage'
-semantic.unresolved_name 'baseType'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'SemanticMetadata'
-semantic.unresolved_name 'annotatedElement'
-semantic.unresolved_name 'SysML::Usage'
-semantic.unresolved_name 'baseType'
-semantic.unresolved_name 'SemanticMetadata'
-semantic.unresolved_name 'annotatedElement'
-semantic.unresolved_name 'SysML::Usage'
-semantic.unresolved_name 'baseType'
-semantic.unresolved_name 'SemanticMetadata'
-semantic.unresolved_name 'annotatedElement'
-semantic.unresolved_name 'SysML::ConnectionDefinition'
-semantic.unresolved_name 'annotatedElement'
-semantic.unresolved_name 'SysML::ConnectionUsage'
-semantic.unresolved_name 'baseType'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "requirement_derivation.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 3 15) (end 3 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 4 16) (end 4 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 13 2) (end 13 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 24 2) (end 24 37))
+      )
+      (diagnostic
+        (severity error)
+        (code "ambiguous_reference")
+        (source "semantic")
+        (range (start 34 2) (end 34 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 34 2) (end 34 52))
+      )
+      (diagnostic
+        (severity error)
+        (code "ambiguous_reference")
+        (source "semantic")
+        (range (start 35 2) (end 35 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 35 2) (end 35 47))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -127,6 +150,40 @@ CloseCurly,EndOfFile,
       (default_ref_usage :> 'annotatedElement' : 'SysML::ConnectionUsage')
       (default_ref_usage :>> 'baseType' value))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'SemanticMetadata'
+semantic.unresolved_name 'annotatedElement'
+semantic.unresolved_name 'SysML::Usage'
+semantic.unresolved_name 'baseType'
+semantic.unresolved_name 'SemanticMetadata'
+semantic.unresolved_name 'annotatedElement'
+semantic.unresolved_name 'SysML::Usage'
+semantic.unresolved_name 'baseType'
+semantic.unresolved_name 'SemanticMetadata'
+semantic.unresolved_name 'annotatedElement'
+semantic.unresolved_name 'SysML::ConnectionDefinition'
+semantic.unresolved_name 'annotatedElement'
+semantic.unresolved_name 'SysML::ConnectionUsage'
+semantic.unresolved_name 'baseType'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'SemanticMetadata'
+semantic.unresolved_name 'annotatedElement'
+semantic.unresolved_name 'SysML::Usage'
+semantic.unresolved_name 'baseType'
+semantic.unresolved_name 'SemanticMetadata'
+semantic.unresolved_name 'annotatedElement'
+semantic.unresolved_name 'SysML::Usage'
+semantic.unresolved_name 'baseType'
+semantic.unresolved_name 'SemanticMetadata'
+semantic.unresolved_name 'annotatedElement'
+semantic.unresolved_name 'SysML::ConnectionDefinition'
+semantic.unresolved_name 'annotatedElement'
+semantic.unresolved_name 'SysML::ConnectionUsage'
+semantic.unresolved_name 'baseType'
+~~~
 # FORMAT
 ~~~sysml
 standard library package RequirementDerivation {
@@ -172,100 +229,56 @@ standard library package RequirementDerivation {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "RequirementDerivation"))) (name "RequirementDerivation") (declared-name "RequirementDerivation")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "RequirementDerivation::*"))) (name "*") (declared-name "*"))
-        (element (kind "metadata def") (id (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata"))) (name "DerivationMetadata") (declared-name "DerivationMetadata")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::annotatedElement"))) (name "annotatedElement") (declared-name "annotatedElement") (effective (featuring-type (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::annotatedElement#attribute"))) (name "annotatedElement") (declared-name "annotatedElement") (effective (featuring-type (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata")))))
-          )
-        )
-        (element (kind "metadata def") (id (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata"))) (name "DerivedRequirementMetadata") (declared-name "DerivedRequirementMetadata")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::annotatedElement"))) (name "annotatedElement") (declared-name "annotatedElement") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata")))))
-          )
-        )
-        (element (kind "metadata def") (id (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata"))) (name "OriginalRequirementMetadata") (declared-name "OriginalRequirementMetadata")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::annotatedElement"))) (name "annotatedElement") (declared-name "annotatedElement") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "RequirementDerivation::SemanticMetadata"))) (name "SemanticMetadata") (declared-name "SemanticMetadata"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "RequirementDerivation::_documentation"))) (name ""))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "48f76fe7983379e8566b3f11da4cc35c151131438da1489cea05c701240ac97f") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "RequirementDerivation"))) (kind "package") (name "RequirementDerivation") (declared-name "RequirementDerivation") (range (start (line 0) (character 0)) (end (line 0) (character 1269))))
+    (element (id (node (document "d0") (qualified-name "RequirementDerivation::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 3) (character 1)) (end (line 3) (character 40))) (parent (node (document "d0") (qualified-name "RequirementDerivation"))) (authored (membership (kind Import) (visibility "public") (import (reference "DerivationConnections::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 3) (character 15)) (end (line 3) (character 36))))))
+    (element (id (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata"))) (kind "metadata def") (name "DerivationMetadata") (declared-name "DerivationMetadata") (range (start (line 28) (character 1)) (end (line 28) (character 313))) (parent (node (document "d0") (qualified-name "RequirementDerivation"))) (authored (membership (kind Owning)) (relationships (specializes (reference "SemanticMetadata") (range (start (line 28) (character 49)) (end (line 28) (character 65)))))))
+    (element (id (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::_documentation"))) (kind "documentation") (name "") (range (start (line 28) (character 1)) (end (line 28) (character 313))) (parent (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata"))))
+    (element (id (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::annotatedElement"))) (kind "attribute") (name "annotatedElement") (declared-name "annotatedElement") (range (start (line 34) (character 2)) (end (line 34) (character 52))) (parent (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata"))) (authored (membership (kind Feature)) (relationships (typing (reference "ConnectionDefinition") (range none)) (subsetting (reference "annotatedElement") (range (start (line 34) (character 2)) (end (line 34) (character 21)))))))
+    (element (id (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::annotatedElement#attribute"))) (kind "attribute") (name "annotatedElement") (declared-name "annotatedElement") (range (start (line 35) (character 2)) (end (line 35) (character 47))) (parent (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata"))) (authored (membership (kind Feature)) (relationships (typing (reference "ConnectionUsage") (range none)) (subsetting (reference "annotatedElement") (range (start (line 35) (character 2)) (end (line 35) (character 21)))))))
+    (element (id (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::baseType"))) (kind "attribute") (name "baseType") (declared-name "baseType") (range (start (line 36) (character 2)) (end (line 36) (character 47))) (parent (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "baseType") (range (start (line 36) (character 2)) (end (line 36) (character 14)))))))
+    (element (id (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata"))) (kind "metadata def") (name "DerivedRequirementMetadata") (declared-name "DerivedRequirementMetadata") (range (start (line 17) (character 1)) (end (line 17) (character 351))) (parent (node (document "d0") (qualified-name "RequirementDerivation"))) (authored (membership (kind Owning)) (relationships (specializes (reference "SemanticMetadata") (range (start (line 17) (character 53)) (end (line 17) (character 69)))))))
+    (element (id (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::_documentation"))) (kind "documentation") (name "") (range (start (line 17) (character 1)) (end (line 17) (character 351))) (parent (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata"))))
+    (element (id (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::annotatedElement"))) (kind "attribute") (name "annotatedElement") (declared-name "annotatedElement") (range (start (line 24) (character 2)) (end (line 24) (character 37))) (parent (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata"))) (authored (membership (kind Feature)) (relationships (typing (reference "Usage") (range none)) (subsetting (reference "annotatedElement") (range (start (line 24) (character 2)) (end (line 24) (character 21)))))))
+    (element (id (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::baseType"))) (kind "attribute") (name "baseType") (declared-name "baseType") (range (start (line 25) (character 2)) (end (line 25) (character 55))) (parent (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "baseType") (range (start (line 25) (character 2)) (end (line 25) (character 14)))))))
+    (element (id (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata"))) (kind "metadata def") (name "OriginalRequirementMetadata") (declared-name "OriginalRequirementMetadata") (range (start (line 6) (character 1)) (end (line 6) (character 357))) (parent (node (document "d0") (qualified-name "RequirementDerivation"))) (authored (membership (kind Owning)) (relationships (specializes (reference "SemanticMetadata") (range (start (line 6) (character 56)) (end (line 6) (character 72)))))))
+    (element (id (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::_documentation"))) (kind "documentation") (name "") (range (start (line 6) (character 1)) (end (line 6) (character 357))) (parent (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata"))))
+    (element (id (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::annotatedElement"))) (kind "attribute") (name "annotatedElement") (declared-name "annotatedElement") (range (start (line 13) (character 2)) (end (line 13) (character 37))) (parent (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata"))) (authored (membership (kind Feature)) (relationships (typing (reference "Usage") (range none)) (subsetting (reference "annotatedElement") (range (start (line 13) (character 2)) (end (line 13) (character 21)))))))
+    (element (id (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::baseType"))) (kind "attribute") (name "baseType") (declared-name "baseType") (range (start (line 14) (character 2)) (end (line 14) (character 56))) (parent (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "baseType") (range (start (line 14) (character 2)) (end (line 14) (character 14)))))))
+    (element (id (node (document "d0") (qualified-name "RequirementDerivation::SemanticMetadata"))) (kind "import") (name "SemanticMetadata") (declared-name "SemanticMetadata") (range (start (line 4) (character 1)) (end (line 4) (character 46))) (parent (node (document "d0") (qualified-name "RequirementDerivation"))) (authored (membership (kind Import) (visibility "private") (import (reference "Metaobjects::SemanticMetadata") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 4) (character 16)) (end (line 4) (character 45))))))
+    (element (id (node (document "d0") (qualified-name "RequirementDerivation::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 1269))) (parent (node (document "d0") (qualified-name "RequirementDerivation"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "RequirementDerivation::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "DerivationConnections::*") (range (start (line 3) (character 15)) (end (line 3) (character 36))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata"))) (kind specialization) (ordinal 0)) (authored-target "SemanticMetadata") (range (start (line 28) (character 49)) (end (line 28) (character 65))) (outcome (status resolved) (target (node (document "d0") (qualified-name "RequirementDerivation::SemanticMetadata")))))
+    (reference (id (source (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::annotatedElement"))) (kind featureTyping) (ordinal 0)) (authored-target "ConnectionDefinition") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::annotatedElement"))) (kind subsetting) (ordinal 0)) (authored-target "annotatedElement") (range (start (line 34) (character 2)) (end (line 34) (character 21))) (outcome (status ambiguous) (candidates (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::annotatedElement")) (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::annotatedElement#attribute")))))
+    (reference (id (source (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::annotatedElement#attribute"))) (kind featureTyping) (ordinal 0)) (authored-target "ConnectionUsage") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::annotatedElement#attribute"))) (kind subsetting) (ordinal 0)) (authored-target "annotatedElement") (range (start (line 35) (character 2)) (end (line 35) (character 21))) (outcome (status ambiguous) (candidates (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::annotatedElement")) (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::annotatedElement#attribute")))))
+    (reference (id (source (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::baseType"))) (kind redefinition) (ordinal 0)) (authored-target "baseType") (range (start (line 36) (character 2)) (end (line 36) (character 14))) (outcome (status resolved) (target (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::baseType")))))
+    (reference (id (source (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata"))) (kind specialization) (ordinal 0)) (authored-target "SemanticMetadata") (range (start (line 17) (character 53)) (end (line 17) (character 69))) (outcome (status resolved) (target (node (document "d0") (qualified-name "RequirementDerivation::SemanticMetadata")))))
+    (reference (id (source (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::annotatedElement"))) (kind featureTyping) (ordinal 0)) (authored-target "Usage") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::annotatedElement"))) (kind subsetting) (ordinal 0)) (authored-target "annotatedElement") (range (start (line 24) (character 2)) (end (line 24) (character 21))) (outcome (status resolved) (target (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::annotatedElement")))))
+    (reference (id (source (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::baseType"))) (kind redefinition) (ordinal 0)) (authored-target "baseType") (range (start (line 25) (character 2)) (end (line 25) (character 14))) (outcome (status resolved) (target (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::baseType")))))
+    (reference (id (source (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata"))) (kind specialization) (ordinal 0)) (authored-target "SemanticMetadata") (range (start (line 6) (character 56)) (end (line 6) (character 72))) (outcome (status resolved) (target (node (document "d0") (qualified-name "RequirementDerivation::SemanticMetadata")))))
+    (reference (id (source (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::annotatedElement"))) (kind featureTyping) (ordinal 0)) (authored-target "Usage") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::annotatedElement"))) (kind subsetting) (ordinal 0)) (authored-target "annotatedElement") (range (start (line 13) (character 2)) (end (line 13) (character 21))) (outcome (status resolved) (target (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::annotatedElement")))))
+    (reference (id (source (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::baseType"))) (kind redefinition) (ordinal 0)) (authored-target "baseType") (range (start (line 14) (character 2)) (end (line 14) (character 14))) (outcome (status resolved) (target (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::baseType")))))
+    (reference (id (source (node (document "d0") (qualified-name "RequirementDerivation::SemanticMetadata"))) (kind membershipImport) (ordinal 0)) (authored-target "Metaobjects::SemanticMetadata") (range (start (line 4) (character 16)) (end (line 4) (character 45))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::_documentation"))) (to (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::_documentation"))) (to (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::_documentation"))) (to (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "RequirementDerivation::_documentation"))) (to (node (document "d0") (qualified-name "RequirementDerivation"))) (provenance authored))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::annotatedElement"))) (to (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::annotatedElement#attribute"))) (provenance authored))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::annotatedElement#attribute"))) (to (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::annotatedElement"))) (provenance authored))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata"))) (target (node (document "d0") (qualified-name "RequirementDerivation::SemanticMetadata"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata"))) (kind specialization) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::baseType"))) (target (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::baseType"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::baseType"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata"))) (target (node (document "d0") (qualified-name "RequirementDerivation::SemanticMetadata"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata"))) (kind specialization) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::annotatedElement"))) (target (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::annotatedElement"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::annotatedElement"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::baseType"))) (target (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::baseType"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::baseType"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata"))) (target (node (document "d0") (qualified-name "RequirementDerivation::SemanticMetadata"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata"))) (kind specialization) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::annotatedElement"))) (target (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::annotatedElement"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::annotatedElement"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::baseType"))) (target (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::baseType"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::baseType"))) (kind redefinition) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::annotatedElement"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::annotatedElement#attribute"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementDerivation::DerivationMetadata::baseType"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::annotatedElement"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::baseType"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::annotatedElement"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::baseType"))) (status missing-prerequisite) (target "Base::dataValues"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/requirement_derivation.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 3 15) (end 3 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 4 16) (end 4 45))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 6 1) (end 6 357))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 17 1) (end 17 351))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 28 1) (end 28 313))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

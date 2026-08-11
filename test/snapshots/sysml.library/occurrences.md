@@ -998,163 +998,98 @@ standard library package Occurrences {
 	}
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything::self'
-semantic.unresolved_name 'things'
-semantic.unresolved_name 'Clock'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'Natural'
-semantic.unresolved_name 'Natural'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'Set'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'Set'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'elements::notIntersection'
-semantic.unresolved_name 'elements::notIntersection'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'OrderedSet'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'interdiff::elements'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'Set'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Transfers::Transfer'
-semantic.unresolved_name 'Transfers::transfers'
-semantic.unresolved_name 'source'
-semantic.unresolved_name 'target'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'source'
-semantic.unresolved_name 'target'
-semantic.unresolved_name 'Transfers::Transfer'
-semantic.unresolved_name 'Transfers::transfers'
-semantic.unresolved_name 'source'
-semantic.unresolved_name 'target'
-semantic.unresolved_name 'source'
-semantic.unresolved_name 'target'
-semantic.unresolved_name 'things'
-semantic.unresolved_name 'Performances::BooleanEvaluation'
-semantic.unresolved_name 'Transfers::Transfer'
-semantic.unresolved_name 'Transfers::Transfer'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'BinaryLink'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'source'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'target'
-semantic.unresolved_name 'DataValue'
-semantic.unresolved_name 'DataValue'
-semantic.unresolved_name 'BinaryLink'
-semantic.unresolved_name 'BinaryLink::source'
-semantic.unresolved_name 'BinaryLink::target'
-semantic.unresolved_name 'BinaryLink'
-semantic.unresolved_name 'BinaryLink::source'
-semantic.unresolved_name 'BinaryLink::target'
-semantic.unresolved_name 'source'
-semantic.unresolved_name 'target'
-semantic.unresolved_name 'BinaryLink'
-semantic.unresolved_name 'BinaryLink::source'
-semantic.unresolved_name 'BinaryLink::target'
-semantic.unresolved_name 'binaryLinks'
-semantic.unresolved_name 'binaryLinks::source'
-semantic.unresolved_name 'binaryLinks::target'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'Anything::self'
-semantic.unresolved_name 'things'
-semantic.unresolved_name 'Clock'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'Natural'
-semantic.unresolved_name 'Natural'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'Set'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'Set'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'elements::notIntersection'
-semantic.unresolved_name 'elements::notIntersection'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'OrderedSet'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'interdiff::elements'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'Set'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Transfers::Transfer'
-semantic.unresolved_name 'Transfers::transfers'
-semantic.unresolved_name 'source'
-semantic.unresolved_name 'target'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'source'
-semantic.unresolved_name 'target'
-semantic.unresolved_name 'Transfers::Transfer'
-semantic.unresolved_name 'Transfers::transfers'
-semantic.unresolved_name 'source'
-semantic.unresolved_name 'target'
-semantic.unresolved_name 'source'
-semantic.unresolved_name 'target'
-semantic.unresolved_name 'things'
-semantic.unresolved_name 'Performances::BooleanEvaluation'
-semantic.unresolved_name 'Transfers::Transfer'
-semantic.unresolved_name 'Transfers::Transfer'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'BinaryLink'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'source'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'target'
-semantic.unresolved_name 'DataValue'
-semantic.unresolved_name 'DataValue'
-semantic.unresolved_name 'BinaryLink'
-semantic.unresolved_name 'BinaryLink::source'
-semantic.unresolved_name 'BinaryLink::target'
-semantic.unresolved_name 'BinaryLink'
-semantic.unresolved_name 'BinaryLink::source'
-semantic.unresolved_name 'BinaryLink::target'
-semantic.unresolved_name 'source'
-semantic.unresolved_name 'target'
-semantic.unresolved_name 'BinaryLink'
-semantic.unresolved_name 'BinaryLink::source'
-semantic.unresolved_name 'BinaryLink::target'
-semantic.unresolved_name 'binaryLinks'
-semantic.unresolved_name 'binaryLinks::source'
-semantic.unresolved_name 'binaryLinks::target'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "occurrences.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 16) (end 8 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 16) (end 9 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 16) (end 10 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 11 16) (end 11 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 12 16) (end 12 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 13 16) (end 13 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 14 16) (end 14 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 15 16) (end 15 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 16 16) (end 16 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 17 16) (end 17 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 18 16) (end 18 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 19 16) (end 19 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 20 16) (end 20 40))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -2186,6 +2121,164 @@ CloseCurly,EndOfFile,
       (feature_def end 'surroundedSpace' : 'Occurrence' :>> 'separateSpaceToo')
       (feature_def end 'surroundingSpace' : 'Occurrence' :>> 'separateSpace' crosses 'surroundedSpace.surroundedByOccurrences'))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything::self'
+semantic.unresolved_name 'things'
+semantic.unresolved_name 'Clock'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'Set'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'Set'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'elements::notIntersection'
+semantic.unresolved_name 'elements::notIntersection'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'OrderedSet'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'interdiff::elements'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'Set'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Transfers::Transfer'
+semantic.unresolved_name 'Transfers::transfers'
+semantic.unresolved_name 'source'
+semantic.unresolved_name 'target'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'source'
+semantic.unresolved_name 'target'
+semantic.unresolved_name 'Transfers::Transfer'
+semantic.unresolved_name 'Transfers::transfers'
+semantic.unresolved_name 'source'
+semantic.unresolved_name 'target'
+semantic.unresolved_name 'source'
+semantic.unresolved_name 'target'
+semantic.unresolved_name 'things'
+semantic.unresolved_name 'Performances::BooleanEvaluation'
+semantic.unresolved_name 'Transfers::Transfer'
+semantic.unresolved_name 'Transfers::Transfer'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'BinaryLink'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'source'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'target'
+semantic.unresolved_name 'DataValue'
+semantic.unresolved_name 'DataValue'
+semantic.unresolved_name 'BinaryLink'
+semantic.unresolved_name 'BinaryLink::source'
+semantic.unresolved_name 'BinaryLink::target'
+semantic.unresolved_name 'BinaryLink'
+semantic.unresolved_name 'BinaryLink::source'
+semantic.unresolved_name 'BinaryLink::target'
+semantic.unresolved_name 'source'
+semantic.unresolved_name 'target'
+semantic.unresolved_name 'BinaryLink'
+semantic.unresolved_name 'BinaryLink::source'
+semantic.unresolved_name 'BinaryLink::target'
+semantic.unresolved_name 'binaryLinks'
+semantic.unresolved_name 'binaryLinks::source'
+semantic.unresolved_name 'binaryLinks::target'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything::self'
+semantic.unresolved_name 'things'
+semantic.unresolved_name 'Clock'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'Set'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'Set'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'elements::notIntersection'
+semantic.unresolved_name 'elements::notIntersection'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'OrderedSet'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'interdiff::elements'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'Set'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Transfers::Transfer'
+semantic.unresolved_name 'Transfers::transfers'
+semantic.unresolved_name 'source'
+semantic.unresolved_name 'target'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'source'
+semantic.unresolved_name 'target'
+semantic.unresolved_name 'Transfers::Transfer'
+semantic.unresolved_name 'Transfers::transfers'
+semantic.unresolved_name 'source'
+semantic.unresolved_name 'target'
+semantic.unresolved_name 'source'
+semantic.unresolved_name 'target'
+semantic.unresolved_name 'things'
+semantic.unresolved_name 'Performances::BooleanEvaluation'
+semantic.unresolved_name 'Transfers::Transfer'
+semantic.unresolved_name 'Transfers::Transfer'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'BinaryLink'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'source'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'target'
+semantic.unresolved_name 'DataValue'
+semantic.unresolved_name 'DataValue'
+semantic.unresolved_name 'BinaryLink'
+semantic.unresolved_name 'BinaryLink::source'
+semantic.unresolved_name 'BinaryLink::target'
+semantic.unresolved_name 'BinaryLink'
+semantic.unresolved_name 'BinaryLink::source'
+semantic.unresolved_name 'BinaryLink::target'
+semantic.unresolved_name 'source'
+semantic.unresolved_name 'target'
+semantic.unresolved_name 'BinaryLink'
+semantic.unresolved_name 'BinaryLink::source'
+semantic.unresolved_name 'BinaryLink::target'
+semantic.unresolved_name 'binaryLinks'
+semantic.unresolved_name 'binaryLinks::source'
+semantic.unresolved_name 'binaryLinks::target'
+~~~
 # FORMAT
 ~~~sysml
 standard library package Occurrences {
@@ -3183,161 +3276,73 @@ standard library package Occurrences {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Occurrences"))) (name "Occurrences") (declared-name "Occurrences")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Occurrences::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Occurrences::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Occurrences::Anything"))) (name "Anything") (declared-name "Anything"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Occurrences::Boolean"))) (name "Boolean") (declared-name "Boolean"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Occurrences::DataValue"))) (name "DataValue") (declared-name "DataValue"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Occurrences::HappensLink"))) (name "HappensLink") (declared-name "HappensLink"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Occurrences::IncomingTransferSort"))) (name "IncomingTransferSort") (declared-name "IncomingTransferSort"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Occurrences::Natural"))) (name "Natural") (declared-name "Natural"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Occurrences::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Occurrences::OrderedSet"))) (name "OrderedSet") (declared-name "OrderedSet"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Occurrences::SelfLink"))) (name "SelfLink") (declared-name "SelfLink"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Occurrences::Set"))) (name "Set") (declared-name "Set"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Occurrences::SpaceLink"))) (name "SpaceLink") (declared-name "SpaceLink"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "Occurrences::_documentation"))) (name ""))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Occurrences::all"))) (name "all") (declared-name "all"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Occurrences::all#feature_decl"))) (name "all") (declared-name "all"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl"))) (name "all") (declared-name "all"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl10"))) (name "all") (declared-name "all"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl11"))) (name "all") (declared-name "all"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl12"))) (name "all") (declared-name "all"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl13"))) (name "all") (declared-name "all"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl14"))) (name "all") (declared-name "all"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl15"))) (name "all") (declared-name "all"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl16"))) (name "all") (declared-name "all"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl17"))) (name "all") (declared-name "all"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl18"))) (name "all") (declared-name "all"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl19"))) (name "all") (declared-name "all"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl2"))) (name "all") (declared-name "all"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl3"))) (name "all") (declared-name "all"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl4"))) (name "all") (declared-name "all"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl5"))) (name "all") (declared-name "all"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl6"))) (name "all") (declared-name "all"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl7"))) (name "all") (declared-name "all"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl8"))) (name "all") (declared-name "all"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl9"))) (name "all") (declared-name "all"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Occurrences::contains"))) (name "contains") (declared-name "contains"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Occurrences::earlierFirstIncomingTransferSort"))) (name "earlierFirstIncomingTransferSort") (declared-name "earlierFirstIncomingTransferSort"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Occurrences::includes"))) (name "includes") (declared-name "includes"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Occurrences::isEmpty"))) (name "isEmpty") (declared-name "isEmpty"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Occurrences::notEmpty"))) (name "notEmpty") (declared-name "notEmpty"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Occurrences::occurrences"))) (name "occurrences") (declared-name "occurrences"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Occurrences::things"))) (name "things") (declared-name "things"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Occurrences::union"))) (name "union") (declared-name "union"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "56b5a2d0f5c22b15846b15f449d3fe18890c5afd06bfd6ef4460404a31856fea") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Occurrences"))) (kind "package") (name "Occurrences") (declared-name "Occurrences") (range (start (line 0) (character 0)) (end (line 0) (character 36918))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 12) (character 1)) (end (line 12) (character 25))) (parent (node (document "d0") (qualified-name "Occurrences"))) (authored (membership (kind Import) (visibility "private") (import (reference "Links::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 12) (character 16)) (end (line 12) (character 21))))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 13) (character 1)) (end (line 13) (character 26))) (parent (node (document "d0") (qualified-name "Occurrences"))) (authored (membership (kind Import) (visibility "private") (import (reference "Clocks::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 13) (character 16)) (end (line 13) (character 22))))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::Anything"))) (kind "import") (name "Anything") (declared-name "Anything") (range (start (line 7) (character 1)) (end (line 7) (character 31))) (parent (node (document "d0") (qualified-name "Occurrences"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::Anything") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 30))))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::Boolean"))) (kind "import") (name "Boolean") (declared-name "Boolean") (range (start (line 11) (character 1)) (end (line 11) (character 38))) (parent (node (document "d0") (qualified-name "Occurrences"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Boolean") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 11) (character 16)) (end (line 11) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::DataValue"))) (kind "import") (name "DataValue") (declared-name "DataValue") (range (start (line 9) (character 1)) (end (line 9) (character 32))) (parent (node (document "d0") (qualified-name "Occurrences"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::DataValue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 9) (character 16)) (end (line 9) (character 31))))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::HappensLink"))) (kind "kermlDecl") (name "HappensLink") (declared-name "HappensLink") (range (start (line 730) (character 1)) (end (line 730) (character 600))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::IncomingTransferSort"))) (kind "kermlDecl") (name "IncomingTransferSort") (declared-name "IncomingTransferSort") (range (start (line 698) (character 1)) (end (line 698) (character 186))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::Natural"))) (kind "import") (name "Natural") (declared-name "Natural") (range (start (line 10) (character 1)) (end (line 10) (character 38))) (parent (node (document "d0") (qualified-name "Occurrences"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Natural") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 10) (character 16)) (end (line 10) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::Occurrence"))) (kind "classifier decl") (name "Occurrence") (declared-name "Occurrence") (range (start (line 22) (character 1)) (end (line 22) (character 23370))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::OrderedSet"))) (kind "import") (name "OrderedSet") (declared-name "OrderedSet") (range (start (line 15) (character 1)) (end (line 15) (character 40))) (parent (node (document "d0") (qualified-name "Occurrences"))) (authored (membership (kind Import) (visibility "private") (import (reference "Collections::OrderedSet") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 15) (character 16)) (end (line 15) (character 39))))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::SelfLink"))) (kind "classifier decl") (name "SelfLink") (declared-name "SelfLink") (range (start (line 728) (character 1)) (end (line 728) (character 53))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::Set"))) (kind "import") (name "Set") (declared-name "Set") (range (start (line 14) (character 1)) (end (line 14) (character 33))) (parent (node (document "d0") (qualified-name "Occurrences"))) (authored (membership (kind Import) (visibility "private") (import (reference "Collections::Set") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 14) (character 16)) (end (line 14) (character 32))))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::SpaceLink"))) (kind "kermlDecl") (name "SpaceLink") (declared-name "SpaceLink") (range (start (line 769) (character 1)) (end (line 769) (character 656))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 36918))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::all"))) (kind "classifier decl") (name "all") (declared-name "all") (range (start (line 687) (character 1)) (end (line 687) (character 151))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::all#feature_decl"))) (kind "feature decl") (name "all") (declared-name "all") (range (start (line 920) (character 1)) (end (line 920) (character 474))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 708) (character 1)) (end (line 708) (character 914))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl10"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 853) (character 1)) (end (line 853) (character 668))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl11"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 866) (character 1)) (end (line 866) (character 436))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl12"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 877) (character 1)) (end (line 877) (character 628))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl13"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 891) (character 1)) (end (line 891) (character 919))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl14"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 909) (character 1)) (end (line 909) (character 457))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl15"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 931) (character 1)) (end (line 931) (character 619))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl16"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 945) (character 1)) (end (line 945) (character 400))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl17"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 958) (character 1)) (end (line 958) (character 378))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl18"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 970) (character 1)) (end (line 970) (character 430))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl19"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 981) (character 1)) (end (line 981) (character 424))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl2"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 744) (character 1)) (end (line 744) (character 715))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl3"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 758) (character 1)) (end (line 758) (character 460))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl4"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 783) (character 1)) (end (line 783) (character 581))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl5"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 796) (character 1)) (end (line 796) (character 679))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl6"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 810) (character 1)) (end (line 810) (character 575))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl7"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 823) (character 1)) (end (line 823) (character 368))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl8"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 833) (character 1)) (end (line 833) (character 391))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::all#kermlDecl9"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 843) (character 1)) (end (line 843) (character 364))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::contains"))) (kind "import") (name "contains") (declared-name "contains") (range (start (line 16) (character 1)) (end (line 16) (character 46))) (parent (node (document "d0") (qualified-name "Occurrences"))) (authored (membership (kind Import) (visibility "private") (import (reference "CollectionFunctions::contains") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 16) (character 16)) (end (line 16) (character 45))))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::earlierFirstIncomingTransferSort"))) (kind "kermlDecl") (name "earlierFirstIncomingTransferSort") (declared-name "earlierFirstIncomingTransferSort") (range (start (line 704) (character 1)) (end (line 704) (character 130))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::includes"))) (kind "import") (name "includes") (declared-name "includes") (range (start (line 19) (character 1)) (end (line 19) (character 44))) (parent (node (document "d0") (qualified-name "Occurrences"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::includes") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 19) (character 16)) (end (line 19) (character 43))))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::isEmpty"))) (kind "import") (name "isEmpty") (declared-name "isEmpty") (range (start (line 17) (character 1)) (end (line 17) (character 43))) (parent (node (document "d0") (qualified-name "Occurrences"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::isEmpty") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 17) (character 16)) (end (line 17) (character 42))))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::notEmpty"))) (kind "import") (name "notEmpty") (declared-name "notEmpty") (range (start (line 18) (character 1)) (end (line 18) (character 44))) (parent (node (document "d0") (qualified-name "Occurrences"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::notEmpty") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 18) (character 16)) (end (line 18) (character 43))))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::occurrences"))) (kind "feature decl") (name "occurrences") (declared-name "occurrences") (range (start (line 696) (character 1)) (end (line 696) (character 73))) (parent (node (document "d0") (qualified-name "Occurrences"))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::things"))) (kind "import") (name "things") (declared-name "things") (range (start (line 8) (character 1)) (end (line 8) (character 29))) (parent (node (document "d0") (qualified-name "Occurrences"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::things") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "Occurrences::union"))) (kind "import") (name "union") (declared-name "union") (range (start (line 20) (character 1)) (end (line 20) (character 41))) (parent (node (document "d0") (qualified-name "Occurrences"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::union") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 20) (character 16)) (end (line 20) (character 40))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Occurrences::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Links::*") (range (start (line 12) (character 16)) (end (line 12) (character 21))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Occurrences::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "Clocks::*") (range (start (line 13) (character 16)) (end (line 13) (character 22))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Occurrences::Anything"))) (kind membershipImport) (ordinal 0)) (authored-target "Base::Anything") (range (start (line 7) (character 16)) (end (line 7) (character 30))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Occurrences::Boolean"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Boolean") (range (start (line 11) (character 16)) (end (line 11) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Occurrences::DataValue"))) (kind membershipImport) (ordinal 0)) (authored-target "Base::DataValue") (range (start (line 9) (character 16)) (end (line 9) (character 31))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Occurrences::Natural"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Natural") (range (start (line 10) (character 16)) (end (line 10) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Occurrences::OrderedSet"))) (kind membershipImport) (ordinal 0)) (authored-target "Collections::OrderedSet") (range (start (line 15) (character 16)) (end (line 15) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Occurrences::Set"))) (kind membershipImport) (ordinal 0)) (authored-target "Collections::Set") (range (start (line 14) (character 16)) (end (line 14) (character 32))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Occurrences::contains"))) (kind membershipImport) (ordinal 0)) (authored-target "CollectionFunctions::contains") (range (start (line 16) (character 16)) (end (line 16) (character 45))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Occurrences::includes"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::includes") (range (start (line 19) (character 16)) (end (line 19) (character 43))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Occurrences::isEmpty"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::isEmpty") (range (start (line 17) (character 16)) (end (line 17) (character 42))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Occurrences::notEmpty"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::notEmpty") (range (start (line 18) (character 16)) (end (line 18) (character 43))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Occurrences::things"))) (kind membershipImport) (ordinal 0)) (authored-target "Base::things") (range (start (line 8) (character 16)) (end (line 8) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Occurrences::union"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::union") (range (start (line 20) (character 16)) (end (line 20) (character 40))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Occurrences::_documentation"))) (to (node (document "d0") (qualified-name "Occurrences"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/occurrences.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 16) (end 7 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 16) (end 8 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 9 16) (end 9 31))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 10 16) (end 10 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 11 16) (end 11 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 12 16) (end 12 21))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 13 16) (end 13 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 14 16) (end 14 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 15 16) (end 15 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 16 16) (end 16 45))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 17 16) (end 17 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 18 16) (end 18 43))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 19 16) (end 19 43))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 20 16) (end 20 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 744 1) (end 744 715))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

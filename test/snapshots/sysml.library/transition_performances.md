@@ -72,41 +72,86 @@ standard library package TransitionPerformances {
 	}	
 }
 ~~~
-# EXPECTED
-~~~
-parse.expected_usage_declaration
-semantic.unresolved_name 'Performance'
-semantic.unresolved_name 'MessageTransfer'
-semantic.unresolved_name 'enclosedPerformances'
-semantic.unresolved_name 'enclosedPerformances'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'HappensBefore'
-semantic.unresolved_name 'Natural'
-semantic.unresolved_name 'AcceptPerformance'
-semantic.unresolved_name 'timeEnclosedOccurrences'
-semantic.unresolved_name 'acceptPerformances'
-semantic.unresolved_name 'acceptedTransfer'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Natural'
-semantic.unresolved_name 'HappensBefore'
-~~~
-# PROBLEMS
-~~~
-parse.expected_usage_declaration
-semantic.unresolved_name 'Performance'
-semantic.unresolved_name 'MessageTransfer'
-semantic.unresolved_name 'enclosedPerformances'
-semantic.unresolved_name 'enclosedPerformances'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'HappensBefore'
-semantic.unresolved_name 'Natural'
-semantic.unresolved_name 'AcceptPerformance'
-semantic.unresolved_name 'timeEnclosedOccurrences'
-semantic.unresolved_name 'acceptPerformances'
-semantic.unresolved_name 'acceptedTransfer'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'Natural'
-semantic.unresolved_name 'HappensBefore'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "transition_performances.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 16) (end 8 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 16) (end 9 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 16) (end 10 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 11 16) (end 11 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 12 16) (end 12 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 13 16) (end 13 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 14 16) (end 14 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 15 16) (end 15 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 16 16) (end 16 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 17 16) (end 17 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 18 16) (end 18 39))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -233,6 +278,42 @@ CloseCurly,EndOfFile,
       (invariant_def
         (result_expr_member)))))
 ~~~
+# EXPECTED
+~~~
+parse.expected_usage_declaration
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'MessageTransfer'
+semantic.unresolved_name 'enclosedPerformances'
+semantic.unresolved_name 'enclosedPerformances'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'HappensBefore'
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'AcceptPerformance'
+semantic.unresolved_name 'timeEnclosedOccurrences'
+semantic.unresolved_name 'acceptPerformances'
+semantic.unresolved_name 'acceptedTransfer'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'HappensBefore'
+~~~
+# PROBLEMS
+~~~
+parse.expected_usage_declaration
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'MessageTransfer'
+semantic.unresolved_name 'enclosedPerformances'
+semantic.unresolved_name 'enclosedPerformances'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'HappensBefore'
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'AcceptPerformance'
+semantic.unresolved_name 'timeEnclosedOccurrences'
+semantic.unresolved_name 'acceptPerformances'
+semantic.unresolved_name 'acceptedTransfer'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'HappensBefore'
+~~~
 # FORMAT
 ~~~sysml
 standard library package TransitionPerformances {
@@ -304,116 +385,44 @@ standard library package TransitionPerformances {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "TransitionPerformances"))) (name "TransitionPerformances") (declared-name "TransitionPerformances")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "TransitionPerformances::AcceptPerformance"))) (name "AcceptPerformance") (declared-name "AcceptPerformance"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TransitionPerformances::Boolean"))) (name "Boolean") (declared-name "Boolean"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TransitionPerformances::Evaluation"))) (name "Evaluation") (declared-name "Evaluation"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TransitionPerformances::HappensBefore"))) (name "HappensBefore") (declared-name "HappensBefore"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TransitionPerformances::MessageTransfer"))) (name "MessageTransfer") (declared-name "MessageTransfer"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TransitionPerformances::Natural"))) (name "Natural") (declared-name "Natural"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TransitionPerformances::NonStateTransitionPerformance"))) (name "NonStateTransitionPerformance") (declared-name "NonStateTransitionPerformance"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TransitionPerformances::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TransitionPerformances::Performance"))) (name "Performance") (declared-name "Performance"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TransitionPerformances::TransitionPerformance"))) (name "TransitionPerformance") (declared-name "TransitionPerformance"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "TransitionPerformances::_documentation"))) (name ""))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TransitionPerformances::acceptPerformances"))) (name "acceptPerformances") (declared-name "acceptPerformances"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TransitionPerformances::allTrue"))) (name "allTrue") (declared-name "allTrue"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TransitionPerformances::isEmpty"))) (name "isEmpty") (declared-name "isEmpty"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "TransitionPerformances::size"))) (name "size") (declared-name "size"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TransitionPerformances::struct"))) (name "struct") (declared-name "struct"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e1fe96a223d39b15d3ecd0a7eb23cf877c1aaadd43d6490806224874663f174a") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "TransitionPerformances"))) (kind "package") (name "TransitionPerformances") (declared-name "TransitionPerformances") (range (start (line 0) (character 0)) (end (line 0) (character 2591))))
+    (element (id (node (document "d0") (qualified-name "TransitionPerformances::AcceptPerformance"))) (kind "import") (name "AcceptPerformance") (declared-name "AcceptPerformance") (range (start (line 15) (character 1)) (end (line 15) (character 45))) (parent (node (document "d0") (qualified-name "TransitionPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Transfers::AcceptPerformance") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 15) (character 16)) (end (line 15) (character 44))))))
+    (element (id (node (document "d0") (qualified-name "TransitionPerformances::Boolean"))) (kind "import") (name "Boolean") (declared-name "Boolean") (range (start (line 7) (character 1)) (end (line 7) (character 38))) (parent (node (document "d0") (qualified-name "TransitionPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Boolean") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "TransitionPerformances::Evaluation"))) (kind "import") (name "Evaluation") (declared-name "Evaluation") (range (start (line 13) (character 1)) (end (line 13) (character 41))) (parent (node (document "d0") (qualified-name "TransitionPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Performances::Evaluation") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 13) (character 16)) (end (line 13) (character 40))))))
+    (element (id (node (document "d0") (qualified-name "TransitionPerformances::HappensBefore"))) (kind "import") (name "HappensBefore") (declared-name "HappensBefore") (range (start (line 11) (character 1)) (end (line 11) (character 43))) (parent (node (document "d0") (qualified-name "TransitionPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::HappensBefore") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 11) (character 16)) (end (line 11) (character 42))))))
+    (element (id (node (document "d0") (qualified-name "TransitionPerformances::MessageTransfer"))) (kind "import") (name "MessageTransfer") (declared-name "MessageTransfer") (range (start (line 14) (character 1)) (end (line 14) (character 43))) (parent (node (document "d0") (qualified-name "TransitionPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Transfers::MessageTransfer") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 14) (character 16)) (end (line 14) (character 42))))))
+    (element (id (node (document "d0") (qualified-name "TransitionPerformances::Natural"))) (kind "import") (name "Natural") (declared-name "Natural") (range (start (line 8) (character 1)) (end (line 8) (character 38))) (parent (node (document "d0") (qualified-name "TransitionPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Natural") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "TransitionPerformances::NonStateTransitionPerformance"))) (kind "kermlDecl") (name "NonStateTransitionPerformance") (declared-name "NonStateTransitionPerformance") (range (start (line 50) (character 1)) (end (line 50) (character 467))) (parent (node (document "d0") (qualified-name "TransitionPerformances"))))
+    (element (id (node (document "d0") (qualified-name "TransitionPerformances::Occurrence"))) (kind "import") (name "Occurrence") (declared-name "Occurrence") (range (start (line 10) (character 1)) (end (line 10) (character 40))) (parent (node (document "d0") (qualified-name "TransitionPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::Occurrence") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 10) (character 16)) (end (line 10) (character 39))))))
+    (element (id (node (document "d0") (qualified-name "TransitionPerformances::Performance"))) (kind "import") (name "Performance") (declared-name "Performance") (range (start (line 12) (character 1)) (end (line 12) (character 42))) (parent (node (document "d0") (qualified-name "TransitionPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Performances::Performance") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 12) (character 16)) (end (line 12) (character 41))))))
+    (element (id (node (document "d0") (qualified-name "TransitionPerformances::TransitionPerformance"))) (kind "kermlDecl") (name "TransitionPerformance") (declared-name "TransitionPerformance") (range (start (line 20) (character 1)) (end (line 20) (character 1162))) (parent (node (document "d0") (qualified-name "TransitionPerformances"))))
+    (element (id (node (document "d0") (qualified-name "TransitionPerformances::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 2591))) (parent (node (document "d0") (qualified-name "TransitionPerformances"))))
+    (element (id (node (document "d0") (qualified-name "TransitionPerformances::acceptPerformances"))) (kind "import") (name "acceptPerformances") (declared-name "acceptPerformances") (range (start (line 16) (character 1)) (end (line 16) (character 46))) (parent (node (document "d0") (qualified-name "TransitionPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "Transfers::acceptPerformances") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 16) (character 16)) (end (line 16) (character 45))))))
+    (element (id (node (document "d0") (qualified-name "TransitionPerformances::allTrue"))) (kind "import") (name "allTrue") (declared-name "allTrue") (range (start (line 17) (character 1)) (end (line 17) (character 42))) (parent (node (document "d0") (qualified-name "TransitionPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "ControlFunctions::allTrue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 17) (character 16)) (end (line 17) (character 41))))))
+    (element (id (node (document "d0") (qualified-name "TransitionPerformances::isEmpty"))) (kind "import") (name "isEmpty") (declared-name "isEmpty") (range (start (line 9) (character 1)) (end (line 9) (character 43))) (parent (node (document "d0") (qualified-name "TransitionPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::isEmpty") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 9) (character 16)) (end (line 9) (character 42))))))
+    (element (id (node (document "d0") (qualified-name "TransitionPerformances::size"))) (kind "import") (name "size") (declared-name "size") (range (start (line 18) (character 1)) (end (line 18) (character 40))) (parent (node (document "d0") (qualified-name "TransitionPerformances"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::size") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 18) (character 16)) (end (line 18) (character 39))))))
+    (element (id (node (document "d0") (qualified-name "TransitionPerformances::struct"))) (kind "kermlDecl") (name "struct") (declared-name "struct") (range (start (line 59) (character 1)) (end (line 59) (character 184))) (parent (node (document "d0") (qualified-name "TransitionPerformances"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "TransitionPerformances::AcceptPerformance"))) (kind membershipImport) (ordinal 0)) (authored-target "Transfers::AcceptPerformance") (range (start (line 15) (character 16)) (end (line 15) (character 44))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TransitionPerformances::Boolean"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Boolean") (range (start (line 7) (character 16)) (end (line 7) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TransitionPerformances::Evaluation"))) (kind membershipImport) (ordinal 0)) (authored-target "Performances::Evaluation") (range (start (line 13) (character 16)) (end (line 13) (character 40))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TransitionPerformances::HappensBefore"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::HappensBefore") (range (start (line 11) (character 16)) (end (line 11) (character 42))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TransitionPerformances::MessageTransfer"))) (kind membershipImport) (ordinal 0)) (authored-target "Transfers::MessageTransfer") (range (start (line 14) (character 16)) (end (line 14) (character 42))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TransitionPerformances::Natural"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Natural") (range (start (line 8) (character 16)) (end (line 8) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TransitionPerformances::Occurrence"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::Occurrence") (range (start (line 10) (character 16)) (end (line 10) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TransitionPerformances::Performance"))) (kind membershipImport) (ordinal 0)) (authored-target "Performances::Performance") (range (start (line 12) (character 16)) (end (line 12) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TransitionPerformances::acceptPerformances"))) (kind membershipImport) (ordinal 0)) (authored-target "Transfers::acceptPerformances") (range (start (line 16) (character 16)) (end (line 16) (character 45))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TransitionPerformances::allTrue"))) (kind membershipImport) (ordinal 0)) (authored-target "ControlFunctions::allTrue") (range (start (line 17) (character 16)) (end (line 17) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TransitionPerformances::isEmpty"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::isEmpty") (range (start (line 9) (character 16)) (end (line 9) (character 42))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TransitionPerformances::size"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::size") (range (start (line 18) (character 16)) (end (line 18) (character 39))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "TransitionPerformances::_documentation"))) (to (node (document "d0") (qualified-name "TransitionPerformances"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/transition_performances.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 16) (end 7 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 16) (end 8 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 9 16) (end 9 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 10 16) (end 10 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 11 16) (end 11 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 12 16) (end 12 41))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 13 16) (end 13 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 14 16) (end 14 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 15 16) (end 15 44))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 16 16) (end 16 45))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 17 16) (end 17 41))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 18 16) (end 18 39))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

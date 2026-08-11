@@ -159,67 +159,122 @@ standard library package Items {
 	
 }
 ~~~
-# EXPECTED
-~~~
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.unresolved_name 'Object'
-semantic.unresolved_name 'Object::self'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'spaceBoundary'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'StructuredSpaceObject'
-semantic.unresolved_name 'faces'
-semantic.unresolved_name 'edges'
-semantic.unresolved_name 'innerSpaceOccurrences'
-semantic.unresolved_name 'subobjects'
-semantic.unresolved_name 'Item::incomingTransferSort'
-semantic.unresolved_name 'subobjects::incomingTransferSort'
-semantic.unresolved_name 'Part'
-semantic.unresolved_name 'parts'
-semantic.unresolved_name 'ConstraintCheck'
-semantic.unresolved_name 'constraintChecks'
-semantic.unresolved_name 'ownedPerformances'
-semantic.unresolved_name 'JustOutsideOf'
-semantic.unresolved_name 'HappensWhile'
-semantic.unresolved_name 'separateSpaceToo'
-semantic.unresolved_name 'thisOccurrence'
-semantic.unresolved_name 'separateSpace'
-semantic.unresolved_name 'thatOccurrence'
-semantic.unresolved_name 'objects'
-~~~
-# PROBLEMS
-~~~
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.redefinition_featuring_type_overlap
-semantic.unresolved_name 'Object'
-semantic.unresolved_name 'Object::self'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'endShot'
-semantic.unresolved_name 'spaceBoundary'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'StructuredSpaceObject'
-semantic.unresolved_name 'faces'
-semantic.unresolved_name 'edges'
-semantic.unresolved_name 'innerSpaceOccurrences'
-semantic.unresolved_name 'subobjects'
-semantic.unresolved_name 'Item::incomingTransferSort'
-semantic.unresolved_name 'subobjects::incomingTransferSort'
-semantic.unresolved_name 'Part'
-semantic.unresolved_name 'parts'
-semantic.unresolved_name 'ConstraintCheck'
-semantic.unresolved_name 'constraintChecks'
-semantic.unresolved_name 'ownedPerformances'
-semantic.unresolved_name 'JustOutsideOf'
-semantic.unresolved_name 'HappensWhile'
-semantic.unresolved_name 'separateSpaceToo'
-semantic.unresolved_name 'thisOccurrence'
-semantic.unresolved_name 'separateSpace'
-semantic.unresolved_name 'thatOccurrence'
-semantic.unresolved_name 'objects'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "items.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 16) (end 8 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 16) (end 9 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 16) (end 10 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 11 16) (end 11 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 12 16) (end 12 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 13 16) (end 13 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 14 16) (end 14 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 15 16) (end 15 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 16 16) (end 16 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 17 16) (end 17 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 18 16) (end 18 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 19 16) (end 19 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 20 16) (end 20 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 21 16) (end 21 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 30 21) (end 30 33))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 104 2) (end 104 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 120 40) (end 120 48))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -391,6 +446,68 @@ CloseCurly,EndOfFile,
     (item_usage abstract 'items' : 'Item' :> 'objects' multiplicity nonunique
       (documentation))))
 ~~~
+# EXPECTED
+~~~
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.unresolved_name 'Object'
+semantic.unresolved_name 'Object::self'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'spaceBoundary'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'StructuredSpaceObject'
+semantic.unresolved_name 'faces'
+semantic.unresolved_name 'edges'
+semantic.unresolved_name 'innerSpaceOccurrences'
+semantic.unresolved_name 'subobjects'
+semantic.unresolved_name 'Item::incomingTransferSort'
+semantic.unresolved_name 'subobjects::incomingTransferSort'
+semantic.unresolved_name 'Part'
+semantic.unresolved_name 'parts'
+semantic.unresolved_name 'ConstraintCheck'
+semantic.unresolved_name 'constraintChecks'
+semantic.unresolved_name 'ownedPerformances'
+semantic.unresolved_name 'JustOutsideOf'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'separateSpaceToo'
+semantic.unresolved_name 'thisOccurrence'
+semantic.unresolved_name 'separateSpace'
+semantic.unresolved_name 'thatOccurrence'
+semantic.unresolved_name 'objects'
+~~~
+# PROBLEMS
+~~~
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.redefinition_featuring_type_overlap
+semantic.unresolved_name 'Object'
+semantic.unresolved_name 'Object::self'
+semantic.unresolved_name 'startShot'
+semantic.unresolved_name 'endShot'
+semantic.unresolved_name 'spaceBoundary'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'StructuredSpaceObject'
+semantic.unresolved_name 'faces'
+semantic.unresolved_name 'edges'
+semantic.unresolved_name 'innerSpaceOccurrences'
+semantic.unresolved_name 'subobjects'
+semantic.unresolved_name 'Item::incomingTransferSort'
+semantic.unresolved_name 'subobjects::incomingTransferSort'
+semantic.unresolved_name 'Part'
+semantic.unresolved_name 'parts'
+semantic.unresolved_name 'ConstraintCheck'
+semantic.unresolved_name 'constraintChecks'
+semantic.unresolved_name 'ownedPerformances'
+semantic.unresolved_name 'JustOutsideOf'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'separateSpaceToo'
+semantic.unresolved_name 'thisOccurrence'
+semantic.unresolved_name 'separateSpace'
+semantic.unresolved_name 'thatOccurrence'
+semantic.unresolved_name 'objects'
+~~~
 # FORMAT
 ~~~sysml
 standard library package Items {
@@ -549,217 +666,80 @@ standard library package Items {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Items"))) (name "Items") (declared-name "Items")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Items::ConstraintCheck"))) (name "ConstraintCheck") (declared-name "ConstraintCheck"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Items::HappensWhile"))) (name "HappensWhile") (declared-name "HappensWhile"))
-        (element (kind "item def") (id (node (document "d0") (qualified-name "Items::Item"))) (name "Item") (declared-name "Item")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Items::Item::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Items::Item")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Items::Item::isSolid"))) (name "isSolid") (declared-name "isSolid") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Items::Item"))))
-              (contains
-                (element (kind "documentation") (id (node (document "d0") (qualified-name "Items::Item::isSolid::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Items::Item")))))
-              )
-            )
-            (element (kind "ref") (id (node (document "d0") (qualified-name "Items::Item::self"))) (name "self") (declared-name "self") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Items::Item")))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "Items::Item::subparts"))) (name "subparts") (declared-name "subparts") (declared (properties (abstract true) (ordered false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Items::Item"))))
-              (contains
-                (element (kind "documentation") (id (node (document "d0") (qualified-name "Items::Item::subparts::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Items::Item")))))
-              )
-            )
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "Items::JustOutsideOf"))) (name "JustOutsideOf") (declared-name "JustOutsideOf"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Items::Object"))) (name "Object") (declared-name "Object"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Items::Part"))) (name "Part") (declared-name "Part"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Items::StructuredSpaceObject"))) (name "StructuredSpaceObject") (declared-name "StructuredSpaceObject"))
-        (element (kind "connection def") (id (node (document "d0") (qualified-name "Items::Touches"))) (name "Touches") (declared-name "Touches")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Items::Touches::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Items::Touches")))))
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "Items::Touches::touches"))) (name "touches") (declared-name "touches") (declared (properties (end true)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Items::Touches")))))
-            (element (kind "interface end") (id (node (document "d0") (qualified-name "Items::Touches::touchesToo"))) (name "touchesToo") (declared-name "touchesToo") (declared (properties (end true)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Items::Touches")))))
-          )
-        )
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "Items::_documentation"))) (name ""))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Items::constraintChecks"))) (name "constraintChecks") (declared-name "constraintChecks"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Items::contains"))) (name "contains") (declared-name "contains"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Items::forAll"))) (name "forAll") (declared-name "forAll"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Items::includes"))) (name "includes") (declared-name "includes"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Items::isEmpty"))) (name "isEmpty") (declared-name "isEmpty"))
-        (element (kind "item def") (id (node (document "d0") (qualified-name "Items::items"))) (name "items") (declared-name "items")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Items::items::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Items::items")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "Items::notEmpty"))) (name "notEmpty") (declared-name "notEmpty"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Items::objects"))) (name "objects") (declared-name "objects"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Items::parts"))) (name "parts") (declared-name "parts"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Items::union"))) (name "union") (declared-name "union"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "41b6b16dba209172428c0a719f3b5feec1fa54f385725d97eaa7df21357619d2") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Items"))) (kind "package") (name "Items") (declared-name "Items") (range (start (line 0) (character 0)) (end (line 0) (character 4121))))
+    (element (id (node (document "d0") (qualified-name "Items::ConstraintCheck"))) (kind "import") (name "ConstraintCheck") (declared-name "ConstraintCheck") (range (start (line 14) (character 1)) (end (line 14) (character 45))) (parent (node (document "d0") (qualified-name "Items"))) (authored (membership (kind Import) (visibility "private") (import (reference "Constraints::ConstraintCheck") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 14) (character 16)) (end (line 14) (character 44))))))
+    (element (id (node (document "d0") (qualified-name "Items::HappensWhile"))) (kind "import") (name "HappensWhile") (declared-name "HappensWhile") (range (start (line 11) (character 1)) (end (line 11) (character 42))) (parent (node (document "d0") (qualified-name "Items"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::HappensWhile") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 11) (character 16)) (end (line 11) (character 41))))))
+    (element (id (node (document "d0") (qualified-name "Items::Item"))) (kind "item def") (name "Item") (declared-name "Item") (range (start (line 23) (character 1)) (end (line 23) (character 2898))) (parent (node (document "d0") (qualified-name "Items"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Object") (range (start (line 23) (character 27)) (end (line 23) (character 33)))))))
+    (element (id (node (document "d0") (qualified-name "Items::Item::_documentation"))) (kind "documentation") (name "") (range (start (line 23) (character 1)) (end (line 23) (character 2898))) (parent (node (document "d0") (qualified-name "Items::Item"))))
+    (element (id (node (document "d0") (qualified-name "Items::Item::isSolid"))) (kind "attribute") (name "isSolid") (declared-name "isSolid") (range (start (line 104) (character 2)) (end (line 104) (character 105))) (parent (node (document "d0") (qualified-name "Items::Item"))))
+    (element (id (node (document "d0") (qualified-name "Items::Item::isSolid::_documentation"))) (kind "documentation") (name "") (range (start (line 104) (character 2)) (end (line 104) (character 105))) (parent (node (document "d0") (qualified-name "Items::Item::isSolid"))))
+    (element (id (node (document "d0") (qualified-name "Items::Item::self"))) (kind "ref") (name "self") (declared-name "self") (range (start (line 30) (character 2)) (end (line 30) (character 34))) (parent (node (document "d0") (qualified-name "Items::Item"))) (authored (membership (kind Feature)) (relationships (typing (reference "Item") (range (start (line 30) (character 11)) (end (line 30) (character 16)))) (redefinition (reference "Object::self") (range (start (line 30) (character 21)) (end (line 30) (character 33)))))))
+    (element (id (node (document "d0") (qualified-name "Items::Item::subparts"))) (kind "part") (name "subparts") (declared-name "subparts") (range (start (line 120) (character 2)) (end (line 120) (character 129))) (parent (node (document "d0") (qualified-name "Items::Item"))) (authored (membership (kind Feature)) (relationships (typing (reference "Part") (range (start (line 120) (character 26)) (end (line 120) (character 30)))) (subsetting (reference "subitems") (range (start (line 120) (character 40)) (end (line 120) (character 48)))) (subsetting (reference "parts") (range (start (line 120) (character 50)) (end (line 120) (character 55)))))))
+    (element (id (node (document "d0") (qualified-name "Items::Item::subparts::_documentation"))) (kind "documentation") (name "") (range (start (line 120) (character 2)) (end (line 120) (character 129))) (parent (node (document "d0") (qualified-name "Items::Item::subparts"))))
+    (element (id (node (document "d0") (qualified-name "Items::JustOutsideOf"))) (kind "import") (name "JustOutsideOf") (declared-name "JustOutsideOf") (range (start (line 12) (character 1)) (end (line 12) (character 43))) (parent (node (document "d0") (qualified-name "Items"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::JustOutsideOf") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 12) (character 16)) (end (line 12) (character 42))))))
+    (element (id (node (document "d0") (qualified-name "Items::Object"))) (kind "import") (name "Object") (declared-name "Object") (range (start (line 7) (character 1)) (end (line 7) (character 32))) (parent (node (document "d0") (qualified-name "Items"))) (authored (membership (kind Import) (visibility "private") (import (reference "Objects::Object") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 31))))))
+    (element (id (node (document "d0") (qualified-name "Items::Part"))) (kind "import") (name "Part") (declared-name "Part") (range (start (line 9) (character 1)) (end (line 9) (character 28))) (parent (node (document "d0") (qualified-name "Items"))) (authored (membership (kind Import) (visibility "private") (import (reference "Parts::Part") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 9) (character 16)) (end (line 9) (character 27))))))
+    (element (id (node (document "d0") (qualified-name "Items::StructuredSpaceObject"))) (kind "import") (name "StructuredSpaceObject") (declared-name "StructuredSpaceObject") (range (start (line 13) (character 1)) (end (line 13) (character 47))) (parent (node (document "d0") (qualified-name "Items"))) (authored (membership (kind Import) (visibility "private") (import (reference "Objects::StructuredSpaceObject") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 13) (character 16)) (end (line 13) (character 46))))))
+    (element (id (node (document "d0") (qualified-name "Items::Touches"))) (kind "connection def") (name "Touches") (declared-name "Touches") (range (start (line 135) (character 1)) (end (line 135) (character 310))) (parent (node (document "d0") (qualified-name "Items"))) (authored (membership (kind Owning)) (relationships (specializes (reference "JustOutsideOf") (range (start (line 135) (character 27)) (end (line 135) (character 40)))) (specializes (reference "HappensWhile") (range (start (line 135) (character 42)) (end (line 135) (character 54)))))))
+    (element (id (node (document "d0") (qualified-name "Items::Touches::_documentation"))) (kind "documentation") (name "") (range (start (line 135) (character 1)) (end (line 135) (character 310))) (parent (node (document "d0") (qualified-name "Items::Touches"))))
+    (element (id (node (document "d0") (qualified-name "Items::Touches::touches"))) (kind "interface end") (name "touches") (declared-name "touches") (range (start (line 142) (character 2)) (end (line 142) (character 72))) (parent (node (document "d0") (qualified-name "Items::Touches"))) (authored (relationships (typing (reference "") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Items::Touches::touchesToo"))) (kind "interface end") (name "touchesToo") (declared-name "touchesToo") (range (start (line 141) (character 2)) (end (line 141) (character 81))) (parent (node (document "d0") (qualified-name "Items::Touches"))) (authored (relationships (typing (reference "") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Items::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 4121))) (parent (node (document "d0") (qualified-name "Items"))))
+    (element (id (node (document "d0") (qualified-name "Items::constraintChecks"))) (kind "import") (name "constraintChecks") (declared-name "constraintChecks") (range (start (line 15) (character 1)) (end (line 15) (character 46))) (parent (node (document "d0") (qualified-name "Items"))) (authored (membership (kind Import) (visibility "private") (import (reference "Constraints::constraintChecks") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 15) (character 16)) (end (line 15) (character 45))))))
+    (element (id (node (document "d0") (qualified-name "Items::contains"))) (kind "import") (name "contains") (declared-name "contains") (range (start (line 16) (character 1)) (end (line 16) (character 46))) (parent (node (document "d0") (qualified-name "Items"))) (authored (membership (kind Import) (visibility "private") (import (reference "CollectionFunctions::contains") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 16) (character 16)) (end (line 16) (character 45))))))
+    (element (id (node (document "d0") (qualified-name "Items::forAll"))) (kind "import") (name "forAll") (declared-name "forAll") (range (start (line 21) (character 1)) (end (line 21) (character 41))) (parent (node (document "d0") (qualified-name "Items"))) (authored (membership (kind Import) (visibility "private") (import (reference "ControlFunctions::forAll") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 21) (character 16)) (end (line 21) (character 40))))))
+    (element (id (node (document "d0") (qualified-name "Items::includes"))) (kind "import") (name "includes") (declared-name "includes") (range (start (line 19) (character 1)) (end (line 19) (character 44))) (parent (node (document "d0") (qualified-name "Items"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::includes") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 19) (character 16)) (end (line 19) (character 43))))))
+    (element (id (node (document "d0") (qualified-name "Items::isEmpty"))) (kind "import") (name "isEmpty") (declared-name "isEmpty") (range (start (line 17) (character 1)) (end (line 17) (character 43))) (parent (node (document "d0") (qualified-name "Items"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::isEmpty") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 17) (character 16)) (end (line 17) (character 42))))))
+    (element (id (node (document "d0") (qualified-name "Items::items"))) (kind "item def") (name "items") (declared-name "items") (range (start (line 145) (character 1)) (end (line 145) (character 126))) (parent (node (document "d0") (qualified-name "Items"))) (authored (membership (kind Owning)) (relationships (specializes (reference "objects") (range (start (line 0) (character 0)) (end (line 0) (character 7)))))))
+    (element (id (node (document "d0") (qualified-name "Items::items::_documentation"))) (kind "documentation") (name "") (range (start (line 145) (character 1)) (end (line 145) (character 126))) (parent (node (document "d0") (qualified-name "Items::items"))))
+    (element (id (node (document "d0") (qualified-name "Items::notEmpty"))) (kind "import") (name "notEmpty") (declared-name "notEmpty") (range (start (line 18) (character 1)) (end (line 18) (character 44))) (parent (node (document "d0") (qualified-name "Items"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::notEmpty") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 18) (character 16)) (end (line 18) (character 43))))))
+    (element (id (node (document "d0") (qualified-name "Items::objects"))) (kind "import") (name "objects") (declared-name "objects") (range (start (line 8) (character 1)) (end (line 8) (character 33))) (parent (node (document "d0") (qualified-name "Items"))) (authored (membership (kind Import) (visibility "private") (import (reference "Objects::objects") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 32))))))
+    (element (id (node (document "d0") (qualified-name "Items::parts"))) (kind "import") (name "parts") (declared-name "parts") (range (start (line 10) (character 1)) (end (line 10) (character 29))) (parent (node (document "d0") (qualified-name "Items"))) (authored (membership (kind Import) (visibility "private") (import (reference "Parts::parts") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 10) (character 16)) (end (line 10) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "Items::union"))) (kind "import") (name "union") (declared-name "union") (range (start (line 20) (character 1)) (end (line 20) (character 41))) (parent (node (document "d0") (qualified-name "Items"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::union") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 20) (character 16)) (end (line 20) (character 40))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Items::ConstraintCheck"))) (kind membershipImport) (ordinal 0)) (authored-target "Constraints::ConstraintCheck") (range (start (line 14) (character 16)) (end (line 14) (character 44))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Items::HappensWhile"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::HappensWhile") (range (start (line 11) (character 16)) (end (line 11) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Items::Item"))) (kind specialization) (ordinal 0)) (authored-target "Object") (range (start (line 23) (character 27)) (end (line 23) (character 33))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Items::Object")))))
+    (reference (id (source (node (document "d0") (qualified-name "Items::Item::self"))) (kind featureTyping) (ordinal 0)) (authored-target "Item") (range (start (line 30) (character 11)) (end (line 30) (character 16))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Items::Item")))))
+    (reference (id (source (node (document "d0") (qualified-name "Items::Item::self"))) (kind redefinition) (ordinal 0)) (authored-target "Object::self") (range (start (line 30) (character 21)) (end (line 30) (character 33))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Items::Item::subparts"))) (kind featureTyping) (ordinal 0)) (authored-target "Part") (range (start (line 120) (character 26)) (end (line 120) (character 30))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Items::Part")))))
+    (reference (id (source (node (document "d0") (qualified-name "Items::Item::subparts"))) (kind subsetting) (ordinal 0)) (authored-target "subitems") (range (start (line 120) (character 40)) (end (line 120) (character 48))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Items::Item::subparts"))) (kind subsetting) (ordinal 1)) (authored-target "parts") (range (start (line 120) (character 50)) (end (line 120) (character 55))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Items::parts")))))
+    (reference (id (source (node (document "d0") (qualified-name "Items::JustOutsideOf"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::JustOutsideOf") (range (start (line 12) (character 16)) (end (line 12) (character 42))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Items::Object"))) (kind membershipImport) (ordinal 0)) (authored-target "Objects::Object") (range (start (line 7) (character 16)) (end (line 7) (character 31))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Items::Part"))) (kind membershipImport) (ordinal 0)) (authored-target "Parts::Part") (range (start (line 9) (character 16)) (end (line 9) (character 27))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Items::StructuredSpaceObject"))) (kind membershipImport) (ordinal 0)) (authored-target "Objects::StructuredSpaceObject") (range (start (line 13) (character 16)) (end (line 13) (character 46))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Items::Touches"))) (kind specialization) (ordinal 0)) (authored-target "JustOutsideOf") (range (start (line 135) (character 27)) (end (line 135) (character 40))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Items::JustOutsideOf")))))
+    (reference (id (source (node (document "d0") (qualified-name "Items::Touches"))) (kind specialization) (ordinal 1)) (authored-target "HappensWhile") (range (start (line 135) (character 42)) (end (line 135) (character 54))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Items::HappensWhile")))))
+    (reference (id (source (node (document "d0") (qualified-name "Items::Touches::touches"))) (kind featureTyping) (ordinal 0)) (authored-target "") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Items::Touches::_documentation")))))
+    (reference (id (source (node (document "d0") (qualified-name "Items::Touches::touchesToo"))) (kind featureTyping) (ordinal 0)) (authored-target "") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Items::Touches::_documentation")))))
+    (reference (id (source (node (document "d0") (qualified-name "Items::constraintChecks"))) (kind membershipImport) (ordinal 0)) (authored-target "Constraints::constraintChecks") (range (start (line 15) (character 16)) (end (line 15) (character 45))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Items::contains"))) (kind membershipImport) (ordinal 0)) (authored-target "CollectionFunctions::contains") (range (start (line 16) (character 16)) (end (line 16) (character 45))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Items::forAll"))) (kind membershipImport) (ordinal 0)) (authored-target "ControlFunctions::forAll") (range (start (line 21) (character 16)) (end (line 21) (character 40))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Items::includes"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::includes") (range (start (line 19) (character 16)) (end (line 19) (character 43))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Items::isEmpty"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::isEmpty") (range (start (line 17) (character 16)) (end (line 17) (character 42))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Items::items"))) (kind specialization) (ordinal 0)) (authored-target "objects") (range (start (line 0) (character 0)) (end (line 0) (character 7))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Items::objects")))))
+    (reference (id (source (node (document "d0") (qualified-name "Items::notEmpty"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::notEmpty") (range (start (line 18) (character 16)) (end (line 18) (character 43))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Items::objects"))) (kind membershipImport) (ordinal 0)) (authored-target "Objects::objects") (range (start (line 8) (character 16)) (end (line 8) (character 32))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Items::parts"))) (kind membershipImport) (ordinal 0)) (authored-target "Parts::parts") (range (start (line 10) (character 16)) (end (line 10) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Items::union"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::union") (range (start (line 20) (character 16)) (end (line 20) (character 40))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Items::Item::_documentation"))) (to (node (document "d0") (qualified-name "Items::Item"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Items::Item::isSolid::_documentation"))) (to (node (document "d0") (qualified-name "Items::Item::isSolid"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Items::Item::subparts::_documentation"))) (to (node (document "d0") (qualified-name "Items::Item::subparts"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Items::Touches::_documentation"))) (to (node (document "d0") (qualified-name "Items::Touches"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Items::_documentation"))) (to (node (document "d0") (qualified-name "Items"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Items::items::_documentation"))) (to (node (document "d0") (qualified-name "Items::items"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Items::Item::self"))) (to (node (document "d0") (qualified-name "Items::Item"))) (provenance authored))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Items::Item"))) (target (node (document "d0") (qualified-name "Items::Object"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Items::Item"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Items::Item::self"))) (target (node (document "d0") (qualified-name "Items::Item"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Items::Item::self"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Items::Item::subparts"))) (target (node (document "d0") (qualified-name "Items::Part"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Items::Item::subparts"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "d0") (qualified-name "Items::Item::subparts"))) (target (node (document "d0") (qualified-name "Items::parts"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Items::Item::subparts"))) (kind subsetting) (ordinal 1)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Items::Touches"))) (target (node (document "d0") (qualified-name "Items::HappensWhile"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Items::Touches"))) (kind specialization) (ordinal 1)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Items::Touches"))) (target (node (document "d0") (qualified-name "Items::JustOutsideOf"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Items::Touches"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Items::Touches::touches"))) (target (node (document "d0") (qualified-name "Items::Touches::_documentation"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Items::Touches::touches"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Items::Touches::touchesToo"))) (target (node (document "d0") (qualified-name "Items::Touches::_documentation"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Items::Touches::touchesToo"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Items::items"))) (target (node (document "d0") (qualified-name "Items::objects"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Items::items"))) (kind specialization) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Items::Item"))) (status missing-prerequisite) (target "Items::Item"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Items::Item::isSolid"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Items::Item::subparts"))) (status missing-prerequisite) (target "Parts::parts"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Items::Touches"))) (status missing-prerequisite) (target "Connections::Connection"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Items::items"))) (status missing-prerequisite) (target "Items::Item"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/items.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 16) (end 7 31))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 16) (end 8 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 9 16) (end 9 27))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 10 16) (end 10 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 11 16) (end 11 41))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 12 16) (end 12 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 13 16) (end 13 46))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 14 16) (end 14 44))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 15 16) (end 15 45))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 16 16) (end 16 45))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 17 16) (end 17 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 18 16) (end 18 43))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 19 16) (end 19 43))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 20 16) (end 20 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 21 16) (end 21 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 23 1) (end 23 2898))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 30 2) (end 30 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 135 1) (end 135 310))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 135 1) (end 135 310))
-      )
-      (diagnostic
-        (severity warning)
-        (code "interface_end_invalid")
-        (source "semantic")
-        (range (start 141 2) (end 141 81))
-      )
-      (diagnostic
-        (severity warning)
-        (code "interface_end_invalid")
-        (source "semantic")
-        (range (start 142 2) (end 142 72))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 145 1) (end 145 126))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

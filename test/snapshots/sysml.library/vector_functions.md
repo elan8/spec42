@@ -279,155 +279,74 @@ standard library package VectorFunctions {
 	
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'VectorValue'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'DataFunctions::+'
-semantic.unresolved_name 'VectorValue'
-semantic.unresolved_name 'VectorValue'
-semantic.unresolved_name 'VectorValue'
-semantic.unresolved_name 'DataFunctions::-'
-semantic.unresolved_name 'VectorValue'
-semantic.unresolved_name 'VectorValue'
-semantic.unresolved_name 'VectorValue'
-semantic.unresolved_name 'VectorValue'
-semantic.unresolved_name 'VectorValue'
-semantic.unresolved_name 'VectorValue'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'NumericalVectorValue'
-semantic.unresolved_name 'dimension'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'DataFunctions::*'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'NumericalVectorValue'
-semantic.unresolved_name 'NumericalVectorValue'
-semantic.unresolved_name 'DataFunctions::*'
-semantic.unresolved_name 'NumericalVectorValue'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'NumericalVectorValue'
-semantic.unresolved_name 'DataFunctions::/'
-semantic.unresolved_name 'NumericalVectorValue'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'NumericalVectorValue'
-semantic.unresolved_name 'DataFunctions::*'
-semantic.unresolved_name 'NumericalVectorValue'
-semantic.unresolved_name 'NumericalVectorValue'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'NumericalVectorValue'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'NumericalVectorValue'
-semantic.unresolved_name 'NumericalVectorValue'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'dimension'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'CartesianThreeVectorValue'
-semantic.unresolved_name 'CartesianVectorOf::result::dimension'
-semantic.unresolved_name 'CartesianThreeVectorValue::dimension'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'CartesianThreeVectorValue'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'CartesianThreeVectorValue'
-semantic.unresolved_name 'CartesianThreeVectorValue'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'VectorValue'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'DataFunctions::+'
-semantic.unresolved_name 'VectorValue'
-semantic.unresolved_name 'VectorValue'
-semantic.unresolved_name 'VectorValue'
-semantic.unresolved_name 'DataFunctions::-'
-semantic.unresolved_name 'VectorValue'
-semantic.unresolved_name 'VectorValue'
-semantic.unresolved_name 'VectorValue'
-semantic.unresolved_name 'VectorValue'
-semantic.unresolved_name 'VectorValue'
-semantic.unresolved_name 'VectorValue'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'NumericalVectorValue'
-semantic.unresolved_name 'dimension'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'DataFunctions::*'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'NumericalVectorValue'
-semantic.unresolved_name 'NumericalVectorValue'
-semantic.unresolved_name 'DataFunctions::*'
-semantic.unresolved_name 'NumericalVectorValue'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'NumericalVectorValue'
-semantic.unresolved_name 'DataFunctions::/'
-semantic.unresolved_name 'NumericalVectorValue'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'NumericalVectorValue'
-semantic.unresolved_name 'DataFunctions::*'
-semantic.unresolved_name 'NumericalVectorValue'
-semantic.unresolved_name 'NumericalVectorValue'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'NumericalVectorValue'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'NumericalVectorValue'
-semantic.unresolved_name 'NumericalVectorValue'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'dimension'
-semantic.unresolved_name 'elements'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'CartesianThreeVectorValue'
-semantic.unresolved_name 'CartesianVectorOf::result::dimension'
-semantic.unresolved_name 'CartesianThreeVectorValue::dimension'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'CartesianThreeVectorValue'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'Boolean'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'CartesianVectorValue'
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'CartesianThreeVectorValue'
-semantic.unresolved_name 'CartesianThreeVectorValue'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "vector_functions.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 16) (end 8 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 16) (end 9 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 16) (end 10 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 11 16) (end 11 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 12 16) (end 12 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 13 16) (end 13 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 14 16) (end 14 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 15 16) (end 15 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 16 16) (end 16 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 18 15) (end 18 27))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -777,6 +696,156 @@ CloseCurly,EndOfFile,
       (feature_def in 'coll' : 'CartesianThreeVectorValue' multiplicity)
       (return_member))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'VectorValue'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'DataFunctions::+'
+semantic.unresolved_name 'VectorValue'
+semantic.unresolved_name 'VectorValue'
+semantic.unresolved_name 'VectorValue'
+semantic.unresolved_name 'DataFunctions::-'
+semantic.unresolved_name 'VectorValue'
+semantic.unresolved_name 'VectorValue'
+semantic.unresolved_name 'VectorValue'
+semantic.unresolved_name 'VectorValue'
+semantic.unresolved_name 'VectorValue'
+semantic.unresolved_name 'VectorValue'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'NumericalVectorValue'
+semantic.unresolved_name 'dimension'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'DataFunctions::*'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'NumericalVectorValue'
+semantic.unresolved_name 'NumericalVectorValue'
+semantic.unresolved_name 'DataFunctions::*'
+semantic.unresolved_name 'NumericalVectorValue'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'NumericalVectorValue'
+semantic.unresolved_name 'DataFunctions::/'
+semantic.unresolved_name 'NumericalVectorValue'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'NumericalVectorValue'
+semantic.unresolved_name 'DataFunctions::*'
+semantic.unresolved_name 'NumericalVectorValue'
+semantic.unresolved_name 'NumericalVectorValue'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'NumericalVectorValue'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'NumericalVectorValue'
+semantic.unresolved_name 'NumericalVectorValue'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'dimension'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'CartesianThreeVectorValue'
+semantic.unresolved_name 'CartesianVectorOf::result::dimension'
+semantic.unresolved_name 'CartesianThreeVectorValue::dimension'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'CartesianThreeVectorValue'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'CartesianThreeVectorValue'
+semantic.unresolved_name 'CartesianThreeVectorValue'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'VectorValue'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'DataFunctions::+'
+semantic.unresolved_name 'VectorValue'
+semantic.unresolved_name 'VectorValue'
+semantic.unresolved_name 'VectorValue'
+semantic.unresolved_name 'DataFunctions::-'
+semantic.unresolved_name 'VectorValue'
+semantic.unresolved_name 'VectorValue'
+semantic.unresolved_name 'VectorValue'
+semantic.unresolved_name 'VectorValue'
+semantic.unresolved_name 'VectorValue'
+semantic.unresolved_name 'VectorValue'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'NumericalVectorValue'
+semantic.unresolved_name 'dimension'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'DataFunctions::*'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'NumericalVectorValue'
+semantic.unresolved_name 'NumericalVectorValue'
+semantic.unresolved_name 'DataFunctions::*'
+semantic.unresolved_name 'NumericalVectorValue'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'NumericalVectorValue'
+semantic.unresolved_name 'DataFunctions::/'
+semantic.unresolved_name 'NumericalVectorValue'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'NumericalVectorValue'
+semantic.unresolved_name 'DataFunctions::*'
+semantic.unresolved_name 'NumericalVectorValue'
+semantic.unresolved_name 'NumericalVectorValue'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'NumericalVectorValue'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'NumericalVectorValue'
+semantic.unresolved_name 'NumericalVectorValue'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'dimension'
+semantic.unresolved_name 'elements'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'CartesianThreeVectorValue'
+semantic.unresolved_name 'CartesianVectorOf::result::dimension'
+semantic.unresolved_name 'CartesianThreeVectorValue::dimension'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'CartesianThreeVectorValue'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'CartesianVectorValue'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'CartesianThreeVectorValue'
+semantic.unresolved_name 'CartesianThreeVectorValue'
+~~~
 # FORMAT
 ~~~sysml
 standard library package VectorFunctions {
@@ -1055,130 +1124,62 @@ standard library package VectorFunctions {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "VectorFunctions"))) (name "VectorFunctions") (declared-name "VectorFunctions")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "VectorFunctions::*"))) (name "*") (declared-name "*"))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "VectorFunctions::*#alias"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "VectorFunctions::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "VectorFunctions::*#import2"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "VectorFunctions::Boolean"))) (name "Boolean") (declared-name "Boolean"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::CartesianThreeVectorOf"))) (name "CartesianThreeVectorOf") (declared-name "CartesianThreeVectorOf"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::CartesianVectorOf"))) (name "CartesianVectorOf") (declared-name "CartesianVectorOf"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "VectorFunctions::NumericalValue"))) (name "NumericalValue") (declared-name "NumericalValue"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "VectorFunctions::Positive"))) (name "Positive") (declared-name "Positive"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "VectorFunctions::Real"))) (name "Real") (declared-name "Real"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::VectorOf"))) (name "VectorOf") (declared-name "VectorOf"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "VectorFunctions::_documentation"))) (name ""))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::angle"))) (name "angle") (declared-name "angle"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "VectorFunctions::arccos"))) (name "arccos") (declared-name "arccos"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "VectorFunctions::cartesian3DZeroVector"))) (name "cartesian3DZeroVector") (declared-name "cartesian3DZeroVector"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::cartesianAngle"))) (name "cartesianAngle") (declared-name "cartesianAngle"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::cartesianInner"))) (name "cartesianInner") (declared-name "cartesianInner"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::cartesianNorm"))) (name "cartesianNorm") (declared-name "cartesianNorm"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::cartesianScalarVectorMult"))) (name "cartesianScalarVectorMult") (declared-name "cartesianScalarVectorMult"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::cartesianVectorScalarMult"))) (name "cartesianVectorScalarMult") (declared-name "cartesianVectorScalarMult"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "VectorFunctions::cartesianZeroVector"))) (name "cartesianZeroVector") (declared-name "cartesianZeroVector"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::function"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::function#kermlDecl"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::function#kermlDecl2"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::function#kermlDecl3"))) (name "function") (declared-name "function"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::inner"))) (name "inner") (declared-name "inner"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::isCartesianZeroVector"))) (name "isCartesianZeroVector") (declared-name "isCartesianZeroVector"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::isZeroVector"))) (name "isZeroVector") (declared-name "isZeroVector"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::norm"))) (name "norm") (declared-name "norm"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::scalarVectorMult"))) (name "scalarVectorMult") (declared-name "scalarVectorMult"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "VectorFunctions::size"))) (name "size") (declared-name "size"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "VectorFunctions::sqrt"))) (name "sqrt") (declared-name "sqrt"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::sum"))) (name "sum") (declared-name "sum"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::sum0"))) (name "sum0") (declared-name "sum0"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::vectorScalarDiv"))) (name "vectorScalarDiv") (declared-name "vectorScalarDiv"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::vectorScalarMult"))) (name "vectorScalarMult") (declared-name "vectorScalarMult"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "8fb54af6d260a5053fc4088493024fb788856a4a4037ee622d23b6cd2536ccde") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "VectorFunctions"))) (kind "package") (name "VectorFunctions") (declared-name "VectorFunctions") (range (start (line 0) (character 0)) (end (line 0) (character 8060))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 12) (character 1)) (end (line 12) (character 38))) (parent (node (document "d0") (qualified-name "VectorFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "NumericalFunctions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 12) (character 16)) (end (line 12) (character 34))))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::*#alias"))) (kind "alias") (name "*") (declared-name "*") (range (start (line 100) (character 1)) (end (line 100) (character 32))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 16) (character 1)) (end (line 16) (character 36))) (parent (node (document "d0") (qualified-name "VectorFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ControlFunctions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 16) (character 16)) (end (line 16) (character 32))))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::*#import2"))) (kind "import") (name "*") (declared-name "*") (range (start (line 18) (character 1)) (end (line 18) (character 31))) (parent (node (document "d0") (qualified-name "VectorFunctions"))) (authored (membership (kind Import) (visibility "public") (import (reference "VectorValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 18) (character 15)) (end (line 18) (character 27))))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::Boolean"))) (kind "import") (name "Boolean") (declared-name "Boolean") (range (start (line 11) (character 1)) (end (line 11) (character 38))) (parent (node (document "d0") (qualified-name "VectorFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Boolean") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 11) (character 16)) (end (line 11) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::CartesianThreeVectorOf"))) (kind "kermlDecl") (name "CartesianThreeVectorOf") (declared-name "CartesianThreeVectorOf") (range (start (line 179) (character 1)) (end (line 179) (character 252))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::CartesianVectorOf"))) (kind "kermlDecl") (name "CartesianVectorOf") (declared-name "CartesianVectorOf") (range (start (line 166) (character 1)) (end (line 166) (character 384))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::NumericalValue"))) (kind "import") (name "NumericalValue") (declared-name "NumericalValue") (range (start (line 8) (character 1)) (end (line 8) (character 45))) (parent (node (document "d0") (qualified-name "VectorFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::NumericalValue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 44))))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::Positive"))) (kind "import") (name "Positive") (declared-name "Positive") (range (start (line 9) (character 1)) (end (line 9) (character 39))) (parent (node (document "d0") (qualified-name "VectorFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Positive") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 9) (character 16)) (end (line 9) (character 38))))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::Real"))) (kind "import") (name "Real") (declared-name "Real") (range (start (line 10) (character 1)) (end (line 10) (character 35))) (parent (node (document "d0") (qualified-name "VectorFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 10) (character 16)) (end (line 10) (character 34))))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::VectorOf"))) (kind "kermlDecl") (name "VectorOf") (declared-name "VectorOf") (range (start (line 74) (character 1)) (end (line 74) (character 398))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 8060))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::angle"))) (kind "kermlDecl") (name "angle") (declared-name "angle") (range (start (line 151) (character 1)) (end (line 151) (character 338))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::arccos"))) (kind "import") (name "arccos") (declared-name "arccos") (range (start (line 14) (character 1)) (end (line 14) (character 38))) (parent (node (document "d0") (qualified-name "VectorFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "TrigFunctions::arccos") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 14) (character 16)) (end (line 14) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::cartesian3DZeroVector"))) (kind "feature decl") (name "cartesian3DZeroVector") (declared-name "cartesian3DZeroVector") (range (start (line 197) (character 1)) (end (line 197) (character 89))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::cartesianAngle"))) (kind "kermlDecl") (name "cartesianAngle") (declared-name "cartesianAngle") (range (start (line 261) (character 1)) (end (line 261) (character 240))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::cartesianInner"))) (kind "kermlDecl") (name "cartesianInner") (declared-name "cartesianInner") (range (start (line 248) (character 1)) (end (line 248) (character 277))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::cartesianNorm"))) (kind "kermlDecl") (name "cartesianNorm") (declared-name "cartesianNorm") (range (start (line 256) (character 1)) (end (line 256) (character 140))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::cartesianScalarVectorMult"))) (kind "kermlDecl") (name "cartesianScalarVectorMult") (declared-name "cartesianScalarVectorMult") (range (start (line 234) (character 1)) (end (line 234) (character 231))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::cartesianVectorScalarMult"))) (kind "kermlDecl") (name "cartesianVectorScalarMult") (declared-name "cartesianVectorScalarMult") (range (start (line 242) (character 1)) (end (line 242) (character 193))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::cartesianZeroVector"))) (kind "feature decl") (name "cartesianZeroVector") (declared-name "cartesianZeroVector") (range (start (line 186) (character 1)) (end (line 186) (character 243))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::function"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 32) (character 1)) (end (line 32) (character 387))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::function#kermlDecl"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 45) (character 1)) (end (line 45) (character 509))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::function#kermlDecl2"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 210) (character 1)) (end (line 210) (character 334))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::function#kermlDecl3"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 221) (character 1)) (end (line 221) (character 419))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::inner"))) (kind "kermlDecl") (name "inner") (declared-name "inner") (range (start (line 126) (character 1)) (end (line 126) (character 339))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::isCartesianZeroVector"))) (kind "kermlDecl") (name "isCartesianZeroVector") (declared-name "isCartesianZeroVector") (range (start (line 200) (character 1)) (end (line 200) (character 250))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::isZeroVector"))) (kind "kermlDecl") (name "isZeroVector") (declared-name "isZeroVector") (range (start (line 22) (character 1)) (end (line 22) (character 158))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::norm"))) (kind "kermlDecl") (name "norm") (declared-name "norm") (range (start (line 139) (character 1)) (end (line 139) (character 279))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::scalarVectorMult"))) (kind "kermlDecl") (name "scalarVectorMult") (declared-name "scalarVectorMult") (range (start (line 88) (character 1)) (end (line 88) (character 358))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::size"))) (kind "import") (name "size") (declared-name "size") (range (start (line 15) (character 1)) (end (line 15) (character 40))) (parent (node (document "d0") (qualified-name "VectorFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::size") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 15) (character 16)) (end (line 15) (character 39))))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::sqrt"))) (kind "import") (name "sqrt") (declared-name "sqrt") (range (start (line 13) (character 1)) (end (line 13) (character 36))) (parent (node (document "d0") (qualified-name "VectorFunctions"))) (authored (membership (kind Import) (visibility "private") (import (reference "RealFunctions::sqrt") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 13) (character 16)) (end (line 13) (character 35))))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::sum"))) (kind "kermlDecl") (name "sum") (declared-name "sum") (range (start (line 267) (character 1)) (end (line 267) (character 137))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::sum0"))) (kind "kermlDecl") (name "sum0") (declared-name "sum0") (range (start (line 60) (character 1)) (end (line 60) (character 320))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::vectorScalarDiv"))) (kind "kermlDecl") (name "vectorScalarDiv") (declared-name "vectorScalarDiv") (range (start (line 114) (character 1)) (end (line 114) (character 391))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+    (element (id (node (document "d0") (qualified-name "VectorFunctions::vectorScalarMult"))) (kind "kermlDecl") (name "vectorScalarMult") (declared-name "vectorScalarMult") (range (start (line 102) (character 1)) (end (line 102) (character 392))) (parent (node (document "d0") (qualified-name "VectorFunctions"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "VectorFunctions::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "NumericalFunctions::*") (range (start (line 12) (character 16)) (end (line 12) (character 34))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorFunctions::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "ControlFunctions::*") (range (start (line 16) (character 16)) (end (line 16) (character 32))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorFunctions::*#import2"))) (kind namespaceImport) (ordinal 0)) (authored-target "VectorValues::*") (range (start (line 18) (character 15)) (end (line 18) (character 27))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorFunctions::Boolean"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Boolean") (range (start (line 11) (character 16)) (end (line 11) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorFunctions::NumericalValue"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::NumericalValue") (range (start (line 8) (character 16)) (end (line 8) (character 44))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorFunctions::Positive"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Positive") (range (start (line 9) (character 16)) (end (line 9) (character 38))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorFunctions::Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (range (start (line 10) (character 16)) (end (line 10) (character 34))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorFunctions::arccos"))) (kind membershipImport) (ordinal 0)) (authored-target "TrigFunctions::arccos") (range (start (line 14) (character 16)) (end (line 14) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorFunctions::size"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::size") (range (start (line 15) (character 16)) (end (line 15) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "VectorFunctions::sqrt"))) (kind membershipImport) (ordinal 0)) (authored-target "RealFunctions::sqrt") (range (start (line 13) (character 16)) (end (line 13) (character 35))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VectorFunctions::_documentation"))) (to (node (document "d0") (qualified-name "VectorFunctions"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/vector_functions.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 16) (end 8 44))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 9 16) (end 9 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 10 16) (end 10 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 11 16) (end 11 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 12 16) (end 12 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 13 16) (end 13 35))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 14 16) (end 14 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 15 16) (end 15 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 16 16) (end 16 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 18 15) (end 18 27))
-      )
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 45 1) (end 45 509))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

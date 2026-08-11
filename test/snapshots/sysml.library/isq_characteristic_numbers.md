@@ -1997,467 +1997,722 @@ standard library package ISQCharacteristicNumbers {
 
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
-semantic.unresolved_name 'DimensionOneValue'
-semantic.unresolved_name 'scalarQuantities'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "isq_characteristic_numbers.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 14 19) (end 14 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 15 19) (end 15 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 16 19) (end 16 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 17 19) (end 17 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 20 4) (end 20 956))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 37 4) (end 37 928))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 54 4) (end 54 818))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 71 4) (end 71 1203))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 88 4) (end 88 1158))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 105 4) (end 105 819))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 122 4) (end 122 804))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 139 4) (end 139 854))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 161 4) (end 161 923))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 178 4) (end 178 877))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 195 4) (end 195 968))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 212 4) (end 212 843))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 229 4) (end 229 755))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 246 4) (end 246 881))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 263 4) (end 263 858))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 280 4) (end 280 785))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 299 4) (end 299 811))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 316 4) (end 316 909))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 333 4) (end 333 972))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 352 4) (end 352 1000))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 369 4) (end 369 703))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 386 4) (end 386 885))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 405 4) (end 405 885))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 422 4) (end 422 872))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 441 4) (end 441 918))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 458 4) (end 458 871))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 475 4) (end 475 928))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 492 4) (end 492 744))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 509 4) (end 509 731))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 526 4) (end 526 962))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 543 4) (end 543 896))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 560 4) (end 560 817))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 577 4) (end 577 1093))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 596 4) (end 596 762))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 613 4) (end 613 692))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 630 4) (end 630 1094))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 649 4) (end 649 924))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 666 4) (end 666 865))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 683 4) (end 683 1238))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 700 4) (end 700 917))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 717 4) (end 717 787))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 734 4) (end 734 882))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 751 4) (end 751 889))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 768 4) (end 768 1194))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 785 4) (end 785 734))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 802 4) (end 802 1268))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 819 4) (end 819 843))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 836 4) (end 836 1110))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 853 4) (end 853 1061))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 874 4) (end 874 763))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 891 4) (end 891 648))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 908 4) (end 908 826))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 925 4) (end 925 879))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 942 4) (end 942 853))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 959 4) (end 959 700))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 976 4) (end 976 814))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 995 4) (end 995 761))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1012 4) (end 1012 715))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1029 4) (end 1029 983))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1046 4) (end 1046 878))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1063 4) (end 1063 1170))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1080 4) (end 1080 978))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1097 4) (end 1097 1061))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1114 4) (end 1114 1104))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1131 4) (end 1131 1033))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1148 4) (end 1148 898))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1165 4) (end 1165 866))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1182 4) (end 1182 1233))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1199 4) (end 1199 697))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1216 4) (end 1216 942))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1233 4) (end 1233 1139))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1250 4) (end 1250 1261))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1269 4) (end 1269 974))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1286 4) (end 1286 834))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1303 4) (end 1303 1148))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1320 4) (end 1320 861))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1337 4) (end 1337 879))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1354 4) (end 1354 919))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1371 4) (end 1371 1025))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1388 4) (end 1388 746))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1405 4) (end 1405 943))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1422 4) (end 1422 963))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1439 4) (end 1439 731))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1456 4) (end 1456 860))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1473 4) (end 1473 1009))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1490 4) (end 1490 677))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1509 4) (end 1509 644))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1526 4) (end 1526 835))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1543 4) (end 1543 719))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1560 4) (end 1560 802))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1577 4) (end 1577 736))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1594 4) (end 1594 1063))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1611 4) (end 1611 832))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1628 4) (end 1628 889))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1645 4) (end 1645 1046))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1666 4) (end 1666 834))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1683 4) (end 1683 1038))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1702 4) (end 1702 816))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1719 4) (end 1719 841))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1736 4) (end 1736 913))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1753 4) (end 1753 1038))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1770 4) (end 1770 869))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1787 4) (end 1787 994))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1804 4) (end 1804 773))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1821 4) (end 1821 704))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1838 4) (end 1838 766))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1855 4) (end 1855 1246))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1872 4) (end 1872 854))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1889 4) (end 1889 1142))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1906 4) (end 1906 772))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1923 4) (end 1923 1117))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1940 4) (end 1940 1015))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1957 4) (end 1957 765))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1974 4) (end 1974 790))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -3653,6 +3908,468 @@ CloseCurly,EndOfFile,
     (attribute_def 'LandauGinzburgNumberValue' :> 'DimensionOneValue'
       (documentation))
     (attribute_usage 'landauGinzburgNumber' : 'LandauGinzburgNumberValue' :> 'scalarQuantities')))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'scalarQuantities'
 ~~~
 # FORMAT
 ~~~sysml
@@ -5651,1898 +6368,724 @@ standard library package ISQCharacteristicNumbers {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (name "ISQCharacteristicNumbers") (declared-name "ISQCharacteristicNumbers")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::*#import2"))) (name "*") (declared-name "*"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AbsorptionNumberValue"))) (name "AbsorptionNumberValue") (declared-name "AbsorptionNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AbsorptionNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AbsorptionNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AlfvénNumberValue"))) (name "AlfvénNumberValue") (declared-name "AlfvénNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AlfvénNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AlfvénNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AmpèreNumberValue"))) (name "AmpèreNumberValue") (declared-name "AmpèreNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AmpèreNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AmpèreNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArchimedesNumberValue"))) (name "ArchimedesNumberValue") (declared-name "ArchimedesNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArchimedesNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArchimedesNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArrheniusNumberValue"))) (name "ArrheniusNumberValue") (declared-name "ArrheniusNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArrheniusNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArrheniusNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AtwoodNumberValue"))) (name "AtwoodNumberValue") (declared-name "AtwoodNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AtwoodNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AtwoodNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberForSolidParticlesValue"))) (name "BagnoldNumberForSolidParticlesValue") (declared-name "BagnoldNumberForSolidParticlesValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberForSolidParticlesValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberForSolidParticlesValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberValue"))) (name "BagnoldNumberValue") (declared-name "BagnoldNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BatchelorNumberValue"))) (name "BatchelorNumberValue") (declared-name "BatchelorNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BatchelorNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BatchelorNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForEntropyValue"))) (name "BejanNumberForEntropyValue") (declared-name "BejanNumberForEntropyValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForEntropyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForEntropyValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForHeatTransferValue"))) (name "BejanNumberForHeatTransferValue") (declared-name "BejanNumberForHeatTransferValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForHeatTransferValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForHeatTransferValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForMassTransferValue"))) (name "BejanNumberForMassTransferValue") (declared-name "BejanNumberForMassTransferValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForMassTransferValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForMassTransferValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberValue"))) (name "BejanNumberValue") (declared-name "BejanNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BinghamNumberValue"))) (name "BinghamNumberValue") (declared-name "BinghamNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BinghamNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BinghamNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberForMassTransferValue"))) (name "BiotNumberForMassTransferValue") (declared-name "BiotNumberForMassTransferValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberForMassTransferValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberForMassTransferValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberValue"))) (name "BiotNumberValue") (declared-name "BiotNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BlakeNumberValue"))) (name "BlakeNumberValue") (declared-name "BlakeNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BlakeNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BlakeNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BodensteinNumberValue"))) (name "BodensteinNumberValue") (declared-name "BodensteinNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BodensteinNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BodensteinNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BoltzmannNumberValue"))) (name "BoltzmannNumberValue") (declared-name "BoltzmannNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BoltzmannNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BoltzmannNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BondNumberValue"))) (name "BondNumberValue") (declared-name "BondNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BondNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BondNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BrinkmanNumberValue"))) (name "BrinkmanNumberValue") (declared-name "BrinkmanNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BrinkmanNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BrinkmanNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CapillaryNumberValue"))) (name "CapillaryNumberValue") (declared-name "CapillaryNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CapillaryNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CapillaryNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CarnotNumberValue"))) (name "CarnotNumberValue") (declared-name "CarnotNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CarnotNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CarnotNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CauchyNumberValue"))) (name "CauchyNumberValue") (declared-name "CauchyNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CauchyNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CauchyNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CavitationNumberValue"))) (name "CavitationNumberValue") (declared-name "CavitationNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CavitationNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CavitationNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ChandrasekharNumberValue"))) (name "ChandrasekharNumberValue") (declared-name "ChandrasekharNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ChandrasekharNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ChandrasekharNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ClausiusNumberValue"))) (name "ClausiusNumberValue") (declared-name "ClausiusNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ClausiusNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ClausiusNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CompressibilityNumberValue"))) (name "CompressibilityNumberValue") (declared-name "CompressibilityNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CompressibilityNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CompressibilityNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CowlingNumberValue"))) (name "CowlingNumberValue") (declared-name "CowlingNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CowlingNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CowlingNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DarcyFrictionFactorValue"))) (name "DarcyFrictionFactorValue") (declared-name "DarcyFrictionFactorValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DarcyFrictionFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DarcyFrictionFactorValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeanNumberValue"))) (name "DeanNumberValue") (declared-name "DeanNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeanNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeanNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeborahNumberValue"))) (name "DeborahNumberValue") (declared-name "DeborahNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeborahNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeborahNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DynamicCapillaryNumberValue"))) (name "DynamicCapillaryNumberValue") (declared-name "DynamicCapillaryNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DynamicCapillaryNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DynamicCapillaryNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EckertNumberValue"))) (name "EckertNumberValue") (declared-name "EckertNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EckertNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EckertNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EkmanNumberValue"))) (name "EkmanNumberValue") (declared-name "EkmanNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EkmanNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EkmanNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElasticityNumberValue"))) (name "ElasticityNumberValue") (declared-name "ElasticityNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElasticityNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElasticityNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElectricFieldParameterValue"))) (name "ElectricFieldParameterValue") (declared-name "ElectricFieldParameterValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElectricFieldParameterValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElectricFieldParameterValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EulerNumberValue"))) (name "EulerNumberValue") (declared-name "EulerNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EulerNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EulerNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ExpansionNumberValue"))) (name "ExpansionNumberValue") (declared-name "ExpansionNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ExpansionNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ExpansionNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FanningNumberValue"))) (name "FanningNumberValue") (declared-name "FanningNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FanningNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FanningNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberForMassTransferValue"))) (name "FourierNumberForMassTransferValue") (declared-name "FourierNumberForMassTransferValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberForMassTransferValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberForMassTransferValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberValue"))) (name "FourierNumberValue") (declared-name "FourierNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberForHeatTransferValue"))) (name "FroudeNumberForHeatTransferValue") (declared-name "FroudeNumberForHeatTransferValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberForHeatTransferValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberForHeatTransferValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberValue"))) (name "FroudeNumberValue") (declared-name "FroudeNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GalileiNumberValue"))) (name "GalileiNumberValue") (declared-name "GalileiNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GalileiNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GalileiNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GoertlerNumberValue"))) (name "GoertlerNumberValue") (declared-name "GoertlerNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GoertlerNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GoertlerNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberForMassTransferValue"))) (name "GraetzNumberForMassTransferValue") (declared-name "GraetzNumberForMassTransferValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberForMassTransferValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberForMassTransferValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberValue"))) (name "GraetzNumberValue") (declared-name "GraetzNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofMagneticNumberValue"))) (name "GrashofMagneticNumberValue") (declared-name "GrashofMagneticNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofMagneticNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofMagneticNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberForMassTransferValue"))) (name "GrashofNumberForMassTransferValue") (declared-name "GrashofNumberForMassTransferValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberForMassTransferValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberForMassTransferValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberValue"))) (name "GrashofNumberValue") (declared-name "GrashofNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HagenNumberValue"))) (name "HagenNumberValue") (declared-name "HagenNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HagenNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HagenNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HallNumberValue"))) (name "HallNumberValue") (declared-name "HallNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HallNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HallNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HartmannNumberValue"))) (name "HartmannNumberValue") (declared-name "HartmannNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HartmannNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HartmannNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HeatTransferNumberValue"))) (name "HeatTransferNumberValue") (declared-name "HeatTransferNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HeatTransferNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HeatTransferNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HedströmNumberValue"))) (name "HedströmNumberValue") (declared-name "HedströmNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HedströmNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HedströmNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HookeNumberValue"))) (name "HookeNumberValue") (declared-name "HookeNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HookeNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HookeNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JFactorValue"))) (name "JFactorValue") (declared-name "JFactorValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JFactorValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JouleMagneticNumberValue"))) (name "JouleMagneticNumberValue") (declared-name "JouleMagneticNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JouleMagneticNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JouleMagneticNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::KnudsenNumberValue"))) (name "KnudsenNumberValue") (declared-name "KnudsenNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::KnudsenNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::KnudsenNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LagrangeNumberValue"))) (name "LagrangeNumberValue") (declared-name "LagrangeNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LagrangeNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LagrangeNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LandauGinzburgNumberValue"))) (name "LandauGinzburgNumberValue") (declared-name "LandauGinzburgNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LandauGinzburgNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LandauGinzburgNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LaplaceNumberValue"))) (name "LaplaceNumberValue") (declared-name "LaplaceNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LaplaceNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LaplaceNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LavalNumberValue"))) (name "LavalNumberValue") (declared-name "LavalNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LavalNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LavalNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LewisNumberValue"))) (name "LewisNumberValue") (declared-name "LewisNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LewisNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LewisNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LiftCoefficientValue"))) (name "LiftCoefficientValue") (declared-name "LiftCoefficientValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LiftCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LiftCoefficientValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LockhartMartinelliParameterValue"))) (name "LockhartMartinelliParameterValue") (declared-name "LockhartMartinelliParameterValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LockhartMartinelliParameterValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LockhartMartinelliParameterValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LorentzNumberValue"))) (name "LorentzNumberValue") (declared-name "LorentzNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LorentzNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LorentzNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LundquistNumberValue"))) (name "LundquistNumberValue") (declared-name "LundquistNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LundquistNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LundquistNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MachNumberValue"))) (name "MachNumberValue") (declared-name "MachNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MachNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MachNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticNumberValue"))) (name "MagneticNumberValue") (declared-name "MagneticNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticPressureNumberValue"))) (name "MagneticPressureNumberValue") (declared-name "MagneticPressureNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticPressureNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticPressureNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MarangoniNumberValue"))) (name "MarangoniNumberValue") (declared-name "MarangoniNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MarangoniNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MarangoniNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MassTransferFactorValue"))) (name "MassTransferFactorValue") (declared-name "MassTransferFactorValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MassTransferFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MassTransferFactorValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MortonNumberValue"))) (name "MortonNumberValue") (declared-name "MortonNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MortonNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MortonNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NazeNumberValue"))) (name "NazeNumberValue") (declared-name "NazeNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NazeNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NazeNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltElectricNumberValue"))) (name "NusseltElectricNumberValue") (declared-name "NusseltElectricNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltElectricNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltElectricNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberForMassTransferValue"))) (name "NusseltNumberForMassTransferValue") (declared-name "NusseltNumberForMassTransferValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberForMassTransferValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberForMassTransferValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberValue"))) (name "NusseltNumberValue") (declared-name "NusseltNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::OhnesorgeNumberValue"))) (name "OhnesorgeNumberValue") (declared-name "OhnesorgeNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::OhnesorgeNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::OhnesorgeNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PoiseuilleNumberValue"))) (name "PoiseuilleNumberValue") (declared-name "PoiseuilleNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PoiseuilleNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PoiseuilleNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PomerantsevNumberValue"))) (name "PomerantsevNumberValue") (declared-name "PomerantsevNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PomerantsevNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PomerantsevNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PowerNumberValue"))) (name "PowerNumberValue") (declared-name "PowerNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PowerNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PowerNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlMagneticNumberValue"))) (name "PrandtlMagneticNumberValue") (declared-name "PrandtlMagneticNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlMagneticNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlMagneticNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlNumberValue"))) (name "PrandtlNumberValue") (declared-name "PrandtlNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberForMassTransferValue"))) (name "PécletNumberForMassTransferValue") (declared-name "PécletNumberForMassTransferValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberForMassTransferValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberForMassTransferValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberValue"))) (name "PécletNumberValue") (declared-name "PécletNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RayleighNumberValue"))) (name "RayleighNumberValue") (declared-name "RayleighNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RayleighNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RayleighNumberValue")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::Real"))) (name "Real") (declared-name "Real"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReechNumberValue"))) (name "ReechNumberValue") (declared-name "ReechNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReechNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReechNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsElectricNumberValue"))) (name "ReynoldsElectricNumberValue") (declared-name "ReynoldsElectricNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsElectricNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsElectricNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsMagneticNumberValue"))) (name "ReynoldsMagneticNumberValue") (declared-name "ReynoldsMagneticNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsMagneticNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsMagneticNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsNumberValue"))) (name "ReynoldsNumberValue") (declared-name "ReynoldsNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RichardsonNumberValue"))) (name "RichardsonNumberValue") (declared-name "RichardsonNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RichardsonNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RichardsonNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RobertsNumberValue"))) (name "RobertsNumberValue") (declared-name "RobertsNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RobertsNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RobertsNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RossbyNumberValue"))) (name "RossbyNumberValue") (declared-name "RossbyNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RossbyNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RossbyNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SchmidtNumberValue"))) (name "SchmidtNumberValue") (declared-name "SchmidtNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SchmidtNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SchmidtNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SommerfeldNumberValue"))) (name "SommerfeldNumberValue") (declared-name "SommerfeldNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SommerfeldNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SommerfeldNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberForMassTransferValue"))) (name "StantonNumberForMassTransferValue") (declared-name "StantonNumberForMassTransferValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberForMassTransferValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberForMassTransferValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberValue"))) (name "StantonNumberValue") (declared-name "StantonNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StarkNumberValue"))) (name "StarkNumberValue") (declared-name "StarkNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StarkNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StarkNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StefanNumberValue"))) (name "StefanNumberValue") (declared-name "StefanNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StefanNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StefanNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForDragValue"))) (name "StokesNumberForDragValue") (declared-name "StokesNumberForDragValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForDragValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForDragValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForGravityValue"))) (name "StokesNumberForGravityValue") (declared-name "StokesNumberForGravityValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForGravityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForGravityValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForRotameterValue"))) (name "StokesNumberForRotameterValue") (declared-name "StokesNumberForRotameterValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForRotameterValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForRotameterValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForVibratingParticlesValue"))) (name "StokesNumberForVibratingParticlesValue") (declared-name "StokesNumberForVibratingParticlesValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForVibratingParticlesValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForVibratingParticlesValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberValue"))) (name "StokesNumberValue") (declared-name "StokesNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StrouhalNumberValue"))) (name "StrouhalNumberValue") (declared-name "StrouhalNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StrouhalNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StrouhalNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartElectricalNumberValue"))) (name "StuartElectricalNumberValue") (declared-name "StuartElectricalNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartElectricalNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartElectricalNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartNumberValue"))) (name "StuartNumberValue") (declared-name "StuartNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::TaylorNumberValue"))) (name "TaylorNumberValue") (declared-name "TaylorNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::TaylorNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::TaylorNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ThrustCoefficientValue"))) (name "ThrustCoefficientValue") (declared-name "ThrustCoefficientValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ThrustCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ThrustCoefficientValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeberNumberValue"))) (name "WeberNumberValue") (declared-name "WeberNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeberNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeberNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeissenbergNumberValue"))) (name "WeissenbergNumberValue") (declared-name "WeissenbergNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeissenbergNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeissenbergNumberValue")))))
-          )
-        )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WomersleyNumberValue"))) (name "WomersleyNumberValue") (declared-name "WomersleyNumberValue") (declared (properties (ordered false) (unique true)))
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WomersleyNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WomersleyNumberValue")))))
-          )
-        )
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::_documentation"))) (name ""))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::absorptionNumber"))) (name "absorptionNumber") (declared-name "absorptionNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::aeroelasticityParameter"))) (name "aeroelasticityParameter") (declared-name "aeroelasticityParameter"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::alfvénNumber"))) (name "alfvénNumber") (declared-name "alfvénNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ampèreNumber"))) (name "ampèreNumber") (declared-name "ampèreNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::archimedesNumber"))) (name "archimedesNumber") (declared-name "archimedesNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::arrheniusNumber"))) (name "arrheniusNumber") (declared-name "arrheniusNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::atwoodNumber"))) (name "atwoodNumber") (declared-name "atwoodNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bagnoldNumber"))) (name "bagnoldNumber") (declared-name "bagnoldNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bagnoldNumberForSolidParticles"))) (name "bagnoldNumberForSolidParticles") (declared-name "bagnoldNumberForSolidParticles") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::batchelorNumber"))) (name "batchelorNumber") (declared-name "batchelorNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumber"))) (name "bejanNumber") (declared-name "bejanNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumberForEntropy"))) (name "bejanNumberForEntropy") (declared-name "bejanNumberForEntropy") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumberForHeatTransfer"))) (name "bejanNumberForHeatTransfer") (declared-name "bejanNumberForHeatTransfer") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumberForMassTransfer"))) (name "bejanNumberForMassTransfer") (declared-name "bejanNumberForMassTransfer") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::binghamNumber"))) (name "binghamNumber") (declared-name "binghamNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::biotNumber"))) (name "biotNumber") (declared-name "biotNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::biotNumberForMassTransfer"))) (name "biotNumberForMassTransfer") (declared-name "biotNumberForMassTransfer") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::blakeNumber"))) (name "blakeNumber") (declared-name "blakeNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bodensteinNumber"))) (name "bodensteinNumber") (declared-name "bodensteinNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::boltzmannNumber"))) (name "boltzmannNumber") (declared-name "boltzmannNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bondNumber"))) (name "bondNumber") (declared-name "bondNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::brinkmanNumber"))) (name "brinkmanNumber") (declared-name "brinkmanNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::capillaryNumber"))) (name "capillaryNumber") (declared-name "capillaryNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::carnotNumber"))) (name "carnotNumber") (declared-name "carnotNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::cauchyNumber"))) (name "cauchyNumber") (declared-name "cauchyNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::cavitationNumber"))) (name "cavitationNumber") (declared-name "cavitationNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::chandrasekharNumber"))) (name "chandrasekharNumber") (declared-name "chandrasekharNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::clausiusNumber"))) (name "clausiusNumber") (declared-name "clausiusNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::colburnNumber"))) (name "colburnNumber") (declared-name "colburnNumber"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::compressibilityNumber"))) (name "compressibilityNumber") (declared-name "compressibilityNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::cowlingNumber"))) (name "cowlingNumber") (declared-name "cowlingNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::darcyFrictionFactor"))) (name "darcyFrictionFactor") (declared-name "darcyFrictionFactor") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::deanNumber"))) (name "deanNumber") (declared-name "deanNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::deborahNumber"))) (name "deborahNumber") (declared-name "deborahNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::dulongNumber"))) (name "dulongNumber") (declared-name "dulongNumber"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::dynamicCapillaryNumber"))) (name "dynamicCapillaryNumber") (declared-name "dynamicCapillaryNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::eckertNumber"))) (name "eckertNumber") (declared-name "eckertNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ekmanNumber"))) (name "ekmanNumber") (declared-name "ekmanNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::elasticityNumber"))) (name "elasticityNumber") (declared-name "elasticityNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::electricFieldParameter"))) (name "electricFieldParameter") (declared-name "electricFieldParameter") (declared (properties (ordered false) (unique true))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::eulerMagneticNumber"))) (name "eulerMagneticNumber") (declared-name "eulerMagneticNumber"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::eulerNumber"))) (name "eulerNumber") (declared-name "eulerNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::expansionNumber"))) (name "expansionNumber") (declared-name "expansionNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::eötvösNumber"))) (name "eötvösNumber") (declared-name "eötvösNumber"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::fanningNumber"))) (name "fanningNumber") (declared-name "fanningNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::fourierNumber"))) (name "fourierNumber") (declared-name "fourierNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::fourierNumberForMassTransfer"))) (name "fourierNumberForMassTransfer") (declared-name "fourierNumberForMassTransfer") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::froudeNumber"))) (name "froudeNumber") (declared-name "froudeNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::froudeNumberForHeatTransfer"))) (name "froudeNumberForHeatTransfer") (declared-name "froudeNumberForHeatTransfer") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::galileiNumber"))) (name "galileiNumber") (declared-name "galileiNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::goertlerNumber"))) (name "goertlerNumber") (declared-name "goertlerNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::goertlerParameter"))) (name "goertlerParameter") (declared-name "goertlerParameter"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::graetzNumber"))) (name "graetzNumber") (declared-name "graetzNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::graetzNumberForMassTransfer"))) (name "graetzNumberForMassTransfer") (declared-name "graetzNumberForMassTransfer") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::grashofMagneticNumber"))) (name "grashofMagneticNumber") (declared-name "grashofMagneticNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::grashofNumber"))) (name "grashofNumber") (declared-name "grashofNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::grashofNumberForMassTransfer"))) (name "grashofNumberForMassTransfer") (declared-name "grashofNumberForMassTransfer") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hagenNumber"))) (name "hagenNumber") (declared-name "hagenNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hallNumber"))) (name "hallNumber") (declared-name "hallNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hartmannNumber"))) (name "hartmannNumber") (declared-name "hartmannNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::heatTransferFactor"))) (name "heatTransferFactor") (declared-name "heatTransferFactor"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::heatTransferNumber"))) (name "heatTransferNumber") (declared-name "heatTransferNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hedströmNumber"))) (name "hedströmNumber") (declared-name "hedströmNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hookeNumber"))) (name "hookeNumber") (declared-name "hookeNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::jFactor"))) (name "jFactor") (declared-name "jFactor") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::jouleMagneticNumber"))) (name "jouleMagneticNumber") (declared-name "jouleMagneticNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::kiebelNumber"))) (name "kiebelNumber") (declared-name "kiebelNumber"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::knudsenNumber"))) (name "knudsenNumber") (declared-name "knudsenNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::kármanNumber"))) (name "kármanNumber") (declared-name "kármanNumber"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lagrangeNumber"))) (name "lagrangeNumber") (declared-name "lagrangeNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::landauGinzburgNumber"))) (name "landauGinzburgNumber") (declared-name "landauGinzburgNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::laplaceNumber"))) (name "laplaceNumber") (declared-name "laplaceNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lavalNumber"))) (name "lavalNumber") (declared-name "lavalNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lewisNumber"))) (name "lewisNumber") (declared-name "lewisNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::liftCoefficient"))) (name "liftCoefficient") (declared-name "liftCoefficient") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lockhartMartinelliParameter"))) (name "lockhartMartinelliParameter") (declared-name "lockhartMartinelliParameter") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lorentzNumber"))) (name "lorentzNumber") (declared-name "lorentzNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lundquistNumber"))) (name "lundquistNumber") (declared-name "lundquistNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::machMagneticNumber"))) (name "machMagneticNumber") (declared-name "machMagneticNumber"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::machNumber"))) (name "machNumber") (declared-name "machNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::magneticNumber"))) (name "magneticNumber") (declared-name "magneticNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::magneticPressureNumber"))) (name "magneticPressureNumber") (declared-name "magneticPressureNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::marangoniNumber"))) (name "marangoniNumber") (declared-name "marangoniNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::massTransferFactor"))) (name "massTransferFactor") (declared-name "massTransferFactor") (declared (properties (ordered false) (unique true))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::moodyFrictionFactor"))) (name "moodyFrictionFactor") (declared-name "moodyFrictionFactor"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::mortonNumber"))) (name "mortonNumber") (declared-name "mortonNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nazeNumber"))) (name "nazeNumber") (declared-name "nazeNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nusseltElectricNumber"))) (name "nusseltElectricNumber") (declared-name "nusseltElectricNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nusseltNumber"))) (name "nusseltNumber") (declared-name "nusseltNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nusseltNumberForMassTransfer"))) (name "nusseltNumberForMassTransfer") (declared-name "nusseltNumberForMassTransfer") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ohnesorgeNumber"))) (name "ohnesorgeNumber") (declared-name "ohnesorgeNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::plasticityNumber"))) (name "plasticityNumber") (declared-name "plasticityNumber"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::poiseuilleNumber"))) (name "poiseuilleNumber") (declared-name "poiseuilleNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::pomerantsevNumber"))) (name "pomerantsevNumber") (declared-name "pomerantsevNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::powerCoefficient"))) (name "powerCoefficient") (declared-name "powerCoefficient"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::powerNumber"))) (name "powerNumber") (declared-name "powerNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::prandtlMagneticNumber"))) (name "prandtlMagneticNumber") (declared-name "prandtlMagneticNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::prandtlNumber"))) (name "prandtlNumber") (declared-name "prandtlNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::pécletNumber"))) (name "pécletNumber") (declared-name "pécletNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::pécletNumberForMassTransfer"))) (name "pécletNumberForMassTransfer") (declared-name "pécletNumberForMassTransfer") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::rayleighNumber"))) (name "rayleighNumber") (declared-name "rayleighNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reechNumber"))) (name "reechNumber") (declared-name "reechNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reynoldsElectricNumber"))) (name "reynoldsElectricNumber") (declared-name "reynoldsElectricNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reynoldsMagneticNumber"))) (name "reynoldsMagneticNumber") (declared-name "reynoldsMagneticNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reynoldsNumber"))) (name "reynoldsNumber") (declared-name "reynoldsNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::richardsonNumber"))) (name "richardsonNumber") (declared-name "richardsonNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::robertsNumber"))) (name "robertsNumber") (declared-name "robertsNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::rossbyNumber"))) (name "rossbyNumber") (declared-name "rossbyNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::schmidtNumber"))) (name "schmidtNumber") (declared-name "schmidtNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::sommerfeldNumber"))) (name "sommerfeldNumber") (declared-name "sommerfeldNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stantonNumber"))) (name "stantonNumber") (declared-name "stantonNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stantonNumberForMassTransfer"))) (name "stantonNumberForMassTransfer") (declared-name "stantonNumberForMassTransfer") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::starkNumber"))) (name "starkNumber") (declared-name "starkNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stefanNumber"))) (name "stefanNumber") (declared-name "stefanNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumber"))) (name "stokesNumber") (declared-name "stokesNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForDrag"))) (name "stokesNumberForDrag") (declared-name "stokesNumberForDrag") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForGravity"))) (name "stokesNumberForGravity") (declared-name "stokesNumberForGravity") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForRotameter"))) (name "stokesNumberForRotameter") (declared-name "stokesNumberForRotameter") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForVibratingParticles"))) (name "stokesNumberForVibratingParticles") (declared-name "stokesNumberForVibratingParticles") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::strouhalNumber"))) (name "strouhalNumber") (declared-name "strouhalNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stuartElectricalNumber"))) (name "stuartElectricalNumber") (declared-name "stuartElectricalNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stuartNumber"))) (name "stuartNumber") (declared-name "stuartNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::suratmanNumber"))) (name "suratmanNumber") (declared-name "suratmanNumber"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::taylorNumber"))) (name "taylorNumber") (declared-name "taylorNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::thomsonNumber"))) (name "thomsonNumber") (declared-name "thomsonNumber"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::thrustCoefficient"))) (name "thrustCoefficient") (declared-name "thrustCoefficient") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::weberNumber"))) (name "weberNumber") (declared-name "weberNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::weissenbergNumber"))) (name "weissenbergNumber") (declared-name "weissenbergNumber") (declared (properties (ordered false) (unique true))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::womersleyNumber"))) (name "womersleyNumber") (declared-name "womersleyNumber") (declared (properties (ordered false) (unique true))))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "615ec10ea2833ea8b7abbe52b9c07d74493f407844b0aa7c7844ed505014e0e4") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (kind "package") (name "ISQCharacteristicNumbers") (declared-name "ISQCharacteristicNumbers") (range (start (line 0) (character 0)) (end (line 0) (character 120114))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 15) (character 4)) (end (line 15) (character 33))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Import) (visibility "private") (import (reference "Quantities::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 15) (character 19)) (end (line 15) (character 29))))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 16) (character 4)) (end (line 16) (character 44))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Import) (visibility "private") (import (reference "MeasurementReferences::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 16) (character 19)) (end (line 16) (character 40))))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::*#import2"))) (kind "import") (name "*") (declared-name "*") (range (start (line 17) (character 4)) (end (line 17) (character 30))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQBase::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 17) (character 19)) (end (line 17) (character 26))))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AbsorptionNumberValue"))) (kind "attribute def") (name "AbsorptionNumberValue") (declared-name "AbsorptionNumberValue") (range (start (line 1371) (character 4)) (end (line 1371) (character 1025))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AbsorptionNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1371) (character 4)) (end (line 1371) (character 1025))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AbsorptionNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AlfvénNumberValue"))) (kind "attribute def") (name "AlfvénNumberValue") (declared-name "AlfvénNumberValue") (range (start (line 1645) (character 4)) (end (line 1645) (character 1046))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AlfvénNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1645) (character 4)) (end (line 1645) (character 1046))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AlfvénNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AmpèreNumberValue"))) (kind "attribute def") (name "AmpèreNumberValue") (declared-name "AmpèreNumberValue") (range (start (line 1940) (character 4)) (end (line 1940) (character 1015))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AmpèreNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1940) (character 4)) (end (line 1940) (character 1015))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AmpèreNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArchimedesNumberValue"))) (kind "attribute def") (name "ArchimedesNumberValue") (declared-name "ArchimedesNumberValue") (range (start (line 1269) (character 4)) (end (line 1269) (character 974))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArchimedesNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1269) (character 4)) (end (line 1269) (character 974))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArchimedesNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArrheniusNumberValue"))) (kind "attribute def") (name "ArrheniusNumberValue") (declared-name "ArrheniusNumberValue") (range (start (line 1957) (character 4)) (end (line 1957) (character 765))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArrheniusNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1957) (character 4)) (end (line 1957) (character 765))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArrheniusNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AtwoodNumberValue"))) (kind "attribute def") (name "AtwoodNumberValue") (declared-name "AtwoodNumberValue") (range (start (line 1199) (character 4)) (end (line 1199) (character 697))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AtwoodNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1199) (character 4)) (end (line 1199) (character 697))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AtwoodNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberForSolidParticlesValue"))) (kind "attribute def") (name "BagnoldNumberForSolidParticlesValue") (declared-name "BagnoldNumberForSolidParticlesValue") (range (start (line 178) (character 4)) (end (line 178) (character 877))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberForSolidParticlesValue::_documentation"))) (kind "documentation") (name "") (range (start (line 178) (character 4)) (end (line 178) (character 877))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberForSolidParticlesValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberValue"))) (kind "attribute def") (name "BagnoldNumberValue") (declared-name "BagnoldNumberValue") (range (start (line 161) (character 4)) (end (line 161) (character 923))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 161) (character 4)) (end (line 161) (character 923))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BatchelorNumberValue"))) (kind "attribute def") (name "BatchelorNumberValue") (declared-name "BatchelorNumberValue") (range (start (line 1611) (character 4)) (end (line 1611) (character 832))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BatchelorNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1611) (character 4)) (end (line 1611) (character 832))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BatchelorNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForEntropyValue"))) (kind "attribute def") (name "BejanNumberForEntropyValue") (declared-name "BejanNumberForEntropyValue") (range (start (line 891) (character 4)) (end (line 891) (character 648))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForEntropyValue::_documentation"))) (kind "documentation") (name "") (range (start (line 891) (character 4)) (end (line 891) (character 648))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForEntropyValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForHeatTransferValue"))) (kind "attribute def") (name "BejanNumberForHeatTransferValue") (declared-name "BejanNumberForHeatTransferValue") (range (start (line 874) (character 4)) (end (line 874) (character 763))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForHeatTransferValue::_documentation"))) (kind "documentation") (name "") (range (start (line 874) (character 4)) (end (line 874) (character 763))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForHeatTransferValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForMassTransferValue"))) (kind "attribute def") (name "BejanNumberForMassTransferValue") (declared-name "BejanNumberForMassTransferValue") (range (start (line 1337) (character 4)) (end (line 1337) (character 879))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForMassTransferValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1337) (character 4)) (end (line 1337) (character 879))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForMassTransferValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberValue"))) (kind "attribute def") (name "BejanNumberValue") (declared-name "BejanNumberValue") (range (start (line 246) (character 4)) (end (line 246) (character 881))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 246) (character 4)) (end (line 246) (character 881))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BinghamNumberValue"))) (kind "attribute def") (name "BinghamNumberValue") (declared-name "BinghamNumberValue") (range (start (line 280) (character 4)) (end (line 280) (character 785))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BinghamNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 280) (character 4)) (end (line 280) (character 785))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BinghamNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberForMassTransferValue"))) (kind "attribute def") (name "BiotNumberForMassTransferValue") (declared-name "BiotNumberForMassTransferValue") (range (start (line 1216) (character 4)) (end (line 1216) (character 942))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberForMassTransferValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1216) (character 4)) (end (line 1216) (character 942))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberForMassTransferValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberValue"))) (kind "attribute def") (name "BiotNumberValue") (declared-name "BiotNumberValue") (range (start (line 819) (character 4)) (end (line 819) (character 843))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 819) (character 4)) (end (line 819) (character 843))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BlakeNumberValue"))) (kind "attribute def") (name "BlakeNumberValue") (declared-name "BlakeNumberValue") (range (start (line 649) (character 4)) (end (line 649) (character 924))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BlakeNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 649) (character 4)) (end (line 649) (character 924))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BlakeNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BodensteinNumberValue"))) (kind "attribute def") (name "BodensteinNumberValue") (declared-name "BodensteinNumberValue") (range (start (line 316) (character 4)) (end (line 316) (character 909))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BodensteinNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 316) (character 4)) (end (line 316) (character 909))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BodensteinNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BoltzmannNumberValue"))) (kind "attribute def") (name "BoltzmannNumberValue") (declared-name "BoltzmannNumberValue") (range (start (line 1046) (character 4)) (end (line 1046) (character 878))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BoltzmannNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1046) (character 4)) (end (line 1046) (character 878))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BoltzmannNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BondNumberValue"))) (kind "attribute def") (name "BondNumberValue") (declared-name "BondNumberValue") (range (start (line 1250) (character 4)) (end (line 1250) (character 1261))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BondNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1250) (character 4)) (end (line 1250) (character 1261))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BondNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BrinkmanNumberValue"))) (kind "attribute def") (name "BrinkmanNumberValue") (declared-name "BrinkmanNumberValue") (range (start (line 925) (character 4)) (end (line 925) (character 879))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BrinkmanNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 925) (character 4)) (end (line 925) (character 879))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BrinkmanNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CapillaryNumberValue"))) (kind "attribute def") (name "CapillaryNumberValue") (declared-name "CapillaryNumberValue") (range (start (line 1388) (character 4)) (end (line 1388) (character 746))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CapillaryNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1388) (character 4)) (end (line 1388) (character 746))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CapillaryNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CarnotNumberValue"))) (kind "attribute def") (name "CarnotNumberValue") (declared-name "CarnotNumberValue") (range (start (line 959) (character 4)) (end (line 959) (character 700))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CarnotNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 959) (character 4)) (end (line 959) (character 700))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CarnotNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CauchyNumberValue"))) (kind "attribute def") (name "CauchyNumberValue") (declared-name "CauchyNumberValue") (range (start (line 1490) (character 4)) (end (line 1490) (character 677))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CauchyNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1490) (character 4)) (end (line 1490) (character 677))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CauchyNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CavitationNumberValue"))) (kind "attribute def") (name "CavitationNumberValue") (declared-name "CavitationNumberValue") (range (start (line 1354) (character 4)) (end (line 1354) (character 919))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CavitationNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1354) (character 4)) (end (line 1354) (character 919))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CavitationNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ChandrasekharNumberValue"))) (kind "attribute def") (name "ChandrasekharNumberValue") (declared-name "ChandrasekharNumberValue") (range (start (line 1736) (character 4)) (end (line 1736) (character 913))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ChandrasekharNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1736) (character 4)) (end (line 1736) (character 913))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ChandrasekharNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ClausiusNumberValue"))) (kind "attribute def") (name "ClausiusNumberValue") (declared-name "ClausiusNumberValue") (range (start (line 942) (character 4)) (end (line 942) (character 853))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ClausiusNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 942) (character 4)) (end (line 942) (character 853))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ClausiusNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CompressibilityNumberValue"))) (kind "attribute def") (name "CompressibilityNumberValue") (declared-name "CompressibilityNumberValue") (range (start (line 1577) (character 4)) (end (line 1577) (character 736))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CompressibilityNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1577) (character 4)) (end (line 1577) (character 736))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CompressibilityNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CowlingNumberValue"))) (kind "attribute def") (name "CowlingNumberValue") (declared-name "CowlingNumberValue") (range (start (line 1683) (character 4)) (end (line 1683) (character 1038))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CowlingNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1683) (character 4)) (end (line 1683) (character 1038))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CowlingNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DarcyFrictionFactorValue"))) (kind "attribute def") (name "DarcyFrictionFactorValue") (declared-name "DarcyFrictionFactorValue") (range (start (line 386) (character 4)) (end (line 386) (character 885))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DarcyFrictionFactorValue::_documentation"))) (kind "documentation") (name "") (range (start (line 386) (character 4)) (end (line 386) (character 885))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DarcyFrictionFactorValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeanNumberValue"))) (kind "attribute def") (name "DeanNumberValue") (declared-name "DeanNumberValue") (range (start (line 229) (character 4)) (end (line 229) (character 755))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeanNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 229) (character 4)) (end (line 229) (character 755))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeanNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeborahNumberValue"))) (kind "attribute def") (name "DeborahNumberValue") (declared-name "DeborahNumberValue") (range (start (line 1543) (character 4)) (end (line 1543) (character 719))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeborahNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1543) (character 4)) (end (line 1543) (character 719))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeborahNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DynamicCapillaryNumberValue"))) (kind "attribute def") (name "DynamicCapillaryNumberValue") (declared-name "DynamicCapillaryNumberValue") (range (start (line 1405) (character 4)) (end (line 1405) (character 943))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DynamicCapillaryNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1405) (character 4)) (end (line 1405) (character 943))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DynamicCapillaryNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EckertNumberValue"))) (kind "attribute def") (name "EckertNumberValue") (declared-name "EckertNumberValue") (range (start (line 976) (character 4)) (end (line 976) (character 814))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EckertNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 976) (character 4)) (end (line 976) (character 814))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EckertNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EkmanNumberValue"))) (kind "attribute def") (name "EkmanNumberValue") (declared-name "EkmanNumberValue") (range (start (line 352) (character 4)) (end (line 352) (character 1000))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EkmanNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 352) (character 4)) (end (line 352) (character 1000))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EkmanNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElasticityNumberValue"))) (kind "attribute def") (name "ElasticityNumberValue") (declared-name "ElasticityNumberValue") (range (start (line 369) (character 4)) (end (line 369) (character 703))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElasticityNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 369) (character 4)) (end (line 369) (character 703))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElasticityNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElectricFieldParameterValue"))) (kind "attribute def") (name "ElectricFieldParameterValue") (declared-name "ElectricFieldParameterValue") (range (start (line 1821) (character 4)) (end (line 1821) (character 704))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElectricFieldParameterValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1821) (character 4)) (end (line 1821) (character 704))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElectricFieldParameterValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EulerNumberValue"))) (kind "attribute def") (name "EulerNumberValue") (declared-name "EulerNumberValue") (range (start (line 37) (character 4)) (end (line 37) (character 928))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EulerNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 37) (character 4)) (end (line 37) (character 928))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EulerNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ExpansionNumberValue"))) (kind "attribute def") (name "ExpansionNumberValue") (declared-name "ExpansionNumberValue") (range (start (line 1286) (character 4)) (end (line 1286) (character 834))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ExpansionNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1286) (character 4)) (end (line 1286) (character 834))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ExpansionNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FanningNumberValue"))) (kind "attribute def") (name "FanningNumberValue") (declared-name "FanningNumberValue") (range (start (line 405) (character 4)) (end (line 405) (character 885))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FanningNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 405) (character 4)) (end (line 405) (character 885))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FanningNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberForMassTransferValue"))) (kind "attribute def") (name "FourierNumberForMassTransferValue") (declared-name "FourierNumberForMassTransferValue") (range (start (line 1080) (character 4)) (end (line 1080) (character 978))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberForMassTransferValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1080) (character 4)) (end (line 1080) (character 978))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberForMassTransferValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberValue"))) (kind "attribute def") (name "FourierNumberValue") (declared-name "FourierNumberValue") (range (start (line 734) (character 4)) (end (line 734) (character 882))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 734) (character 4)) (end (line 734) (character 882))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberForHeatTransferValue"))) (kind "attribute def") (name "FroudeNumberForHeatTransferValue") (declared-name "FroudeNumberForHeatTransferValue") (range (start (line 785) (character 4)) (end (line 785) (character 734))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberForHeatTransferValue::_documentation"))) (kind "documentation") (name "") (range (start (line 785) (character 4)) (end (line 785) (character 734))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberForHeatTransferValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberValue"))) (kind "attribute def") (name "FroudeNumberValue") (declared-name "FroudeNumberValue") (range (start (line 54) (character 4)) (end (line 54) (character 818))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 54) (character 4)) (end (line 54) (character 818))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GalileiNumberValue"))) (kind "attribute def") (name "GalileiNumberValue") (declared-name "GalileiNumberValue") (range (start (line 700) (character 4)) (end (line 700) (character 917))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GalileiNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 700) (character 4)) (end (line 700) (character 917))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GalileiNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GoertlerNumberValue"))) (kind "attribute def") (name "GoertlerNumberValue") (declared-name "GoertlerNumberValue") (range (start (line 422) (character 4)) (end (line 422) (character 872))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GoertlerNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 422) (character 4)) (end (line 422) (character 872))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GoertlerNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberForMassTransferValue"))) (kind "attribute def") (name "GraetzNumberForMassTransferValue") (declared-name "GraetzNumberForMassTransferValue") (range (start (line 1165) (character 4)) (end (line 1165) (character 866))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberForMassTransferValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1165) (character 4)) (end (line 1165) (character 866))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberForMassTransferValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberValue"))) (kind "attribute def") (name "GraetzNumberValue") (declared-name "GraetzNumberValue") (range (start (line 995) (character 4)) (end (line 995) (character 761))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 995) (character 4)) (end (line 995) (character 761))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofMagneticNumberValue"))) (kind "attribute def") (name "GrashofMagneticNumberValue") (declared-name "GrashofMagneticNumberValue") (range (start (line 1889) (character 4)) (end (line 1889) (character 1142))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofMagneticNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1889) (character 4)) (end (line 1889) (character 1142))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofMagneticNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberForMassTransferValue"))) (kind "attribute def") (name "GrashofNumberForMassTransferValue") (declared-name "GrashofNumberForMassTransferValue") (range (start (line 1114) (character 4)) (end (line 1114) (character 1104))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberForMassTransferValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1114) (character 4)) (end (line 1114) (character 1104))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberForMassTransferValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberValue"))) (kind "attribute def") (name "GrashofNumberValue") (declared-name "GrashofNumberValue") (range (start (line 71) (character 4)) (end (line 71) (character 1203))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 71) (character 4)) (end (line 71) (character 1203))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HagenNumberValue"))) (kind "attribute def") (name "HagenNumberValue") (declared-name "HagenNumberValue") (range (start (line 441) (character 4)) (end (line 441) (character 918))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HagenNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 441) (character 4)) (end (line 441) (character 918))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HagenNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HallNumberValue"))) (kind "attribute def") (name "HallNumberValue") (declared-name "HallNumberValue") (range (start (line 1838) (character 4)) (end (line 1838) (character 766))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HallNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1838) (character 4)) (end (line 1838) (character 766))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HallNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HartmannNumberValue"))) (kind "attribute def") (name "HartmannNumberValue") (declared-name "HartmannNumberValue") (range (start (line 1666) (character 4)) (end (line 1666) (character 834))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HartmannNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1666) (character 4)) (end (line 1666) (character 834))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HartmannNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HeatTransferNumberValue"))) (kind "attribute def") (name "HeatTransferNumberValue") (declared-name "HeatTransferNumberValue") (range (start (line 1012) (character 4)) (end (line 1012) (character 715))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HeatTransferNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1012) (character 4)) (end (line 1012) (character 715))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HeatTransferNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HedströmNumberValue"))) (kind "attribute def") (name "HedströmNumberValue") (declared-name "HedströmNumberValue") (range (start (line 299) (character 4)) (end (line 299) (character 811))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HedströmNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 299) (character 4)) (end (line 299) (character 811))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HedströmNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HookeNumberValue"))) (kind "attribute def") (name "HookeNumberValue") (declared-name "HookeNumberValue") (range (start (line 1509) (character 4)) (end (line 1509) (character 644))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HookeNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1509) (character 4)) (end (line 1509) (character 644))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HookeNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JFactorValue"))) (kind "attribute def") (name "JFactorValue") (declared-name "JFactorValue") (range (start (line 853) (character 4)) (end (line 853) (character 1061))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JFactorValue::_documentation"))) (kind "documentation") (name "") (range (start (line 853) (character 4)) (end (line 853) (character 1061))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JFactorValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JouleMagneticNumberValue"))) (kind "attribute def") (name "JouleMagneticNumberValue") (declared-name "JouleMagneticNumberValue") (range (start (line 1872) (character 4)) (end (line 1872) (character 854))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JouleMagneticNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1872) (character 4)) (end (line 1872) (character 854))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JouleMagneticNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::KnudsenNumberValue"))) (kind "attribute def") (name "KnudsenNumberValue") (declared-name "KnudsenNumberValue") (range (start (line 122) (character 4)) (end (line 122) (character 804))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::KnudsenNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 122) (character 4)) (end (line 122) (character 804))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::KnudsenNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LagrangeNumberValue"))) (kind "attribute def") (name "LagrangeNumberValue") (declared-name "LagrangeNumberValue") (range (start (line 263) (character 4)) (end (line 263) (character 858))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LagrangeNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 263) (character 4)) (end (line 263) (character 858))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LagrangeNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LandauGinzburgNumberValue"))) (kind "attribute def") (name "LandauGinzburgNumberValue") (declared-name "LandauGinzburgNumberValue") (range (start (line 1974) (character 4)) (end (line 1974) (character 790))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LandauGinzburgNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1974) (character 4)) (end (line 1974) (character 790))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LandauGinzburgNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LaplaceNumberValue"))) (kind "attribute def") (name "LaplaceNumberValue") (declared-name "LaplaceNumberValue") (range (start (line 630) (character 4)) (end (line 630) (character 1094))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LaplaceNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 630) (character 4)) (end (line 630) (character 1094))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LaplaceNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LavalNumberValue"))) (kind "attribute def") (name "LavalNumberValue") (declared-name "LavalNumberValue") (range (start (line 458) (character 4)) (end (line 458) (character 871))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LavalNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 458) (character 4)) (end (line 458) (character 871))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LavalNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LewisNumberValue"))) (kind "attribute def") (name "LewisNumberValue") (declared-name "LewisNumberValue") (range (start (line 1456) (character 4)) (end (line 1456) (character 860))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LewisNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1456) (character 4)) (end (line 1456) (character 860))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LewisNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LiftCoefficientValue"))) (kind "attribute def") (name "LiftCoefficientValue") (declared-name "LiftCoefficientValue") (range (start (line 195) (character 4)) (end (line 195) (character 968))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LiftCoefficientValue::_documentation"))) (kind "documentation") (name "") (range (start (line 195) (character 4)) (end (line 195) (character 968))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LiftCoefficientValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LockhartMartinelliParameterValue"))) (kind "attribute def") (name "LockhartMartinelliParameterValue") (declared-name "LockhartMartinelliParameterValue") (range (start (line 1320) (character 4)) (end (line 1320) (character 861))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LockhartMartinelliParameterValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1320) (character 4)) (end (line 1320) (character 861))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LockhartMartinelliParameterValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LorentzNumberValue"))) (kind "attribute def") (name "LorentzNumberValue") (declared-name "LorentzNumberValue") (range (start (line 1560) (character 4)) (end (line 1560) (character 802))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LorentzNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1560) (character 4)) (end (line 1560) (character 802))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LorentzNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LundquistNumberValue"))) (kind "attribute def") (name "LundquistNumberValue") (declared-name "LundquistNumberValue") (range (start (line 1855) (character 4)) (end (line 1855) (character 1246))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LundquistNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1855) (character 4)) (end (line 1855) (character 1246))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LundquistNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MachNumberValue"))) (kind "attribute def") (name "MachNumberValue") (declared-name "MachNumberValue") (range (start (line 105) (character 4)) (end (line 105) (character 819))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MachNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 105) (character 4)) (end (line 105) (character 819))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MachNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticNumberValue"))) (kind "attribute def") (name "MagneticNumberValue") (declared-name "MagneticNumberValue") (range (start (line 1804) (character 4)) (end (line 1804) (character 773))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1804) (character 4)) (end (line 1804) (character 773))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticPressureNumberValue"))) (kind "attribute def") (name "MagneticPressureNumberValue") (declared-name "MagneticPressureNumberValue") (range (start (line 1719) (character 4)) (end (line 1719) (character 841))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticPressureNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1719) (character 4)) (end (line 1719) (character 841))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticPressureNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MarangoniNumberValue"))) (kind "attribute def") (name "MarangoniNumberValue") (declared-name "MarangoniNumberValue") (range (start (line 1303) (character 4)) (end (line 1303) (character 1148))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MarangoniNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1303) (character 4)) (end (line 1303) (character 1148))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MarangoniNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MassTransferFactorValue"))) (kind "attribute def") (name "MassTransferFactorValue") (declared-name "MassTransferFactorValue") (range (start (line 1182) (character 4)) (end (line 1182) (character 1233))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MassTransferFactorValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1182) (character 4)) (end (line 1182) (character 1233))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MassTransferFactorValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MortonNumberValue"))) (kind "attribute def") (name "MortonNumberValue") (declared-name "MortonNumberValue") (range (start (line 1233) (character 4)) (end (line 1233) (character 1139))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MortonNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1233) (character 4)) (end (line 1233) (character 1139))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MortonNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NazeNumberValue"))) (kind "attribute def") (name "NazeNumberValue") (declared-name "NazeNumberValue") (range (start (line 1906) (character 4)) (end (line 1906) (character 772))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NazeNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1906) (character 4)) (end (line 1906) (character 772))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NazeNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltElectricNumberValue"))) (kind "attribute def") (name "NusseltElectricNumberValue") (declared-name "NusseltElectricNumberValue") (range (start (line 1628) (character 4)) (end (line 1628) (character 889))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltElectricNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1628) (character 4)) (end (line 1628) (character 889))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltElectricNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberForMassTransferValue"))) (kind "attribute def") (name "NusseltNumberForMassTransferValue") (declared-name "NusseltNumberForMassTransferValue") (range (start (line 1131) (character 4)) (end (line 1131) (character 1033))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberForMassTransferValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1131) (character 4)) (end (line 1131) (character 1033))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberForMassTransferValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberValue"))) (kind "attribute def") (name "NusseltNumberValue") (declared-name "NusseltNumberValue") (range (start (line 802) (character 4)) (end (line 802) (character 1268))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 802) (character 4)) (end (line 802) (character 1268))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::OhnesorgeNumberValue"))) (kind "attribute def") (name "OhnesorgeNumberValue") (declared-name "OhnesorgeNumberValue") (range (start (line 1473) (character 4)) (end (line 1473) (character 1009))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::OhnesorgeNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1473) (character 4)) (end (line 1473) (character 1009))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::OhnesorgeNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PoiseuilleNumberValue"))) (kind "attribute def") (name "PoiseuilleNumberValue") (declared-name "PoiseuilleNumberValue") (range (start (line 475) (character 4)) (end (line 475) (character 928))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PoiseuilleNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 475) (character 4)) (end (line 475) (character 928))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PoiseuilleNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PomerantsevNumberValue"))) (kind "attribute def") (name "PomerantsevNumberValue") (declared-name "PomerantsevNumberValue") (range (start (line 1029) (character 4)) (end (line 1029) (character 983))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PomerantsevNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1029) (character 4)) (end (line 1029) (character 983))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PomerantsevNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PowerNumberValue"))) (kind "attribute def") (name "PowerNumberValue") (declared-name "PowerNumberValue") (range (start (line 492) (character 4)) (end (line 492) (character 744))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PowerNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 492) (character 4)) (end (line 492) (character 744))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PowerNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlMagneticNumberValue"))) (kind "attribute def") (name "PrandtlMagneticNumberValue") (declared-name "PrandtlMagneticNumberValue") (range (start (line 1753) (character 4)) (end (line 1753) (character 1038))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlMagneticNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1753) (character 4)) (end (line 1753) (character 1038))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlMagneticNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlNumberValue"))) (kind "attribute def") (name "PrandtlNumberValue") (declared-name "PrandtlNumberValue") (range (start (line 1422) (character 4)) (end (line 1422) (character 963))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1422) (character 4)) (end (line 1422) (character 963))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberForMassTransferValue"))) (kind "attribute def") (name "PécletNumberForMassTransferValue") (declared-name "PécletNumberForMassTransferValue") (range (start (line 1097) (character 4)) (end (line 1097) (character 1061))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberForMassTransferValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1097) (character 4)) (end (line 1097) (character 1061))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberForMassTransferValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberValue"))) (kind "attribute def") (name "PécletNumberValue") (declared-name "PécletNumberValue") (range (start (line 751) (character 4)) (end (line 751) (character 889))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 751) (character 4)) (end (line 751) (character 889))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RayleighNumberValue"))) (kind "attribute def") (name "RayleighNumberValue") (declared-name "RayleighNumberValue") (range (start (line 768) (character 4)) (end (line 768) (character 1194))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RayleighNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 768) (character 4)) (end (line 768) (character 1194))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RayleighNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::Real"))) (kind "import") (name "Real") (declared-name "Real") (range (start (line 14) (character 4)) (end (line 14) (character 38))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 14) (character 19)) (end (line 14) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReechNumberValue"))) (kind "attribute def") (name "ReechNumberValue") (declared-name "ReechNumberValue") (range (start (line 526) (character 4)) (end (line 526) (character 962))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReechNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 526) (character 4)) (end (line 526) (character 962))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReechNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsElectricNumberValue"))) (kind "attribute def") (name "ReynoldsElectricNumberValue") (declared-name "ReynoldsElectricNumberValue") (range (start (line 1923) (character 4)) (end (line 1923) (character 1117))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsElectricNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1923) (character 4)) (end (line 1923) (character 1117))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsElectricNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsMagneticNumberValue"))) (kind "attribute def") (name "ReynoldsMagneticNumberValue") (declared-name "ReynoldsMagneticNumberValue") (range (start (line 1594) (character 4)) (end (line 1594) (character 1063))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsMagneticNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1594) (character 4)) (end (line 1594) (character 1063))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsMagneticNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsNumberValue"))) (kind "attribute def") (name "ReynoldsNumberValue") (declared-name "ReynoldsNumberValue") (range (start (line 20) (character 4)) (end (line 20) (character 956))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 20) (character 4)) (end (line 20) (character 956))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RichardsonNumberValue"))) (kind "attribute def") (name "RichardsonNumberValue") (declared-name "RichardsonNumberValue") (range (start (line 509) (character 4)) (end (line 509) (character 731))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RichardsonNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 509) (character 4)) (end (line 509) (character 731))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RichardsonNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RobertsNumberValue"))) (kind "attribute def") (name "RobertsNumberValue") (declared-name "RobertsNumberValue") (range (start (line 1770) (character 4)) (end (line 1770) (character 869))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RobertsNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1770) (character 4)) (end (line 1770) (character 869))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RobertsNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RossbyNumberValue"))) (kind "attribute def") (name "RossbyNumberValue") (declared-name "RossbyNumberValue") (range (start (line 333) (character 4)) (end (line 333) (character 972))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RossbyNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 333) (character 4)) (end (line 333) (character 972))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RossbyNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SchmidtNumberValue"))) (kind "attribute def") (name "SchmidtNumberValue") (declared-name "SchmidtNumberValue") (range (start (line 1439) (character 4)) (end (line 1439) (character 731))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SchmidtNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1439) (character 4)) (end (line 1439) (character 731))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SchmidtNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SommerfeldNumberValue"))) (kind "attribute def") (name "SommerfeldNumberValue") (declared-name "SommerfeldNumberValue") (range (start (line 666) (character 4)) (end (line 666) (character 865))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SommerfeldNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 666) (character 4)) (end (line 666) (character 865))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SommerfeldNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberForMassTransferValue"))) (kind "attribute def") (name "StantonNumberForMassTransferValue") (declared-name "StantonNumberForMassTransferValue") (range (start (line 1148) (character 4)) (end (line 1148) (character 898))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberForMassTransferValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1148) (character 4)) (end (line 1148) (character 898))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberForMassTransferValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberValue"))) (kind "attribute def") (name "StantonNumberValue") (declared-name "StantonNumberValue") (range (start (line 836) (character 4)) (end (line 836) (character 1110))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 836) (character 4)) (end (line 836) (character 1110))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StarkNumberValue"))) (kind "attribute def") (name "StarkNumberValue") (declared-name "StarkNumberValue") (range (start (line 1063) (character 4)) (end (line 1063) (character 1170))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StarkNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1063) (character 4)) (end (line 1063) (character 1170))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StarkNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StefanNumberValue"))) (kind "attribute def") (name "StefanNumberValue") (declared-name "StefanNumberValue") (range (start (line 908) (character 4)) (end (line 908) (character 826))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StefanNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 908) (character 4)) (end (line 908) (character 826))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StefanNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForDragValue"))) (kind "attribute def") (name "StokesNumberForDragValue") (declared-name "StokesNumberForDragValue") (range (start (line 613) (character 4)) (end (line 613) (character 692))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForDragValue::_documentation"))) (kind "documentation") (name "") (range (start (line 613) (character 4)) (end (line 613) (character 692))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForDragValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForGravityValue"))) (kind "attribute def") (name "StokesNumberForGravityValue") (declared-name "StokesNumberForGravityValue") (range (start (line 596) (character 4)) (end (line 596) (character 762))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForGravityValue::_documentation"))) (kind "documentation") (name "") (range (start (line 596) (character 4)) (end (line 596) (character 762))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForGravityValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForRotameterValue"))) (kind "attribute def") (name "StokesNumberForRotameterValue") (declared-name "StokesNumberForRotameterValue") (range (start (line 577) (character 4)) (end (line 577) (character 1093))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForRotameterValue::_documentation"))) (kind "documentation") (name "") (range (start (line 577) (character 4)) (end (line 577) (character 1093))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForRotameterValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForVibratingParticlesValue"))) (kind "attribute def") (name "StokesNumberForVibratingParticlesValue") (declared-name "StokesNumberForVibratingParticlesValue") (range (start (line 560) (character 4)) (end (line 560) (character 817))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForVibratingParticlesValue::_documentation"))) (kind "documentation") (name "") (range (start (line 560) (character 4)) (end (line 560) (character 817))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForVibratingParticlesValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberValue"))) (kind "attribute def") (name "StokesNumberValue") (declared-name "StokesNumberValue") (range (start (line 543) (character 4)) (end (line 543) (character 896))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 543) (character 4)) (end (line 543) (character 896))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StrouhalNumberValue"))) (kind "attribute def") (name "StrouhalNumberValue") (declared-name "StrouhalNumberValue") (range (start (line 139) (character 4)) (end (line 139) (character 854))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StrouhalNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 139) (character 4)) (end (line 139) (character 854))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StrouhalNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartElectricalNumberValue"))) (kind "attribute def") (name "StuartElectricalNumberValue") (declared-name "StuartElectricalNumberValue") (range (start (line 1702) (character 4)) (end (line 1702) (character 816))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartElectricalNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1702) (character 4)) (end (line 1702) (character 816))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartElectricalNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartNumberValue"))) (kind "attribute def") (name "StuartNumberValue") (declared-name "StuartNumberValue") (range (start (line 1787) (character 4)) (end (line 1787) (character 994))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1787) (character 4)) (end (line 1787) (character 994))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::TaylorNumberValue"))) (kind "attribute def") (name "TaylorNumberValue") (declared-name "TaylorNumberValue") (range (start (line 683) (character 4)) (end (line 683) (character 1238))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::TaylorNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 683) (character 4)) (end (line 683) (character 1238))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::TaylorNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ThrustCoefficientValue"))) (kind "attribute def") (name "ThrustCoefficientValue") (declared-name "ThrustCoefficientValue") (range (start (line 212) (character 4)) (end (line 212) (character 843))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ThrustCoefficientValue::_documentation"))) (kind "documentation") (name "") (range (start (line 212) (character 4)) (end (line 212) (character 843))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ThrustCoefficientValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeberNumberValue"))) (kind "attribute def") (name "WeberNumberValue") (declared-name "WeberNumberValue") (range (start (line 88) (character 4)) (end (line 88) (character 1158))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeberNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 88) (character 4)) (end (line 88) (character 1158))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeberNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeissenbergNumberValue"))) (kind "attribute def") (name "WeissenbergNumberValue") (declared-name "WeissenbergNumberValue") (range (start (line 1526) (character 4)) (end (line 1526) (character 835))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeissenbergNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 1526) (character 4)) (end (line 1526) (character 835))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeissenbergNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WomersleyNumberValue"))) (kind "attribute def") (name "WomersleyNumberValue") (declared-name "WomersleyNumberValue") (range (start (line 717) (character 4)) (end (line 717) (character 787))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WomersleyNumberValue::_documentation"))) (kind "documentation") (name "") (range (start (line 717) (character 4)) (end (line 717) (character 787))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WomersleyNumberValue"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 120114))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::absorptionNumber"))) (kind "attribute def") (name "absorptionNumber") (declared-name "absorptionNumber") (range (start (line 1385) (character 4)) (end (line 1385) (character 74))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "AbsorptionNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::aeroelasticityParameter"))) (kind "alias") (name "aeroelasticityParameter") (declared-name "aeroelasticityParameter") (range (start (line 1506) (character 4)) (end (line 1506) (character 51))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::alfvénNumber"))) (kind "attribute def") (name "alfvénNumber") (declared-name "alfvénNumber") (range (start (line 1659) (character 4)) (end (line 1659) (character 72))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "AlfvénNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ampèreNumber"))) (kind "attribute def") (name "ampèreNumber") (declared-name "ampèreNumber") (range (start (line 1954) (character 4)) (end (line 1954) (character 72))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "AmpèreNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::archimedesNumber"))) (kind "attribute def") (name "archimedesNumber") (declared-name "archimedesNumber") (range (start (line 1283) (character 4)) (end (line 1283) (character 74))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "ArchimedesNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::arrheniusNumber"))) (kind "attribute def") (name "arrheniusNumber") (declared-name "arrheniusNumber") (range (start (line 1971) (character 4)) (end (line 1971) (character 72))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "ArrheniusNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::atwoodNumber"))) (kind "attribute def") (name "atwoodNumber") (declared-name "atwoodNumber") (range (start (line 1213) (character 4)) (end (line 1213) (character 66))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "AtwoodNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bagnoldNumber"))) (kind "attribute def") (name "bagnoldNumber") (declared-name "bagnoldNumber") (range (start (line 175) (character 4)) (end (line 175) (character 68))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "BagnoldNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bagnoldNumberForSolidParticles"))) (kind "attribute def") (name "bagnoldNumberForSolidParticles") (declared-name "bagnoldNumberForSolidParticles") (range (start (line 192) (character 4)) (end (line 192) (character 102))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "BagnoldNumberForSolidParticlesValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::batchelorNumber"))) (kind "attribute def") (name "batchelorNumber") (declared-name "batchelorNumber") (range (start (line 1625) (character 4)) (end (line 1625) (character 72))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "BatchelorNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumber"))) (kind "attribute def") (name "bejanNumber") (declared-name "bejanNumber") (range (start (line 260) (character 4)) (end (line 260) (character 64))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "BejanNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumberForEntropy"))) (kind "attribute def") (name "bejanNumberForEntropy") (declared-name "bejanNumberForEntropy") (range (start (line 905) (character 4)) (end (line 905) (character 84))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "BejanNumberForEntropyValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumberForHeatTransfer"))) (kind "attribute def") (name "bejanNumberForHeatTransfer") (declared-name "bejanNumberForHeatTransfer") (range (start (line 888) (character 4)) (end (line 888) (character 94))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "BejanNumberForHeatTransferValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumberForMassTransfer"))) (kind "attribute def") (name "bejanNumberForMassTransfer") (declared-name "bejanNumberForMassTransfer") (range (start (line 1351) (character 4)) (end (line 1351) (character 94))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "BejanNumberForMassTransferValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::binghamNumber"))) (kind "attribute def") (name "binghamNumber") (declared-name "binghamNumber") (range (start (line 294) (character 4)) (end (line 294) (character 68))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "BinghamNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::biotNumber"))) (kind "attribute def") (name "biotNumber") (declared-name "biotNumber") (range (start (line 833) (character 4)) (end (line 833) (character 62))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "BiotNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::biotNumberForMassTransfer"))) (kind "attribute def") (name "biotNumberForMassTransfer") (declared-name "biotNumberForMassTransfer") (range (start (line 1230) (character 4)) (end (line 1230) (character 92))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "BiotNumberForMassTransferValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::blakeNumber"))) (kind "attribute def") (name "blakeNumber") (declared-name "blakeNumber") (range (start (line 663) (character 4)) (end (line 663) (character 64))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "BlakeNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bodensteinNumber"))) (kind "attribute def") (name "bodensteinNumber") (declared-name "bodensteinNumber") (range (start (line 330) (character 4)) (end (line 330) (character 74))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "BodensteinNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::boltzmannNumber"))) (kind "attribute def") (name "boltzmannNumber") (declared-name "boltzmannNumber") (range (start (line 1060) (character 4)) (end (line 1060) (character 72))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "BoltzmannNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bondNumber"))) (kind "attribute def") (name "bondNumber") (declared-name "bondNumber") (range (start (line 1264) (character 4)) (end (line 1264) (character 62))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "BondNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::brinkmanNumber"))) (kind "attribute def") (name "brinkmanNumber") (declared-name "brinkmanNumber") (range (start (line 939) (character 4)) (end (line 939) (character 70))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "BrinkmanNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::capillaryNumber"))) (kind "attribute def") (name "capillaryNumber") (declared-name "capillaryNumber") (range (start (line 1402) (character 4)) (end (line 1402) (character 72))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "CapillaryNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::carnotNumber"))) (kind "attribute def") (name "carnotNumber") (declared-name "carnotNumber") (range (start (line 973) (character 4)) (end (line 973) (character 66))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "CarnotNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::cauchyNumber"))) (kind "attribute def") (name "cauchyNumber") (declared-name "cauchyNumber") (range (start (line 1504) (character 4)) (end (line 1504) (character 66))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "CauchyNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::cavitationNumber"))) (kind "attribute def") (name "cavitationNumber") (declared-name "cavitationNumber") (range (start (line 1368) (character 4)) (end (line 1368) (character 74))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "CavitationNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::chandrasekharNumber"))) (kind "attribute def") (name "chandrasekharNumber") (declared-name "chandrasekharNumber") (range (start (line 1750) (character 4)) (end (line 1750) (character 80))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "ChandrasekharNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::clausiusNumber"))) (kind "attribute def") (name "clausiusNumber") (declared-name "clausiusNumber") (range (start (line 956) (character 4)) (end (line 956) (character 70))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "ClausiusNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::colburnNumber"))) (kind "alias") (name "colburnNumber") (declared-name "colburnNumber") (range (start (line 871) (character 4)) (end (line 871) (character 36))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::compressibilityNumber"))) (kind "attribute def") (name "compressibilityNumber") (declared-name "compressibilityNumber") (range (start (line 1591) (character 4)) (end (line 1591) (character 84))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "CompressibilityNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::cowlingNumber"))) (kind "attribute def") (name "cowlingNumber") (declared-name "cowlingNumber") (range (start (line 1697) (character 4)) (end (line 1697) (character 68))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "CowlingNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::darcyFrictionFactor"))) (kind "attribute def") (name "darcyFrictionFactor") (declared-name "darcyFrictionFactor") (range (start (line 400) (character 4)) (end (line 400) (character 80))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DarcyFrictionFactorValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::deanNumber"))) (kind "attribute def") (name "deanNumber") (declared-name "deanNumber") (range (start (line 243) (character 4)) (end (line 243) (character 62))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DeanNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::deborahNumber"))) (kind "attribute def") (name "deborahNumber") (declared-name "deborahNumber") (range (start (line 1557) (character 4)) (end (line 1557) (character 68))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DeborahNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::dulongNumber"))) (kind "alias") (name "dulongNumber") (declared-name "dulongNumber") (range (start (line 992) (character 4)) (end (line 992) (character 40))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::dynamicCapillaryNumber"))) (kind "attribute def") (name "dynamicCapillaryNumber") (declared-name "dynamicCapillaryNumber") (range (start (line 1419) (character 4)) (end (line 1419) (character 86))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "DynamicCapillaryNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::eckertNumber"))) (kind "attribute def") (name "eckertNumber") (declared-name "eckertNumber") (range (start (line 990) (character 4)) (end (line 990) (character 66))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "EckertNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ekmanNumber"))) (kind "attribute def") (name "ekmanNumber") (declared-name "ekmanNumber") (range (start (line 366) (character 4)) (end (line 366) (character 64))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "EkmanNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::elasticityNumber"))) (kind "attribute def") (name "elasticityNumber") (declared-name "elasticityNumber") (range (start (line 383) (character 4)) (end (line 383) (character 74))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "ElasticityNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::electricFieldParameter"))) (kind "attribute def") (name "electricFieldParameter") (declared-name "electricFieldParameter") (range (start (line 1835) (character 4)) (end (line 1835) (character 86))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "ElectricFieldParameterValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::eulerMagneticNumber"))) (kind "alias") (name "eulerMagneticNumber") (declared-name "eulerMagneticNumber") (range (start (line 1699) (character 4)) (end (line 1699) (character 48))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::eulerNumber"))) (kind "attribute def") (name "eulerNumber") (declared-name "eulerNumber") (range (start (line 51) (character 4)) (end (line 51) (character 64))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "EulerNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::expansionNumber"))) (kind "attribute def") (name "expansionNumber") (declared-name "expansionNumber") (range (start (line 1300) (character 4)) (end (line 1300) (character 72))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "ExpansionNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::eötvösNumber"))) (kind "alias") (name "eötvösNumber") (declared-name "eötvösNumber") (range (start (line 1266) (character 4)) (end (line 1266) (character 42))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::fanningNumber"))) (kind "attribute def") (name "fanningNumber") (declared-name "fanningNumber") (range (start (line 419) (character 4)) (end (line 419) (character 68))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "FanningNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::fourierNumber"))) (kind "attribute def") (name "fourierNumber") (declared-name "fourierNumber") (range (start (line 748) (character 4)) (end (line 748) (character 68))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "FourierNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::fourierNumberForMassTransfer"))) (kind "attribute def") (name "fourierNumberForMassTransfer") (declared-name "fourierNumberForMassTransfer") (range (start (line 1094) (character 4)) (end (line 1094) (character 98))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "FourierNumberForMassTransferValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::froudeNumber"))) (kind "attribute def") (name "froudeNumber") (declared-name "froudeNumber") (range (start (line 68) (character 4)) (end (line 68) (character 66))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "FroudeNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::froudeNumberForHeatTransfer"))) (kind "attribute def") (name "froudeNumberForHeatTransfer") (declared-name "froudeNumberForHeatTransfer") (range (start (line 799) (character 4)) (end (line 799) (character 96))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "FroudeNumberForHeatTransferValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::galileiNumber"))) (kind "attribute def") (name "galileiNumber") (declared-name "galileiNumber") (range (start (line 714) (character 4)) (end (line 714) (character 68))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "GalileiNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::goertlerNumber"))) (kind "attribute def") (name "goertlerNumber") (declared-name "goertlerNumber") (range (start (line 436) (character 4)) (end (line 436) (character 70))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "GoertlerNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::goertlerParameter"))) (kind "alias") (name "goertlerParameter") (declared-name "goertlerParameter") (range (start (line 438) (character 4)) (end (line 438) (character 47))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::graetzNumber"))) (kind "attribute def") (name "graetzNumber") (declared-name "graetzNumber") (range (start (line 1009) (character 4)) (end (line 1009) (character 66))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "GraetzNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::graetzNumberForMassTransfer"))) (kind "attribute def") (name "graetzNumberForMassTransfer") (declared-name "graetzNumberForMassTransfer") (range (start (line 1179) (character 4)) (end (line 1179) (character 96))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "GraetzNumberForMassTransferValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::grashofMagneticNumber"))) (kind "attribute def") (name "grashofMagneticNumber") (declared-name "grashofMagneticNumber") (range (start (line 1903) (character 4)) (end (line 1903) (character 84))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "GrashofMagneticNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::grashofNumber"))) (kind "attribute def") (name "grashofNumber") (declared-name "grashofNumber") (range (start (line 85) (character 4)) (end (line 85) (character 68))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "GrashofNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::grashofNumberForMassTransfer"))) (kind "attribute def") (name "grashofNumberForMassTransfer") (declared-name "grashofNumberForMassTransfer") (range (start (line 1128) (character 4)) (end (line 1128) (character 98))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "GrashofNumberForMassTransferValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hagenNumber"))) (kind "attribute def") (name "hagenNumber") (declared-name "hagenNumber") (range (start (line 455) (character 4)) (end (line 455) (character 64))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "HagenNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hallNumber"))) (kind "attribute def") (name "hallNumber") (declared-name "hallNumber") (range (start (line 1852) (character 4)) (end (line 1852) (character 62))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "HallNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hartmannNumber"))) (kind "attribute def") (name "hartmannNumber") (declared-name "hartmannNumber") (range (start (line 1680) (character 4)) (end (line 1680) (character 70))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "HartmannNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::heatTransferFactor"))) (kind "alias") (name "heatTransferFactor") (declared-name "heatTransferFactor") (range (start (line 869) (character 4)) (end (line 869) (character 41))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::heatTransferNumber"))) (kind "attribute def") (name "heatTransferNumber") (declared-name "heatTransferNumber") (range (start (line 1026) (character 4)) (end (line 1026) (character 78))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "HeatTransferNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hedströmNumber"))) (kind "attribute def") (name "hedströmNumber") (declared-name "hedströmNumber") (range (start (line 313) (character 4)) (end (line 313) (character 76))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "HedströmNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hookeNumber"))) (kind "attribute def") (name "hookeNumber") (declared-name "hookeNumber") (range (start (line 1523) (character 4)) (end (line 1523) (character 64))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "HookeNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::jFactor"))) (kind "attribute def") (name "jFactor") (declared-name "jFactor") (range (start (line 867) (character 4)) (end (line 867) (character 56))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "JFactorValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::jouleMagneticNumber"))) (kind "attribute def") (name "jouleMagneticNumber") (declared-name "jouleMagneticNumber") (range (start (line 1886) (character 4)) (end (line 1886) (character 80))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "JouleMagneticNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::kiebelNumber"))) (kind "alias") (name "kiebelNumber") (declared-name "kiebelNumber") (range (start (line 349) (character 4)) (end (line 349) (character 40))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::knudsenNumber"))) (kind "attribute def") (name "knudsenNumber") (declared-name "knudsenNumber") (range (start (line 136) (character 4)) (end (line 136) (character 68))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "KnudsenNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::kármanNumber"))) (kind "alias") (name "kármanNumber") (declared-name "kármanNumber") (range (start (line 1663) (character 4)) (end (line 1663) (character 46))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lagrangeNumber"))) (kind "attribute def") (name "lagrangeNumber") (declared-name "lagrangeNumber") (range (start (line 277) (character 4)) (end (line 277) (character 70))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "LagrangeNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::landauGinzburgNumber"))) (kind "attribute def") (name "landauGinzburgNumber") (declared-name "landauGinzburgNumber") (range (start (line 1988) (character 4)) (end (line 1988) (character 82))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "LandauGinzburgNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::laplaceNumber"))) (kind "attribute def") (name "laplaceNumber") (declared-name "laplaceNumber") (range (start (line 644) (character 4)) (end (line 644) (character 68))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "LaplaceNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lavalNumber"))) (kind "attribute def") (name "lavalNumber") (declared-name "lavalNumber") (range (start (line 472) (character 4)) (end (line 472) (character 64))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "LavalNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lewisNumber"))) (kind "attribute def") (name "lewisNumber") (declared-name "lewisNumber") (range (start (line 1470) (character 4)) (end (line 1470) (character 64))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "LewisNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::liftCoefficient"))) (kind "attribute def") (name "liftCoefficient") (declared-name "liftCoefficient") (range (start (line 209) (character 4)) (end (line 209) (character 72))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "LiftCoefficientValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lockhartMartinelliParameter"))) (kind "attribute def") (name "lockhartMartinelliParameter") (declared-name "lockhartMartinelliParameter") (range (start (line 1334) (character 4)) (end (line 1334) (character 96))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "LockhartMartinelliParameterValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lorentzNumber"))) (kind "attribute def") (name "lorentzNumber") (declared-name "lorentzNumber") (range (start (line 1574) (character 4)) (end (line 1574) (character 68))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "LorentzNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lundquistNumber"))) (kind "attribute def") (name "lundquistNumber") (declared-name "lundquistNumber") (range (start (line 1869) (character 4)) (end (line 1869) (character 72))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "LundquistNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::machMagneticNumber"))) (kind "alias") (name "machMagneticNumber") (declared-name "machMagneticNumber") (range (start (line 1661) (character 4)) (end (line 1661) (character 49))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::machNumber"))) (kind "attribute def") (name "machNumber") (declared-name "machNumber") (range (start (line 119) (character 4)) (end (line 119) (character 62))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "MachNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::magneticNumber"))) (kind "attribute def") (name "magneticNumber") (declared-name "magneticNumber") (range (start (line 1818) (character 4)) (end (line 1818) (character 70))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "MagneticNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::magneticPressureNumber"))) (kind "attribute def") (name "magneticPressureNumber") (declared-name "magneticPressureNumber") (range (start (line 1733) (character 4)) (end (line 1733) (character 86))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "MagneticPressureNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::marangoniNumber"))) (kind "attribute def") (name "marangoniNumber") (declared-name "marangoniNumber") (range (start (line 1317) (character 4)) (end (line 1317) (character 72))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "MarangoniNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::massTransferFactor"))) (kind "attribute def") (name "massTransferFactor") (declared-name "massTransferFactor") (range (start (line 1196) (character 4)) (end (line 1196) (character 78))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "MassTransferFactorValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::moodyFrictionFactor"))) (kind "alias") (name "moodyFrictionFactor") (declared-name "moodyFrictionFactor") (range (start (line 402) (character 4)) (end (line 402) (character 54))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::mortonNumber"))) (kind "attribute def") (name "mortonNumber") (declared-name "mortonNumber") (range (start (line 1247) (character 4)) (end (line 1247) (character 66))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "MortonNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nazeNumber"))) (kind "attribute def") (name "nazeNumber") (declared-name "nazeNumber") (range (start (line 1920) (character 4)) (end (line 1920) (character 62))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "NazeNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nusseltElectricNumber"))) (kind "attribute def") (name "nusseltElectricNumber") (declared-name "nusseltElectricNumber") (range (start (line 1642) (character 4)) (end (line 1642) (character 84))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "NusseltElectricNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nusseltNumber"))) (kind "attribute def") (name "nusseltNumber") (declared-name "nusseltNumber") (range (start (line 816) (character 4)) (end (line 816) (character 68))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "NusseltNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nusseltNumberForMassTransfer"))) (kind "attribute def") (name "nusseltNumberForMassTransfer") (declared-name "nusseltNumberForMassTransfer") (range (start (line 1145) (character 4)) (end (line 1145) (character 98))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "NusseltNumberForMassTransferValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ohnesorgeNumber"))) (kind "attribute def") (name "ohnesorgeNumber") (declared-name "ohnesorgeNumber") (range (start (line 1487) (character 4)) (end (line 1487) (character 72))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "OhnesorgeNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::plasticityNumber"))) (kind "alias") (name "plasticityNumber") (declared-name "plasticityNumber") (range (start (line 296) (character 4)) (end (line 296) (character 45))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::poiseuilleNumber"))) (kind "attribute def") (name "poiseuilleNumber") (declared-name "poiseuilleNumber") (range (start (line 489) (character 4)) (end (line 489) (character 74))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "PoiseuilleNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::pomerantsevNumber"))) (kind "attribute def") (name "pomerantsevNumber") (declared-name "pomerantsevNumber") (range (start (line 1043) (character 4)) (end (line 1043) (character 76))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "PomerantsevNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::powerCoefficient"))) (kind "alias") (name "powerCoefficient") (declared-name "powerCoefficient") (range (start (line 593) (character 4)) (end (line 593) (character 44))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::powerNumber"))) (kind "attribute def") (name "powerNumber") (declared-name "powerNumber") (range (start (line 506) (character 4)) (end (line 506) (character 64))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "PowerNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::prandtlMagneticNumber"))) (kind "attribute def") (name "prandtlMagneticNumber") (declared-name "prandtlMagneticNumber") (range (start (line 1767) (character 4)) (end (line 1767) (character 84))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "PrandtlMagneticNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::prandtlNumber"))) (kind "attribute def") (name "prandtlNumber") (declared-name "prandtlNumber") (range (start (line 1436) (character 4)) (end (line 1436) (character 68))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "PrandtlNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::pécletNumber"))) (kind "attribute def") (name "pécletNumber") (declared-name "pécletNumber") (range (start (line 765) (character 4)) (end (line 765) (character 72))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "PécletNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::pécletNumberForMassTransfer"))) (kind "attribute def") (name "pécletNumberForMassTransfer") (declared-name "pécletNumberForMassTransfer") (range (start (line 1111) (character 4)) (end (line 1111) (character 102))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "PécletNumberForMassTransferValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::rayleighNumber"))) (kind "attribute def") (name "rayleighNumber") (declared-name "rayleighNumber") (range (start (line 782) (character 4)) (end (line 782) (character 70))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "RayleighNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reechNumber"))) (kind "attribute def") (name "reechNumber") (declared-name "reechNumber") (range (start (line 540) (character 4)) (end (line 540) (character 64))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "ReechNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reynoldsElectricNumber"))) (kind "attribute def") (name "reynoldsElectricNumber") (declared-name "reynoldsElectricNumber") (range (start (line 1937) (character 4)) (end (line 1937) (character 86))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "ReynoldsElectricNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reynoldsMagneticNumber"))) (kind "attribute def") (name "reynoldsMagneticNumber") (declared-name "reynoldsMagneticNumber") (range (start (line 1608) (character 4)) (end (line 1608) (character 86))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "ReynoldsMagneticNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reynoldsNumber"))) (kind "attribute def") (name "reynoldsNumber") (declared-name "reynoldsNumber") (range (start (line 34) (character 4)) (end (line 34) (character 70))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "ReynoldsNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::richardsonNumber"))) (kind "attribute def") (name "richardsonNumber") (declared-name "richardsonNumber") (range (start (line 523) (character 4)) (end (line 523) (character 74))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "RichardsonNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::robertsNumber"))) (kind "attribute def") (name "robertsNumber") (declared-name "robertsNumber") (range (start (line 1784) (character 4)) (end (line 1784) (character 68))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "RobertsNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::rossbyNumber"))) (kind "attribute def") (name "rossbyNumber") (declared-name "rossbyNumber") (range (start (line 347) (character 4)) (end (line 347) (character 66))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "RossbyNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::schmidtNumber"))) (kind "attribute def") (name "schmidtNumber") (declared-name "schmidtNumber") (range (start (line 1453) (character 4)) (end (line 1453) (character 68))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "SchmidtNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::sommerfeldNumber"))) (kind "attribute def") (name "sommerfeldNumber") (declared-name "sommerfeldNumber") (range (start (line 680) (character 4)) (end (line 680) (character 74))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "SommerfeldNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stantonNumber"))) (kind "attribute def") (name "stantonNumber") (declared-name "stantonNumber") (range (start (line 850) (character 4)) (end (line 850) (character 68))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "StantonNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stantonNumberForMassTransfer"))) (kind "attribute def") (name "stantonNumberForMassTransfer") (declared-name "stantonNumberForMassTransfer") (range (start (line 1162) (character 4)) (end (line 1162) (character 98))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "StantonNumberForMassTransferValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::starkNumber"))) (kind "attribute def") (name "starkNumber") (declared-name "starkNumber") (range (start (line 1077) (character 4)) (end (line 1077) (character 64))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "StarkNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stefanNumber"))) (kind "attribute def") (name "stefanNumber") (declared-name "stefanNumber") (range (start (line 922) (character 4)) (end (line 922) (character 66))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "StefanNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumber"))) (kind "attribute def") (name "stokesNumber") (declared-name "stokesNumber") (range (start (line 557) (character 4)) (end (line 557) (character 66))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "StokesNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForDrag"))) (kind "attribute def") (name "stokesNumberForDrag") (declared-name "stokesNumberForDrag") (range (start (line 627) (character 4)) (end (line 627) (character 80))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "StokesNumberForDragValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForGravity"))) (kind "attribute def") (name "stokesNumberForGravity") (declared-name "stokesNumberForGravity") (range (start (line 610) (character 4)) (end (line 610) (character 86))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "StokesNumberForGravityValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForRotameter"))) (kind "attribute def") (name "stokesNumberForRotameter") (declared-name "stokesNumberForRotameter") (range (start (line 591) (character 4)) (end (line 591) (character 90))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "StokesNumberForRotameterValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForVibratingParticles"))) (kind "attribute def") (name "stokesNumberForVibratingParticles") (declared-name "stokesNumberForVibratingParticles") (range (start (line 574) (character 4)) (end (line 574) (character 108))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "StokesNumberForVibratingParticlesValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::strouhalNumber"))) (kind "attribute def") (name "strouhalNumber") (declared-name "strouhalNumber") (range (start (line 153) (character 4)) (end (line 153) (character 70))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "StrouhalNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stuartElectricalNumber"))) (kind "attribute def") (name "stuartElectricalNumber") (declared-name "stuartElectricalNumber") (range (start (line 1716) (character 4)) (end (line 1716) (character 86))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "StuartElectricalNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stuartNumber"))) (kind "attribute def") (name "stuartNumber") (declared-name "stuartNumber") (range (start (line 1801) (character 4)) (end (line 1801) (character 66))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "StuartNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::suratmanNumber"))) (kind "alias") (name "suratmanNumber") (declared-name "suratmanNumber") (range (start (line 646) (character 4)) (end (line 646) (character 43))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::taylorNumber"))) (kind "attribute def") (name "taylorNumber") (declared-name "taylorNumber") (range (start (line 697) (character 4)) (end (line 697) (character 66))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "TaylorNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::thomsonNumber"))) (kind "alias") (name "thomsonNumber") (declared-name "thomsonNumber") (range (start (line 155) (character 4)) (end (line 155) (character 43))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::thrustCoefficient"))) (kind "attribute def") (name "thrustCoefficient") (declared-name "thrustCoefficient") (range (start (line 226) (character 4)) (end (line 226) (character 76))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "ThrustCoefficientValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::weberNumber"))) (kind "attribute def") (name "weberNumber") (declared-name "weberNumber") (range (start (line 102) (character 4)) (end (line 102) (character 64))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "WeberNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::weissenbergNumber"))) (kind "attribute def") (name "weissenbergNumber") (declared-name "weissenbergNumber") (range (start (line 1540) (character 4)) (end (line 1540) (character 76))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "WeissenbergNumberValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "ISQCharacteristicNumbers::womersleyNumber"))) (kind "attribute def") (name "womersleyNumber") (declared-name "womersleyNumber") (range (start (line 731) (character 4)) (end (line 731) (character 72))) (parent (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (authored (membership (kind Owning)) (relationships (typing (reference "WomersleyNumberValue") (range none)))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Quantities::*") (range (start (line 15) (character 19)) (end (line 15) (character 29))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "MeasurementReferences::*") (range (start (line 16) (character 19)) (end (line 16) (character 40))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::*#import2"))) (kind namespaceImport) (ordinal 0)) (authored-target "ISQBase::*") (range (start (line 17) (character 19)) (end (line 17) (character 26))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AbsorptionNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AlfvénNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AmpèreNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArchimedesNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArrheniusNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AtwoodNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberForSolidParticlesValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BatchelorNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForEntropyValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForHeatTransferValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForMassTransferValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BinghamNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberForMassTransferValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BlakeNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BodensteinNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BoltzmannNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BondNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BrinkmanNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CapillaryNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CarnotNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CauchyNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CavitationNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ChandrasekharNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ClausiusNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CompressibilityNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CowlingNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DarcyFrictionFactorValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeanNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeborahNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DynamicCapillaryNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EckertNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EkmanNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElasticityNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElectricFieldParameterValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EulerNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ExpansionNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FanningNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberForMassTransferValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberForHeatTransferValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GalileiNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GoertlerNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberForMassTransferValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofMagneticNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberForMassTransferValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HagenNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HallNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HartmannNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HeatTransferNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HedströmNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HookeNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JFactorValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JouleMagneticNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::KnudsenNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LagrangeNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LandauGinzburgNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LaplaceNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LavalNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LewisNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LiftCoefficientValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LockhartMartinelliParameterValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LorentzNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LundquistNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MachNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticPressureNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MarangoniNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MassTransferFactorValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MortonNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NazeNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltElectricNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberForMassTransferValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::OhnesorgeNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PoiseuilleNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PomerantsevNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PowerNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlMagneticNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberForMassTransferValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RayleighNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (range (start (line 14) (character 19)) (end (line 14) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReechNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsElectricNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsMagneticNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RichardsonNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RobertsNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RossbyNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SchmidtNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SommerfeldNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberForMassTransferValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StarkNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StefanNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForDragValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForGravityValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForRotameterValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForVibratingParticlesValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StrouhalNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartElectricalNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::TaylorNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ThrustCoefficientValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeberNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeissenbergNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WomersleyNumberValue"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::absorptionNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "AbsorptionNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AbsorptionNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::alfvénNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "AlfvénNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AlfvénNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ampèreNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "AmpèreNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AmpèreNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::archimedesNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "ArchimedesNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArchimedesNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::arrheniusNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "ArrheniusNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArrheniusNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::atwoodNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "AtwoodNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AtwoodNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bagnoldNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "BagnoldNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bagnoldNumberForSolidParticles"))) (kind featureTyping) (ordinal 0)) (authored-target "BagnoldNumberForSolidParticlesValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberForSolidParticlesValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::batchelorNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "BatchelorNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BatchelorNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "BejanNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumberForEntropy"))) (kind featureTyping) (ordinal 0)) (authored-target "BejanNumberForEntropyValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForEntropyValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumberForHeatTransfer"))) (kind featureTyping) (ordinal 0)) (authored-target "BejanNumberForHeatTransferValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForHeatTransferValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumberForMassTransfer"))) (kind featureTyping) (ordinal 0)) (authored-target "BejanNumberForMassTransferValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForMassTransferValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::binghamNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "BinghamNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BinghamNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::biotNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "BiotNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::biotNumberForMassTransfer"))) (kind featureTyping) (ordinal 0)) (authored-target "BiotNumberForMassTransferValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberForMassTransferValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::blakeNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "BlakeNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BlakeNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bodensteinNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "BodensteinNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BodensteinNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::boltzmannNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "BoltzmannNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BoltzmannNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bondNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "BondNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BondNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::brinkmanNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "BrinkmanNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BrinkmanNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::capillaryNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "CapillaryNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CapillaryNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::carnotNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "CarnotNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CarnotNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::cauchyNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "CauchyNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CauchyNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::cavitationNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "CavitationNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CavitationNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::chandrasekharNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "ChandrasekharNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ChandrasekharNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::clausiusNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "ClausiusNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ClausiusNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::compressibilityNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "CompressibilityNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CompressibilityNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::cowlingNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "CowlingNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CowlingNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::darcyFrictionFactor"))) (kind featureTyping) (ordinal 0)) (authored-target "DarcyFrictionFactorValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DarcyFrictionFactorValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::deanNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "DeanNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeanNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::deborahNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "DeborahNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeborahNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::dynamicCapillaryNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "DynamicCapillaryNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DynamicCapillaryNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::eckertNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "EckertNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EckertNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ekmanNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "EkmanNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EkmanNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::elasticityNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "ElasticityNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElasticityNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::electricFieldParameter"))) (kind featureTyping) (ordinal 0)) (authored-target "ElectricFieldParameterValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElectricFieldParameterValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::eulerNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "EulerNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EulerNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::expansionNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "ExpansionNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ExpansionNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::fanningNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "FanningNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FanningNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::fourierNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "FourierNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::fourierNumberForMassTransfer"))) (kind featureTyping) (ordinal 0)) (authored-target "FourierNumberForMassTransferValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberForMassTransferValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::froudeNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "FroudeNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::froudeNumberForHeatTransfer"))) (kind featureTyping) (ordinal 0)) (authored-target "FroudeNumberForHeatTransferValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberForHeatTransferValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::galileiNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "GalileiNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GalileiNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::goertlerNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "GoertlerNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GoertlerNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::graetzNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "GraetzNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::graetzNumberForMassTransfer"))) (kind featureTyping) (ordinal 0)) (authored-target "GraetzNumberForMassTransferValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberForMassTransferValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::grashofMagneticNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "GrashofMagneticNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofMagneticNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::grashofNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "GrashofNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::grashofNumberForMassTransfer"))) (kind featureTyping) (ordinal 0)) (authored-target "GrashofNumberForMassTransferValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberForMassTransferValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hagenNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "HagenNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HagenNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hallNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "HallNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HallNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hartmannNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "HartmannNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HartmannNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::heatTransferNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "HeatTransferNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HeatTransferNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hedströmNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "HedströmNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HedströmNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hookeNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "HookeNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HookeNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::jFactor"))) (kind featureTyping) (ordinal 0)) (authored-target "JFactorValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JFactorValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::jouleMagneticNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "JouleMagneticNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JouleMagneticNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::knudsenNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "KnudsenNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::KnudsenNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lagrangeNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "LagrangeNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LagrangeNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::landauGinzburgNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "LandauGinzburgNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LandauGinzburgNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::laplaceNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "LaplaceNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LaplaceNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lavalNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "LavalNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LavalNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lewisNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "LewisNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LewisNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::liftCoefficient"))) (kind featureTyping) (ordinal 0)) (authored-target "LiftCoefficientValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LiftCoefficientValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lockhartMartinelliParameter"))) (kind featureTyping) (ordinal 0)) (authored-target "LockhartMartinelliParameterValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LockhartMartinelliParameterValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lorentzNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "LorentzNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LorentzNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lundquistNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "LundquistNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LundquistNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::machNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "MachNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MachNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::magneticNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "MagneticNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::magneticPressureNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "MagneticPressureNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticPressureNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::marangoniNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "MarangoniNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MarangoniNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::massTransferFactor"))) (kind featureTyping) (ordinal 0)) (authored-target "MassTransferFactorValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MassTransferFactorValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::mortonNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "MortonNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MortonNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nazeNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "NazeNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NazeNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nusseltElectricNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "NusseltElectricNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltElectricNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nusseltNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "NusseltNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nusseltNumberForMassTransfer"))) (kind featureTyping) (ordinal 0)) (authored-target "NusseltNumberForMassTransferValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberForMassTransferValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ohnesorgeNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "OhnesorgeNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::OhnesorgeNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::poiseuilleNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "PoiseuilleNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PoiseuilleNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::pomerantsevNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "PomerantsevNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PomerantsevNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::powerNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "PowerNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PowerNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::prandtlMagneticNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "PrandtlMagneticNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlMagneticNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::prandtlNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "PrandtlNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::pécletNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "PécletNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::pécletNumberForMassTransfer"))) (kind featureTyping) (ordinal 0)) (authored-target "PécletNumberForMassTransferValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberForMassTransferValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::rayleighNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "RayleighNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RayleighNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reechNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "ReechNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReechNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reynoldsElectricNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "ReynoldsElectricNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsElectricNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reynoldsMagneticNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "ReynoldsMagneticNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsMagneticNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reynoldsNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "ReynoldsNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::richardsonNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "RichardsonNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RichardsonNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::robertsNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "RobertsNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RobertsNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::rossbyNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "RossbyNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RossbyNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::schmidtNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "SchmidtNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SchmidtNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::sommerfeldNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "SommerfeldNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SommerfeldNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stantonNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "StantonNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stantonNumberForMassTransfer"))) (kind featureTyping) (ordinal 0)) (authored-target "StantonNumberForMassTransferValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberForMassTransferValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::starkNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "StarkNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StarkNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stefanNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "StefanNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StefanNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "StokesNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForDrag"))) (kind featureTyping) (ordinal 0)) (authored-target "StokesNumberForDragValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForDragValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForGravity"))) (kind featureTyping) (ordinal 0)) (authored-target "StokesNumberForGravityValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForGravityValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForRotameter"))) (kind featureTyping) (ordinal 0)) (authored-target "StokesNumberForRotameterValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForRotameterValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForVibratingParticles"))) (kind featureTyping) (ordinal 0)) (authored-target "StokesNumberForVibratingParticlesValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForVibratingParticlesValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::strouhalNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "StrouhalNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StrouhalNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stuartElectricalNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "StuartElectricalNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartElectricalNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stuartNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "StuartNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::taylorNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "TaylorNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::TaylorNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::thrustCoefficient"))) (kind featureTyping) (ordinal 0)) (authored-target "ThrustCoefficientValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ThrustCoefficientValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::weberNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "WeberNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeberNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::weissenbergNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "WeissenbergNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeissenbergNumberValue")))))
+    (reference (id (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::womersleyNumber"))) (kind featureTyping) (ordinal 0)) (authored-target "WomersleyNumberValue") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WomersleyNumberValue")))))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AbsorptionNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AbsorptionNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AlfvénNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AlfvénNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AmpèreNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AmpèreNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArchimedesNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArchimedesNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArrheniusNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArrheniusNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AtwoodNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AtwoodNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberForSolidParticlesValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberForSolidParticlesValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BatchelorNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BatchelorNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForEntropyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForEntropyValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForHeatTransferValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForHeatTransferValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForMassTransferValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForMassTransferValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BinghamNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BinghamNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberForMassTransferValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberForMassTransferValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BlakeNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BlakeNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BodensteinNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BodensteinNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BoltzmannNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BoltzmannNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BondNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BondNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BrinkmanNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BrinkmanNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CapillaryNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CapillaryNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CarnotNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CarnotNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CauchyNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CauchyNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CavitationNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CavitationNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ChandrasekharNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ChandrasekharNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ClausiusNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ClausiusNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CompressibilityNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CompressibilityNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CowlingNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CowlingNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DarcyFrictionFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DarcyFrictionFactorValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeanNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeanNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeborahNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeborahNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DynamicCapillaryNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DynamicCapillaryNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EckertNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EckertNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EkmanNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EkmanNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElasticityNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElasticityNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElectricFieldParameterValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElectricFieldParameterValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EulerNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EulerNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ExpansionNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ExpansionNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FanningNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FanningNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberForMassTransferValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberForMassTransferValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberForHeatTransferValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberForHeatTransferValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GalileiNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GalileiNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GoertlerNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GoertlerNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberForMassTransferValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberForMassTransferValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofMagneticNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofMagneticNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberForMassTransferValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberForMassTransferValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HagenNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HagenNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HallNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HallNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HartmannNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HartmannNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HeatTransferNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HeatTransferNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HedströmNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HedströmNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HookeNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HookeNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JFactorValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JouleMagneticNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JouleMagneticNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::KnudsenNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::KnudsenNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LagrangeNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LagrangeNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LandauGinzburgNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LandauGinzburgNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LaplaceNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LaplaceNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LavalNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LavalNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LewisNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LewisNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LiftCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LiftCoefficientValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LockhartMartinelliParameterValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LockhartMartinelliParameterValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LorentzNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LorentzNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LundquistNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LundquistNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MachNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MachNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticPressureNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticPressureNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MarangoniNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MarangoniNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MassTransferFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MassTransferFactorValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MortonNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MortonNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NazeNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NazeNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltElectricNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltElectricNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberForMassTransferValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberForMassTransferValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::OhnesorgeNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::OhnesorgeNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PoiseuilleNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PoiseuilleNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PomerantsevNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PomerantsevNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PowerNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PowerNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlMagneticNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlMagneticNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberForMassTransferValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberForMassTransferValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RayleighNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RayleighNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReechNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReechNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsElectricNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsElectricNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsMagneticNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsMagneticNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RichardsonNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RichardsonNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RobertsNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RobertsNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RossbyNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RossbyNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SchmidtNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SchmidtNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SommerfeldNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SommerfeldNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberForMassTransferValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberForMassTransferValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StarkNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StarkNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StefanNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StefanNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForDragValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForDragValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForGravityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForGravityValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForRotameterValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForRotameterValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForVibratingParticlesValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForVibratingParticlesValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StrouhalNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StrouhalNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartElectricalNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartElectricalNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::TaylorNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::TaylorNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ThrustCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ThrustCoefficientValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeberNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeberNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeissenbergNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeissenbergNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WomersleyNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WomersleyNumberValue"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::_documentation"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::absorptionNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AbsorptionNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::alfvénNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AlfvénNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ampèreNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AmpèreNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::archimedesNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArchimedesNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::arrheniusNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArrheniusNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::atwoodNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AtwoodNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bagnoldNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bagnoldNumberForSolidParticles"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberForSolidParticlesValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::batchelorNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BatchelorNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumberForEntropy"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForEntropyValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumberForHeatTransfer"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForHeatTransferValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumberForMassTransfer"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForMassTransferValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::binghamNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BinghamNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::biotNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::biotNumberForMassTransfer"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberForMassTransferValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::blakeNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BlakeNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bodensteinNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BodensteinNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::boltzmannNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BoltzmannNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bondNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BondNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::brinkmanNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BrinkmanNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::capillaryNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CapillaryNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::carnotNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CarnotNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::cauchyNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CauchyNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::cavitationNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CavitationNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::chandrasekharNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ChandrasekharNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::clausiusNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ClausiusNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::compressibilityNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CompressibilityNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::cowlingNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CowlingNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::darcyFrictionFactor"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DarcyFrictionFactorValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::deanNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeanNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::deborahNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeborahNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::dynamicCapillaryNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DynamicCapillaryNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::eckertNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EckertNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ekmanNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EkmanNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::elasticityNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElasticityNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::electricFieldParameter"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElectricFieldParameterValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::eulerNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EulerNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::expansionNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ExpansionNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::fanningNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FanningNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::fourierNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::fourierNumberForMassTransfer"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberForMassTransferValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::froudeNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::froudeNumberForHeatTransfer"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberForHeatTransferValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::galileiNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GalileiNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::goertlerNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GoertlerNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::graetzNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::graetzNumberForMassTransfer"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberForMassTransferValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::grashofMagneticNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofMagneticNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::grashofNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::grashofNumberForMassTransfer"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberForMassTransferValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hagenNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HagenNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hallNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HallNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hartmannNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HartmannNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::heatTransferNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HeatTransferNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hedströmNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HedströmNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hookeNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HookeNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::jFactor"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JFactorValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::jouleMagneticNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JouleMagneticNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::knudsenNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::KnudsenNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lagrangeNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LagrangeNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::landauGinzburgNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LandauGinzburgNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::laplaceNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LaplaceNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lavalNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LavalNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lewisNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LewisNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::liftCoefficient"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LiftCoefficientValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lockhartMartinelliParameter"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LockhartMartinelliParameterValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lorentzNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LorentzNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lundquistNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LundquistNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::machNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MachNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::magneticNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::magneticPressureNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticPressureNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::marangoniNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MarangoniNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::massTransferFactor"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MassTransferFactorValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::mortonNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MortonNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nazeNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NazeNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nusseltElectricNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltElectricNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nusseltNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nusseltNumberForMassTransfer"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberForMassTransferValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ohnesorgeNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::OhnesorgeNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::poiseuilleNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PoiseuilleNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::pomerantsevNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PomerantsevNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::powerNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PowerNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::prandtlMagneticNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlMagneticNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::prandtlNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::pécletNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::pécletNumberForMassTransfer"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberForMassTransferValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::rayleighNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RayleighNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reechNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReechNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reynoldsElectricNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsElectricNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reynoldsMagneticNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsMagneticNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reynoldsNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::richardsonNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RichardsonNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::robertsNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RobertsNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::rossbyNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RossbyNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::schmidtNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SchmidtNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::sommerfeldNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SommerfeldNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stantonNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stantonNumberForMassTransfer"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberForMassTransferValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::starkNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StarkNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stefanNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StefanNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForDrag"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForDragValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForGravity"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForGravityValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForRotameter"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForRotameterValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForVibratingParticles"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForVibratingParticlesValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::strouhalNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StrouhalNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stuartElectricalNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartElectricalNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stuartNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::taylorNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::TaylorNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::thrustCoefficient"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ThrustCoefficientValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::weberNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeberNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::weissenbergNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeissenbergNumberValue"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::womersleyNumber"))) (to (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WomersleyNumberValue"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::absorptionNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AbsorptionNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::absorptionNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::alfvénNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AlfvénNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::alfvénNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ampèreNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AmpèreNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ampèreNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::archimedesNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArchimedesNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::archimedesNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::arrheniusNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArrheniusNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::arrheniusNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::atwoodNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AtwoodNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::atwoodNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bagnoldNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bagnoldNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bagnoldNumberForSolidParticles"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberForSolidParticlesValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bagnoldNumberForSolidParticles"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::batchelorNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BatchelorNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::batchelorNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumberForEntropy"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForEntropyValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumberForEntropy"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumberForHeatTransfer"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForHeatTransferValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumberForHeatTransfer"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumberForMassTransfer"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForMassTransferValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumberForMassTransfer"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::binghamNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BinghamNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::binghamNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::biotNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::biotNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::biotNumberForMassTransfer"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberForMassTransferValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::biotNumberForMassTransfer"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::blakeNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BlakeNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::blakeNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bodensteinNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BodensteinNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bodensteinNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::boltzmannNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BoltzmannNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::boltzmannNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bondNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BondNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bondNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::brinkmanNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BrinkmanNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::brinkmanNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::capillaryNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CapillaryNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::capillaryNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::carnotNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CarnotNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::carnotNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::cauchyNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CauchyNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::cauchyNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::cavitationNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CavitationNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::cavitationNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::chandrasekharNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ChandrasekharNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::chandrasekharNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::clausiusNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ClausiusNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::clausiusNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::compressibilityNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CompressibilityNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::compressibilityNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::cowlingNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CowlingNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::cowlingNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::darcyFrictionFactor"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DarcyFrictionFactorValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::darcyFrictionFactor"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::deanNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeanNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::deanNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::deborahNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeborahNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::deborahNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::dynamicCapillaryNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DynamicCapillaryNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::dynamicCapillaryNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::eckertNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EckertNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::eckertNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ekmanNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EkmanNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ekmanNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::elasticityNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElasticityNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::elasticityNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::electricFieldParameter"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElectricFieldParameterValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::electricFieldParameter"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::eulerNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EulerNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::eulerNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::expansionNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ExpansionNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::expansionNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::fanningNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FanningNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::fanningNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::fourierNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::fourierNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::fourierNumberForMassTransfer"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberForMassTransferValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::fourierNumberForMassTransfer"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::froudeNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::froudeNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::froudeNumberForHeatTransfer"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberForHeatTransferValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::froudeNumberForHeatTransfer"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::galileiNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GalileiNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::galileiNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::goertlerNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GoertlerNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::goertlerNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::graetzNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::graetzNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::graetzNumberForMassTransfer"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberForMassTransferValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::graetzNumberForMassTransfer"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::grashofMagneticNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofMagneticNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::grashofMagneticNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::grashofNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::grashofNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::grashofNumberForMassTransfer"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberForMassTransferValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::grashofNumberForMassTransfer"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hagenNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HagenNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hagenNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hallNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HallNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hallNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hartmannNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HartmannNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hartmannNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::heatTransferNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HeatTransferNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::heatTransferNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hedströmNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HedströmNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hedströmNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hookeNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HookeNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hookeNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::jFactor"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JFactorValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::jFactor"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::jouleMagneticNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JouleMagneticNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::jouleMagneticNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::knudsenNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::KnudsenNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::knudsenNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lagrangeNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LagrangeNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lagrangeNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::landauGinzburgNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LandauGinzburgNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::landauGinzburgNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::laplaceNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LaplaceNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::laplaceNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lavalNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LavalNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lavalNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lewisNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LewisNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lewisNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::liftCoefficient"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LiftCoefficientValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::liftCoefficient"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lockhartMartinelliParameter"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LockhartMartinelliParameterValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lockhartMartinelliParameter"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lorentzNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LorentzNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lorentzNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lundquistNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LundquistNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lundquistNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::machNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MachNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::machNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::magneticNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::magneticNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::magneticPressureNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticPressureNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::magneticPressureNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::marangoniNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MarangoniNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::marangoniNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::massTransferFactor"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MassTransferFactorValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::massTransferFactor"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::mortonNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MortonNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::mortonNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nazeNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NazeNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nazeNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nusseltElectricNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltElectricNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nusseltElectricNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nusseltNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nusseltNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nusseltNumberForMassTransfer"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberForMassTransferValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nusseltNumberForMassTransfer"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ohnesorgeNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::OhnesorgeNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ohnesorgeNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::poiseuilleNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PoiseuilleNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::poiseuilleNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::pomerantsevNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PomerantsevNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::pomerantsevNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::powerNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PowerNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::powerNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::prandtlMagneticNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlMagneticNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::prandtlMagneticNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::prandtlNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::prandtlNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::pécletNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::pécletNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::pécletNumberForMassTransfer"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberForMassTransferValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::pécletNumberForMassTransfer"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::rayleighNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RayleighNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::rayleighNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reechNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReechNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reechNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reynoldsElectricNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsElectricNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reynoldsElectricNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reynoldsMagneticNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsMagneticNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reynoldsMagneticNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reynoldsNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reynoldsNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::richardsonNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RichardsonNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::richardsonNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::robertsNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RobertsNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::robertsNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::rossbyNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RossbyNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::rossbyNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::schmidtNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SchmidtNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::schmidtNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::sommerfeldNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SommerfeldNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::sommerfeldNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stantonNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stantonNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stantonNumberForMassTransfer"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberForMassTransferValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stantonNumberForMassTransfer"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::starkNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StarkNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::starkNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stefanNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StefanNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stefanNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForDrag"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForDragValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForDrag"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForGravity"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForGravityValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForGravity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForRotameter"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForRotameterValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForRotameter"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForVibratingParticles"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForVibratingParticlesValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForVibratingParticles"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::strouhalNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StrouhalNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::strouhalNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stuartElectricalNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartElectricalNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stuartElectricalNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stuartNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stuartNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::taylorNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::TaylorNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::taylorNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::thrustCoefficient"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ThrustCoefficientValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::thrustCoefficient"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::weberNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeberNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::weberNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::weissenbergNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeissenbergNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::weissenbergNumber"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::womersleyNumber"))) (target (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WomersleyNumberValue"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ISQCharacteristicNumbers::womersleyNumber"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AbsorptionNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AlfvénNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AmpèreNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArchimedesNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ArrheniusNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::AtwoodNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberForSolidParticlesValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BagnoldNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BatchelorNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForEntropyValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForHeatTransferValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberForMassTransferValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BejanNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BinghamNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberForMassTransferValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BiotNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BlakeNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BodensteinNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BoltzmannNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BondNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::BrinkmanNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CapillaryNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CarnotNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CauchyNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CavitationNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ChandrasekharNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ClausiusNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CompressibilityNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::CowlingNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DarcyFrictionFactorValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeanNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DeborahNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::DynamicCapillaryNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EckertNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EkmanNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElasticityNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ElectricFieldParameterValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::EulerNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ExpansionNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FanningNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberForMassTransferValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FourierNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberForHeatTransferValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::FroudeNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GalileiNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GoertlerNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberForMassTransferValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GraetzNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofMagneticNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberForMassTransferValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::GrashofNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HagenNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HallNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HartmannNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HeatTransferNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HedströmNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::HookeNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JFactorValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::JouleMagneticNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::KnudsenNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LagrangeNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LandauGinzburgNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LaplaceNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LavalNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LewisNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LiftCoefficientValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LockhartMartinelliParameterValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LorentzNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::LundquistNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MachNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MagneticPressureNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MarangoniNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MassTransferFactorValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::MortonNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NazeNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltElectricNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberForMassTransferValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::NusseltNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::OhnesorgeNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PoiseuilleNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PomerantsevNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PowerNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlMagneticNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PrandtlNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberForMassTransferValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::PécletNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RayleighNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReechNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsElectricNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsMagneticNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ReynoldsNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RichardsonNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RobertsNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::RossbyNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SchmidtNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::SommerfeldNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberForMassTransferValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StantonNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StarkNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StefanNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForDragValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForGravityValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForRotameterValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberForVibratingParticlesValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StokesNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StrouhalNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartElectricalNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::StuartNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::TaylorNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ThrustCoefficientValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeberNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WeissenbergNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::WomersleyNumberValue"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::absorptionNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::alfvénNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ampèreNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::archimedesNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::arrheniusNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::atwoodNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bagnoldNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bagnoldNumberForSolidParticles"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::batchelorNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumberForEntropy"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumberForHeatTransfer"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bejanNumberForMassTransfer"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::binghamNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::biotNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::biotNumberForMassTransfer"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::blakeNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bodensteinNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::boltzmannNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::bondNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::brinkmanNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::capillaryNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::carnotNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::cauchyNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::cavitationNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::chandrasekharNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::clausiusNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::compressibilityNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::cowlingNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::darcyFrictionFactor"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::deanNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::deborahNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::dynamicCapillaryNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::eckertNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ekmanNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::elasticityNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::electricFieldParameter"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::eulerNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::expansionNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::fanningNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::fourierNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::fourierNumberForMassTransfer"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::froudeNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::froudeNumberForHeatTransfer"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::galileiNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::goertlerNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::graetzNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::graetzNumberForMassTransfer"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::grashofMagneticNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::grashofNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::grashofNumberForMassTransfer"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hagenNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hallNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hartmannNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::heatTransferNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hedströmNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::hookeNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::jFactor"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::jouleMagneticNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::knudsenNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lagrangeNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::landauGinzburgNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::laplaceNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lavalNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lewisNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::liftCoefficient"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lockhartMartinelliParameter"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lorentzNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::lundquistNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::machNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::magneticNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::magneticPressureNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::marangoniNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::massTransferFactor"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::mortonNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nazeNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nusseltElectricNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nusseltNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::nusseltNumberForMassTransfer"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::ohnesorgeNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::poiseuilleNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::pomerantsevNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::powerNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::prandtlMagneticNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::prandtlNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::pécletNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::pécletNumberForMassTransfer"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::rayleighNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reechNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reynoldsElectricNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reynoldsMagneticNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::reynoldsNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::richardsonNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::robertsNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::rossbyNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::schmidtNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::sommerfeldNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stantonNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stantonNumberForMassTransfer"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::starkNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stefanNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForDrag"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForGravity"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForRotameter"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stokesNumberForVibratingParticles"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::strouhalNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stuartElectricalNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::stuartNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::taylorNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::thrustCoefficient"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::weberNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::weissenbergNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQCharacteristicNumbers::womersleyNumber"))) (status missing-prerequisite) (target "Base::DataValue"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/isq_characteristic_numbers.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 14 19) (end 14 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 15 19) (end 15 29))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 16 19) (end 16 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 17 19) (end 17 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 20 4) (end 20 956))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 37 4) (end 37 928))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 54 4) (end 54 818))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 71 4) (end 71 1203))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 88 4) (end 88 1158))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 105 4) (end 105 819))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 122 4) (end 122 804))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 139 4) (end 139 854))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 161 4) (end 161 923))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 178 4) (end 178 877))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 195 4) (end 195 968))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 212 4) (end 212 843))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 229 4) (end 229 755))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 246 4) (end 246 881))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 263 4) (end 263 858))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 280 4) (end 280 785))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 299 4) (end 299 811))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 316 4) (end 316 909))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 333 4) (end 333 972))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 352 4) (end 352 1000))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 369 4) (end 369 703))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 386 4) (end 386 885))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 405 4) (end 405 885))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 422 4) (end 422 872))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 441 4) (end 441 918))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 458 4) (end 458 871))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 475 4) (end 475 928))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 492 4) (end 492 744))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 509 4) (end 509 731))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 526 4) (end 526 962))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 543 4) (end 543 896))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 560 4) (end 560 817))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 577 4) (end 577 1093))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 596 4) (end 596 762))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 613 4) (end 613 692))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 630 4) (end 630 1094))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 649 4) (end 649 924))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 666 4) (end 666 865))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 683 4) (end 683 1238))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 700 4) (end 700 917))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 717 4) (end 717 787))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 734 4) (end 734 882))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 751 4) (end 751 889))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 768 4) (end 768 1194))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 785 4) (end 785 734))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 802 4) (end 802 1268))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 819 4) (end 819 843))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 836 4) (end 836 1110))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 853 4) (end 853 1061))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 874 4) (end 874 763))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 891 4) (end 891 648))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 908 4) (end 908 826))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 925 4) (end 925 879))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 942 4) (end 942 853))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 959 4) (end 959 700))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 976 4) (end 976 814))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 995 4) (end 995 761))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1012 4) (end 1012 715))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1029 4) (end 1029 983))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1046 4) (end 1046 878))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1063 4) (end 1063 1170))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1080 4) (end 1080 978))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1097 4) (end 1097 1061))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1114 4) (end 1114 1104))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1131 4) (end 1131 1033))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1148 4) (end 1148 898))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1165 4) (end 1165 866))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1182 4) (end 1182 1233))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1199 4) (end 1199 697))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1216 4) (end 1216 942))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1233 4) (end 1233 1139))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1250 4) (end 1250 1261))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1269 4) (end 1269 974))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1286 4) (end 1286 834))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1303 4) (end 1303 1148))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1320 4) (end 1320 861))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1337 4) (end 1337 879))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1354 4) (end 1354 919))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1371 4) (end 1371 1025))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1388 4) (end 1388 746))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1405 4) (end 1405 943))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1422 4) (end 1422 963))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1439 4) (end 1439 731))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1456 4) (end 1456 860))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1473 4) (end 1473 1009))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1490 4) (end 1490 677))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1509 4) (end 1509 644))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1526 4) (end 1526 835))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1543 4) (end 1543 719))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1560 4) (end 1560 802))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1577 4) (end 1577 736))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1594 4) (end 1594 1063))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1611 4) (end 1611 832))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1628 4) (end 1628 889))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1645 4) (end 1645 1046))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1666 4) (end 1666 834))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1683 4) (end 1683 1038))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1702 4) (end 1702 816))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1719 4) (end 1719 841))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1736 4) (end 1736 913))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1753 4) (end 1753 1038))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1770 4) (end 1770 869))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1787 4) (end 1787 994))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1804 4) (end 1804 773))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1821 4) (end 1821 704))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1838 4) (end 1838 766))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1855 4) (end 1855 1246))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1872 4) (end 1872 854))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1889 4) (end 1889 1142))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1906 4) (end 1906 772))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1923 4) (end 1923 1117))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1940 4) (end 1940 1015))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1957 4) (end 1957 765))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 1974 4) (end 1974 790))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

@@ -218,87 +218,110 @@ standard library package Objects {
 	  }
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Occurrence::self'
-semantic.unresolved_name 'suboccurrences'
-semantic.unresolved_name 'Performance'
-semantic.unresolved_name 'performances'
-semantic.unresolved_name 'Performance'
-semantic.unresolved_name 'timeEnclosedOccurrences'
-semantic.unresolved_name 'Performance'
-semantic.unresolved_name 'timeEnclosedOccurrences'
-semantic.unresolved_name 'suboccurrences'
-semantic.unresolved_name 'this'
-semantic.unresolved_name 'spaceBoundary'
-semantic.unresolved_name 'Link'
-semantic.unresolved_name 'BinaryLink'
-semantic.unresolved_name 'occurrences'
-semantic.unresolved_name 'links'
-semantic.unresolved_name 'binaryLinks'
-semantic.unresolved_name 'innerSpaceDimension'
-semantic.unresolved_name 'innerSpaceDimension'
-semantic.unresolved_name 'Natural'
-semantic.unresolved_name 'innerSpaceDimension'
-semantic.unresolved_name 'innerSpaceDimension'
-semantic.unresolved_name 'Occurrence::spaceSlices'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'StructuredSpaceObject::innerSpaceDimension'
-semantic.unresolved_name 'Surface::innerSpaceDimension'
-semantic.unresolved_name 'StructuredSpaceObject::innerSpaceDimension'
-semantic.unresolved_name 'Curve::innerSpaceDimension'
-semantic.unresolved_name 'StructuredSpaceObject::innerSpaceDimension'
-semantic.unresolved_name 'Point::innerSpaceDimension'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'that::edges'
-semantic.unresolved_name 'that::vertices'
-semantic.unresolved_name 'spaceBoundary'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'that::vertices'
-semantic.unresolved_name 'spaceBoundary'
-semantic.unresolved_name 'innerSpaceDimension'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Occurrence::self'
-semantic.unresolved_name 'suboccurrences'
-semantic.unresolved_name 'Performance'
-semantic.unresolved_name 'performances'
-semantic.unresolved_name 'Performance'
-semantic.unresolved_name 'timeEnclosedOccurrences'
-semantic.unresolved_name 'Performance'
-semantic.unresolved_name 'timeEnclosedOccurrences'
-semantic.unresolved_name 'suboccurrences'
-semantic.unresolved_name 'this'
-semantic.unresolved_name 'spaceBoundary'
-semantic.unresolved_name 'Link'
-semantic.unresolved_name 'BinaryLink'
-semantic.unresolved_name 'occurrences'
-semantic.unresolved_name 'links'
-semantic.unresolved_name 'binaryLinks'
-semantic.unresolved_name 'innerSpaceDimension'
-semantic.unresolved_name 'innerSpaceDimension'
-semantic.unresolved_name 'Natural'
-semantic.unresolved_name 'innerSpaceDimension'
-semantic.unresolved_name 'innerSpaceDimension'
-semantic.unresolved_name 'Occurrence::spaceSlices'
-semantic.unresolved_name 'Integer'
-semantic.unresolved_name 'StructuredSpaceObject::innerSpaceDimension'
-semantic.unresolved_name 'Surface::innerSpaceDimension'
-semantic.unresolved_name 'StructuredSpaceObject::innerSpaceDimension'
-semantic.unresolved_name 'Curve::innerSpaceDimension'
-semantic.unresolved_name 'StructuredSpaceObject::innerSpaceDimension'
-semantic.unresolved_name 'Point::innerSpaceDimension'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'that::edges'
-semantic.unresolved_name 'that::vertices'
-semantic.unresolved_name 'spaceBoundary'
-semantic.unresolved_name 'that'
-semantic.unresolved_name 'that::vertices'
-semantic.unresolved_name 'spaceBoundary'
-semantic.unresolved_name 'innerSpaceDimension'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "objects.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 16) (end 6 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 16) (end 8 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 16) (end 9 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 16) (end 10 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 11 16) (end 11 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 12 16) (end 12 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 13 16) (end 13 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 14 16) (end 14 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 15 16) (end 15 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 16 16) (end 16 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 17 16) (end 17 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 18 16) (end 18 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 19 16) (end 19 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 20 16) (end 20 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 21 16) (end 21 37))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -531,6 +554,88 @@ CloseCurly,EndOfFile,
       (feature_def portion 'vertices' : 'StructuredPoint' multiplicity :> 'structuredSpaceObjectCells' ordered)
       (feature_def derived :>> 'innerSpaceDimension' value))))
 ~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence::self'
+semantic.unresolved_name 'suboccurrences'
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'performances'
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'timeEnclosedOccurrences'
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'timeEnclosedOccurrences'
+semantic.unresolved_name 'suboccurrences'
+semantic.unresolved_name 'this'
+semantic.unresolved_name 'spaceBoundary'
+semantic.unresolved_name 'Link'
+semantic.unresolved_name 'BinaryLink'
+semantic.unresolved_name 'occurrences'
+semantic.unresolved_name 'links'
+semantic.unresolved_name 'binaryLinks'
+semantic.unresolved_name 'innerSpaceDimension'
+semantic.unresolved_name 'innerSpaceDimension'
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'innerSpaceDimension'
+semantic.unresolved_name 'innerSpaceDimension'
+semantic.unresolved_name 'Occurrence::spaceSlices'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'StructuredSpaceObject::innerSpaceDimension'
+semantic.unresolved_name 'Surface::innerSpaceDimension'
+semantic.unresolved_name 'StructuredSpaceObject::innerSpaceDimension'
+semantic.unresolved_name 'Curve::innerSpaceDimension'
+semantic.unresolved_name 'StructuredSpaceObject::innerSpaceDimension'
+semantic.unresolved_name 'Point::innerSpaceDimension'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'that::edges'
+semantic.unresolved_name 'that::vertices'
+semantic.unresolved_name 'spaceBoundary'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'that::vertices'
+semantic.unresolved_name 'spaceBoundary'
+semantic.unresolved_name 'innerSpaceDimension'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence::self'
+semantic.unresolved_name 'suboccurrences'
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'performances'
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'timeEnclosedOccurrences'
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'timeEnclosedOccurrences'
+semantic.unresolved_name 'suboccurrences'
+semantic.unresolved_name 'this'
+semantic.unresolved_name 'spaceBoundary'
+semantic.unresolved_name 'Link'
+semantic.unresolved_name 'BinaryLink'
+semantic.unresolved_name 'occurrences'
+semantic.unresolved_name 'links'
+semantic.unresolved_name 'binaryLinks'
+semantic.unresolved_name 'innerSpaceDimension'
+semantic.unresolved_name 'innerSpaceDimension'
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'innerSpaceDimension'
+semantic.unresolved_name 'innerSpaceDimension'
+semantic.unresolved_name 'Occurrence::spaceSlices'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'StructuredSpaceObject::innerSpaceDimension'
+semantic.unresolved_name 'Surface::innerSpaceDimension'
+semantic.unresolved_name 'StructuredSpaceObject::innerSpaceDimension'
+semantic.unresolved_name 'Curve::innerSpaceDimension'
+semantic.unresolved_name 'StructuredSpaceObject::innerSpaceDimension'
+semantic.unresolved_name 'Point::innerSpaceDimension'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'that::edges'
+semantic.unresolved_name 'that::vertices'
+semantic.unresolved_name 'spaceBoundary'
+semantic.unresolved_name 'that'
+semantic.unresolved_name 'that::vertices'
+semantic.unresolved_name 'spaceBoundary'
+semantic.unresolved_name 'innerSpaceDimension'
+~~~
 # FORMAT
 ~~~sysml
 standard library package Objects {
@@ -748,164 +853,60 @@ standard library package Objects {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Objects"))) (name "Objects") (declared-name "Objects")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::Anything"))) (name "Anything") (declared-name "Anything"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::HappensLink"))) (name "HappensLink") (declared-name "HappensLink"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::Integer"))) (name "Integer") (declared-name "Integer"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::Natural"))) (name "Natural") (declared-name "Natural"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Objects::Object"))) (name "Object") (declared-name "Object"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::Performance"))) (name "Performance") (declared-name "Performance"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::SelfSameLifeLink"))) (name "SelfSameLifeLink") (declared-name "SelfSameLifeLink"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Objects::StructuredSpaceObject"))) (name "StructuredSpaceObject") (declared-name "StructuredSpaceObject"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::WithinBoth"))) (name "WithinBoth") (declared-name "WithinBoth"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "Objects::_documentation"))) (name ""))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Objects::all"))) (name "all") (declared-name "all"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Objects::all#classifier_decl"))) (name "all") (declared-name "all"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Objects::all#classifier_decl2"))) (name "all") (declared-name "all"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Objects::all#classifier_decl3"))) (name "all") (declared-name "all"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Objects::binaryLinkObjects"))) (name "binaryLinkObjects") (declared-name "binaryLinkObjects"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::contains"))) (name "contains") (declared-name "contains"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::isEmpty"))) (name "isEmpty") (declared-name "isEmpty"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Objects::linkObjects"))) (name "linkObjects") (declared-name "linkObjects"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::notEmpty"))) (name "notEmpty") (declared-name "notEmpty"))
-        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Objects::objects"))) (name "objects") (declared-name "objects"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::occurrences"))) (name "occurrences") (declared-name "occurrences"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::performances"))) (name "performances") (declared-name "performances"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Objects::struct"))) (name "struct") (declared-name "struct"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Objects::struct#kermlDecl"))) (name "struct") (declared-name "struct"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::things"))) (name "things") (declared-name "things"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::union"))) (name "union") (declared-name "union"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "4c8de9f1c750d01e753aefee227494ea93944260304f2390c20bce90f510f476") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Objects"))) (kind "package") (name "Objects") (declared-name "Objects") (range (start (line 0) (character 0)) (end (line 0) (character 7248))))
+    (element (id (node (document "d0") (qualified-name "Objects::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 8) (character 1)) (end (line 8) (character 25))) (parent (node (document "d0") (qualified-name "Objects"))) (authored (membership (kind Import) (visibility "private") (import (reference "Links::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 21))))))
+    (element (id (node (document "d0") (qualified-name "Objects::Anything"))) (kind "import") (name "Anything") (declared-name "Anything") (range (start (line 6) (character 1)) (end (line 6) (character 31))) (parent (node (document "d0") (qualified-name "Objects"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::Anything") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 6) (character 16)) (end (line 6) (character 30))))))
+    (element (id (node (document "d0") (qualified-name "Objects::HappensLink"))) (kind "import") (name "HappensLink") (declared-name "HappensLink") (range (start (line 11) (character 1)) (end (line 11) (character 41))) (parent (node (document "d0") (qualified-name "Objects"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::HappensLink") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 11) (character 16)) (end (line 11) (character 40))))))
+    (element (id (node (document "d0") (qualified-name "Objects::Integer"))) (kind "import") (name "Integer") (declared-name "Integer") (range (start (line 20) (character 1)) (end (line 20) (character 38))) (parent (node (document "d0") (qualified-name "Objects"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Integer") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 20) (character 16)) (end (line 20) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "Objects::Natural"))) (kind "import") (name "Natural") (declared-name "Natural") (range (start (line 21) (character 1)) (end (line 21) (character 38))) (parent (node (document "d0") (qualified-name "Objects"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Natural") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 21) (character 16)) (end (line 21) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "Objects::Object"))) (kind "classifier decl") (name "Object") (declared-name "Object") (range (start (line 23) (character 1)) (end (line 23) (character 1434))) (parent (node (document "d0") (qualified-name "Objects"))))
+    (element (id (node (document "d0") (qualified-name "Objects::Occurrence"))) (kind "import") (name "Occurrence") (declared-name "Occurrence") (range (start (line 9) (character 1)) (end (line 9) (character 40))) (parent (node (document "d0") (qualified-name "Objects"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::Occurrence") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 9) (character 16)) (end (line 9) (character 39))))))
+    (element (id (node (document "d0") (qualified-name "Objects::Performance"))) (kind "import") (name "Performance") (declared-name "Performance") (range (start (line 14) (character 1)) (end (line 14) (character 42))) (parent (node (document "d0") (qualified-name "Objects"))) (authored (membership (kind Import) (visibility "private") (import (reference "Performances::Performance") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 14) (character 16)) (end (line 14) (character 41))))))
+    (element (id (node (document "d0") (qualified-name "Objects::SelfSameLifeLink"))) (kind "import") (name "SelfSameLifeLink") (declared-name "SelfSameLifeLink") (range (start (line 12) (character 1)) (end (line 12) (character 46))) (parent (node (document "d0") (qualified-name "Objects"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::SelfSameLifeLink") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 12) (character 16)) (end (line 12) (character 45))))))
+    (element (id (node (document "d0") (qualified-name "Objects::StructuredSpaceObject"))) (kind "classifier decl") (name "StructuredSpaceObject") (declared-name "StructuredSpaceObject") (range (start (line 156) (character 1)) (end (line 156) (character 3063))) (parent (node (document "d0") (qualified-name "Objects"))))
+    (element (id (node (document "d0") (qualified-name "Objects::WithinBoth"))) (kind "import") (name "WithinBoth") (declared-name "WithinBoth") (range (start (line 13) (character 1)) (end (line 13) (character 40))) (parent (node (document "d0") (qualified-name "Objects"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::WithinBoth") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 13) (character 16)) (end (line 13) (character 39))))))
+    (element (id (node (document "d0") (qualified-name "Objects::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 7248))) (parent (node (document "d0") (qualified-name "Objects"))))
+    (element (id (node (document "d0") (qualified-name "Objects::all"))) (kind "classifier decl") (name "all") (declared-name "all") (range (start (line 116) (character 1)) (end (line 116) (character 156))) (parent (node (document "d0") (qualified-name "Objects"))))
+    (element (id (node (document "d0") (qualified-name "Objects::all#classifier_decl"))) (kind "classifier decl") (name "all") (declared-name "all") (range (start (line 125) (character 1)) (end (line 125) (character 323))) (parent (node (document "d0") (qualified-name "Objects"))))
+    (element (id (node (document "d0") (qualified-name "Objects::all#classifier_decl2"))) (kind "classifier decl") (name "all") (declared-name "all") (range (start (line 138) (character 1)) (end (line 138) (character 158))) (parent (node (document "d0") (qualified-name "Objects"))))
+    (element (id (node (document "d0") (qualified-name "Objects::all#classifier_decl3"))) (kind "classifier decl") (name "all") (declared-name "all") (range (start (line 147) (character 1)) (end (line 147) (character 161))) (parent (node (document "d0") (qualified-name "Objects"))))
+    (element (id (node (document "d0") (qualified-name "Objects::binaryLinkObjects"))) (kind "feature decl") (name "binaryLinkObjects") (declared-name "binaryLinkObjects") (range (start (line 106) (character 1)) (end (line 106) (character 280))) (parent (node (document "d0") (qualified-name "Objects"))))
+    (element (id (node (document "d0") (qualified-name "Objects::contains"))) (kind "import") (name "contains") (declared-name "contains") (range (start (line 19) (character 1)) (end (line 19) (character 46))) (parent (node (document "d0") (qualified-name "Objects"))) (authored (membership (kind Import) (visibility "private") (import (reference "CollectionFunctions::contains") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 19) (character 16)) (end (line 19) (character 45))))))
+    (element (id (node (document "d0") (qualified-name "Objects::isEmpty"))) (kind "import") (name "isEmpty") (declared-name "isEmpty") (range (start (line 16) (character 1)) (end (line 16) (character 43))) (parent (node (document "d0") (qualified-name "Objects"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::isEmpty") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 16) (character 16)) (end (line 16) (character 42))))))
+    (element (id (node (document "d0") (qualified-name "Objects::linkObjects"))) (kind "feature decl") (name "linkObjects") (declared-name "linkObjects") (range (start (line 99) (character 1)) (end (line 99) (character 220))) (parent (node (document "d0") (qualified-name "Objects"))))
+    (element (id (node (document "d0") (qualified-name "Objects::notEmpty"))) (kind "import") (name "notEmpty") (declared-name "notEmpty") (range (start (line 17) (character 1)) (end (line 17) (character 44))) (parent (node (document "d0") (qualified-name "Objects"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::notEmpty") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 17) (character 16)) (end (line 17) (character 43))))))
+    (element (id (node (document "d0") (qualified-name "Objects::objects"))) (kind "feature decl") (name "objects") (declared-name "objects") (range (start (line 92) (character 1)) (end (line 92) (character 166))) (parent (node (document "d0") (qualified-name "Objects"))))
+    (element (id (node (document "d0") (qualified-name "Objects::occurrences"))) (kind "import") (name "occurrences") (declared-name "occurrences") (range (start (line 10) (character 1)) (end (line 10) (character 41))) (parent (node (document "d0") (qualified-name "Objects"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::occurrences") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 10) (character 16)) (end (line 10) (character 40))))))
+    (element (id (node (document "d0") (qualified-name "Objects::performances"))) (kind "import") (name "performances") (declared-name "performances") (range (start (line 15) (character 1)) (end (line 15) (character 43))) (parent (node (document "d0") (qualified-name "Objects"))) (authored (membership (kind Import) (visibility "private") (import (reference "Performances::performances") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 15) (character 16)) (end (line 15) (character 42))))))
+    (element (id (node (document "d0") (qualified-name "Objects::struct"))) (kind "kermlDecl") (name "struct") (declared-name "struct") (range (start (line 77) (character 1)) (end (line 77) (character 196))) (parent (node (document "d0") (qualified-name "Objects"))))
+    (element (id (node (document "d0") (qualified-name "Objects::struct#kermlDecl"))) (kind "kermlDecl") (name "struct") (declared-name "struct") (range (start (line 84) (character 1)) (end (line 84) (character 241))) (parent (node (document "d0") (qualified-name "Objects"))))
+    (element (id (node (document "d0") (qualified-name "Objects::things"))) (kind "import") (name "things") (declared-name "things") (range (start (line 7) (character 1)) (end (line 7) (character 29))) (parent (node (document "d0") (qualified-name "Objects"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::things") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "Objects::union"))) (kind "import") (name "union") (declared-name "union") (range (start (line 18) (character 1)) (end (line 18) (character 41))) (parent (node (document "d0") (qualified-name "Objects"))) (authored (membership (kind Import) (visibility "private") (import (reference "SequenceFunctions::union") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 18) (character 16)) (end (line 18) (character 40))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Objects::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Links::*") (range (start (line 8) (character 16)) (end (line 8) (character 21))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Objects::Anything"))) (kind membershipImport) (ordinal 0)) (authored-target "Base::Anything") (range (start (line 6) (character 16)) (end (line 6) (character 30))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Objects::HappensLink"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::HappensLink") (range (start (line 11) (character 16)) (end (line 11) (character 40))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Objects::Integer"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Integer") (range (start (line 20) (character 16)) (end (line 20) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Objects::Natural"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Natural") (range (start (line 21) (character 16)) (end (line 21) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Objects::Occurrence"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::Occurrence") (range (start (line 9) (character 16)) (end (line 9) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Objects::Performance"))) (kind membershipImport) (ordinal 0)) (authored-target "Performances::Performance") (range (start (line 14) (character 16)) (end (line 14) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Objects::SelfSameLifeLink"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::SelfSameLifeLink") (range (start (line 12) (character 16)) (end (line 12) (character 45))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Objects::WithinBoth"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::WithinBoth") (range (start (line 13) (character 16)) (end (line 13) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Objects::contains"))) (kind membershipImport) (ordinal 0)) (authored-target "CollectionFunctions::contains") (range (start (line 19) (character 16)) (end (line 19) (character 45))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Objects::isEmpty"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::isEmpty") (range (start (line 16) (character 16)) (end (line 16) (character 42))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Objects::notEmpty"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::notEmpty") (range (start (line 17) (character 16)) (end (line 17) (character 43))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Objects::occurrences"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::occurrences") (range (start (line 10) (character 16)) (end (line 10) (character 40))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Objects::performances"))) (kind membershipImport) (ordinal 0)) (authored-target "Performances::performances") (range (start (line 15) (character 16)) (end (line 15) (character 42))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Objects::things"))) (kind membershipImport) (ordinal 0)) (authored-target "Base::things") (range (start (line 7) (character 16)) (end (line 7) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Objects::union"))) (kind membershipImport) (ordinal 0)) (authored-target "SequenceFunctions::union") (range (start (line 18) (character 16)) (end (line 18) (character 40))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Objects::_documentation"))) (to (node (document "d0") (qualified-name "Objects"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/objects.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 6 16) (end 6 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 16) (end 7 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 16) (end 8 21))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 9 16) (end 9 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 10 16) (end 10 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 11 16) (end 11 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 12 16) (end 12 45))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 13 16) (end 13 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 14 16) (end 14 41))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 15 16) (end 15 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 16 16) (end 16 42))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 17 16) (end 17 43))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 18 16) (end 18 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 19 16) (end 19 45))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 20 16) (end 20 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 21 16) (end 21 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 84 1) (end 84 241))
-      )
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 125 1) (end 125 323))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

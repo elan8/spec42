@@ -194,45 +194,44 @@ standard library package Triggers {
 	
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'ChangeSignal'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'Clock'
-semantic.unresolved_name 'signalCondition'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'ChangeMonitor'
-semantic.unresolved_name 'ChangeSignal'
-semantic.unresolved_name 'monitor::startObservation'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Clock'
-semantic.unresolved_name 'ChangeMonitor'
-semantic.unresolved_name 'monitor::startObservation'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Clock'
-semantic.unresolved_name 'ChangeMonitor'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'ChangeSignal'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'Clock'
-semantic.unresolved_name 'signalCondition'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'ChangeMonitor'
-semantic.unresolved_name 'ChangeSignal'
-semantic.unresolved_name 'monitor::startObservation'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Clock'
-semantic.unresolved_name 'ChangeMonitor'
-semantic.unresolved_name 'monitor::startObservation'
-semantic.unresolved_name 'NumericalValue'
-semantic.unresolved_name 'Occurrence'
-semantic.unresolved_name 'Clock'
-semantic.unresolved_name 'ChangeMonitor'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "triggers.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 16) (end 8 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 16) (end 9 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 16) (end 10 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 12 15) (end 12 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 13 15) (end 13 26))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -396,6 +395,46 @@ CloseCurly,EndOfFile,
       (feature_def in 'monitor' : 'ChangeMonitor' multiplicity value
         (documentation))
       (return_member))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'ChangeSignal'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'Clock'
+semantic.unresolved_name 'signalCondition'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'ChangeMonitor'
+semantic.unresolved_name 'ChangeSignal'
+semantic.unresolved_name 'monitor::startObservation'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Clock'
+semantic.unresolved_name 'ChangeMonitor'
+semantic.unresolved_name 'monitor::startObservation'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Clock'
+semantic.unresolved_name 'ChangeMonitor'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'ChangeSignal'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'Clock'
+semantic.unresolved_name 'signalCondition'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'ChangeMonitor'
+semantic.unresolved_name 'ChangeSignal'
+semantic.unresolved_name 'monitor::startObservation'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Clock'
+semantic.unresolved_name 'ChangeMonitor'
+semantic.unresolved_name 'monitor::startObservation'
+semantic.unresolved_name 'NumericalValue'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Clock'
+semantic.unresolved_name 'ChangeMonitor'
 ~~~
 # FORMAT
 ~~~sysml
@@ -590,68 +629,31 @@ standard library package Triggers {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Triggers"))) (name "Triggers") (declared-name "Triggers")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Triggers::*"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Triggers::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Triggers::Boolean"))) (name "Boolean") (declared-name "Boolean"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Triggers::NumericalValue"))) (name "NumericalValue") (declared-name "NumericalValue"))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Triggers::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
-        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Triggers::TimeSignal"))) (name "TimeSignal") (declared-name "TimeSignal"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Triggers::TriggerAfter"))) (name "TriggerAfter") (declared-name "TriggerAfter"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Triggers::TriggerAt"))) (name "TriggerAt") (declared-name "TriggerAt"))
-        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Triggers::TriggerWhen"))) (name "TriggerWhen") (declared-name "TriggerWhen"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "Triggers::_documentation"))) (name ""))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "0c3a9a90e86a7c5642734154a2c5491dd80c2e8525253d18df54229f301d0711") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Triggers"))) (kind "package") (name "Triggers") (declared-name "Triggers") (range (start (line 0) (character 0)) (end (line 0) (character 4422))))
+    (element (id (node (document "d0") (qualified-name "Triggers::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 12) (character 1)) (end (line 12) (character 25))) (parent (node (document "d0") (qualified-name "Triggers"))) (authored (membership (kind Import) (visibility "public") (import (reference "Clocks::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 12) (character 15)) (end (line 12) (character 21))))))
+    (element (id (node (document "d0") (qualified-name "Triggers::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 13) (character 1)) (end (line 13) (character 30))) (parent (node (document "d0") (qualified-name "Triggers"))) (authored (membership (kind Import) (visibility "public") (import (reference "Observation::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 13) (character 15)) (end (line 13) (character 26))))))
+    (element (id (node (document "d0") (qualified-name "Triggers::Boolean"))) (kind "import") (name "Boolean") (declared-name "Boolean") (range (start (line 8) (character 1)) (end (line 8) (character 38))) (parent (node (document "d0") (qualified-name "Triggers"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Boolean") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 37))))))
+    (element (id (node (document "d0") (qualified-name "Triggers::NumericalValue"))) (kind "import") (name "NumericalValue") (declared-name "NumericalValue") (range (start (line 9) (character 1)) (end (line 9) (character 45))) (parent (node (document "d0") (qualified-name "Triggers"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::NumericalValue") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 9) (character 16)) (end (line 9) (character 44))))))
+    (element (id (node (document "d0") (qualified-name "Triggers::Occurrence"))) (kind "import") (name "Occurrence") (declared-name "Occurrence") (range (start (line 10) (character 1)) (end (line 10) (character 40))) (parent (node (document "d0") (qualified-name "Triggers"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::Occurrence") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 10) (character 16)) (end (line 10) (character 39))))))
+    (element (id (node (document "d0") (qualified-name "Triggers::TimeSignal"))) (kind "classifier decl") (name "TimeSignal") (declared-name "TimeSignal") (range (start (line 15) (character 1)) (end (line 15) (character 632))) (parent (node (document "d0") (qualified-name "Triggers"))))
+    (element (id (node (document "d0") (qualified-name "Triggers::TriggerAfter"))) (kind "kermlDecl") (name "TriggerAfter") (declared-name "TriggerAfter") (range (start (line 140) (character 1)) (end (line 140) (character 1178))) (parent (node (document "d0") (qualified-name "Triggers"))))
+    (element (id (node (document "d0") (qualified-name "Triggers::TriggerAt"))) (kind "kermlDecl") (name "TriggerAt") (declared-name "TriggerAt") (range (start (line 90) (character 1)) (end (line 90) (character 1219))) (parent (node (document "d0") (qualified-name "Triggers"))))
+    (element (id (node (document "d0") (qualified-name "Triggers::TriggerWhen"))) (kind "kermlDecl") (name "TriggerWhen") (declared-name "TriggerWhen") (range (start (line 47) (character 1)) (end (line 47) (character 952))) (parent (node (document "d0") (qualified-name "Triggers"))))
+    (element (id (node (document "d0") (qualified-name "Triggers::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 4422))) (parent (node (document "d0") (qualified-name "Triggers"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Triggers::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Clocks::*") (range (start (line 12) (character 15)) (end (line 12) (character 21))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Triggers::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "Observation::*") (range (start (line 13) (character 15)) (end (line 13) (character 26))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Triggers::Boolean"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Boolean") (range (start (line 8) (character 16)) (end (line 8) (character 37))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Triggers::NumericalValue"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::NumericalValue") (range (start (line 9) (character 16)) (end (line 9) (character 44))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Triggers::Occurrence"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::Occurrence") (range (start (line 10) (character 16)) (end (line 10) (character 39))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Triggers::_documentation"))) (to (node (document "d0") (qualified-name "Triggers"))) (provenance authored))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/triggers.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 16) (end 8 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 9 16) (end 9 44))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 10 16) (end 10 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 12 15) (end 12 21))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 13 15) (end 13 26))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

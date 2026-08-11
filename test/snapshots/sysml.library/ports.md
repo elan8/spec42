@@ -60,23 +60,32 @@ standard library package Ports {
     }
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Object'
-semantic.unresolved_name 'Object::self'
-semantic.unresolved_name 'timeEnclosedOccurrences'
-semantic.unresolved_name 'outgoingTransfersFromSelf'
-semantic.unresolved_name 'interfacingPorts::incomingTransfersToSelf'
-semantic.unresolved_name 'objects'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Object'
-semantic.unresolved_name 'Object::self'
-semantic.unresolved_name 'timeEnclosedOccurrences'
-semantic.unresolved_name 'outgoingTransfersFromSelf'
-semantic.unresolved_name 'interfacingPorts::incomingTransfersToSelf'
-semantic.unresolved_name 'objects'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "ports.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 19) (end 7 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 19) (end 8 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 22 45) (end 22 68))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -130,6 +139,24 @@ CloseCurly,EndOfFile,
         (interface_end end 'target')))
     (port_usage abstract 'ports' : 'Port' :> 'objects' multiplicity nonunique
       (documentation))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Object'
+semantic.unresolved_name 'Object::self'
+semantic.unresolved_name 'timeEnclosedOccurrences'
+semantic.unresolved_name 'outgoingTransfersFromSelf'
+semantic.unresolved_name 'interfacingPorts::incomingTransfersToSelf'
+semantic.unresolved_name 'objects'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Object'
+semantic.unresolved_name 'Object::self'
+semantic.unresolved_name 'timeEnclosedOccurrences'
+semantic.unresolved_name 'outgoingTransfersFromSelf'
+semantic.unresolved_name 'interfacingPorts::incomingTransfersToSelf'
+semantic.unresolved_name 'objects'
 ~~~
 # FORMAT
 ~~~sysml
@@ -190,85 +217,38 @@ standard library package Ports {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Ports"))) (name "Ports") (declared-name "Ports")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Ports::Object"))) (name "Object") (declared-name "Object"))
-        (element (kind "port def") (id (node (document "d0") (qualified-name "Ports::Port"))) (name "Port") (declared-name "Port")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Ports::Port::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Ports::Port")))))
-            (element (kind "port") (id (node (document "d0") (qualified-name "Ports::Port::subports"))) (name "subports") (declared-name "subports") (declared (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Ports::Port"))))
-              (contains
-                (element (kind "documentation") (id (node (document "d0") (qualified-name "Ports::Port::subports::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Ports::Port")))))
-              )
-            )
-            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "Ports::Port::~Port"))) (name "~Port") (declared-name "~Port") (effective (featuring-type (node (document "d0") (qualified-name "Ports::Port")))))
-          )
-        )
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "Ports::_documentation"))) (name ""))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Ports::objects"))) (name "objects") (declared-name "objects"))
-        (element (kind "port def") (id (node (document "d0") (qualified-name "Ports::ports"))) (name "ports") (declared-name "ports")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Ports::ports::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Ports::ports")))))
-            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "Ports::ports::~ports"))) (name "~ports") (declared-name "~ports") (effective (featuring-type (node (document "d0") (qualified-name "Ports::ports")))))
-          )
-        )
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "8851193e6f34324e83b3b8e041bca0d4592493adfdc3c42bfa241db0cee36751") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Ports"))) (kind "package") (name "Ports") (declared-name "Ports") (range (start (line 0) (character 0)) (end (line 0) (character 1594))))
+    (element (id (node (document "d0") (qualified-name "Ports::Object"))) (kind "import") (name "Object") (declared-name "Object") (range (start (line 7) (character 4)) (end (line 7) (character 35))) (parent (node (document "d0") (qualified-name "Ports"))) (authored (membership (kind Import) (visibility "private") (import (reference "Objects::Object") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 19)) (end (line 7) (character 34))))))
+    (element (id (node (document "d0") (qualified-name "Ports::Port"))) (kind "port def") (name "Port") (declared-name "Port") (range (start (line 10) (character 4)) (end (line 10) (character 1179))) (parent (node (document "d0") (qualified-name "Ports"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Object") (range (start (line 10) (character 30)) (end (line 10) (character 36)))))))
+    (element (id (node (document "d0") (qualified-name "Ports::Port::_documentation"))) (kind "documentation") (name "") (range (start (line 10) (character 4)) (end (line 10) (character 1179))) (parent (node (document "d0") (qualified-name "Ports::Port"))))
+    (element (id (node (document "d0") (qualified-name "Ports::Port::subports"))) (kind "port") (name "subports") (declared-name "subports") (range (start (line 22) (character 8)) (end (line 22) (character 184))) (parent (node (document "d0") (qualified-name "Ports::Port"))) (authored (membership (kind Feature)) (relationships (typing (reference "Port") (range none)) (subsetting (reference "ports") (range (start (line 22) (character 38)) (end (line 22) (character 43)))) (subsetting (reference "timeEnclosedOccurrences") (range (start (line 22) (character 45)) (end (line 22) (character 68)))))))
+    (element (id (node (document "d0") (qualified-name "Ports::Port::subports::_documentation"))) (kind "documentation") (name "") (range (start (line 22) (character 8)) (end (line 22) (character 184))) (parent (node (document "d0") (qualified-name "Ports::Port::subports"))))
+    (element (id (node (document "d0") (qualified-name "Ports::Port::~Port"))) (kind "conjugated port definition") (name "~Port") (declared-name "~Port") (range (start (line 10) (character 4)) (end (line 10) (character 1179))) (parent (node (document "d0") (qualified-name "Ports::Port"))))
+    (element (id (node (document "d0") (qualified-name "Ports::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 1594))) (parent (node (document "d0") (qualified-name "Ports"))))
+    (element (id (node (document "d0") (qualified-name "Ports::objects"))) (kind "import") (name "objects") (declared-name "objects") (range (start (line 8) (character 4)) (end (line 8) (character 36))) (parent (node (document "d0") (qualified-name "Ports"))) (authored (membership (kind Import) (visibility "private") (import (reference "Objects::objects") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 8) (character 19)) (end (line 8) (character 35))))))
+    (element (id (node (document "d0") (qualified-name "Ports::ports"))) (kind "port def") (name "ports") (declared-name "ports") (range (start (line 47) (character 4)) (end (line 47) (character 156))) (parent (node (document "d0") (qualified-name "Ports"))) (authored (membership (kind Owning)) (relationships (specializes (reference "objects") (range (start (line 0) (character 0)) (end (line 0) (character 7)))))))
+    (element (id (node (document "d0") (qualified-name "Ports::ports::_documentation"))) (kind "documentation") (name "") (range (start (line 47) (character 4)) (end (line 47) (character 156))) (parent (node (document "d0") (qualified-name "Ports::ports"))))
+    (element (id (node (document "d0") (qualified-name "Ports::ports::~ports"))) (kind "conjugated port definition") (name "~ports") (declared-name "~ports") (range (start (line 47) (character 4)) (end (line 47) (character 156))) (parent (node (document "d0") (qualified-name "Ports::ports"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Ports::Object"))) (kind membershipImport) (ordinal 0)) (authored-target "Objects::Object") (range (start (line 7) (character 19)) (end (line 7) (character 34))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Ports::Port"))) (kind specialization) (ordinal 0)) (authored-target "Object") (range (start (line 10) (character 30)) (end (line 10) (character 36))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Ports::Object")))))
+    (reference (id (source (node (document "d0") (qualified-name "Ports::Port::subports"))) (kind featureTyping) (ordinal 0)) (authored-target "Port") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Ports::Port")))))
+    (reference (id (source (node (document "d0") (qualified-name "Ports::Port::subports"))) (kind subsetting) (ordinal 0)) (authored-target "ports") (range (start (line 22) (character 38)) (end (line 22) (character 43))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Ports::ports")))))
+    (reference (id (source (node (document "d0") (qualified-name "Ports::Port::subports"))) (kind subsetting) (ordinal 1)) (authored-target "timeEnclosedOccurrences") (range (start (line 22) (character 45)) (end (line 22) (character 68))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Ports::objects"))) (kind membershipImport) (ordinal 0)) (authored-target "Objects::objects") (range (start (line 8) (character 19)) (end (line 8) (character 35))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Ports::ports"))) (kind specialization) (ordinal 0)) (authored-target "objects") (range (start (line 0) (character 0)) (end (line 0) (character 7))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Ports::objects")))))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Ports::Port::_documentation"))) (to (node (document "d0") (qualified-name "Ports::Port"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Ports::Port::subports::_documentation"))) (to (node (document "d0") (qualified-name "Ports::Port::subports"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Ports::_documentation"))) (to (node (document "d0") (qualified-name "Ports"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Ports::ports::_documentation"))) (to (node (document "d0") (qualified-name "Ports::ports"))) (provenance authored))
-    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "Ports::Port::~Port"))) (to (node (document "d0") (qualified-name "Ports::Port"))) (provenance authored))
-    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "Ports::ports::~ports"))) (to (node (document "d0") (qualified-name "Ports::ports"))) (provenance authored))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Ports::Port::subports"))) (to (node (document "d0") (qualified-name "Ports::Port"))) (provenance authored))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Ports::Port"))) (target (node (document "d0") (qualified-name "Ports::Object"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Ports::Port"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Ports::Port::subports"))) (target (node (document "d0") (qualified-name "Ports::Port"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Ports::Port::subports"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "d0") (qualified-name "Ports::Port::subports"))) (target (node (document "d0") (qualified-name "Ports::ports"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Ports::Port::subports"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Ports::ports"))) (target (node (document "d0") (qualified-name "Ports::objects"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Ports::ports"))) (kind specialization) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Ports::Port"))) (status missing-prerequisite) (target "Ports::Port"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Ports::Port::subports"))) (status missing-prerequisite) (target "Ports::ports"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Ports::Port::~Port"))) (status missing-prerequisite) (target "Ports::Port"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Ports::ports"))) (status missing-prerequisite) (target "Ports::Port"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Ports::ports::~ports"))) (status missing-prerequisite) (target "Ports::Port"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/ports.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 19) (end 7 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 19) (end 8 35))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 10 4) (end 10 1179))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 47 4) (end 47 156))
-      )
-    )
+  (evaluation
   )
 )
 ~~~

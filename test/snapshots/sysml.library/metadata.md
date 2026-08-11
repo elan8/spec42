@@ -38,23 +38,38 @@ doc
 	}
 }
 ~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Metaobject'
-semantic.unresolved_name 'Item'
-semantic.unresolved_name 'Metaobject::self'
-semantic.unresolved_name 'Item::self'
-semantic.unresolved_name 'metaobjects'
-semantic.unresolved_name 'items'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Metaobject'
-semantic.unresolved_name 'Item'
-semantic.unresolved_name 'Metaobject::self'
-semantic.unresolved_name 'Item::self'
-semantic.unresolved_name 'metaobjects'
-semantic.unresolved_name 'items'
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "metadata.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 16) (end 8 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 16) (end 9 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 16) (end 10 28))
+      )
+    )
+  )
+)
 ~~~
 # TOKENS
 ~~~zig
@@ -90,6 +105,24 @@ CloseCurly,EndOfFile,
       (ref_usage ref 'self' : 'MetadataItem' :>> 'Metaobject::self', 'Item::self'))
     (item_usage abstract 'metadataItems' : 'MetadataItem' :> 'metaobjects', 'items' multiplicity
       (documentation))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Metaobject'
+semantic.unresolved_name 'Item'
+semantic.unresolved_name 'Metaobject::self'
+semantic.unresolved_name 'Item::self'
+semantic.unresolved_name 'metaobjects'
+semantic.unresolved_name 'items'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Metaobject'
+semantic.unresolved_name 'Item'
+semantic.unresolved_name 'Metaobject::self'
+semantic.unresolved_name 'Item::self'
+semantic.unresolved_name 'metaobjects'
+semantic.unresolved_name 'items'
 ~~~
 # FORMAT
 ~~~sysml
@@ -129,97 +162,37 @@ standard library package Metadata {
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Metadata"))) (name "Metadata") (declared-name "Metadata")
-      (contains
-        (element (kind "import") (id (node (document "d0") (qualified-name "Metadata::Item"))) (name "Item") (declared-name "Item"))
-        (element (kind "metadata def") (id (node (document "d0") (qualified-name "Metadata::MetadataItem"))) (name "MetadataItem") (declared-name "MetadataItem")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Metadata::MetadataItem::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Metadata::MetadataItem")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "Metadata::Metaobject"))) (name "Metaobject") (declared-name "Metaobject"))
-        (element (kind "documentation") (id (node (document "d0") (qualified-name "Metadata::_documentation"))) (name ""))
-        (element (kind "import") (id (node (document "d0") (qualified-name "Metadata::items"))) (name "items") (declared-name "items"))
-        (element (kind "item def") (id (node (document "d0") (qualified-name "Metadata::metadataItems"))) (name "metadataItems") (declared-name "metadataItems")
-          (contains
-            (element (kind "documentation") (id (node (document "d0") (qualified-name "Metadata::metadataItems::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Metadata::metadataItems")))))
-          )
-        )
-        (element (kind "import") (id (node (document "d0") (qualified-name "Metadata::metaobjects"))) (name "metaobjects") (declared-name "metaobjects"))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c760d0452c56b13cb7227cfd44e684b55f81608432d78c204d02fe5d545afcf5") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Metadata"))) (kind "package") (name "Metadata") (declared-name "Metadata") (range (start (line 0) (character 0)) (end (line 0) (character 884))))
+    (element (id (node (document "d0") (qualified-name "Metadata::Item"))) (kind "import") (name "Item") (declared-name "Item") (range (start (line 9) (character 1)) (end (line 9) (character 28))) (parent (node (document "d0") (qualified-name "Metadata"))) (authored (membership (kind Import) (visibility "private") (import (reference "Items::Item") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 9) (character 16)) (end (line 9) (character 27))))))
+    (element (id (node (document "d0") (qualified-name "Metadata::MetadataItem"))) (kind "metadata def") (name "MetadataItem") (declared-name "MetadataItem") (range (start (line 12) (character 1)) (end (line 12) (character 293))) (parent (node (document "d0") (qualified-name "Metadata"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Metaobject") (range (start (line 12) (character 39)) (end (line 12) (character 49)))) (specializes (reference "Item") (range (start (line 12) (character 51)) (end (line 12) (character 55)))))))
+    (element (id (node (document "d0") (qualified-name "Metadata::MetadataItem::_documentation"))) (kind "documentation") (name "") (range (start (line 12) (character 1)) (end (line 12) (character 293))) (parent (node (document "d0") (qualified-name "Metadata::MetadataItem"))))
+    (element (id (node (document "d0") (qualified-name "Metadata::Metaobject"))) (kind "import") (name "Metaobject") (declared-name "Metaobject") (range (start (line 7) (character 1)) (end (line 7) (character 40))) (parent (node (document "d0") (qualified-name "Metadata"))) (authored (membership (kind Import) (visibility "private") (import (reference "Metaobjects::Metaobject") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 16)) (end (line 7) (character 39))))))
+    (element (id (node (document "d0") (qualified-name "Metadata::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 884))) (parent (node (document "d0") (qualified-name "Metadata"))))
+    (element (id (node (document "d0") (qualified-name "Metadata::items"))) (kind "import") (name "items") (declared-name "items") (range (start (line 10) (character 1)) (end (line 10) (character 29))) (parent (node (document "d0") (qualified-name "Metadata"))) (authored (membership (kind Import) (visibility "private") (import (reference "Items::items") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 10) (character 16)) (end (line 10) (character 28))))))
+    (element (id (node (document "d0") (qualified-name "Metadata::metadataItems"))) (kind "item def") (name "metadataItems") (declared-name "metadataItems") (range (start (line 22) (character 1)) (end (line 22) (character 270))) (parent (node (document "d0") (qualified-name "Metadata"))) (authored (membership (kind Owning)) (relationships (specializes (reference "metaobjects") (range (start (line 0) (character 0)) (end (line 0) (character 11)))) (specializes (reference "items") (range (start (line 0) (character 13)) (end (line 0) (character 18)))))))
+    (element (id (node (document "d0") (qualified-name "Metadata::metadataItems::_documentation"))) (kind "documentation") (name "") (range (start (line 22) (character 1)) (end (line 22) (character 270))) (parent (node (document "d0") (qualified-name "Metadata::metadataItems"))))
+    (element (id (node (document "d0") (qualified-name "Metadata::metaobjects"))) (kind "import") (name "metaobjects") (declared-name "metaobjects") (range (start (line 8) (character 1)) (end (line 8) (character 41))) (parent (node (document "d0") (qualified-name "Metadata"))) (authored (membership (kind Import) (visibility "private") (import (reference "Metaobjects::metaobjects") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 8) (character 16)) (end (line 8) (character 40))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Metadata::Item"))) (kind membershipImport) (ordinal 0)) (authored-target "Items::Item") (range (start (line 9) (character 16)) (end (line 9) (character 27))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Metadata::MetadataItem"))) (kind specialization) (ordinal 0)) (authored-target "Metaobject") (range (start (line 12) (character 39)) (end (line 12) (character 49))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Metadata::Metaobject")))))
+    (reference (id (source (node (document "d0") (qualified-name "Metadata::MetadataItem"))) (kind specialization) (ordinal 1)) (authored-target "Item") (range (start (line 12) (character 51)) (end (line 12) (character 55))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Metadata::Item")))))
+    (reference (id (source (node (document "d0") (qualified-name "Metadata::Metaobject"))) (kind membershipImport) (ordinal 0)) (authored-target "Metaobjects::Metaobject") (range (start (line 7) (character 16)) (end (line 7) (character 39))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Metadata::items"))) (kind membershipImport) (ordinal 0)) (authored-target "Items::items") (range (start (line 10) (character 16)) (end (line 10) (character 28))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Metadata::metadataItems"))) (kind specialization) (ordinal 0)) (authored-target "metaobjects") (range (start (line 0) (character 0)) (end (line 0) (character 11))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Metadata::metaobjects")))))
+    (reference (id (source (node (document "d0") (qualified-name "Metadata::metadataItems"))) (kind specialization) (ordinal 1)) (authored-target "items") (range (start (line 0) (character 13)) (end (line 0) (character 18))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Metadata::items")))))
+    (reference (id (source (node (document "d0") (qualified-name "Metadata::metaobjects"))) (kind membershipImport) (ordinal 0)) (authored-target "Metaobjects::metaobjects") (range (start (line 8) (character 16)) (end (line 8) (character 40))) (outcome (status unresolved)))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Metadata::MetadataItem::_documentation"))) (to (node (document "d0") (qualified-name "Metadata::MetadataItem"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Metadata::_documentation"))) (to (node (document "d0") (qualified-name "Metadata"))) (provenance authored))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Metadata::metadataItems::_documentation"))) (to (node (document "d0") (qualified-name "Metadata::metadataItems"))) (provenance authored))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Metadata::MetadataItem"))) (target (node (document "d0") (qualified-name "Metadata::Item"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Metadata::MetadataItem"))) (kind specialization) (ordinal 1)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Metadata::MetadataItem"))) (target (node (document "d0") (qualified-name "Metadata::Metaobject"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Metadata::MetadataItem"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Metadata::metadataItems"))) (target (node (document "d0") (qualified-name "Metadata::items"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Metadata::metadataItems"))) (kind specialization) (ordinal 1)))
+    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Metadata::metadataItems"))) (target (node (document "d0") (qualified-name "Metadata::metaobjects"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Metadata::metadataItems"))) (kind specialization) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata::MetadataItem"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata::metadataItems"))) (status missing-prerequisite) (target "Items::Item"))
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml.library/metadata.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 7 16) (end 7 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 8 16) (end 8 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 9 16) (end 9 27))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 10 16) (end 10 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 12 1) (end 12 293))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 12 1) (end 12 293))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 22 1) (end 22 270))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_specializes_reference")
-        (source "semantic")
-        (range (start 22 1) (end 22 270))
-      )
-    )
+  (evaluation
   )
 )
 ~~~
