@@ -109,7 +109,7 @@ fn materialize_transition_features(
             "transitionFeatureKind".to_string(),
             serde_json::json!("trigger"),
         );
-        insert_transition_accept_attrs(&mut attrs, accept);
+        let payload_type_refs = insert_transition_accept_attrs(&mut attrs, accept);
         let qualified = qualified_name_for_node(
             g,
             uri,
@@ -127,6 +127,7 @@ fn materialize_transition_features(
             attrs,
             Some(transition_id),
         );
+        super::payload::apply_payload_type_refs(g, uri, &qualified, &payload_type_refs);
     }
     if let Some(guard) = guard {
         let mut attrs = HashMap::new();
@@ -289,9 +290,10 @@ pub(super) fn build_from_state_body(
                         serde_json::json!(transition_effect_to_debug_string(effect)),
                     );
                 }
-                if let Some(ref accept) = t.accept {
-                    insert_transition_accept_attrs(&mut attrs, accept);
-                }
+                let payload_type_refs = t
+                    .accept
+                    .as_ref()
+                    .map(|accept| insert_transition_accept_attrs(&mut attrs, accept));
                 let transition_range = span_to_range(&transition_node.span);
                 add_node_and_recurse(
                     g,
@@ -303,6 +305,9 @@ pub(super) fn build_from_state_body(
                     attrs,
                     Some(parent_id),
                 );
+                if let Some(refs) = &payload_type_refs {
+                    super::payload::apply_payload_type_refs(g, uri, &qualified, refs);
+                }
                 let transition_id = NodeId::new(uri, &qualified);
                 if let Some(node) = g.get_node_mut(&transition_id) {
                     node.declared_facts.transition_endpoints = Some(TransitionEndpointFacts {
