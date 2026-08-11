@@ -100,9 +100,6 @@ fn record_declared_relationship_target(
     reference: &str,
 ) {
     let reference = reference.trim();
-    if reference.is_empty() {
-        return;
-    }
     let Some(node) = g.get_node_mut(source_id) else {
         return;
     };
@@ -265,6 +262,16 @@ fn add_edge_if_both_exist_opt(
     let tgt_key = normalize_for_lookup(target_qualified);
     let src_id = NodeId::new(uri, &src_key);
     let tgt_id = NodeId::new(uri, &tgt_key);
+    if g.structural_input_only {
+        // Structural construction records authored target text only. Candidate discovery and
+        // edge publication belong exclusively to the canonical resolver after all documents are
+        // merged; otherwise this helper would remain a second semantic authority.
+        if g.get_node(&src_id).is_some() {
+            record_declared_relationship_target(g, &src_id, kind, &tgt_key);
+            return true;
+        }
+        return false;
+    }
     let (Some(&src_idx), Some(tgt_node)) = (g.node_index_by_id.get(&src_id), g.get_node(&tgt_id))
     else {
         g.pending_relationships

@@ -195,28 +195,19 @@ impl ReferenceKind {
             Self::ReferenceSubsetting => RelationshipKind::ReferenceSubsetting,
             Self::CrossSubsetting => RelationshipKind::CrossSubsetting,
             Self::NamespaceImport | Self::MembershipImport => return None,
-            Self::ConnectionSource
-            | Self::ConnectionTarget
-            | Self::BindSource
-            | Self::BindTarget
-            | Self::SatisfySource
-            | Self::SatisfyTarget
-            | Self::AllocateSource
-            | Self::AllocateTarget
-            | Self::FlowSource
-            | Self::FlowTarget
-            | Self::SuccessionFlowSource
-            | Self::SuccessionFlowTarget
-            | Self::PerformSource
-            | Self::PerformTarget
-            | Self::TransitionSource
-            | Self::TransitionTarget
-            | Self::ReferenceSource
-            | Self::ReferenceTarget
-            | Self::DependencySource
-            | Self::DependencyTarget
-            | Self::DerivationSource
-            | Self::DerivationTarget => return None,
+            Self::ConnectionSource | Self::ConnectionTarget => RelationshipKind::Connection,
+            Self::BindSource | Self::BindTarget => RelationshipKind::Bind,
+            Self::SatisfySource | Self::SatisfyTarget => RelationshipKind::Satisfy,
+            Self::AllocateSource | Self::AllocateTarget => RelationshipKind::Allocate,
+            Self::FlowSource | Self::FlowTarget => RelationshipKind::Flow,
+            Self::SuccessionFlowSource | Self::SuccessionFlowTarget => {
+                RelationshipKind::SuccessionFlow
+            }
+            Self::PerformSource | Self::PerformTarget => RelationshipKind::Perform,
+            Self::TransitionSource | Self::TransitionTarget => RelationshipKind::Transition,
+            Self::ReferenceSource | Self::ReferenceTarget => RelationshipKind::Reference,
+            Self::DependencySource | Self::DependencyTarget => RelationshipKind::Dependency,
+            Self::DerivationSource | Self::DerivationTarget => RelationshipKind::Derivation,
         })
     }
 }
@@ -1173,6 +1164,21 @@ fn authored_relationships(
             ReferenceKind::CrossSubsetting,
             facts.cross_subsetting.clone(),
         ),
+        (ReferenceKind::ConnectionSource, facts.connection.clone()),
+        (ReferenceKind::BindSource, facts.bind.clone()),
+        (ReferenceKind::SatisfySource, facts.satisfy.clone()),
+        (ReferenceKind::AllocateSource, facts.allocate.clone()),
+        (ReferenceKind::FlowSource, facts.flow.clone()),
+        (
+            ReferenceKind::SuccessionFlowSource,
+            facts.succession_flow.clone(),
+        ),
+        (ReferenceKind::PerformSource, facts.perform.clone()),
+        (ReferenceKind::TransitionSource, facts.transition.clone()),
+        (ReferenceKind::TransitionSource, facts.initial_state.clone()),
+        (ReferenceKind::ReferenceSource, facts.reference.clone()),
+        (ReferenceKind::DependencySource, facts.dependency.clone()),
+        (ReferenceKind::DerivationSource, facts.derivation.clone()),
     ]
 }
 

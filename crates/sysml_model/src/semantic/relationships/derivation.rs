@@ -5,6 +5,11 @@ pub(crate) fn try_wire_derivation_connection(
     uri: &Url,
     connection_node_id: &NodeId,
 ) {
+    if g.structural_input_only {
+        // Derivation endpoints are authored facts and are settled by the canonical resolver.
+        // The legacy helper cannot safely discover cross-document targets during construction.
+        return;
+    }
     let Some(connection) = g.get_node(connection_node_id) else {
         return;
     };

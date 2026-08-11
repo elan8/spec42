@@ -1233,6 +1233,32 @@ pub struct DeclaredRelationshipFacts {
     /// remain owned by their `typing` facts on `ElementKind::Subject` children.
     #[serde(default)]
     pub subject: Vec<DeclaredRelationshipTarget>,
+    /// Authored endpoint relationships whose parser adapter exposes only qualified target text.
+    /// Their ranges remain explicit `None` until a richer AST adapter supplies them.
+    #[serde(default)]
+    pub connection: Vec<DeclaredRelationshipTarget>,
+    #[serde(default)]
+    pub bind: Vec<DeclaredRelationshipTarget>,
+    #[serde(default)]
+    pub satisfy: Vec<DeclaredRelationshipTarget>,
+    #[serde(default)]
+    pub allocate: Vec<DeclaredRelationshipTarget>,
+    #[serde(default)]
+    pub flow: Vec<DeclaredRelationshipTarget>,
+    #[serde(default)]
+    pub succession_flow: Vec<DeclaredRelationshipTarget>,
+    #[serde(default)]
+    pub perform: Vec<DeclaredRelationshipTarget>,
+    #[serde(default)]
+    pub transition: Vec<DeclaredRelationshipTarget>,
+    #[serde(default)]
+    pub initial_state: Vec<DeclaredRelationshipTarget>,
+    #[serde(default)]
+    pub reference: Vec<DeclaredRelationshipTarget>,
+    #[serde(default)]
+    pub dependency: Vec<DeclaredRelationshipTarget>,
+    #[serde(default)]
+    pub derivation: Vec<DeclaredRelationshipTarget>,
 }
 
 /// A source-level reference carried by a structured parser relationship.
@@ -1263,6 +1289,18 @@ impl DeclaredRelationshipFacts {
             RelationshipKind::ReferenceSubsetting => &mut self.reference_subsetting,
             RelationshipKind::CrossSubsetting => &mut self.cross_subsetting,
             RelationshipKind::Subject => &mut self.subject,
+            RelationshipKind::Connection => &mut self.connection,
+            RelationshipKind::Bind => &mut self.bind,
+            RelationshipKind::Satisfy => &mut self.satisfy,
+            RelationshipKind::Allocate => &mut self.allocate,
+            RelationshipKind::Flow => &mut self.flow,
+            RelationshipKind::SuccessionFlow => &mut self.succession_flow,
+            RelationshipKind::Perform => &mut self.perform,
+            RelationshipKind::Transition => &mut self.transition,
+            RelationshipKind::InitialState => &mut self.initial_state,
+            RelationshipKind::Reference => &mut self.reference,
+            RelationshipKind::Dependency => &mut self.dependency,
+            RelationshipKind::Derivation => &mut self.derivation,
             _ => return false,
         };
         // Repeated authored clauses are distinct source facts even when they
