@@ -48,12 +48,6 @@ package '14a-Language Extensions' {
         (source "semantic")
         (range (start 12 3) (end 12 47))
       )
-      (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 26 3) (end 26 51))
-      )
     )
   )
 )

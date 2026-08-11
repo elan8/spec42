@@ -127,6 +127,16 @@ standard library package CauseAndEffect {
         (code "ambiguous_reference")
         (source "semantic")
         (range (start 36 2) (end 36 25))
+        (related-information
+          (related
+            (uri "memory://snapshot/snapshot/cause_and_effect.md")
+            (range (start 36 2) (end 36 56))
+          )
+          (related
+            (uri "memory://snapshot/snapshot/cause_and_effect.md")
+            (range (start 37 2) (end 37 51))
+          )
+        )
       )
       (diagnostic
         (severity warning)
@@ -139,6 +149,16 @@ standard library package CauseAndEffect {
         (code "ambiguous_reference")
         (source "semantic")
         (range (start 37 2) (end 37 25))
+        (related-information
+          (related
+            (uri "memory://snapshot/snapshot/cause_and_effect.md")
+            (range (start 36 2) (end 36 56))
+          )
+          (related
+            (uri "memory://snapshot/snapshot/cause_and_effect.md")
+            (range (start 37 2) (end 37 51))
+          )
+        )
       )
       (diagnostic
         (severity warning)

@@ -102,22 +102,10 @@ package '11b-Safety and Security Feaure Views' {
         (range (start 12 16) (end 12 37))
       )
       (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 16 30) (end 16 49))
-      )
-      (diagnostic
         (severity information)
         (code "untyped_part_usage")
         (source "sysml")
         (range (start 17 4) (end 17 22))
-      )
-      (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 18 31) (end 18 51))
       )
       (diagnostic
         (severity information)
@@ -126,22 +114,10 @@ package '11b-Safety and Security Feaure Views' {
         (range (start 21 4) (end 21 14))
       )
       (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 22 25) (end 22 44))
-      )
-      (diagnostic
         (severity information)
         (code "untyped_part_usage")
         (source "sysml")
         (range (start 26 4) (end 26 18))
-      )
-      (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 27 36) (end 27 56))
       )
       (diagnostic
         (severity warning)

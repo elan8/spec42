@@ -89,18 +89,48 @@ package '3a-Function-based Behavior-5' {
         (code "ambiguous_reference")
         (source "semantic")
         (range (start 36 4) (end 36 890))
+        (related-information
+          (related
+            (uri "memory://snapshot/snapshot/3a_function_based_behavior_3.md")
+            (range (start 36 4) (end 36 890))
+          )
+          (related
+            (uri "memory://snapshot/snapshot/3a_function_based_behavior_3.md")
+            (range (start 67 4) (end 67 45))
+          )
+        )
       )
       (diagnostic
         (severity error)
         (code "ambiguous_reference")
         (source "semantic")
         (range (start 38 6) (end 38 44))
+        (related-information
+          (related
+            (uri "memory://snapshot/snapshot/3a_function_based_behavior_3.md")
+            (range (start 36 4) (end 36 890))
+          )
+          (related
+            (uri "memory://snapshot/snapshot/3a_function_based_behavior_3.md")
+            (range (start 67 4) (end 67 45))
+          )
+        )
       )
       (diagnostic
         (severity error)
         (code "ambiguous_reference")
         (source "semantic")
         (range (start 67 4) (end 67 45))
+        (related-information
+          (related
+            (uri "memory://snapshot/snapshot/3a_function_based_behavior_3.md")
+            (range (start 36 4) (end 36 890))
+          )
+          (related
+            (uri "memory://snapshot/snapshot/3a_function_based_behavior_3.md")
+            (range (start 67 4) (end 67 45))
+          )
+        )
       )
     )
   )

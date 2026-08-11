@@ -59,34 +59,16 @@ package 'Filtering Example-2' {
         (range (start 9 3) (end 9 14))
       )
       (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 10 29) (end 10 48))
-      )
-      (diagnostic
         (severity information)
         (code "untyped_part_usage")
         (source "sysml")
         (range (start 11 3) (end 11 21))
       )
       (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 12 30) (end 12 50))
-      )
-      (diagnostic
         (severity information)
         (code "untyped_part_usage")
         (source "sysml")
         (range (start 15 3) (end 15 13))
-      )
-      (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 16 24) (end 16 43))
       )
       (diagnostic
         (severity information)
@@ -101,20 +83,14 @@ package 'Filtering Example-2' {
         (range (start 20 3) (end 20 17))
       )
       (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 21 35) (end 21 55))
-      )
-      (diagnostic
         (severity warning)
-        (code "unsupported_reference")
+        (code "unsupported_filtered_import")
         (source "semantic")
         (range (start 27 16) (end 27 23))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_reference")
+        (code "unsupported_filtered_import")
         (source "semantic")
         (range (start 32 16) (end 32 23))
       )

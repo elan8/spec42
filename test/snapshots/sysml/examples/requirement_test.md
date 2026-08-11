@@ -63,6 +63,16 @@ package RequirementTest {
         (code "ambiguous_reference")
         (source "semantic")
         (range (start 21 22) (end 21 23))
+        (related-information
+          (related
+            (uri "memory://snapshot/snapshot/requirement_test.md")
+            (range (start 3 1) (end 3 22))
+          )
+          (related
+            (uri "memory://snapshot/snapshot/requirement_test.md")
+            (range (start 18 1) (end 18 76))
+          )
+        )
       )
       (diagnostic
         (severity warning)
@@ -75,6 +85,16 @@ package RequirementTest {
         (code "ambiguous_reference")
         (source "semantic")
         (range (start 26 26) (end 26 27))
+        (related-information
+          (related
+            (uri "memory://snapshot/snapshot/requirement_test.md")
+            (range (start 3 1) (end 3 22))
+          )
+          (related
+            (uri "memory://snapshot/snapshot/requirement_test.md")
+            (range (start 18 1) (end 18 76))
+          )
+        )
       )
     )
   )

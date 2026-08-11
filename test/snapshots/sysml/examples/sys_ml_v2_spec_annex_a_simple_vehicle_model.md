@@ -1599,9 +1599,27 @@ package SimpleVehicleModel{
       )
       (diagnostic
         (severity error)
-        (code "ambiguous_reference")
+        (code "ambiguous_import_target")
         (source "semantic")
         (range (start 16 22) (end 16 41))
+        (related-information
+          (related
+            (uri "memory://snapshot/snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md")
+            (range (start 444 8) (end 444 229))
+          )
+          (related
+            (uri "memory://snapshot/snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md")
+            (range (start 446 12) (end 446 96))
+          )
+          (related
+            (uri "memory://snapshot/snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md")
+            (range (start 447 16) (end 447 48))
+          )
+          (related
+            (uri "memory://snapshot/snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md")
+            (range (start 449 12) (end 449 34))
+          )
+        )
       )
       (diagnostic
         (severity warning)
@@ -2234,28 +2252,10 @@ package SimpleVehicleModel{
         (range (start 666 42) (end 666 51))
       )
       (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 684 45) (end 684 64))
-      )
-      (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 689 50) (end 689 69))
-      )
-      (diagnostic
         (severity information)
         (code "untyped_part_usage")
         (source "sysml")
         (range (start 690 24) (end 690 42))
-      )
-      (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 691 51) (end 691 71))
       )
       (diagnostic
         (severity warning)
@@ -2538,24 +2538,6 @@ package SimpleVehicleModel{
         (code "unresolved_reference")
         (source "semantic")
         (range (start 880 52) (end 880 61))
-      )
-      (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 892 32) (end 892 60))
-      )
-      (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 893 32) (end 893 51))
-      )
-      (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 894 32) (end 894 47))
       )
       (diagnostic
         (severity warning)
@@ -2880,12 +2862,6 @@ package SimpleVehicleModel{
         (code "unresolved_import_target")
         (source "semantic")
         (range (start 1206 22) (end 1206 39))
-      )
-      (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 1224 20) (end 1224 91))
       )
       (diagnostic
         (severity warning)

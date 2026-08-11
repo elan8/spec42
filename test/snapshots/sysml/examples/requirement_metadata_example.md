@@ -71,24 +71,6 @@ package RequirementMetadataExample {
       )
       (diagnostic
         (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 16 12) (end 16 37))
-      )
-      (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 23 6) (end 23 25))
-      )
-      (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 24 12) (end 24 27))
-      )
-      (diagnostic
-        (severity error)
         (code "unexpected_keyword_in_scope")
         (source "sysml")
         (range (start 29 5) (end 29 52))

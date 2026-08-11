@@ -38,18 +38,6 @@ package VerificationMetadataExample {
         (source "semantic")
         (range (start 2 16) (end 2 38))
       )
-      (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 6 29) (end 6 48))
-      )
-      (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 10 30) (end 10 45))
-      )
     )
   )
 )

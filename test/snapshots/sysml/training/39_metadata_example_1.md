@@ -48,6 +48,16 @@ package 'Metadata Example-1' {
         (code "ambiguous_reference")
         (source "semantic")
         (range (start 4 2) (end 4 21))
+        (related-information
+          (related
+            (uri "memory://snapshot/snapshot/39_metadata_example_1.md")
+            (range (start 4 2) (end 4 46))
+          )
+          (related
+            (uri "memory://snapshot/snapshot/39_metadata_example_1.md")
+            (range (start 5 2) (end 5 41))
+          )
+        )
       )
       (diagnostic
         (severity warning)
@@ -60,6 +70,16 @@ package 'Metadata Example-1' {
         (code "ambiguous_reference")
         (source "semantic")
         (range (start 5 2) (end 5 21))
+        (related-information
+          (related
+            (uri "memory://snapshot/snapshot/39_metadata_example_1.md")
+            (range (start 4 2) (end 4 46))
+          )
+          (related
+            (uri "memory://snapshot/snapshot/39_metadata_example_1.md")
+            (range (start 5 2) (end 5 41))
+          )
+        )
       )
       (diagnostic
         (severity warning)

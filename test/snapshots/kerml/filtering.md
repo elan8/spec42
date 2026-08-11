@@ -92,7 +92,7 @@ package Filtering {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_reference")
+        (code "unsupported_filtered_import")
         (source "semantic")
         (range (start 33 20) (end 33 31))
       )

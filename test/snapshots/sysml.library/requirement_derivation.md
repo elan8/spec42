@@ -79,6 +79,16 @@ standard library package RequirementDerivation {
         (code "ambiguous_reference")
         (source "semantic")
         (range (start 34 2) (end 34 21))
+        (related-information
+          (related
+            (uri "memory://snapshot/snapshot/requirement_derivation.md")
+            (range (start 34 2) (end 34 52))
+          )
+          (related
+            (uri "memory://snapshot/snapshot/requirement_derivation.md")
+            (range (start 35 2) (end 35 47))
+          )
+        )
       )
       (diagnostic
         (severity warning)
@@ -91,6 +101,16 @@ standard library package RequirementDerivation {
         (code "ambiguous_reference")
         (source "semantic")
         (range (start 35 2) (end 35 21))
+        (related-information
+          (related
+            (uri "memory://snapshot/snapshot/requirement_derivation.md")
+            (range (start 34 2) (end 34 52))
+          )
+          (related
+            (uri "memory://snapshot/snapshot/requirement_derivation.md")
+            (range (start 35 2) (end 35 47))
+          )
+        )
       )
       (diagnostic
         (severity warning)

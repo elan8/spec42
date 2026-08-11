@@ -284,6 +284,16 @@ package '14c-Language-Extensions' {
         (code "ambiguous_reference")
         (source "semantic")
         (range (start 106 3) (end 106 22))
+        (related-information
+          (related
+            (uri "memory://snapshot/snapshot/14c_language_extensions.md")
+            (range (start 106 3) (end 106 47))
+          )
+          (related
+            (uri "memory://snapshot/snapshot/14c_language_extensions.md")
+            (range (start 107 3) (end 107 42))
+          )
+        )
       )
       (diagnostic
         (severity warning)
@@ -296,6 +306,16 @@ package '14c-Language-Extensions' {
         (code "ambiguous_reference")
         (source "semantic")
         (range (start 107 3) (end 107 22))
+        (related-information
+          (related
+            (uri "memory://snapshot/snapshot/14c_language_extensions.md")
+            (range (start 106 3) (end 106 47))
+          )
+          (related
+            (uri "memory://snapshot/snapshot/14c_language_extensions.md")
+            (range (start 107 3) (end 107 42))
+          )
+        )
       )
       (diagnostic
         (severity warning)
@@ -344,12 +364,6 @@ package '14c-Language-Extensions' {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 152 12) (end 152 172))
-      )
-      (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 153 19) (end 153 45))
       )
       (diagnostic
         (severity warning)

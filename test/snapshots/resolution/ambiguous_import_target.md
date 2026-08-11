@@ -96,7 +96,7 @@ package Use {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "107509f1f58ffc0ebb1f6707882e2d6cb9204892d3c92b4c9d88de175153c882") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1eab7aa02395b376bc91e3a7c5956222dc88b0da8a9f77368a7b142c279f8c23") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "Shared"))) (kind "package") (name "Shared") (declared-name "Shared") (range (start (line 0) (character 0)) (end (line 0) (character 34))))
     (element (id (node (document "d0") (qualified-name "Shared::Thing"))) (kind "part def") (name "Thing") (declared-name "Thing") (range (start (line 0) (character 17)) (end (line 0) (character 32))) (parent (node (document "d0") (qualified-name "Shared"))))

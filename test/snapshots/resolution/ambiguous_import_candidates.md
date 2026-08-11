@@ -58,7 +58,7 @@ package Use {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a9353a83f967714c5cbfaea099bca53def920fd105df69bcfa0c8d71246d7db6") (contract-version "canonical-resolution-v1"))
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "798fd92f6b46e161d670380ca7f30fa3627a058ff750511daf82acc8828a5afa") (contract-version "canonical-resolution-v1"))
   (structure
     (element (id (node (document "d0") (qualified-name "A"))) (kind "package") (name "A") (declared-name "A") (range (start (line 0) (character 0)) (end (line 0) (character 29))))
     (element (id (node (document "d0") (qualified-name "A::Thing"))) (kind "part def") (name "Thing") (declared-name "Thing") (range (start (line 0) (character 12)) (end (line 0) (character 27))) (parent (node (document "d0") (qualified-name "A"))))
