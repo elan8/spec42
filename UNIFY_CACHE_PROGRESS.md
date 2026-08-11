@@ -453,4 +453,124 @@ are listed separately because they are not cache work and outlive it.
 | `remove_nodes_for_uri` cleared `standard_library_uris` for a removed document but left a stale `source_origins` entry, so a deleted document's Workspace/StandardLibrary/Library/External classification survived its own deletion | fixed by B11 |
 | Whole-graph linking and the scoped/incremental resolver are two independently implemented resolution engines | open, unscheduled |
 | Type-reference resolution is workspace-wide where KerML requires containment, visibility and import scoping; affects all typing kinds | open, unscheduled |
+| 22 pre-existing `snapshot_single_build` failures on `main` | open, out of scope for this effort |### Finding: redefinition does not suppress the implied multiplicity default
+
+Resolved while landing chunk G, and it left a larger defect behind.
+
+The metadata-def restriction shorthand (`:>> annotatedElement`, `:>> baseType` inside a
+`metadata def`) carries a dual relationship: the authored redefinition, plus a subsetting entailed
+by it. The subsetting is load-bearing — an existing contract test depends on it to avoid an
+incompatible-type-kind diagnostic — but it had been living only in the untyped attribute map,
+where it produced no graph edge and its provenance was never classified.
+
+It is now published through the implied-relationship mechanism as
+`ImpliedRelationshipRule::MetadataRedefinitionEntailsSubsetting`, so it carries implied provenance
+and stays distinguishable from the authored redefinition. Recording it as a declared fact instead
+would have published an entailed relationship as though it were written, which `AGENTS.md`
+forbids.
+
+The entailment is universal at the metamodel level: `org.omg.sysml/model/kerml.ecore:1471`
+declares `Redefinition` with `eSuperTypes="#//Subsetting"`, so every redefinition *is* a
+subsetting. The implementation is deliberately narrowed to the metadata shorthand, matching the
+only consumer today, because widening it moves a large share of the corpus.
+
+**The defect this exposed:** `SemanticGraph::has_implied_exactly_one_multiplicity`
+(`crates/sysml_model/src/semantic/graph.rs:627`) suppresses the default 1..1 multiplicity only
+when a `Subsetting` edge is present, ignoring `Redefinition` entirely. Because redefinition is a
+subsetting, a redefining feature should inherit its multiplicity rather than take the default —
+so **every redefining feature that does not also subset currently carries a spurious implied
+1..1 multiplicity**. Landing the narrow rule corrected this for metadata `baseType` only, which is
+visible in the `14c_language_extensions.md` golden.
+
+Fixing it properly means widening the entailment to all redefinitions. That is recommended
+follow-up work and needs a fixture survey first: even the narrow rule moved one corpus golden that
+was not predicted.
+
+### Resolving normative language questions
+
+Several findings in this effort are not cache questions at all but SysML/KerML semantics
+questions: whether attribute typing is an ordinary `FeatureTyping`, what scope a type reference
+resolves in, and whether a golden fixture encodes correct behaviour or an implementation artifact.
+
+Do not settle these by reading Spec42's own code, and do not settle them by picking whichever
+answer keeps the fixtures green. The authoritative sources are the specification and the OMG
+pilot implementation, available locally at
+`/Users/luke/Documents/GitHub/SysML-v2-Pilot-Implementation` — in particular `sysml.library/`
+(the normative model library), `org.omg.sysml/` (metamodel and derived-property implementations),
+the Xtext grammars, and the `*.xpect.tests` expectation suites, which frequently encode exactly
+the edge cases in dispute.
+
+When a question of this kind blocks work, investigate there and record the answer with citations,
+distinguishing what the specification states normatively from what the pilot implementation
+merely happens to do. A fixture may then be changed as a deliberate, cited correction — never as
+a quiet edit.
+
+### Agent worktree hygiene
+
+Each agent worktree builds its own `target/`, at roughly 20 GB apiece. Seven concurrent
+worktrees exhausted the disk mid-merge. Agents must run `cargo clean` as their final action after
+committing and verifying, and merged worktrees should be removed promptly.
+
+### Transitional dual population
+
+Chunk D leaves its producers writing *both* the typed `SourceTextFacts` and the legacy attribute
+entries for keys whose remaining consumers have not migrated yet. Every read it owns goes through
+the typed fact, so there is no dual-read path, but the legacy write is a second writer and must
+not outlive the migration.
+
+Chunk G is responsible for deleting those writes along with the field. A chunk that removes the
+last consumer of a key must also remove that key's legacy write; the attribute bag is not
+considered gone while any producer still populates it.
+
+Chunk E is the largest and is best split into a producer-side pass in `sysml_model` followed by a
+consumer-side pass in `sysml_diagnostics`. Chunks E and F both touch `graph_builder/action.rs`,
+`analysis_case.rs`, and `usage_builders.rs`, so they are sequenced rather than run concurrently.
+Chunk G must be last: it deletes the field and therefore depends on every other chunk.
+
+### Key classification rule
+
+Each key is classified before migration:
+
+- **Semantic** — read to make a construction, name-resolution, typing, evaluation, analysis, or
+  diagnostic decision. Becomes a canonical typed declared/effective/evaluated fact at the earliest
+  layer holding all prerequisites.
+- **Source fidelity** — source spelling, documentation text, ranges. Belongs to the AST or a typed
+  source fact. May be projected to JSON at a transport or render boundary, never read back into a
+  semantic decision.
+- **Presentation only** — currently written back onto the node purely to be projected later.
+  Becomes a typed projection result owned outside the semantic graph.
+
+A key with both a semantic and a presentation consumer is split into a typed semantic fact plus a
+separately derived projection. It is not carried as JSON to serve both.
+
+## Remaining round-trip blockers
+
+Tracked against `ROUNDTRIP_SEMGRAPH_PREREQS.md` §8. Persistent `LibrarySemanticGraph` and
+`WorkspaceSemanticGraph` artifacts stay disabled until every row passes.
+
+| Blocker | Summary | Status |
+|---------|---------|--------|
+| B1 | Typed edge construction ownership; rebuild cross-document ownership from it | done |
+| B2 | Omit lookup/containment indexes from the record; rebuild and validate them | not started |
+| B3 | Complete source roles and canonical resolution precedence | done |
+| B4 | `SemanticPublication` identity, phase, completeness | done |
+| B5 | `SemanticGraphRecordV1` replaces direct runtime serde | not started |
+| B6 | Graph hit rehydrates sources and ASTs; no concealed missing input | not started |
+| B7 | Typed `GraphInvariantError` and single cache-import validator | done |
+| B8 | Canonical, byte-stable encoding | not started |
+| B9 | Attribute bag removed | in progress |
+| B10 | Decode bounds; no stack overflow on hostile nesting | in progress (store layer) |
+| B11 | `GraphStateFingerprint` plus query and post-edit differential suites | done |
+
+## Semantic defects found while doing this work
+
+These are pre-existing correctness problems surfaced by the cache effort, not caused by it. They
+are listed separately because they are not cache work and outlive it.
+
+| Defect | Status |
+|--------|--------|
+| Cross-document edge ownership was not reconstructible; a stale edge could survive an edit beside its replacement | fixed by B1 |
+| `remove_nodes_for_uri` cleared `standard_library_uris` for a removed document but left a stale `source_origins` entry, so a deleted document's Workspace/StandardLibrary/Library/External classification survived its own deletion | fixed by B11 |
+| Whole-graph linking and the scoped/incremental resolver are two independently implemented resolution engines | open, unscheduled |
+| Type-reference resolution is workspace-wide where KerML requires containment, visibility and import scoping; affects all typing kinds | open, unscheduled |
 | 22 pre-existing `snapshot_single_build` failures on `main` | open, out of scope for this effort |
