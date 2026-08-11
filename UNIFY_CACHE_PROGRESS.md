@@ -6,6 +6,91 @@ Tracks execution of `UNIFY_CACHE_PLAN.md` §12 and the `ROUNDTRIP_SEMGRAPH_PRERE
 enablement gate. This file records ownership and status only; the two design documents remain
 authoritative for intent.
 
+---
+
+## Conclusion of this work phase
+
+**This phase is stopping short of the cutover, deliberately. The unified cache cannot be completed
+as specified until the semantic resolution layer is settled.** That is a real blocker, not a
+scheduling problem, and the honest thing is to stop at a coherent boundary and say so rather than
+build the remaining layers on an unresolved foundation.
+
+### What was delivered
+
+Everything below is merged to `integration/unified-cache`, pushed, and verified at the recorded
+test baseline with `cargo clippy --workspace --all-targets -- -D warnings` clean.
+
+- **Plan step 3, complete.** The whole physical cache layer: the sharded `.s42c` object store,
+  the manually decoded envelope, canonical postcard-plus-zstd payloads, lock-free atomic
+  publication, typed miss reasons, the LRU capacity policy, and the `CacheStore` API — with tests
+  covering corruption, truncation, bit flips, key mismatch, decompression bombs, concurrent
+  writers, interrupted writes, unwritable roots, and prune convergence.
+- **Plan step 2, complete.** Typed BLAKE3 identities in their own `source_identity` crate,
+  `SourceManifest` with a root digest that commits every entry, role, digest and the ordering
+  policy, and the breaking migration of repository-owned metadata off SHA-256 strings.
+- **Round-trip prerequisites B1, B3 and B4, complete.** Typed edge construction ownership;
+  canonical source roles and resolution precedence; and the `SemanticPublication` phase,
+  completeness and identity contract.
+- **B9 substantially advanced.** Six of seven attribute-bag chunks merged. What remains is the
+  `*Type` classification family and the final field deletion.
+
+The store is genuinely usable infrastructure. It is not wired to any call site, which is correct:
+nothing should consume it until the artifacts it stores are trustworthy.
+
+### Why it stops here
+
+`UNIFY_CACHE_PLAN.md` §2.2 requires that cold, warm, parallel, incremental and cache-disabled
+paths be semantically equivalent, and `AGENTS.md` requires the same. That is the cache's central
+correctness claim — everything else is an optimization detail.
+
+While implementing the prerequisites, three pre-existing semantic defects surfaced. One is fixed.
+The other two mean **the equivalence guarantee is not currently true, independently of caching**:
+
+1. Whole-graph linking and the scoped/incremental resolver are two independently implemented
+   resolution engines. They are known to be different code; whether they produce different results
+   has never been established.
+2. Type-reference resolution is workspace-wide, where KerML requires scoping by namespace
+   containment with visibility and import filtering. This affects every typing kind.
+
+A cache is a disposable accelerator and must never be what makes an inconsistency permanent.
+Persisting and redistributing graphs produced by one of two divergent engines, under a resolution
+rule that does not match the specification, would do exactly that — and would make the divergence
+harder to find, because it would no longer reproduce from source alone.
+
+The remaining plan steps are all downstream of this. Step 4 defines the graph artifacts, step 5
+routes every production surface through one build service, and step 8 is the parity gate. Each of
+those either bakes in the current resolution behaviour or is meant to prove an equivalence that is
+not yet true.
+
+### What must happen before this resumes
+
+`RESOLUTION_LAYER_INVESTIGATION.md` is the kickoff brief for the blocking work. It carries the
+established findings and citations so the design activity does not re-derive them. Its most
+important output for the cache is the answer to one question: **what does a reference's resolution
+actually depend on?** Once resolution depends on enclosing namespace, visibility and imports, the
+set of edits that can invalidate it is much larger than a name match — and if resolution depends
+on inputs the cache key does not commit, the cache is unsound. That question must be answered
+before any artifact key covering a graph can be declared complete.
+
+`ROUNDTRIP_SEMGRAPH_PREREQS.md` §8 already forbids enabling persistent graph artifacts until its
+gate passes. That gate is not met, and this work does not enable them.
+
+### Resuming cleanly
+
+The remaining work is independently resumable in this order. None of it is blocked on anything
+except where noted.
+
+1. Finish B9: the `*Type` family, then chunk G to delete the field. Not blocked. This unblocks a
+   real postcard round-trip test, which is currently impossible.
+2. B7 (invariant validator), B11 (graph state fingerprint) — not blocked, and needed regardless of
+   how the resolution work lands.
+3. B5, B8, B2, B6 (the graph record, canonical encoding, index rebuild, workspace rehydration) —
+   blocked on B9 completing, because the record cannot be defined while the untyped attribute bag
+   exists.
+4. Plan steps 4 onward — blocked on the resolution work above, not merely on the prerequisites.
+
+---
+
 ## Test baseline
 
 Recorded on `integration/unified-cache` at `df9ea0b5` (docs-only vs `main`):
