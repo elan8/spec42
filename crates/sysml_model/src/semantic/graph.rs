@@ -963,8 +963,17 @@ impl SemanticGraphData {
             .extend(other.pending_relationships.iter().cloned());
         self.pending_expression_relationships
             .extend(other.pending_expression_relationships.iter().cloned());
-        self.declared_expression_relationships
-            .extend(other.declared_expression_relationships.iter().cloned());
+        self.declared_expression_relationships.extend(
+            other
+                .declared_expression_relationships
+                .iter()
+                .filter(|record| {
+                    shadowed_packages.is_none_or(|packages| {
+                        !Self::qualified_name_under_packages(&record.owner.qualified_name, packages)
+                    })
+                })
+                .cloned(),
+        );
         for (id, node) in other.iter_nodes() {
             if let Some(shadowed) = shadowed_packages {
                 let exact_name_exists = self
