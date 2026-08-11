@@ -20,6 +20,8 @@ use sysml_query::{
     RelationshipKind, SourceDocument as QuerySourceDocument, SourceKind, TextPosition,
 };
 
+const REVIEWED_PRIMARY_TARGET_NS: u64 = 1_000_000_000;
+
 #[derive(Debug, Parser)]
 #[command(
     name = "spec42-resolution-benchmark",
@@ -107,6 +109,7 @@ struct WorkloadReport {
     manifest: String,
     inputs: Vec<ManifestInput>,
     input: InputFacts,
+    reviewed_target: Option<TargetAssessment>,
     fresh_builds: Vec<FreshBuildSample>,
     fresh_build_wall_time_ns: SampleSummary,
     downstream_queries: Vec<Vec<QueryMeasurement>>,
@@ -119,6 +122,15 @@ struct WorkloadReport {
 struct InputFacts {
     documents: usize,
     source_bytes: usize,
+}
+
+#[derive(Debug, Serialize)]
+struct TargetAssessment {
+    requirement: &'static str,
+    target_wall_time_ns: u64,
+    observed_max_wall_time_ns: u64,
+    status: &'static str,
+    enforcement: &'static str,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -323,11 +335,14 @@ fn run_workload(cli: &Cli, size: ModelSize) -> Result<WorkloadReport, String> {
             .iter()
             .map(|sample| sample.request_and_build_wall_time_ns),
     );
+    let reviewed_target =
+        assess_reviewed_target(size, &fresh_build_wall_time_ns, !cfg!(debug_assertions));
     Ok(WorkloadReport {
         name: size.name().to_string(),
         manifest: relative_manifest.to_string_lossy().into_owned(),
         inputs,
         input,
+        reviewed_target,
         fresh_build_wall_time_ns,
         replacement_wall_time_ns: summarize(
             replacements
@@ -938,6 +953,29 @@ fn summarize(values: impl Iterator<Item = u64>) -> SampleSummary {
     }
 }
 
+fn assess_reviewed_target(
+    size: ModelSize,
+    summary: &SampleSummary,
+    release_build: bool,
+) -> Option<TargetAssessment> {
+    matches!(size, ModelSize::StandardLibrary | ModelSize::ManyFiles).then(|| {
+        let observed = summary.max.unwrap_or(u64::MAX);
+        TargetAssessment {
+            requirement: "complete release-mode canonical publication in under one second",
+            target_wall_time_ns: REVIEWED_PRIMARY_TARGET_NS,
+            observed_max_wall_time_ns: observed,
+            status: if !release_build {
+                "not-assessed-debug-build"
+            } else if observed < REVIEWED_PRIMARY_TARGET_NS {
+                "passed-on-this-run"
+            } else {
+                "failed-on-this-run"
+            },
+            enforcement: "reported evidence only; this command does not fail CI on host timing",
+        }
+    })
+}
+
 fn nanos(duration: Duration) -> u64 {
     duration.as_nanos().min(u64::MAX as u128) as u64
 }
@@ -972,5 +1010,30 @@ mod tests {
         assert_eq!(summary.min, Some(2));
         assert_eq!(summary.median, Some(5));
         assert_eq!(summary.max, Some(9));
+    }
+
+    #[test]
+    fn reviewed_target_is_report_only_and_primary_workload_scoped() {
+        let passing = summarize([REVIEWED_PRIMARY_TARGET_NS - 1].into_iter());
+        let failing = summarize([REVIEWED_PRIMARY_TARGET_NS].into_iter());
+        assert!(assess_reviewed_target(ModelSize::Large, &failing, true).is_none());
+        assert_eq!(
+            assess_reviewed_target(ModelSize::StandardLibrary, &passing, true)
+                .unwrap()
+                .status,
+            "passed-on-this-run"
+        );
+        assert_eq!(
+            assess_reviewed_target(ModelSize::ManyFiles, &failing, true)
+                .unwrap()
+                .status,
+            "failed-on-this-run"
+        );
+        assert_eq!(
+            assess_reviewed_target(ModelSize::ManyFiles, &passing, false)
+                .unwrap()
+                .status,
+            "not-assessed-debug-build"
+        );
     }
 }

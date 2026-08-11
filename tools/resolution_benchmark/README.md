@@ -13,6 +13,9 @@ The primary acceptance workloads are:
 
 Small, medium, and large workloads remain useful phase-scaling probes.
 
+Both primary workloads must complete the full release-mode publication, including canonical
+resolution, in under one second on the review machine.
+
 Run the bounded scaling workloads in release mode from the repository root:
 
 ```sh
@@ -50,6 +53,11 @@ Downstream timings always include operation and result counters and state their 
 eager adjacency index, sorted settled-fact lookup, or repeated immutable publication scan. This is
 important because a fast scan on a small fixture is not evidence of the required query complexity,
 and an unbounded lazy memo would require its own dependency/lifetime contract.
+
+Primary workload reports assess the observed complete-publication wall time against the reviewed
+sub-second target. They record `failed-on-this-run` when appropriate without turning host timing
+into a default CI failure. Current samples belong in benchmark artifacts or review notes, not as
+machine-specific assertions in this documentation. The scoped resolver is not a fallback.
 
 The report also keeps current evidence gaps explicit: portable per-phase peak memory, immutable-IR
 phase/work counters, and a generator consuming `PublishedModel` are not yet available. It does not
