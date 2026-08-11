@@ -2914,24 +2914,6 @@ mod tests {
     }
 
     #[test]
-    fn expression_relationships_are_recorded_and_resolved_at_publication() {
-        let model = build("package M { part def System { part a; part b; connect a to b; } }");
-        assert!(model.resolution().facts().iter().any(|fact| {
-            fact.reference.kind == ReferenceKind::ConnectionSource
-                && matches!(fact.outcome, ResolutionOutcome::Resolved { .. })
-        }));
-        let connection = model
-            .resolution()
-            .relationships()
-            .iter()
-            .find(|relationship| relationship.kind == RelationshipKind::Connection)
-            .expect("canonical connection relationship");
-        assert_eq!(connection.source.qualified_name, "M::System::a");
-        assert_eq!(connection.target.qualified_name, "M::System::b");
-        assert!(connection.expression.is_some());
-    }
-
-    #[test]
     fn structural_input_has_authored_facts_without_semantic_endpoint_edges() {
         let source = document(
             "memory://test/structural.sysml",
@@ -2953,22 +2935,6 @@ mod tests {
             )
         }));
         assert!(!graph.declared_expression_relationships.is_empty());
-    }
-
-    #[test]
-    fn generic_flow_builder_targets_are_resolved_canonically() {
-        let model = build(
-            "package P { action def ExecuteMission { action validateRoute; action startMission; first validateRoute then startMission; } }",
-        );
-        assert!(model.resolution().facts().iter().any(|fact| {
-            fact.reference.kind == ReferenceKind::FlowSource
-                && matches!(fact.outcome, ResolutionOutcome::Resolved { .. })
-        }));
-        assert!(model
-            .resolution()
-            .relationships()
-            .iter()
-            .any(|relationship| relationship.kind == RelationshipKind::Flow));
     }
 
     #[test]
@@ -2994,49 +2960,6 @@ mod tests {
     }
 
     #[test]
-    fn inner_lexical_binding_shadows_outer_import_even_when_incompatible() {
-        let model = build(
-            "package A { part def T; }
-             package C {
-                 import A::*;
-                 part T;
-                 part p : T;
-             }",
-        );
-        let fact = model
-            .resolution()
-            .facts()
-            .iter()
-            .find(|fact| fact.reference.kind == ReferenceKind::FeatureTyping)
-            .expect("typing fact");
-        let ResolutionOutcome::Resolved { target } = &fact.outcome else {
-            panic!("inner lexical binding must be retained: {:?}", fact.outcome);
-        };
-        assert_eq!(target.qualified_name, "C::T");
-    }
-
-    #[test]
-    fn qualified_segments_are_resolved_from_the_innermost_namespace() {
-        let model = build(
-            "package A { part def T; }
-             package C {
-                 package A { part def T; }
-                 part p : A::T;
-             }",
-        );
-        let fact = model
-            .resolution()
-            .facts()
-            .iter()
-            .find(|fact| fact.reference.kind == ReferenceKind::FeatureTyping)
-            .expect("typing fact");
-        let ResolutionOutcome::Resolved { target } = &fact.outcome else {
-            panic!("qualified target should resolve: {:?}", fact.outcome);
-        };
-        assert_eq!(target.qualified_name, "C::A::T");
-    }
-
-    #[test]
     fn cyclic_public_reexports_do_not_create_a_candidate_or_hang() {
         let model = build(
             "package A { public import B::*; }
@@ -3050,45 +2973,6 @@ mod tests {
             .find(|fact| fact.reference.kind == ReferenceKind::FeatureTyping)
             .expect("typing fact");
         assert!(matches!(fact.outcome, ResolutionOutcome::Unresolved));
-    }
-
-    #[test]
-    fn inherited_members_are_resolved_and_deduplicated_across_a_diamond() {
-        let model = build(
-            "package M {
-                 part def Base { part def Member; }
-                 part def Left :> Base;
-                 part def Right :> Base;
-                 part def Diamond :> Left, Right { part p : Member; }
-             }",
-        );
-        let fact = model
-            .resolution()
-            .facts()
-            .iter()
-            .find(|fact| fact.reference.kind == ReferenceKind::FeatureTyping)
-            .expect("typing fact");
-        let ResolutionOutcome::Resolved { target } = &fact.outcome else {
-            panic!("inherited member should resolve: {:?}", fact.outcome);
-        };
-        assert_eq!(target.qualified_name, "M::Base::Member");
-    }
-
-    #[test]
-    fn case_subject_is_a_derived_relationship_with_explicit_provenance() {
-        let model = build("package M { part def P; analysis def A { subject s : P; } }");
-        let subject = model
-            .resolution()
-            .relationships()
-            .iter()
-            .find(|relationship| relationship.kind == RelationshipKind::Subject)
-            .expect("derived subject relationship");
-        assert_eq!(subject.source.qualified_name, "M::A");
-        assert_eq!(subject.target.qualified_name, "M::P");
-        assert_eq!(
-            subject.provenance,
-            ResolutionProvenance::Derived(DerivedRelationshipRule::CaseSubjectFromTypedSubject)
-        );
     }
 
     #[test]

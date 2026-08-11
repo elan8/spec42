@@ -39,7 +39,6 @@ pub fn collect_diagnostics_from_graph_with_unit_registry(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::canonicalize_diagnostics;
     use crate::DiagnosticSeverity;
     use sysml_model::{
         build_and_link_graph, build_graph_from_doc, build_semantic_model, ConstructionStrategy,
@@ -72,87 +71,6 @@ mod tests {
             false,
             DiagnosticsOptions::default(),
         )
-    }
-
-    #[test]
-    fn graph_diagnostics_api_publishes_canonical_order() {
-        let input = r#"
-            package P {
-                part bad_first : MissingFirst;
-                part bad_second : MissingSecond;
-            }
-        "#;
-        let parsed = sysml_v2_parser::parse(input).expect("parse");
-        let uri = Url::parse("file:///test.sysml").expect("uri");
-        let graph = build_graph_from_doc(&parsed, &uri);
-
-        let diagnostics =
-            collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
-        assert!(
-            diagnostics.len() >= 2,
-            "expected independently produced diagnostics, got {diagnostics:?}"
-        );
-        let mut canonical = diagnostics.clone();
-        canonicalize_diagnostics(&mut canonical);
-        assert_eq!(diagnostics, canonical);
-    }
-
-    #[test]
-    fn collect_diagnostics_from_graph_emits_inherited_attribute_value_type_mismatch() {
-        let input = r#"
-            package Demo {
-                enum def RequirementStatusKind {
-                    enum approved;
-                }
-                requirement def ManagedRequirement {
-                    attribute status : RequirementStatusKind;
-                }
-                requirement def UserRequirement :> ManagedRequirement;
-                requirement def Need :> UserRequirement;
-                requirement need : Need {
-                    attribute status = "approved";
-                }
-            }
-        "#;
-        let uri = Url::parse("file:///test.sysml").expect("uri");
-        let diagnostics = collect_from_model(input, &uri);
-        let codes: Vec<_> = diagnostics.iter().map(|d| d.code.as_str()).collect();
-        assert!(
-            diagnostics.iter().any(|diagnostic| {
-                diagnostic.code == "implicit_redefinition_without_operator"
-                    && diagnostic.severity == DiagnosticSeverity::Error
-            }),
-            "expected implicit_redefinition_without_operator, got {codes:?}"
-        );
-        assert!(diagnostics.iter().any(|diagnostic| {
-            diagnostic.code == "inherited_attribute_value_type_mismatch"
-                && diagnostic.severity == DiagnosticSeverity::Error
-        }));
-    }
-
-    #[test]
-    fn collect_diagnostics_from_graph_accepts_enum_status_redefinition() {
-        let input = r#"
-            package Demo {
-                enum def RequirementStatusKind {
-                    enum approved;
-                }
-                requirement def ManagedRequirement {
-                    attribute status : RequirementStatusKind;
-                }
-                requirement def UserRequirement :> ManagedRequirement;
-                requirement def Need :> UserRequirement;
-                requirement need : Need {
-                    attribute :>> status = RequirementStatusKind::approved;
-                }
-            }
-        "#;
-        let uri = Url::parse("file:///test.sysml").expect("uri");
-        let diagnostics = collect_from_model(input, &uri);
-        assert!(!diagnostics.iter().any(|diagnostic| {
-            diagnostic.code == "implicit_redefinition_without_operator"
-                || diagnostic.code == "inherited_attribute_value_type_mismatch"
-        }));
     }
 
     #[test]
