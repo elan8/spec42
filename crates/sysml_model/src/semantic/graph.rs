@@ -1021,6 +1021,43 @@ impl SemanticGraphData {
         self.iter_edges().collect()
     }
 
+    /// Removes relationship edges whose targets are owned by the canonical resolver.
+    ///
+    /// This is used once, after the resolver has copied the settled results into
+    /// `ResolutionState`, so the structural graph retained by `SemanticModel` cannot become a
+    /// second resolved-edge authority.
+    pub(crate) fn remove_resolution_edges(&mut self) {
+        let resolution_kinds = [
+            RelationshipKind::Typing,
+            RelationshipKind::Specializes,
+            RelationshipKind::Subsetting,
+            RelationshipKind::Redefinition,
+            RelationshipKind::ReferenceSubsetting,
+            RelationshipKind::CrossSubsetting,
+            RelationshipKind::Subject,
+        ];
+        let to_remove: Vec<_> = self
+            .graph
+            .edge_indices()
+            .filter(|edge| {
+                self.graph
+                    .edge_weight(*edge)
+                    .is_some_and(|weight| resolution_kinds.contains(&weight.kind))
+            })
+            .collect();
+        for edge in to_remove {
+            self.graph.remove_edge(edge);
+        }
+        self.invalidate_query_indexes();
+    }
+
+    /// Clears evaluation products when a resolved-only publication is requested.
+    pub(crate) fn clear_evaluation_state(&mut self) {
+        self.evaluation_facts_by_node_id.clear();
+        self.evaluation_publication = EvaluationPublicationState::NotRun;
+        self.invalidate_query_indexes();
+    }
+
     pub fn node_ids_for_qualified_name(&self, qualified_name: &str) -> Option<&[NodeId]> {
         self.node_ids_by_qualified_name
             .get(qualified_name)

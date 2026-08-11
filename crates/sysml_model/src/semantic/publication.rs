@@ -340,6 +340,39 @@ impl<'a> ResolutionDb<'a> {
                     });
                 }
             }
+            if let Some(membership) = &node.declared_facts.membership {
+                if let Some(import) = &membership.import {
+                    let kind = match import.shape {
+                        crate::semantic::model::ImportShape::Namespace
+                        | crate::semantic::model::ImportShape::FilteredNamespace => {
+                            ReferenceKind::NamespaceImport
+                        }
+                        crate::semantic::model::ImportShape::Membership => {
+                            ReferenceKind::MembershipImport
+                        }
+                    };
+                    let candidates =
+                        explicit_name_candidates(self.graph, &node, &import.target.reference);
+                    let outcome = match candidates.as_slice() {
+                        [target] => ResolutionOutcome::Resolved {
+                            target: target.clone(),
+                        },
+                        [] => ResolutionOutcome::Unresolved,
+                        candidates => ResolutionOutcome::Ambiguous {
+                            candidates: candidates.to_vec(),
+                        },
+                    };
+                    facts.push(ResolutionFact {
+                        reference: AuthoredReferenceId {
+                            source: node.id.clone(),
+                            kind,
+                            authored_ordinal: 0,
+                        },
+                        authored_target: import.target.reference.clone(),
+                        outcome,
+                    });
+                }
+            }
         }
 
         facts.sort_by(|left, right| left.reference.cmp(&right.reference));
@@ -496,10 +529,6 @@ impl SemanticModel {
     pub fn view(&self) -> ResolutionView<'_> {
         ResolutionView { model: self }
     }
-
-    pub(crate) fn structural_graph(&self) -> &SemanticGraph {
-        &self.structural_graph
-    }
 }
 
 #[derive(Debug, Clone, Default)]
@@ -576,10 +605,15 @@ pub fn build_semantic_model(
     let resolution = ResolutionDb::new(&graph)
         .solve()
         .map_err(SemanticBuildFailure::Resolution)?;
+    let mut structural_graph = graph;
+    structural_graph.remove_resolution_edges();
+    if matches!(request.evaluation, EvaluationPolicy::ResolvedOnly) {
+        structural_graph.clear_evaluation_state();
+    }
     let indexes = SemanticQueryIndexes::from_state(&resolution);
     Ok(SemanticModel {
         identity,
-        structural_graph: graph,
+        structural_graph,
         resolution,
         evaluation: matches!(request.evaluation, EvaluationPolicy::Evaluate)
             .then_some(EvaluationState),
@@ -650,6 +684,20 @@ mod tests {
         assert_eq!(model.phase(), SemanticPhase::Resolved);
         assert!(!model.has_evaluation());
         assert_eq!(model.completeness(), SemanticCompleteness::Complete);
+        assert!(model
+            .structural_graph
+            .semantic_edges()
+            .into_iter()
+            .all(|(_, _, edge)| !matches!(
+                edge.kind,
+                RelationshipKind::Typing
+                    | RelationshipKind::Specializes
+                    | RelationshipKind::Subsetting
+                    | RelationshipKind::Redefinition
+                    | RelationshipKind::ReferenceSubsetting
+                    | RelationshipKind::CrossSubsetting
+                    | RelationshipKind::Subject
+            )));
         assert!(model.resolution().facts().iter().any(|fact| {
             fact.reference.kind == ReferenceKind::FeatureTyping
                 && matches!(fact.outcome, ResolutionOutcome::Resolved { .. })
