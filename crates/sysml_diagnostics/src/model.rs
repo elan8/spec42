@@ -166,22 +166,22 @@ fn collect_inherited_value_diagnostics(
         let Some(inherited) = inherited else {
             continue;
         };
+        diagnostics.push(reference_diagnostic(
+            uri,
+            node.range,
+            &AuthoredReferenceId {
+                source: node.id.clone(),
+                kind: ReferenceKind::Redefinition,
+                authored_ordinal: 0,
+            },
+            "implicit_redefinition_without_operator",
+            DiagnosticSeverity::Error,
+            format!(
+                "Feature '{}' overrides inherited {} '{}' but is missing explicit redefinition ':>>'.",
+                node.name, inherited.element_kind, inherited.name
+            ),
+        ));
         if node.element_kind != ElementKind::Attribute {
-            diagnostics.push(reference_diagnostic(
-                uri,
-                node.range,
-                &AuthoredReferenceId {
-                    source: node.id.clone(),
-                    kind: ReferenceKind::Redefinition,
-                    authored_ordinal: 0,
-                },
-                "implicit_redefinition_without_operator",
-                DiagnosticSeverity::Error,
-                format!(
-                    "Feature '{}' overrides inherited {} '{}' but is missing explicit redefinition ':>>'.",
-                    node.name, inherited.element_kind, inherited.name
-                ),
-            ));
             continue;
         }
         if !is_string_literal(value) {

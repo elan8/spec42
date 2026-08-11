@@ -42,8 +42,37 @@ mod tests {
     use crate::canonicalize_diagnostics;
     use crate::DiagnosticSeverity;
     use sysml_model::{
-        build_and_link_graph, build_graph_from_doc, SysmlDocument, SysmlDocumentSourceKind,
+        build_and_link_graph, build_graph_from_doc, build_semantic_model, ConstructionStrategy,
+        EvaluationPolicy, ImmutableSourceSnapshot, SemanticBuildRequest, SemanticConfiguration,
+        SysmlDocument, SysmlDocumentSourceKind,
     };
+
+    fn collect_from_model(input: &str, uri: &Url) -> Vec<SemanticDiagnostic> {
+        let document = SysmlDocument::from_uri(
+            uri.as_str(),
+            input.to_string(),
+            None,
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("document");
+        let model = build_semantic_model(SemanticBuildRequest {
+            sources: ImmutableSourceSnapshot::new(vec![document]).expect("source snapshot"),
+            construction: ConstructionStrategy::Sequential,
+            evaluation: EvaluationPolicy::ResolvedOnly,
+            configuration: SemanticConfiguration::default(),
+        })
+        .expect("semantic model");
+        crate::collect_document_diagnostics_from_model(
+            &model,
+            false,
+            uri,
+            input,
+            false,
+            DiagnosticsOptions::default(),
+        )
+    }
 
     #[test]
     fn collect_diagnostics_from_graph_emits_implicit_redefinition_without_operator() {
@@ -57,11 +86,8 @@ mod tests {
                 }
             }
         "#;
-        let parsed = sysml_v2_parser::parse(input).expect("parse");
         let uri = Url::parse("file:///test.sysml").expect("uri");
-        let graph = build_graph_from_doc(&parsed, &uri);
-        let diagnostics =
-            collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+        let diagnostics = collect_from_model(input, &uri);
         assert!(diagnostics.iter().any(|diagnostic| {
             diagnostic.code == "implicit_redefinition_without_operator"
                 && diagnostic.severity == DiagnosticSeverity::Error
@@ -108,11 +134,8 @@ mod tests {
                 }
             }
         "#;
-        let parsed = sysml_v2_parser::parse(input).expect("parse");
         let uri = Url::parse("file:///test.sysml").expect("uri");
-        let graph = build_graph_from_doc(&parsed, &uri);
-        let diagnostics =
-            collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+        let diagnostics = collect_from_model(input, &uri);
         let codes: Vec<_> = diagnostics.iter().map(|d| d.code.as_str()).collect();
         assert!(
             diagnostics.iter().any(|diagnostic| {
@@ -144,11 +167,8 @@ mod tests {
                 }
             }
         "#;
-        let parsed = sysml_v2_parser::parse(input).expect("parse");
         let uri = Url::parse("file:///test.sysml").expect("uri");
-        let graph = build_graph_from_doc(&parsed, &uri);
-        let diagnostics =
-            collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+        let diagnostics = collect_from_model(input, &uri);
         assert!(!diagnostics.iter().any(|diagnostic| {
             diagnostic.code == "implicit_redefinition_without_operator"
                 || diagnostic.code == "inherited_attribute_value_type_mismatch"
@@ -163,11 +183,8 @@ mod tests {
                 port def ChildPort :> BasePort;
             }
         "#;
-        let parsed = sysml_v2_parser::parse(input).expect("parse");
         let uri = Url::parse("file:///test.sysml").expect("uri");
-        let graph = build_graph_from_doc(&parsed, &uri);
-        let diagnostics =
-            collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+        let diagnostics = collect_from_model(input, &uri);
         assert!(!diagnostics
             .iter()
             .any(|diagnostic| { diagnostic.code == "unresolved_specializes_reference" }));
@@ -189,11 +206,8 @@ mod tests {
                 }
             }
         "#;
-        let parsed = sysml_v2_parser::parse(input).expect("parse");
         let uri = Url::parse("file:///test.sysml").expect("uri");
-        let graph = build_graph_from_doc(&parsed, &uri);
-        let diagnostics =
-            collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+        let diagnostics = collect_from_model(input, &uri);
         assert!(diagnostics.iter().any(|diagnostic| {
             diagnostic.code == "inherited_attribute_value_type_mismatch"
                 && diagnostic.severity == DiagnosticSeverity::Error
