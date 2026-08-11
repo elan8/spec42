@@ -196,7 +196,9 @@ fn has_specialization_intent(node: &SemanticNode) -> bool {
 /// redefines/subsetting family, whose
 /// authored declarations are always carried by `DeclaredRelationshipFacts` rather than the
 /// legacy attribute map.
-fn has_typed_relationship_intent(target_lists: &[&[sysml_model::DeclaredRelationshipTarget]]) -> bool {
+fn has_typed_relationship_intent(
+    target_lists: &[&[sysml_model::DeclaredRelationshipTarget]],
+) -> bool {
     target_lists.iter().any(|targets| !targets.is_empty())
 }
 
