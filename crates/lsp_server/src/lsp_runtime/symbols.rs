@@ -139,6 +139,14 @@ fn is_attribute_like_kind(kind: &sysml_model::ElementKind) -> bool {
     lower.contains("attribute") || lower.contains("property")
 }
 
+/// Resolves the display type name for an attribute/attribute-def symbol.
+///
+/// Prefers the published `Typing` edge (when the declared type resolved). Falls back to the
+/// raw declared reference text from `DeclaredRelationshipFacts::typing` -- the same typed fact
+/// every SysML attribute producer already populates via `add_typing_edge_if_exists`
+/// (`crates/sysml_model/src/semantic/relationships.rs::record_declared_relationship_target`) --
+/// rather than the legacy `attributeType`/`dataType`/`type` attribute-map keys. `dataType` and
+/// `type` have no producer anywhere in the graph builder; they were always-dead fallbacks.
 fn attribute_type_name(state: &ServerState, node: &SemanticNode) -> Option<String> {
     state
         .semantic_graph
@@ -146,11 +154,12 @@ fn attribute_type_name(state: &ServerState, node: &SemanticNode) -> Option<Strin
         .into_iter()
         .find_map(|target| Some(target.name.clone()).filter(|name| !name.trim().is_empty()))
         .or_else(|| {
-            node.attributes
-                .get("attributeType")
-                .or_else(|| node.attributes.get("dataType"))
-                .or_else(|| node.attributes.get("type"))
-                .and_then(|value| value.as_str())
+            node.declared_facts
+                .relationships
+                .typing
+                .first()
+                .map(|target| target.reference.as_str())
+                .filter(|raw| !raw.trim().is_empty())
                 .map(|raw| raw.split("::").last().unwrap_or(raw).to_string())
         })
 }
@@ -345,6 +354,65 @@ mod tests {
         assert!(
             titles.iter().all(|title| !title.contains("inherited mass")),
             "direct override should suppress inherited duplicate, got {titles:#?}"
+        );
+    }
+
+    #[test]
+    fn attribute_type_name_resolves_a_locally_typed_attribute() {
+        let source = r#"
+            package P {
+                attribute def Mass;
+                part def Car {
+                    attribute mass : Mass;
+                }
+            }
+        "#;
+        let (state, uri) = prepare_state(&source);
+        let node = state
+            .semantic_graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|node| node.element_kind == "attribute" && node.name == "mass")
+            .expect("mass attribute node");
+        assert_eq!(
+            attribute_type_name(&state, node).as_deref(),
+            Some("Mass"),
+            "expected the resolved Typing edge target name"
+        );
+    }
+
+    #[test]
+    fn attribute_type_name_falls_back_to_the_typed_declared_reference_when_unresolved() {
+        // `Unknown` never resolves to a node in this document, so `attribute_type_name` must
+        // fall back to the raw declared reference text carried by
+        // `DeclaredRelationshipFacts::typing` -- not the legacy `attributeType`/`dataType`/`type`
+        // attribute-map keys, which this producer no longer needs and which have no writer
+        // anywhere in the graph builder.
+        let source = r#"
+            package P {
+                part def Car {
+                    attribute mass : Unknown;
+                }
+            }
+        "#;
+        let (state, uri) = prepare_state(&source);
+        let node = state
+            .semantic_graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|node| node.element_kind == "attribute" && node.name == "mass")
+            .expect("mass attribute node");
+        assert!(
+            state
+                .semantic_graph
+                .outgoing_targets_by_kind(node, RelationshipKind::Typing)
+                .is_empty(),
+            "Unknown must not resolve to a real node"
+        );
+        assert_eq!(
+            attribute_type_name(&state, node).as_deref(),
+            Some("Unknown"),
+            "expected the unresolved declared type text as a fallback"
         );
     }
 
