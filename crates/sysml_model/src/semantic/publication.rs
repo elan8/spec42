@@ -469,7 +469,7 @@ impl<'a> ResolutionDb<'a> {
             })
             .collect::<BTreeMap<_, _>>();
         let result = solve_fixed_point(initial, max_passes, |previous| {
-            let solved = self.solve_once();
+            let solved = self.solve_once(Some(previous));
             // Keep unresolved slots in the working state.  Omitting a pending key would make
             // the generic fixed-point driver mistake a partial pass for convergence.
             let mut next = previous.clone();
@@ -506,7 +506,7 @@ impl<'a> ResolutionDb<'a> {
             next
         });
         match result {
-            Ok(settled) => Ok(self.apply_working_outcomes(self.solve_once(), &settled)),
+            Ok(settled) => Ok(self.solve_once(Some(&settled))),
             Err(FixedPointFailure::DependencyDeadlock {
                 passes,
                 pending,
@@ -537,23 +537,12 @@ impl<'a> ResolutionDb<'a> {
         }
     }
 
-    fn apply_working_outcomes(
+    fn solve_once(
         &self,
-        mut state: ResolutionState,
-        settled: &BTreeMap<
-            AuthoredReferenceId,
-            WorkingOutcome<AuthoredReferenceId, ResolutionOutcome>,
+        previous: Option<
+            &BTreeMap<AuthoredReferenceId, WorkingOutcome<AuthoredReferenceId, ResolutionOutcome>>,
         >,
     ) -> ResolutionState {
-        for fact in &mut state.facts {
-            if let Some(WorkingOutcome::Final(outcome)) = settled.get(&fact.reference) {
-                fact.outcome = outcome.clone();
-            }
-        }
-        state
-    }
-
-    fn solve_once(&self) -> ResolutionState {
         let mut facts = Vec::new();
         let mut relationships = Vec::new();
         let nodes = self.graph.semantic_nodes();
@@ -566,23 +555,37 @@ impl<'a> ResolutionDb<'a> {
             for (kind, targets) in authored_relationships(&node.declared_facts.relationships) {
                 let relationship_kind = kind.relationship_kind();
                 for (ordinal, authored) in targets.into_iter().enumerate() {
-                    let mut candidates =
-                        explicit_name_candidates(self.graph, &node, &authored.reference);
-                    candidates.sort_by(node_id_order);
-                    candidates.dedup();
                     let reference = AuthoredReferenceId {
                         source: node.id.clone(),
                         kind,
                         authored_ordinal: ordinal as u32,
                     };
-                    let outcome = match candidates.as_slice() {
-                        [target] => ResolutionOutcome::Resolved {
-                            target: target.clone(),
-                        },
-                        [] => ResolutionOutcome::Unresolved,
-                        candidates => ResolutionOutcome::Ambiguous {
-                            candidates: candidates.to_vec(),
-                        },
+                    let blocked = previous.is_some_and(|state| {
+                        reference_dependencies(self.graph, &reference)
+                            .iter()
+                            .any(|dependency| {
+                                !matches!(
+                                    state.get(dependency),
+                                    Some(WorkingOutcome::Final(ResolutionOutcome::Resolved { .. }))
+                                )
+                            })
+                    });
+                    let outcome = if blocked {
+                        ResolutionOutcome::Unresolved
+                    } else {
+                        let mut candidates =
+                            explicit_name_candidates(self.graph, &node, &authored.reference);
+                        candidates.sort_by(node_id_order);
+                        candidates.dedup();
+                        match candidates.as_slice() {
+                            [target] => ResolutionOutcome::Resolved {
+                                target: target.clone(),
+                            },
+                            [] => ResolutionOutcome::Unresolved,
+                            candidates => ResolutionOutcome::Ambiguous {
+                                candidates: candidates.to_vec(),
+                            },
+                        }
                     };
                     if let Some(target) = outcome.resolved_target() {
                         let relationship_kind =
