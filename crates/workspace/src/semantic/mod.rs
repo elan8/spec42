@@ -31,9 +31,10 @@ pub use sysml_model::{
 };
 pub use sysml_model::{
     build_semantic_model, AuthoredReferenceId, ConstructionStrategy, EvaluationPolicy,
-    ImmutableSourceSnapshot, ReferenceKind, ResolutionFact, ResolutionOutcome, ResolutionState,
-    ResolutionView, SemanticBuildFailure, SemanticBuildRequest, SemanticCompleteness,
-    SemanticConfiguration, SemanticModel, SemanticModelIdentity, SemanticPhase,
+    ImmutableSourceSnapshot, ReferenceKind, ResolutionFact, ResolutionOutcome,
+    ResolutionProvenance, ResolutionState, ResolutionView, SemanticBuildFailure,
+    SemanticBuildRequest, SemanticCompleteness, SemanticConfiguration, SemanticModel,
+    SemanticModelIdentity, SemanticPhase,
 };
 
 /// Build a settled immutable semantic publication from workspace documents.

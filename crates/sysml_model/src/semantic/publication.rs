@@ -17,6 +17,7 @@ use crate::semantic::model::{
 };
 use crate::semantic::pipeline::build_structural_graph;
 use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
+use crate::semantic::text_span::TextRange;
 
 /// An exact set of source documents admitted to one semantic build.
 #[derive(Debug, Clone)]
@@ -194,6 +195,7 @@ impl ResolutionOutcome {
 pub struct ResolutionFact {
     pub reference: AuthoredReferenceId,
     pub authored_target: String,
+    pub authored_range: Option<TextRange>,
     pub outcome: ResolutionOutcome,
 }
 
@@ -304,9 +306,10 @@ impl<'a> ResolutionDb<'a> {
         let mut relationships = Vec::new();
         let nodes = self.graph.semantic_nodes();
 
-        // The graph linker has already materialized the structural relationship pass.  We
-        // project its result into typed facts in one deterministic pass.  No graph mutation or
-        // first-candidate selection is performed here.
+        // Structural builders record authored targets as facts only. Candidate discovery starts
+        // here, against that stable input, and never reads relationship edges or mutates the
+        // graph. A single deterministic pass is sufficient for the currently owned families;
+        // recursive inherited-member traversal has its own cycle guard below.
         for node in nodes {
             for (kind, targets) in authored_relationships(&node.declared_facts.relationships) {
                 let relationship_kind = kind.relationship_kind();
@@ -342,6 +345,7 @@ impl<'a> ResolutionDb<'a> {
                     facts.push(ResolutionFact {
                         reference,
                         authored_target: authored.reference,
+                        authored_range: authored.range,
                         outcome,
                     });
                 }
@@ -375,6 +379,7 @@ impl<'a> ResolutionDb<'a> {
                             authored_ordinal: 0,
                         },
                         authored_target: import.target.reference.clone(),
+                        authored_range: import.target.range,
                         outcome,
                     });
                 }
@@ -734,30 +739,27 @@ pub fn build_semantic_model(
 ) -> Result<SemanticModel, SemanticBuildFailure> {
     let identity = SemanticModelIdentity::for_request(&request.sources, &request.configuration);
     let documents = request.sources.documents();
-    let (mut graph, _) = build_structural_graph(documents, request.construction);
-    // A few older materializers still emit relationship-shaped edges while creating source
-    // nodes. Remove every resolver-owned edge before candidate discovery so the canonical solver
-    // cannot accidentally observe a result produced by a fragment builder.
-    graph.remove_resolution_edges();
+    let (graph, _) = build_structural_graph(documents, request.construction);
     let resolution = ResolutionDb::new(&graph)
         .solve()
         .map_err(SemanticBuildFailure::Resolution)?;
-    let mut structural_graph = graph;
-    structural_graph.remove_resolution_edges();
+    let structural_graph = graph;
     let evaluation = if matches!(request.evaluation, EvaluationPolicy::Evaluate) {
-        resolution.install_relationship_projection(&mut structural_graph);
+        // Evaluation is an explicitly later phase. It receives a private working graph with
+        // resolved relationships installed; the published structural graph remains immutable
+        // authored input and never becomes a second resolution authority.
+        let mut evaluation_graph = structural_graph.clone();
+        resolution.install_relationship_projection(&mut evaluation_graph);
         crate::semantic::analysis_typing::prepare_analysis_evaluation_context(
-            &mut structural_graph,
+            &mut evaluation_graph,
         );
-        crate::semantic::evaluation::evaluate_expressions(&mut structural_graph);
+        crate::semantic::evaluation::evaluate_expressions(&mut evaluation_graph);
         Some(EvaluationState {
-            evaluated_nodes: structural_graph.evaluation_fact_count(),
+            evaluated_nodes: evaluation_graph.evaluation_fact_count(),
         })
     } else {
-        structural_graph.clear_evaluation_state();
         None
     };
-    structural_graph.remove_resolution_edges();
     let indexes = SemanticQueryIndexes::from_state(&resolution);
     Ok(SemanticModel {
         identity,
@@ -998,6 +1000,29 @@ mod tests {
     }
 
     #[test]
+    fn queries_are_read_only_over_the_published_resolution() {
+        let model = build("package M { part def P; part p : P; }");
+        let fact = model
+            .resolution()
+            .facts()
+            .iter()
+            .find(|fact| fact.reference.kind == ReferenceKind::FeatureTyping)
+            .expect("typing fact");
+        let before = model.resolution().clone();
+        let target = fact
+            .outcome
+            .resolved_target()
+            .expect("resolved target")
+            .clone();
+        let source = fact.reference.source.clone();
+        let view = model.view();
+        assert_eq!(view.outcome(&fact.reference), Some(&fact.outcome));
+        assert_eq!(view.outgoing(&source, RelationshipKind::Typing), &[target]);
+        assert!(view.incoming(&source, RelationshipKind::Typing).is_empty());
+        assert_eq!(model.resolution(), &before);
+    }
+
+    #[test]
     fn evaluate_policy_runs_after_resolution_before_publication() {
         let snapshot = ImmutableSourceSnapshot::new(vec![document(
             "memory://test/a.sysml",
@@ -1027,9 +1052,8 @@ mod tests {
             "package A { part p : Missing; }",
         )])
         .unwrap();
-        let (mut graph, _) =
+        let (graph, _) =
             build_structural_graph(snapshot.documents(), ConstructionStrategy::Sequential);
-        graph.remove_resolution_edges();
         let failure = ResolutionDb::new(&graph)
             .solve_with_max_passes(0)
             .expect_err("zero pass bound must fail explicitly");

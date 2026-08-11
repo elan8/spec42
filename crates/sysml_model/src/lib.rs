@@ -71,9 +71,10 @@ pub use semantic::prepared_view::{
 };
 pub use semantic::publication::{
     build_semantic_model, AuthoredReferenceId, ConstructionStrategy, EvaluationPolicy,
-    ImmutableSourceSnapshot, ReferenceKind, ResolutionFact, ResolutionOutcome, ResolutionState,
-    ResolutionView, SemanticBuildFailure, SemanticBuildRequest, SemanticCompleteness,
-    SemanticConfiguration, SemanticModel, SemanticModelIdentity, SemanticPhase,
+    ImmutableSourceSnapshot, ReferenceKind, ResolutionFact, ResolutionOutcome,
+    ResolutionProvenance, ResolutionState, ResolutionView, SemanticBuildFailure,
+    SemanticBuildRequest, SemanticCompleteness, SemanticConfiguration, SemanticModel,
+    SemanticModelIdentity, SemanticPhase,
 };
 pub use semantic::reference_resolution::{
     parse_expose_target_suffix, resolve_expose_target, resolve_expression_endpoint_strict,
