@@ -3,10 +3,15 @@
 //! This module is deliberately independent of the legacy mutable graph. It consumes only the
 //! typed authored-reference outcomes and read-only node queries exposed by `ResolutionView`.
 
+use std::collections::{BTreeMap, HashMap, HashSet};
+
 use url::Url;
 
 use sysml_model::semantic::text_span::{TextPosition, TextRange};
-use sysml_model::{AuthoredReferenceId, ReferenceKind, ResolutionOutcome, SemanticModel};
+use sysml_model::{
+    AuthoredReferenceId, ElementKind, ReferenceKind, RelationshipKind, ResolutionOutcome,
+    SemanticDiagnosticInput, SemanticModel,
+};
 
 use crate::ordering::canonicalize_diagnostics;
 use crate::shared_rules::{
@@ -34,13 +39,18 @@ pub fn collect_document_diagnostics_from_model(
         diagnostic.severity == DiagnosticSeverity::Error && diagnostic.source == "sysml"
     });
     if !(skip_semantic_on_parse_error && has_parse_error) {
+        let input = model.diagnostic_input();
         let mut has_unresolved = false;
-        model.view().visit_facts(|fact| {
+        for fact in input.facts() {
             if fact.reference.source.uri != *uri {
-                return;
+                continue;
             }
-            let Some(node) = model.view().node(&fact.reference.source) else {
-                return;
+            let Some(node) = input
+                .nodes()
+                .iter()
+                .find(|node| node.id == fact.reference.source)
+            else {
+                continue;
             };
             let range = fact.authored_range.unwrap_or(node.range);
             match &fact.outcome {
@@ -76,7 +86,8 @@ pub fn collect_document_diagnostics_from_model(
                     format!("unsupported reference {:?}", fact.authored_target),
                 )),
             }
-        });
+        }
+        diagnostics.extend(collect_inherited_value_diagnostics(&input, uri));
         if let Some(diagnostic) =
             missing_library_context_diagnostic(uri, text, has_unresolved, has_library_paths)
         {
@@ -87,11 +98,139 @@ pub fn collect_document_diagnostics_from_model(
     diagnostics
 }
 
+fn collect_inherited_value_diagnostics(
+    input: &SemanticDiagnosticInput,
+    uri: &Url,
+) -> Vec<SemanticDiagnostic> {
+    let nodes = input
+        .nodes()
+        .iter()
+        .map(|node| (node.id.clone(), node))
+        .collect::<HashMap<_, _>>();
+    let mut relationships =
+        BTreeMap::<(sysml_model::NodeId, RelationshipKind), Vec<sysml_model::NodeId>>::new();
+    for relationship in input.relationships() {
+        relationships
+            .entry((relationship.source.clone(), relationship.kind.clone()))
+            .or_default()
+            .push(relationship.target.clone());
+    }
+    let mut diagnostics = Vec::new();
+    for node in input.nodes().iter().filter(|node| node.id.uri == *uri) {
+        let Some(value) = node
+            .attributes
+            .get("value")
+            .and_then(|value| value.as_str())
+        else {
+            continue;
+        };
+        if node.element_kind == ElementKind::Ref
+            || !node.declared_facts.relationships.redefinition.is_empty()
+        {
+            continue;
+        }
+        let Some(owner_id) = node.parent_id.as_ref() else {
+            continue;
+        };
+        let Some(owner) = nodes.get(owner_id) else {
+            continue;
+        };
+        let mut roots = relationships
+            .get(&(owner.id.clone(), RelationshipKind::Typing))
+            .cloned()
+            .unwrap_or_default();
+        if roots.is_empty() {
+            roots.push(owner.id.clone());
+        }
+        let mut stack = roots;
+        let mut visited = HashSet::new();
+        let mut inherited = None;
+        while let Some(type_id) = stack.pop() {
+            if !visited.insert(type_id.clone()) {
+                continue;
+            }
+            if let Some(candidate) = nodes.values().find(|candidate| {
+                candidate.parent_id.as_ref() == Some(&type_id) && candidate.name == node.name
+            }) {
+                inherited = Some(*candidate);
+                break;
+            }
+            stack.extend(
+                relationships
+                    .get(&(type_id, RelationshipKind::Specializes))
+                    .into_iter()
+                    .flatten()
+                    .cloned(),
+            );
+        }
+        let Some(inherited) = inherited else {
+            continue;
+        };
+        if node.element_kind != ElementKind::Attribute {
+            diagnostics.push(reference_diagnostic(
+                uri,
+                node.range,
+                &AuthoredReferenceId {
+                    source: node.id.clone(),
+                    kind: ReferenceKind::Redefinition,
+                    authored_ordinal: 0,
+                },
+                "implicit_redefinition_without_operator",
+                DiagnosticSeverity::Error,
+                format!(
+                    "Feature '{}' overrides inherited {} '{}' but is missing explicit redefinition ':>>'.",
+                    node.name, inherited.element_kind, inherited.name
+                ),
+            ));
+            continue;
+        }
+        if !is_string_literal(value) {
+            continue;
+        }
+        let Some(type_ref) = inherited
+            .declared_facts
+            .relationships
+            .typing
+            .first()
+            .map(|target| target.reference.as_str())
+        else {
+            continue;
+        };
+        if nodes.values().any(|candidate| {
+            candidate.element_kind == ElementKind::EnumDef
+                && (candidate.id.qualified_name == type_ref
+                    || candidate.name == type_ref.rsplit("::").next().unwrap_or(type_ref))
+        }) {
+            diagnostics.push(reference_diagnostic(
+                uri,
+                node.range,
+                &AuthoredReferenceId {
+                    source: node.id.clone(),
+                    kind: ReferenceKind::Redefinition,
+                    authored_ordinal: 0,
+                },
+                "inherited_attribute_value_type_mismatch",
+                DiagnosticSeverity::Error,
+                format!(
+                    "Feature '{}' is typed as enum '{}' but was assigned string literal {}; use an enumeration value.",
+                    node.name, type_ref, value.trim()
+                ),
+            ));
+        }
+    }
+    diagnostics
+}
+
+fn is_string_literal(value: &str) -> bool {
+    let value = value.trim();
+    value.starts_with('"') && value.ends_with('"') && value.len() >= 2
+}
+
 fn reference_diagnostic(
     uri: &Url,
     range: TextRange,
     reference: &AuthoredReferenceId,
-    _code: &str,
+    code: &str,
     severity: DiagnosticSeverity,
     message: String,
 ) -> SemanticDiagnostic {
@@ -100,7 +239,11 @@ fn reference_diagnostic(
         range,
         severity,
         source: "semantic".to_string(),
-        code: diagnostic_code(reference.kind, severity),
+        code: if code.starts_with("unresolved_") {
+            diagnostic_code(reference.kind, severity)
+        } else {
+            code.to_string()
+        },
         message,
         related_information: Vec::new(),
     }

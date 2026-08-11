@@ -1284,6 +1284,30 @@ pub struct SemanticModel {
     indexes: SemanticQueryIndexes,
 }
 
+/// Stable, owned semantic facts supplied to diagnostics. This projection contains no graph,
+/// resolver storage, pending queues, or query indexes; it is the diagnostic contract for one
+/// immutable publication and can evolve independently of the internal model representation.
+#[derive(Debug, Clone)]
+pub struct SemanticDiagnosticInput {
+    nodes: Vec<SemanticNode>,
+    facts: Vec<ResolutionFact>,
+    relationships: Vec<ResolvedRelationship>,
+}
+
+impl SemanticDiagnosticInput {
+    pub fn nodes(&self) -> &[SemanticNode] {
+        &self.nodes
+    }
+
+    pub fn facts(&self) -> &[ResolutionFact] {
+        &self.facts
+    }
+
+    pub fn relationships(&self) -> &[ResolvedRelationship] {
+        &self.relationships
+    }
+}
+
 impl SemanticModel {
     pub fn identity(&self) -> &SemanticModelIdentity {
         &self.identity
@@ -1315,6 +1339,20 @@ impl SemanticModel {
 
     pub fn view(&self) -> ResolutionView<'_> {
         ResolutionView { model: self }
+    }
+
+    /// Returns the owner-defined semantic facts needed by diagnostics.
+    pub fn diagnostic_input(&self) -> SemanticDiagnosticInput {
+        SemanticDiagnosticInput {
+            nodes: self
+                .structural_graph
+                .semantic_node_refs()
+                .into_iter()
+                .cloned()
+                .collect(),
+            facts: self.resolution.facts.clone(),
+            relationships: self.resolution.relationships.clone(),
+        }
     }
 }
 
@@ -1373,20 +1411,6 @@ impl<'a> ResolutionView<'a> {
 
     pub fn node(&self, id: &NodeId) -> Option<&'a SemanticNode> {
         self.model.structural_graph.get_node(id)
-    }
-
-    /// Visits settled authored facts without exposing resolver storage or indexes.
-    pub fn visit_facts(&self, mut visitor: impl FnMut(&ResolutionFact)) {
-        for fact in &self.model.resolution.facts {
-            visitor(fact);
-        }
-    }
-
-    /// Visits settled relationships without exposing resolver storage or indexes.
-    pub fn visit_relationships(&self, mut visitor: impl FnMut(&ResolvedRelationship)) {
-        for relationship in &self.model.resolution.relationships {
-            visitor(relationship);
-        }
     }
 }
 
