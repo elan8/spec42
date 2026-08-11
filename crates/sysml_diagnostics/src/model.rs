@@ -285,33 +285,29 @@ fn collect_category_diagnostics(model: &SemanticModel, uri: &Url) -> Vec<Semanti
         .iter()
         .filter(|fact| fact.owner.uri == *uri)
     {
-        let Some(evaluation) = fact.expression.as_ref() else {
-            continue;
-        };
-        if let Some(analysis) = evaluation.analysis.as_ref() {
-            if analysis.passed == Some(false) {
-                diagnostics.push(SemanticDiagnostic {
-                    uri: uri.clone(),
-                    range: fact.range,
-                    severity: DiagnosticSeverity::Warning,
-                    source: "semantic".to_string(),
-                    code: "analysis_constraint_failed".to_string(),
-                    message: "Analysis constraint evaluated to false.".to_string(),
-                    related_information: Vec::new(),
-                });
-            } else if analysis.expression.status == sysml_model::EvaluationStatus::Unresolved {
-                diagnostics.push(SemanticDiagnostic {
-                    uri: uri.clone(),
-                    range: fact.range,
-                    severity: DiagnosticSeverity::Warning,
-                    source: "semantic".to_string(),
-                    code: "analysis_evaluation_unresolved".to_string(),
-                    message: analysis.expression.error.clone().unwrap_or_else(|| {
-                        "Analysis expression could not be evaluated.".to_string()
-                    }),
-                    related_information: Vec::new(),
-                });
-            }
+        if fact.analysis_passed == Some(false) {
+            diagnostics.push(SemanticDiagnostic {
+                uri: uri.clone(),
+                range: fact.range,
+                severity: DiagnosticSeverity::Warning,
+                source: "semantic".to_string(),
+                code: "analysis_constraint_failed".to_string(),
+                message: "Analysis constraint evaluated to false.".to_string(),
+                related_information: Vec::new(),
+            });
+        } else if fact.analysis_status == Some(sysml_model::EvaluationStatus::Unresolved) {
+            diagnostics.push(SemanticDiagnostic {
+                uri: uri.clone(),
+                range: fact.range,
+                severity: DiagnosticSeverity::Warning,
+                source: "semantic".to_string(),
+                code: "analysis_evaluation_unresolved".to_string(),
+                message: fact
+                    .analysis_error
+                    .clone()
+                    .unwrap_or_else(|| "Analysis expression could not be evaluated.".to_string()),
+                related_information: Vec::new(),
+            });
         }
     }
     diagnostics

@@ -71,14 +71,15 @@ pub use semantic::prepared_view::{
 };
 pub use semantic::publication::{
     build_semantic_model, AuthoredReferenceId, BehaviorDiagnosticInput,
-    BehaviorDiagnosticRelationship, BuilderDiagnosticInput, ConnectionDiagnosticInput,
-    ConnectionDiagnosticRelationship, ConstructionStrategy, DerivedRelationshipRule,
-    EvaluationDiagnosticFact, EvaluationPolicy, ExpressionDiagnosticInput, ImmutableSourceSnapshot,
-    ReferenceKind, RequirementCaseDiagnosticInput, RequirementCaseDiagnosticRelationship,
-    ResolutionDiagnosticInput, ResolutionDiagnosticReference, ResolutionFact, ResolutionOutcome,
-    ResolutionProvenance, ResolutionState, ResolutionView, SemanticBuildFailure,
-    SemanticBuildRequest, SemanticCompleteness, SemanticConfiguration, SemanticModel,
-    SemanticModelIdentity, SemanticPhase, StructuralDiagnosticFact, StructuralDiagnosticInput,
+    BehaviorDiagnosticRelationship, BuilderDiagnosticInput, BuilderDiagnosticReference,
+    ConnectionDiagnosticInput, ConnectionDiagnosticRelationship, ConstructionStrategy,
+    DerivedRelationshipRule, EvaluationPolicy, ExpressionDiagnosticFact, ExpressionDiagnosticInput,
+    ImmutableSourceSnapshot, ReferenceKind, RequirementCaseDiagnosticInput,
+    RequirementCaseDiagnosticRelationship, ResolutionDiagnosticInput,
+    ResolutionDiagnosticReference, ResolutionFact, ResolutionOutcome, ResolutionProvenance,
+    ResolutionState, ResolutionView, SemanticBuildFailure, SemanticBuildRequest,
+    SemanticCompleteness, SemanticConfiguration, SemanticModel, SemanticModelIdentity,
+    SemanticPhase, StructuralDiagnosticFact, StructuralDiagnosticInput, UnitDiagnosticFact,
     UnitDiagnosticInput, ViewDiagnosticInput, ViewDiagnosticRelationship,
 };
 pub use semantic::reference_resolution::{

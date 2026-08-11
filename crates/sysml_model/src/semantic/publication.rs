@@ -14,8 +14,8 @@ use crate::semantic::graph::{DeclaredExpressionRelationshipRecord, SemanticGraph
 pub use crate::semantic::model::DerivedRelationshipRule;
 use crate::semantic::model::{
     DeclaredExpressionRelationship, DeclaredRelationshipFacts, DeclaredRelationshipTarget,
-    ElementKind, ImpliedRelationshipRule, NodeEvaluationFacts, NodeId, RelationshipKind,
-    SemanticEdge, SemanticNode,
+    ElementKind, EvaluatedValue, EvaluationStatus, ImpliedRelationshipRule, NodeEvaluationFacts,
+    NodeId, RelationshipKind, SemanticEdge, SemanticNode,
 };
 use crate::semantic::pipeline::build_structural_graph;
 use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
@@ -1425,32 +1425,47 @@ impl ViewDiagnosticInput {
 }
 
 #[derive(Debug, Clone)]
-pub struct EvaluationDiagnosticFact {
+pub struct ExpressionDiagnosticFact {
     pub owner: NodeId,
     pub range: TextRange,
-    pub expression: Option<NodeEvaluationFacts>,
+    pub status: Option<EvaluationStatus>,
+    pub value: Option<EvaluatedValue>,
+    pub unit: Option<String>,
+    pub error: Option<String>,
+    pub analysis_passed: Option<bool>,
+    pub analysis_status: Option<EvaluationStatus>,
+    pub analysis_error: Option<String>,
 }
 
 #[derive(Debug, Clone, Default)]
 pub struct ExpressionDiagnosticInput {
-    facts: Vec<EvaluationDiagnosticFact>,
+    facts: Vec<ExpressionDiagnosticFact>,
 }
 
 impl ExpressionDiagnosticInput {
-    pub fn facts(&self) -> &[EvaluationDiagnosticFact] {
+    pub fn facts(&self) -> &[ExpressionDiagnosticFact] {
         &self.facts
     }
 }
 
 /// Unit diagnostics consume the evaluator's typed unit result, rather than parsing expression
 /// text or inspecting attributes.
+#[derive(Debug, Clone)]
+pub struct UnitDiagnosticFact {
+    pub owner: NodeId,
+    pub range: TextRange,
+    pub status: Option<EvaluationStatus>,
+    pub unit: Option<String>,
+    pub error: Option<String>,
+}
+
 #[derive(Debug, Clone, Default)]
 pub struct UnitDiagnosticInput {
-    facts: Vec<EvaluationDiagnosticFact>,
+    facts: Vec<UnitDiagnosticFact>,
 }
 
 impl UnitDiagnosticInput {
-    pub fn facts(&self) -> &[EvaluationDiagnosticFact] {
+    pub fn facts(&self) -> &[UnitDiagnosticFact] {
         &self.facts
     }
 }
@@ -1459,11 +1474,22 @@ impl UnitDiagnosticInput {
 /// shares the resolution owner's typed record shape through a category-specific view.
 #[derive(Debug, Clone, Default)]
 pub struct BuilderDiagnosticInput {
-    references: Vec<ResolutionDiagnosticReference>,
+    references: Vec<BuilderDiagnosticReference>,
+}
+
+#[derive(Debug, Clone)]
+pub struct BuilderDiagnosticReference {
+    pub source: NodeId,
+    pub source_range: TextRange,
+    pub authored_target: String,
+    pub authored_range: Option<TextRange>,
+    pub kind: ReferenceKind,
+    pub authored_ordinal: u32,
+    pub outcome: ResolutionOutcome,
 }
 
 impl BuilderDiagnosticInput {
-    pub fn references(&self) -> &[ResolutionDiagnosticReference] {
+    pub fn references(&self) -> &[BuilderDiagnosticReference] {
         &self.references
     }
 }
@@ -1793,17 +1819,41 @@ impl SemanticModel {
     }
 
     pub fn expression_diagnostics(&self) -> ExpressionDiagnosticInput {
-        let mut facts: Vec<EvaluationDiagnosticFact> = self
+        let mut facts: Vec<ExpressionDiagnosticFact> = self
             .evaluation
             .as_ref()
             .into_iter()
             .flat_map(|state| state.facts.iter())
             .filter_map(|(owner, facts)| {
                 let node = self.structural_graph.get_node(owner)?;
-                Some(EvaluationDiagnosticFact {
+                Some(ExpressionDiagnosticFact {
                     owner: owner.clone(),
                     range: node.range,
-                    expression: Some(facts.clone()),
+                    status: facts
+                        .expression
+                        .as_ref()
+                        .map(|expression| expression.status),
+                    value: facts
+                        .expression
+                        .as_ref()
+                        .and_then(|expression| expression.value.clone()),
+                    unit: facts
+                        .expression
+                        .as_ref()
+                        .and_then(|expression| expression.unit.clone()),
+                    error: facts
+                        .expression
+                        .as_ref()
+                        .and_then(|expression| expression.error.clone()),
+                    analysis_passed: facts.analysis.as_ref().and_then(|analysis| analysis.passed),
+                    analysis_status: facts
+                        .analysis
+                        .as_ref()
+                        .map(|analysis| analysis.expression.status),
+                    analysis_error: facts
+                        .analysis
+                        .as_ref()
+                        .and_then(|analysis| analysis.expression.error.clone()),
                 })
             })
             .collect();
@@ -1812,9 +1862,19 @@ impl SemanticModel {
     }
 
     pub fn unit_diagnostics(&self) -> UnitDiagnosticInput {
-        UnitDiagnosticInput {
-            facts: self.expression_diagnostics().facts,
-        }
+        let facts = self
+            .expression_diagnostics()
+            .facts
+            .into_iter()
+            .map(|fact| UnitDiagnosticFact {
+                owner: fact.owner,
+                range: fact.range,
+                status: fact.status,
+                unit: fact.unit,
+                error: fact.error,
+            })
+            .collect();
+        UnitDiagnosticInput { facts }
     }
 
     pub fn builder_diagnostics(&self) -> BuilderDiagnosticInput {
@@ -1836,6 +1896,15 @@ impl SemanticModel {
                         | ReferenceKind::DerivationSource
                         | ReferenceKind::DerivationTarget
                 )
+            })
+            .map(|reference| BuilderDiagnosticReference {
+                source: reference.source,
+                source_range: reference.source_range,
+                authored_target: reference.authored_target,
+                authored_range: reference.authored_range,
+                kind: reference.kind,
+                authored_ordinal: reference.authored_ordinal,
+                outcome: reference.outcome,
             })
             .collect();
         BuilderDiagnosticInput { references }
