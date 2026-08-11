@@ -344,6 +344,13 @@ until no slot changes. Relationship destinations remain in a resolution overlay 
 Consumers use `src/analyse/resolution/Query.zig::ResolutionView` for resolved targets, effective
 names, supertypes, feature types, and scope lookup.
 
+The sibling does not make its canonically ordered fact lists double as its normal query data
+structures. `Index.zig` compiles an ordinal-indexed parent array and a namespace/name hash map;
+`EdgeIndex.zig` compiles graph edges into CSR adjacency so a node's outgoing edges are a direct
+slice; and `TypeQuery.zig` adds snapshot-local memoization for transitive conformance questions.
+Those products are disposable views over a frozen model. Building them may scan the model once,
+but repeated consumers do not rescan every node, edge, or resolution slot to answer a local query.
+
 Its editor coordinator still rebuilds the unified semantic model after a source edit. Content
 caching avoids reparsing unchanged files, but the public cache documentation explicitly says that
 canonicalization and import resolution are not cached. A separate `StdlibSummary` serializes only
@@ -362,7 +369,8 @@ commit record notes that the second solve had introduced a false unresolved-name
 - A fixed-point solver rather than graph mutation during lookup.
 - Correctness-first full semantic rebuilds as the supported execution model.
 - Deletion of the legacy path after consumer migration, with no permanent bridge.
-- Disposable indexes that can be rebuilt from authoritative graph and resolution facts.
+- Disposable, purpose-built indexes that can be rebuilt from authoritative graph and resolution
+  facts and make the documented downstream queries proportional to their result sets.
 
 ### 4.3 What Spec42 must improve
 
@@ -386,6 +394,11 @@ published model or trigger another solve.
 Finally, the sibling's persistent resolution summary is safe only as a paired, pinned stdlib
 artifact. It is not a precedent for reusing mutable workspace semantics without a complete content
 root, algorithm version, configuration identity, and invalidation contract.
+
+Spec42 also does not adopt the sibling view's raw `edgeIndex()` escape hatch. A consumer that needs
+a new semantic relationship query extends the owning typed view. Exposing a general index would
+allow consumers to rebuild semantic classifications and would make its current storage layout a
+public contract.
 
 ## 5. Canonical semantic model
 
@@ -504,6 +517,22 @@ facts with provenance, import outcomes, and the fixed-point products that are th
 facts. Outgoing/incoming adjacency, scope name maps, and lookup tables are private accelerators
 rebuilt from those authoritative facts.
 
+Canonical collections are suitable for deterministic serialization, inspection, and rebuilding
+indexes; they are not the default downstream query representation. Before publication,
+`SemanticQueryIndexes` compiles purpose-built immutable views for authored-reference outcomes,
+relationship adjacency by endpoint and kind, ownership, namespace membership, document/range
+lookup, direct typing/specialization, and any other query used repeatedly by a supported consumer.
+Indexes may use dense ordinal arrays, CSR slices, interval indexes, or maps as appropriate. Their
+storage remains private, and query methods return typed outcomes or borrowed typed result slices.
+
+A complete scan is permitted while constructing or validating one publication when its cost is
+reported as construction work. A `ResolutionView` method, diagnostic category, editor request,
+projection, or generator must not linearly scan all nodes, all resolution facts, or all
+relationships to answer a source-, node-, reference-, or relationship-local question. Adding such
+a consumer requires adding the missing owner-level index or typed projection at the publication
+barrier; snapshot-local memoization may then accelerate genuinely transitive queries without
+becoming authoritative.
+
 `ResolutionView<'a>` borrows the model's structural graph and owned `ResolutionState`. It provides:
 
 - `outcome(AuthoredReferenceId) -> &ResolutionOutcome`;
@@ -520,6 +549,11 @@ The downstream query complexity contract is:
 - qualified lookup: `O(number of segments + returned candidates)`, excluding explicitly bounded
   inherited/import closure work already settled into the model;
 - direct supertypes, feature types, and effective membership: `O(number of returned facts)`.
+
+Complexity tests instrument visited index entries as well as returned values. Repeating a query
+must not increase work in proportion to total model size, and exercising one consumer before
+another must not change either result or required semantic work. Wall-clock benchmarks complement
+these structural checks but do not replace them.
 
 No `ResolutionView` query runs a convergence pass, mutates memo state needed for correctness, or
 changes publication completeness. Harmless allocation-free cache warming is unnecessary because
