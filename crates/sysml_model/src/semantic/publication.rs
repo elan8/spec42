@@ -669,18 +669,7 @@ mod tests {
 
     #[test]
     fn model_publishes_indexed_relationships() {
-        let snapshot = ImmutableSourceSnapshot::new(vec![document(
-            "memory://test/a.sysml",
-            "package A { part def P {} part p : P; }",
-        )])
-        .unwrap();
-        let model = build_semantic_model(SemanticBuildRequest {
-            sources: snapshot,
-            construction: ConstructionStrategy::Sequential,
-            evaluation: EvaluationPolicy::ResolvedOnly,
-            configuration: SemanticConfiguration::default(),
-        })
-        .expect("semantic model");
+        let model = build("package A { part def P {} part p : P; }");
         assert_eq!(model.phase(), SemanticPhase::Resolved);
         assert!(!model.has_evaluation());
         assert_eq!(model.completeness(), SemanticCompleteness::Complete);
@@ -702,5 +691,52 @@ mod tests {
             fact.reference.kind == ReferenceKind::FeatureTyping
                 && matches!(fact.outcome, ResolutionOutcome::Resolved { .. })
         }));
+    }
+
+    #[test]
+    fn sequential_and_parallel_publications_have_equal_resolution_facts() {
+        let snapshot = ImmutableSourceSnapshot::new(vec![document(
+            "memory://test/a.sysml",
+            "package A { part def P {} part p : P; }
+                package B { part def Q :> A::P {} }",
+        )])
+        .unwrap();
+        let configuration = SemanticConfiguration::default();
+        let sequential = build_semantic_model(SemanticBuildRequest {
+            sources: snapshot.clone(),
+            construction: ConstructionStrategy::Sequential,
+            evaluation: EvaluationPolicy::ResolvedOnly,
+            configuration: configuration.clone(),
+        })
+        .expect("sequential semantic model");
+        let parallel = build_semantic_model(SemanticBuildRequest {
+            sources: snapshot,
+            construction: ConstructionStrategy::Parallel,
+            evaluation: EvaluationPolicy::ResolvedOnly,
+            configuration,
+        })
+        .expect("parallel semantic model");
+        assert_eq!(sequential.resolution(), parallel.resolution());
+    }
+
+    #[test]
+    fn missing_targets_remain_explicitly_unresolved() {
+        let model = build("package A { part p : Missing; }");
+        assert!(model.resolution().facts().iter().any(|fact| {
+            fact.reference.kind == ReferenceKind::FeatureTyping
+                && matches!(fact.outcome, ResolutionOutcome::Unresolved)
+        }));
+    }
+
+    fn build(source: &str) -> SemanticModel {
+        let snapshot =
+            ImmutableSourceSnapshot::new(vec![document("memory://test/a.sysml", source)]).unwrap();
+        build_semantic_model(SemanticBuildRequest {
+            sources: snapshot,
+            construction: ConstructionStrategy::Sequential,
+            evaluation: EvaluationPolicy::ResolvedOnly,
+            configuration: SemanticConfiguration::default(),
+        })
+        .expect("semantic model")
     }
 }
