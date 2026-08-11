@@ -184,7 +184,7 @@ impl ModelCanonicalIdentities {
                 .or_default()
                 .push(format!("{}:{}:{}", node.id.qualified_name, node.element_kind.as_str(), node.name));
         }
-        for fact in model.view().facts() {
+        for fact in model.resolution().facts() {
             documents
                 .entry(fact.reference.source.uri.clone())
                 .or_default()
@@ -372,7 +372,7 @@ fn render_model_references(
     identities: &ModelCanonicalIdentities,
     output: &mut String,
 ) {
-    let mut facts = model.view().facts().to_vec();
+    let mut facts = model.resolution().facts().to_vec();
     facts.sort_by_key(|fact| fact.reference.clone());
     output.push_str("  (references\n");
     for fact in facts {
@@ -420,7 +420,7 @@ fn render_model_relationships(
     identities: &ModelCanonicalIdentities,
     output: &mut String,
 ) {
-    let mut relationships = model.view().relationships().to_vec();
+    let mut relationships = model.resolution().relationships().to_vec();
     relationships.sort_by_key(|relationship| {
         (
             relationship.source.clone(),
