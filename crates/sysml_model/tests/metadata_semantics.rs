@@ -474,9 +474,9 @@ fn requirement_metadata_def_shorthand_projects_restriction_attributes() {
     );
     assert!(
         annotated_element
-            .attributes
-            .get("attributeType")
-            .and_then(|v| v.as_str())
+            .declared_facts
+            .relationships
+            .typing_display()
             .is_some_and(|t| t.contains("RequirementUsage")),
         "expected RequirementUsage typing on annotatedElement restriction"
     );
