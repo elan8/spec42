@@ -88,24 +88,31 @@ fn append_plain_field(md: &mut String, label: &str, value: &str) {
     md.push_str(&format!("**{}:** {}  \n", label, value));
 }
 
+/// The authored typing spelling from the typed declared fact. This is a presentation projection
+/// of `DeclaredRelationshipFacts::typing`, never a resolution decision: hover renders the text the
+/// author wrote, exactly as the retired `*Type` attribute projections used to carry it.
+fn declared_typing_display(node: &SemanticNode) -> Option<&str> {
+    node.declared_facts
+        .relationships
+        .typing
+        .first()
+        .map(|target| target.reference.as_str())
+        .filter(|reference| !reference.trim().is_empty())
+}
+
 fn declared_type(node: &SemanticNode) -> Option<&str> {
     first_attr_str(
         node,
         &[
             "partType",
-            "subjectType",
             "attributeType",
             "portType",
-            "actorType",
-            "itemType",
             "parameterType",
-            "stateType",
-            "requirementType",
-            "objectiveType",
             "refType",
             "type",
         ],
     )
+    .or_else(|| declared_typing_display(node))
 }
 
 fn append_attribute_value(md: &mut String, node: &SemanticNode, label: &str, keys: &[&str]) {
@@ -166,7 +173,7 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
             )
         }
         "subject" => {
-            let type_part = attr_str(node, "subjectType")
+            let type_part = declared_typing_display(node)
                 .map(|t| format!(" : {}", t))
                 .unwrap_or_default();
             format!("subject {}{};", node.name, type_part)
@@ -211,13 +218,14 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
             format!("individual def {}{specializes};", node.name)
         }
         "item" => {
-            let type_part = attr_str(node, "itemType")
+            let type_part = declared_typing_display(node)
                 .map(|t| format!(" : {}", t))
                 .unwrap_or_default();
             format!("item {}{}{};", node.name, type_part, multiplicity)
         }
         "enumeration" => {
-            let type_part = first_attr_str(node, &["enumerationType", "type"])
+            let type_part = declared_typing_display(node)
+                .or_else(|| attr_str(node, "type"))
                 .map(|t| format!(" : {}", t))
                 .unwrap_or_default();
             format!("enum {}{}{};", node.name, type_part, multiplicity)
@@ -268,13 +276,13 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
             format!("return {} {};", node.name, token)
         }
         "occurrence" => {
-            let type_part = attr_str(node, "occurrenceType")
+            let type_part = declared_typing_display(node)
                 .map(|t| format!(" : {}", t))
                 .unwrap_or_default();
             format!("occurrence {}{};", node.name, type_part)
         }
         "flow" => {
-            let type_part = attr_str(node, "flowType")
+            let type_part = declared_typing_display(node)
                 .map(|t| format!(" : {}", t))
                 .unwrap_or_default();
             format!("flow {}{};", node.name, type_part)

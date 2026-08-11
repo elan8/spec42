@@ -49,10 +49,7 @@ pub(super) fn add_perform_usage_node(
         .node_index_by_id
         .contains_key(&NodeId::new(uri, &qualified))
     {
-        let mut attrs = HashMap::new();
-        if let Some(action_type) = action_type {
-            attrs.insert("actionType".to_string(), serde_json::json!(action_type));
-        }
+        let attrs = HashMap::new();
         add_node_and_recurse(
             g,
             uri,

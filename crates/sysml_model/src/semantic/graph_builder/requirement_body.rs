@@ -369,11 +369,7 @@ pub(super) fn walk_requirement_def_body(
                     &name,
                     "subject",
                 );
-                let mut attrs = HashMap::new();
-                attrs.insert(
-                    "subjectType".to_string(),
-                    serde_json::json!(sd.value.type_name.as_str()),
-                );
+                let attrs = HashMap::new();
                 add_node_and_recurse(
                     g,
                     uri,
@@ -408,11 +404,7 @@ pub(super) fn walk_requirement_def_body(
                     &name,
                     "actor",
                 );
-                let mut attrs = HashMap::new();
-                attrs.insert(
-                    "actorType".to_string(),
-                    serde_json::json!(ad.value.type_name.as_str()),
-                );
+                let attrs = HashMap::new();
                 add_node_and_recurse(
                     g,
                     uri,
@@ -707,8 +699,7 @@ pub(super) fn walk_requirement_def_body(
                         &s.name,
                         "stakeholder",
                     );
-                    let mut attrs = HashMap::new();
-                    attrs.insert("stakeholderType".to_string(), serde_json::json!(type_name));
+                    let attrs = HashMap::new();
                     add_node_and_recurse(
                         g,
                         uri,

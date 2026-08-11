@@ -54,9 +54,6 @@ pub(super) fn materialize_flow_usage(
         "flowKind".to_string(),
         serde_json::json!(flow_kind_label(flow.kind)),
     );
-    if let Some(ref type_name) = flow.type_name {
-        attrs.insert("flowType".to_string(), serde_json::json!(type_name));
-    }
     if let Some(ref payload) = flow.payload {
         attrs.insert(
             "payloadExpression".to_string(),

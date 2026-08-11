@@ -38,9 +38,6 @@ pub(super) fn add_metadata_keyword_node_opt(
     let name = format!("_{}", mk.keyword);
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "metadata keyword");
     let mut attrs = HashMap::new();
-    if let Some(ref type_name) = mk.type_name {
-        attrs.insert("keywordType".to_string(), serde_json::json!(type_name));
-    }
     if !mk.about_targets.is_empty() {
         attrs.insert(
             "aboutTargets".to_string(),

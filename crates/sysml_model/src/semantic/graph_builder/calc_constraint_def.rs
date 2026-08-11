@@ -240,9 +240,6 @@ pub(super) fn build_constraint_usage(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&c_node.value.membership),
     );
-    if let Some(ref t) = c_node.value.type_name {
-        attrs.insert("constraintType".to_string(), serde_json::json!(t));
-    }
     add_node_and_recurse(
         g,
         uri,
@@ -435,7 +432,7 @@ pub(super) fn materialize_calc_usage(
     let name = identification_name(&calc_node.value.identification);
     let qualified = qualified_name_for_node(g, uri, Some(&parent_id.qualified_name), &name, "calc");
     let range = span_to_range(&calc_node.span);
-    let mut attrs = HashMap::new();
+    let attrs = HashMap::new();
     if let Some(short_name) =
         crate::semantic::ast_util::declared_short_name(&calc_node.value.identification)
     {
@@ -445,9 +442,6 @@ pub(super) fn materialize_calc_usage(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&calc_node.value.membership),
     );
-    if let Some(ref t) = calc_node.value.type_name {
-        attrs.insert("calcType".to_string(), serde_json::json!(t));
-    }
     add_node_and_recurse(
         g,
         uri,

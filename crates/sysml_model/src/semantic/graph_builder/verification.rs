@@ -107,11 +107,7 @@ pub(super) fn build_from_verification_body(
                     &name,
                     "subject",
                 );
-                let mut attrs = HashMap::new();
-                attrs.insert(
-                    "subjectType".to_string(),
-                    serde_json::json!(sd.value.type_name.as_str()),
-                );
+                let attrs = HashMap::new();
                 add_node_and_recurse(
                     g,
                     uri,
@@ -147,10 +143,6 @@ pub(super) fn build_from_verification_body(
                     "objectiveBindingKind".to_string(),
                     serde_json::json!("verification_subject"),
                 );
-                if let Some(type_name) = objective.value.requirement.value.type_name.as_ref() {
-                    objective_attrs
-                        .insert("objectiveType".to_string(), serde_json::json!(type_name));
-                }
                 add_node_and_recurse(
                     g,
                     uri,

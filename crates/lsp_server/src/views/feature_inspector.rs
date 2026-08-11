@@ -17,34 +17,6 @@ use crate::views::dto::{
 };
 use sysml_model::{range_to_dto, ElementKind, ExpressionEvaluationQuery, PositionDto};
 
-const TYPING_ATTRIBUTE_KEYS: &[&str] = &[
-    "partType",
-    "attributeType",
-    "portType",
-    "actionType",
-    "actorType",
-    "itemType",
-    "occurrenceType",
-    "flowType",
-    "allocationType",
-    "stateType",
-    "requirementType",
-    "useCaseType",
-    "concernType",
-    "endType",
-    "refType",
-    "parameterType",
-    "viewType",
-    "viewpointType",
-    "renderingType",
-    "subjectType",
-    "analysisType",
-    "verificationType",
-    "connectionType",
-    "metadataType",
-    "keywordType",
-];
-
 /// The inspector is a JSON transport boundary. Semantic evaluation keeps this closed scalar
 /// representation in `sysml_model`; conversion happens only while assembling this DTO.
 fn evaluated_value_to_json(value: &sysml_model::EvaluatedValue) -> serde_json::Value {
@@ -179,13 +151,12 @@ fn element_ref(node: &SemanticNode) -> SysmlFeatureInspectorElementRefDto {
     }
 }
 
+/// A node declared a typing when the typed declared facts say so: the generic
+/// `DeclaredRelationshipFacts::typing` vector, or `interface_end_type` for interface ends (which
+/// are deliberately kept out of that vector). The legacy `*Type` attribute keys are not consulted.
 fn has_typing_intent(node: &SemanticNode) -> bool {
-    TYPING_ATTRIBUTE_KEYS.iter().any(|key| {
-        node.attributes
-            .get(*key)
-            .and_then(|value| value.as_str())
-            .is_some()
-    })
+    !node.declared_facts.relationships.typing.is_empty()
+        || node.declared_facts.interface_end_type.is_some()
 }
 
 fn has_specialization_intent(node: &SemanticNode) -> bool {
@@ -365,6 +336,37 @@ fn relationship_targets_with_typed_fallback<'a>(
     )
 }
 
+/// Resolved-or-declared typing targets. Prefers the published `Typing` edge; falls back to the
+/// typed `DeclaredRelationshipFacts::typing` targets and, for interface ends, to the typed
+/// `interface_end_type` fact. Never reads the legacy `*Type` projection attributes: every
+/// producer of those keys already dual-writes the typed typing fact (or, for interface ends,
+/// `interface_end_type`), so the typed facts are the authoritative unresolved-case source.
+fn typing_targets_from_typed_facts<'a>(
+    semantic_graph: &'a SemanticGraph,
+    node: &'a SemanticNode,
+) -> Vec<&'a SemanticNode> {
+    let direct = semantic_graph.outgoing_targets_by_kind(node, RelationshipKind::Typing);
+    if !direct.is_empty() {
+        return distinct_nodes(direct);
+    }
+    let declared = distinct_nodes(
+        node.declared_facts
+            .relationships
+            .typing
+            .iter()
+            .flat_map(|target| declared_target_candidates(semantic_graph, node, &target.reference)),
+    );
+    if !declared.is_empty() {
+        return declared;
+    }
+    distinct_nodes(
+        node.declared_facts
+            .interface_end_type
+            .iter()
+            .flat_map(|reference| declared_target_candidates(semantic_graph, node, reference)),
+    )
+}
+
 /// The redefines/subsetting-family typed declared target list for a relationship kind. These are
 /// always dual-written by SysML producers into `DeclaredRelationshipFacts`.
 fn typed_subsetting_family_targets(
@@ -403,12 +405,7 @@ fn effective_typing_targets<'a>(
     semantic_graph: &'a SemanticGraph,
     node: &'a SemanticNode,
 ) -> Vec<&'a SemanticNode> {
-    let direct = relationship_targets_with_fallback(
-        semantic_graph,
-        node,
-        RelationshipKind::Typing,
-        TYPING_ATTRIBUTE_KEYS,
-    );
+    let direct = typing_targets_from_typed_facts(semantic_graph, node);
     if !direct.is_empty() {
         return distinct_nodes(direct);
     }
@@ -430,12 +427,7 @@ fn effective_typing_targets<'a>(
         if !visited.insert(candidate.id.clone()) {
             continue;
         }
-        let typing = relationship_targets_with_fallback(
-            semantic_graph,
-            candidate,
-            RelationshipKind::Typing,
-            TYPING_ATTRIBUTE_KEYS,
-        );
+        let typing = typing_targets_from_typed_facts(semantic_graph, candidate);
         if !typing.is_empty() {
             return distinct_nodes(typing);
         }
@@ -635,12 +627,7 @@ pub(crate) fn feature_inspector_element(
         .as_ref()
         .and_then(|parent_id| semantic_graph.get_node(parent_id))
         .map(element_ref);
-    let typing_targets = relationship_targets_with_fallback(
-        semantic_graph,
-        node,
-        RelationshipKind::Typing,
-        TYPING_ATTRIBUTE_KEYS,
-    );
+    let typing_targets = typing_targets_from_typed_facts(semantic_graph, node);
     let effective_typing_targets = effective_typing_targets(semantic_graph, node);
     let specialization_targets = relationship_targets_with_typed_fallback(
         semantic_graph,

@@ -258,3 +258,34 @@ fn hover_does_not_treat_case_different_identifier_as_keyword() {
         "SysML keywords are case-sensitive; `Part` must remain an unresolved identifier: {result}"
     );
 }
+
+/// Hover renders a usage's declaration from the typed declared typing fact, not from the retired
+/// `*Type` attribute projections. Cover a resolved and an unresolved typing for constructs whose
+/// projections (`itemType`, `occurrenceType`, `stateType`, `subjectType`) were retired: the
+/// authored spelling must still appear, and an unresolved typing must not be silently dropped.
+#[test]
+fn hover_renders_declared_typing_from_typed_facts_for_retired_projection_kinds() {
+    let content = r#"package P {
+    item def Cargo;
+    occurrence def Trip;
+    item load : Cargo;
+    occurrence journey : Trip;
+    item ghost : MissingItemDef;
+}"#;
+    let ws = single_doc("hover-typed-facts.sysml", content);
+
+    for (needle, expected) in [
+        ("load :", "Cargo"),
+        ("journey :", "Trip"),
+        ("ghost :", "MissingItemDef"),
+    ] {
+        let pos = position_for(content, needle);
+        let contents = hover(&ws, "hover-typed-facts.sysml", pos)
+            .expect("hover on usage")
+            .contents;
+        assert!(
+            contents.contains(expected),
+            "hover for `{needle}` should render the authored typing `{expected}`: {contents}"
+        );
+    }
+}

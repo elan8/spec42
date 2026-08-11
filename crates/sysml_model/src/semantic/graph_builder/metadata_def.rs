@@ -17,13 +17,9 @@ use super::{add_node_and_recurse, qualified_name_for_node};
 fn insert_metadata_usage_attrs(
     attrs: &mut HashMap<String, serde_json::Value>,
     name: &str,
-    type_name: Option<&str>,
     about_targets: &[String],
 ) {
     attrs.insert("annotationName".to_string(), serde_json::json!(name));
-    if let Some(t) = type_name.filter(|value| !value.trim().is_empty()) {
-        attrs.insert("metadataType".to_string(), serde_json::json!(t));
-    }
     if !about_targets.is_empty() {
         attrs.insert("aboutTargets".to_string(), serde_json::json!(about_targets));
     }
@@ -57,12 +53,7 @@ pub(super) fn add_package_metadata_usage_node(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&mu.membership),
     );
-    insert_metadata_usage_attrs(
-        &mut attrs,
-        &mu.name,
-        mu.type_name.as_deref(),
-        &mu.about_targets,
-    );
+    insert_metadata_usage_attrs(&mut attrs, &mu.name, &mu.about_targets);
     add_node_and_recurse(
         g,
         uri,
@@ -96,12 +87,7 @@ pub(super) fn add_metadata_annotation_node(
     let ownership_prefix = Some(parent_id.qualified_name.as_str());
     let qualified = qualified_name_for_node(g, uri, ownership_prefix, &meta.name, "metadata usage");
     let mut attrs = HashMap::new();
-    insert_metadata_usage_attrs(
-        &mut attrs,
-        &meta.name,
-        meta.type_name.as_deref(),
-        &meta.about_targets,
-    );
+    insert_metadata_usage_attrs(&mut attrs, &meta.name, &meta.about_targets);
     add_node_and_recurse(
         g,
         uri,

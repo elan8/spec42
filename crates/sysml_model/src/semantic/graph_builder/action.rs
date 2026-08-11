@@ -131,10 +131,6 @@ impl ThenActionChain {
             "action",
         );
         let mut attrs = HashMap::new();
-        attrs.insert(
-            "actionType".to_string(),
-            serde_json::json!(action.type_name.as_str()),
-        );
         insert_action_payload_attrs(&mut attrs, action);
         add_node_and_recurse(
             g,
@@ -267,10 +263,7 @@ pub(super) fn add_perform_step(
         perform.value.action_name.clone()
     };
     let child_qualified = qualified_name_for_node(g, uri, container_prefix, &step_name, "perform");
-    let mut attrs = HashMap::new();
-    if let Some(ref action_type) = perform.value.type_name {
-        attrs.insert("actionType".to_string(), serde_json::json!(action_type));
-    }
+    let attrs = HashMap::new();
     add_node_and_recurse(
         g,
         uri,
@@ -733,10 +726,6 @@ fn materialize_nested_action_usage(
 
 fn action_usage_graph_attrs(usage: &ActionUsage) -> HashMap<String, serde_json::Value> {
     let mut attrs = HashMap::new();
-    attrs.insert(
-        "actionType".to_string(),
-        serde_json::json!(&usage.type_name),
-    );
     if usage.is_abstract {
         attrs.insert("isAbstract".to_string(), serde_json::json!(true));
     }
@@ -794,9 +783,6 @@ fn wire_action_usage_typing(
 
 pub(super) fn state_usage_graph_attrs(usage: &StateUsage) -> HashMap<String, serde_json::Value> {
     let mut attrs = HashMap::new();
-    if let Some(ref t) = usage.type_name {
-        attrs.insert("stateType".to_string(), serde_json::json!(t));
-    }
     if usage.is_abstract {
         attrs.insert("isAbstract".to_string(), serde_json::json!(true));
     }

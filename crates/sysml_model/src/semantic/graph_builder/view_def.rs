@@ -511,14 +511,11 @@ pub(super) fn build_view_usage(
     let name = &vu_node.value.name;
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "view");
     let range = span_to_range(&vu_node.span);
-    let mut attrs = HashMap::new();
+    let attrs = HashMap::new();
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&vu_node.value.membership),
     );
-    if let Some(ref t) = vu_node.value.type_name {
-        attrs.insert("viewType".to_string(), serde_json::json!(t));
-    }
     add_node_and_recurse(
         g,
         uri,
@@ -546,14 +543,10 @@ pub(super) fn build_viewpoint_usage(
     let name = &vpu_node.value.name;
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "viewpoint");
     let range = span_to_range(&vpu_node.span);
-    let mut attrs = HashMap::new();
+    let attrs = HashMap::new();
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&vpu_node.value.membership),
-    );
-    attrs.insert(
-        "viewpointType".to_string(),
-        serde_json::json!(vpu_node.value.type_name.as_str()),
     );
     add_node_and_recurse(
         g,

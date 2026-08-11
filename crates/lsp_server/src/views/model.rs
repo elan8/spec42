@@ -342,29 +342,14 @@ async fn log_perf(client: &Client, enabled: bool, event: &str, fields: Vec<(&str
         .await;
 }
 
-const TYPING_ATTRIBUTE_KEYS: &[&str] = &[
-    "partType",
-    "attributeType",
-    "portType",
-    "actionType",
-    "actorType",
-    "itemType",
-    "occurrenceType",
-    "flowType",
-    "allocationType",
-    "stateType",
-    "requirementType",
-    "useCaseType",
-    "concernType",
-    "endType",
-    "refType",
-    "parameterType",
-];
-
+/// A node "expects resolution" when it authored a typing or specialization. Both are typed
+/// declared facts: `DeclaredRelationshipFacts::typing` (dual-written by every `*Type` projection
+/// producer), `interface_end_type` (interface ends, deliberately kept out of the generic typing
+/// vector), and `DeclaredRelationshipFacts::specializes`. The legacy `*Type` attribute keys are
+/// not consulted.
 fn node_expects_resolution(node: &semantic::SemanticNode) -> bool {
-    TYPING_ATTRIBUTE_KEYS
-        .iter()
-        .any(|key| node.attributes.get(*key).and_then(|v| v.as_str()).is_some())
+    !node.declared_facts.relationships.typing.is_empty()
+        || node.declared_facts.interface_end_type.is_some()
         || !node.declared_facts.relationships.specializes.is_empty()
 }
 

@@ -273,9 +273,6 @@ pub(super) fn materialize_occurrence_usage(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&n.membership),
     );
-    if let Some(ref t) = n.type_name {
-        attrs.insert("occurrenceType".to_string(), serde_json::json!(t));
-    }
     if let Some(ref portion_kind) = n.portion_kind {
         attrs.insert("portionKind".to_string(), serde_json::json!(portion_kind));
     }
@@ -352,9 +349,6 @@ pub(super) fn materialize_requirement_usage(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&n.membership),
     );
-    if let Some(ref t) = n.type_name {
-        attrs.insert("requirementType".to_string(), serde_json::json!(t));
-    }
     if let Some(subsets) = subsetting_target(n.subsets.as_deref()) {
         attrs.insert("subsetsFeature".to_string(), serde_json::json!(subsets));
     }
@@ -399,9 +393,6 @@ pub(super) fn materialize_item_usage(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&n.membership),
     );
-    if let Some(ref t) = n.type_name {
-        attrs.insert("itemType".to_string(), serde_json::json!(t));
-    }
     if let Some(ref m) = n.multiplicity {
         attrs.insert("multiplicity".to_string(), serde_json::json!(m));
     }
@@ -467,9 +458,6 @@ pub(super) fn materialize_connection_usage(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&n.membership),
     );
-    if let Some(type_name) = &n.type_name {
-        attrs.insert("connectionType".to_string(), serde_json::json!(type_name));
-    }
     if let Some(subsets) = subsetting_target(n.subsets.as_deref()) {
         attrs.insert("subsetsFeature".to_string(), serde_json::json!(subsets));
     }
