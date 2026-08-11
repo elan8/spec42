@@ -175,6 +175,8 @@ pub enum ReferenceKind {
     PerformTarget,
     TransitionSource,
     TransitionTarget,
+    InitialStateSource,
+    InitialStateTarget,
     ReferenceSource,
     ReferenceTarget,
     DependencySource,
@@ -205,6 +207,7 @@ impl ReferenceKind {
             }
             Self::PerformSource | Self::PerformTarget => RelationshipKind::Perform,
             Self::TransitionSource | Self::TransitionTarget => RelationshipKind::Transition,
+            Self::InitialStateSource | Self::InitialStateTarget => RelationshipKind::InitialState,
             Self::ReferenceSource | Self::ReferenceTarget => RelationshipKind::Reference,
             Self::DependencySource | Self::DependencyTarget => RelationshipKind::Dependency,
             Self::DerivationSource | Self::DerivationTarget => RelationshipKind::Derivation,
@@ -716,9 +719,13 @@ fn resolve_expression_relationship(
             ReferenceKind::SuccessionFlowTarget,
         ),
         RelationshipKind::Perform => (ReferenceKind::PerformSource, ReferenceKind::PerformTarget),
-        RelationshipKind::Transition | RelationshipKind::InitialState => (
+        RelationshipKind::Transition => (
             ReferenceKind::TransitionSource,
             ReferenceKind::TransitionTarget,
+        ),
+        RelationshipKind::InitialState => (
+            ReferenceKind::InitialStateSource,
+            ReferenceKind::InitialStateTarget,
         ),
         RelationshipKind::Reference => (
             ReferenceKind::ReferenceSource,
@@ -998,9 +1005,13 @@ fn expression_reference_kinds(kind: RelationshipKind) -> Option<(ReferenceKind, 
             ReferenceKind::SuccessionFlowTarget,
         ),
         RelationshipKind::Perform => (ReferenceKind::PerformSource, ReferenceKind::PerformTarget),
-        RelationshipKind::Transition | RelationshipKind::InitialState => (
+        RelationshipKind::Transition => (
             ReferenceKind::TransitionSource,
             ReferenceKind::TransitionTarget,
+        ),
+        RelationshipKind::InitialState => (
+            ReferenceKind::InitialStateSource,
+            ReferenceKind::InitialStateTarget,
         ),
         RelationshipKind::Reference => (
             ReferenceKind::ReferenceSource,
@@ -1206,7 +1217,10 @@ fn authored_relationships(
         ),
         (ReferenceKind::PerformSource, facts.perform.clone()),
         (ReferenceKind::TransitionSource, facts.transition.clone()),
-        (ReferenceKind::TransitionSource, facts.initial_state.clone()),
+        (
+            ReferenceKind::InitialStateSource,
+            facts.initial_state.clone(),
+        ),
         (ReferenceKind::ReferenceSource, facts.reference.clone()),
         (ReferenceKind::DependencySource, facts.dependency.clone()),
         (ReferenceKind::DerivationSource, facts.derivation.clone()),
