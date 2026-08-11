@@ -155,6 +155,31 @@ impl SemanticBuildRequest {
     pub fn identity(&self) -> SemanticModelIdentity {
         SemanticModelIdentity::for_request(self)
     }
+
+    /// Precomputes the dependency-complete identity once and binds it to the exact request that
+    /// will be consumed by semantic construction.
+    pub fn prepare(self) -> PreparedSemanticBuildRequest {
+        let identity = self.identity();
+        PreparedSemanticBuildRequest {
+            request: self,
+            identity,
+        }
+    }
+}
+
+/// Owner-to-owner construction seam used by `sysml_query`.
+///
+/// Its fields remain private so an identity cannot be paired with different semantic inputs.
+#[derive(Debug)]
+pub struct PreparedSemanticBuildRequest {
+    request: SemanticBuildRequest,
+    identity: SemanticModelIdentity,
+}
+
+impl PreparedSemanticBuildRequest {
+    pub fn identity(&self) -> &SemanticModelIdentity {
+        &self.identity
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -2626,14 +2651,29 @@ impl<'a> ResolutionView<'a> {
 pub fn build_semantic_model(
     request: SemanticBuildRequest,
 ) -> Result<SemanticModel, SemanticBuildFailure> {
-    build_semantic_model_with_max_passes(request, 1_000)
+    build_prepared_semantic_model(request.prepare())
 }
 
+/// Builds from the exact semantic inputs bound to a precomputed publication identity.
+pub fn build_prepared_semantic_model(
+    request: PreparedSemanticBuildRequest,
+) -> Result<SemanticModel, SemanticBuildFailure> {
+    build_prepared_semantic_model_with_max_passes(request, 1_000)
+}
+
+#[cfg(test)]
 pub(crate) fn build_semantic_model_with_max_passes(
     request: SemanticBuildRequest,
     max_passes: usize,
 ) -> Result<SemanticModel, SemanticBuildFailure> {
-    let identity = request.identity();
+    build_prepared_semantic_model_with_max_passes(request.prepare(), max_passes)
+}
+
+fn build_prepared_semantic_model_with_max_passes(
+    prepared: PreparedSemanticBuildRequest,
+    max_passes: usize,
+) -> Result<SemanticModel, SemanticBuildFailure> {
+    let PreparedSemanticBuildRequest { request, identity } = prepared;
     let documents = request.sources.documents();
     let (graph, _, completeness) = build_structural_graph(documents, request.construction);
     let resolution = ResolutionDb::new(&graph)

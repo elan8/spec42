@@ -93,12 +93,10 @@ pub enum EvaluationPolicy {
 
 /// Complete inputs for one coherent publication. There is no constructor from a graph, resolver,
 /// partial index, or prior mutable state.
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct BuildRequest {
-    sources: sysml_model::ImmutableSourceSnapshot,
-    construction: ConstructionStrategy,
-    evaluation: EvaluationPolicy,
-    semantic_contract_version: String,
+    inner: sysml_model::PreparedSemanticBuildRequest,
+    identity: PublicationIdentity,
 }
 
 impl BuildRequest {
@@ -111,12 +109,25 @@ impl BuildRequest {
         let sources = sources.into_iter().map(|source| source.inner).collect();
         let sources = sysml_model::ImmutableSourceSnapshot::new(sources)
             .map_err(|error| BuildError(error.to_string()))?;
-        Ok(Self {
+        let inner = sysml_model::SemanticBuildRequest {
             sources,
-            construction,
-            evaluation,
-            semantic_contract_version: semantic_contract_version.into(),
-        })
+            construction: match construction {
+                ConstructionStrategy::Sequential => sysml_model::ConstructionStrategy::Sequential,
+                ConstructionStrategy::Parallel => sysml_model::ConstructionStrategy::Parallel,
+            },
+            evaluation: match evaluation {
+                EvaluationPolicy::ResolvedOnly => sysml_model::EvaluationPolicy::ResolvedOnly,
+                EvaluationPolicy::Evaluate => sysml_model::EvaluationPolicy::Evaluate,
+            },
+            configuration: sysml_model::SemanticConfiguration {
+                semantic_contract_version: semantic_contract_version.into(),
+            },
+        };
+        let inner = inner.prepare();
+        let identity = PublicationIdentity {
+            inner: inner.identity().clone(),
+        };
+        Ok(Self { inner, identity })
     }
 
     pub fn evaluated(
@@ -131,44 +142,9 @@ impl BuildRequest {
         )
     }
 
-    pub fn identity(&self) -> PublicationIdentity {
-        PublicationIdentity {
-            inner: self.model_request().identity(),
-        }
-    }
-
-    fn model_request(&self) -> sysml_model::SemanticBuildRequest {
-        sysml_model::SemanticBuildRequest {
-            sources: self.sources.clone(),
-            construction: match self.construction {
-                ConstructionStrategy::Sequential => sysml_model::ConstructionStrategy::Sequential,
-                ConstructionStrategy::Parallel => sysml_model::ConstructionStrategy::Parallel,
-            },
-            evaluation: match self.evaluation {
-                EvaluationPolicy::ResolvedOnly => sysml_model::EvaluationPolicy::ResolvedOnly,
-                EvaluationPolicy::Evaluate => sysml_model::EvaluationPolicy::Evaluate,
-            },
-            configuration: sysml_model::SemanticConfiguration {
-                semantic_contract_version: self.semantic_contract_version.clone(),
-            },
-        }
-    }
-
-    fn into_model_request(self) -> sysml_model::SemanticBuildRequest {
-        sysml_model::SemanticBuildRequest {
-            sources: self.sources,
-            construction: match self.construction {
-                ConstructionStrategy::Sequential => sysml_model::ConstructionStrategy::Sequential,
-                ConstructionStrategy::Parallel => sysml_model::ConstructionStrategy::Parallel,
-            },
-            evaluation: match self.evaluation {
-                EvaluationPolicy::ResolvedOnly => sysml_model::EvaluationPolicy::ResolvedOnly,
-                EvaluationPolicy::Evaluate => sysml_model::EvaluationPolicy::Evaluate,
-            },
-            configuration: sysml_model::SemanticConfiguration {
-                semantic_contract_version: self.semantic_contract_version,
-            },
-        }
+    /// Returns the precomputed dependency-complete identity without revisiting source contents.
+    pub fn identity(&self) -> &PublicationIdentity {
+        &self.identity
     }
 }
 
@@ -184,15 +160,18 @@ impl fmt::Display for BuildError {
 impl std::error::Error for BuildError {}
 
 /// Opaque, immutable, settled semantic publication.
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct PublishedModel {
     inner: sysml_model::SemanticModel,
+    identity: PublicationIdentity,
 }
 
 pub fn build(request: BuildRequest) -> Result<PublishedModel, BuildError> {
-    let inner = sysml_model::build_semantic_model(request.into_model_request())
+    let BuildRequest { inner, identity } = request;
+    let inner = sysml_model::build_prepared_semantic_model(inner)
         .map_err(|error| BuildError(error.to_string()))?;
-    Ok(PublishedModel { inner })
+    debug_assert_eq!(inner.identity(), &identity.inner);
+    Ok(PublishedModel { inner, identity })
 }
 
 impl PublishedModel {
@@ -213,7 +192,7 @@ impl PublishedModel {
     }
 
     pub fn publication(&self) -> PublicationQueries<'_> {
-        PublicationQueries { model: &self.inner }
+        PublicationQueries { model: self }
     }
 }
 
@@ -257,18 +236,17 @@ pub enum PublicationCompleteness {
 
 /// Publication metadata needed by atomic owners without exposing the model implementation.
 pub struct PublicationQueries<'a> {
-    model: &'a sysml_model::SemanticModel,
+    model: &'a PublishedModel,
 }
 
-impl PublicationQueries<'_> {
-    pub fn identity(&self) -> PublicationIdentity {
-        PublicationIdentity {
-            inner: self.model.identity().clone(),
-        }
+impl<'a> PublicationQueries<'a> {
+    /// Borrows the small identity stored beside the exact request consumed by this publication.
+    pub fn identity(&self) -> &'a PublicationIdentity {
+        &self.model.identity
     }
 
     pub fn completeness(&self) -> PublicationCompleteness {
-        match self.model.completeness() {
+        match self.model.inner.completeness() {
             sysml_model::SemanticCompleteness::Complete => PublicationCompleteness::Complete,
             sysml_model::SemanticCompleteness::EditorRecovery => {
                 PublicationCompleteness::EditorRecovery
@@ -402,6 +380,19 @@ impl NavigationQueries<'_> {
 ///     let _ = &request.sources;
 /// }
 /// ```
+///
+/// Requests and publications deliberately cannot be deep-cloned. Publication sharing uses
+/// `Arc<PublishedModel>`.
+///
+/// ```compile_fail
+/// fn require_clone<T: Clone>() {}
+/// require_clone::<sysml_query::BuildRequest>();
+/// ```
+///
+/// ```compile_fail
+/// fn require_clone<T: Clone>() {}
+/// require_clone::<sysml_query::PublishedModel>();
+/// ```
 pub struct RawStorageIsNotPublic;
 
 #[cfg(test)]
@@ -438,6 +429,7 @@ mod tests {
             BuildRequest::new(vec![source.clone()], construction, evaluation, contract)
                 .expect("unique source")
                 .identity()
+                .clone()
         };
         let base = request(
             ConstructionStrategy::Sequential,
@@ -475,5 +467,21 @@ mod tests {
             ConstructionStrategy::Sequential
         );
         assert_eq!(base.evaluation_policy(), EvaluationPolicy::ResolvedOnly);
+    }
+
+    #[test]
+    fn built_publication_keeps_the_identity_precomputed_for_its_request() {
+        let request = BuildRequest::new(
+            Vec::new(),
+            ConstructionStrategy::Parallel,
+            EvaluationPolicy::ResolvedOnly,
+            "identity-consistency-v1",
+        )
+        .expect("empty source snapshot is valid");
+        let expected = request.identity().clone();
+
+        let model = build(request).expect("empty publication builds");
+
+        assert_eq!(model.publication().identity(), &expected);
     }
 }

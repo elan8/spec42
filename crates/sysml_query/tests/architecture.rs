@@ -23,6 +23,7 @@ const FORBIDDEN_PUBLIC_TYPES: &[&str] = &[
     "SemanticModel",
     "SemanticModelIdentity",
     "SemanticBuildRequest",
+    "PreparedSemanticBuildRequest",
     "ImmutableSourceSnapshot",
     "SemanticQueryIndexes",
     "ResolutionState",
