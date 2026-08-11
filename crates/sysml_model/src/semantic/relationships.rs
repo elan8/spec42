@@ -93,7 +93,7 @@ impl TypeReferenceTarget for Node<TypingRelationship> {
     }
 }
 
-fn record_declared_relationship_target(
+pub(crate) fn record_declared_relationship_target(
     g: &mut SemanticGraph,
     source_id: &NodeId,
     kind: RelationshipKind,

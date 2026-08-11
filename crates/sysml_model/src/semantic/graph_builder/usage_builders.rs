@@ -135,7 +135,14 @@ pub(super) fn materialize_part_usage(
     }
     if n.is_reference {
         if let Some(value_expression) = value_expression.as_deref() {
-            if let Some(target) = expressions::resolve_expression_endpoint_legacy(
+            if g.structural_input_only {
+                crate::semantic::relationships::record_declared_relationship_target(
+                    g,
+                    &node_id,
+                    RelationshipKind::Reference,
+                    value_expression,
+                );
+            } else if let Some(target) = expressions::resolve_expression_endpoint_legacy(
                 g,
                 uri,
                 container_prefix,

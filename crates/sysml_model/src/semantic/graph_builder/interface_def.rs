@@ -143,6 +143,9 @@ pub(super) fn add_connection_edges_from_end_typing(
     uri: &Url,
     parent_id: &NodeId,
 ) {
+    if g.structural_input_only {
+        return;
+    }
     let Some(parent) = g.get_node(parent_id) else {
         return;
     };
