@@ -15,7 +15,9 @@ use crate::ordering::canonicalize_diagnostics;
 use crate::shared_rules::{
     collect_untyped_part_usage_diagnostics, missing_library_context_diagnostic,
 };
-use crate::types::{DiagnosticSeverity, DiagnosticsOptions, SemanticDiagnostic};
+use crate::types::{
+    DiagnosticRelatedInfo, DiagnosticSeverity, DiagnosticsOptions, SemanticDiagnostic,
+};
 
 /// Collects source and canonical-resolution diagnostics from one immutable semantic model.
 ///
@@ -64,14 +66,27 @@ pub fn collect_document_diagnostics_from_model(
                 }
                 ResolutionOutcome::Ambiguous { .. } => {
                     has_unresolved = true;
-                    diagnostics.push(reference_diagnostic(
+                    let mut diagnostic = reference_diagnostic(
                         uri,
                         range,
                         &reference,
                         "ambiguous_reference",
                         DiagnosticSeverity::Error,
                         format!("ambiguous reference {:?}", fact.authored_target),
-                    ));
+                    );
+                    diagnostic.related_information = fact
+                        .candidates
+                        .iter()
+                        .map(|candidate| DiagnosticRelatedInfo {
+                            uri: candidate.target.uri.clone(),
+                            range: candidate.range,
+                            message: format!(
+                                "Ambiguous candidate '{}' ({})",
+                                candidate.target.qualified_name, candidate.kind
+                            ),
+                        })
+                        .collect();
+                    diagnostics.push(diagnostic);
                 }
                 ResolutionOutcome::UnsupportedFiltered => diagnostics.push(reference_diagnostic(
                     uri,
@@ -317,7 +332,7 @@ fn reference_diagnostic(
     uri: &Url,
     range: TextRange,
     reference: &AuthoredReferenceId,
-    code: &str,
+    requested_code: &str,
     severity: DiagnosticSeverity,
     message: String,
 ) -> SemanticDiagnostic {
@@ -326,29 +341,46 @@ fn reference_diagnostic(
         range,
         severity,
         source: "semantic".to_string(),
-        code: if code.starts_with("unresolved_") {
-            diagnostic_code(reference.kind, severity)
+        code: if matches!(
+            requested_code,
+            "unresolved_reference" | "ambiguous_reference" | "unsupported_reference"
+        ) {
+            diagnostic_code(reference.kind, severity, requested_code)
         } else {
-            code.to_string()
+            requested_code.to_string()
         },
         message,
         related_information: Vec::new(),
     }
 }
 
-fn diagnostic_code(kind: ReferenceKind, severity: DiagnosticSeverity) -> String {
-    let base = match kind {
-        ReferenceKind::FeatureTyping => "unresolved_type_reference",
-        ReferenceKind::Specialization => "unresolved_specializes_reference",
-        ReferenceKind::NamespaceImport | ReferenceKind::MembershipImport => {
-            "unresolved_import_target"
-        }
-        _ => match severity {
-            DiagnosticSeverity::Error => "ambiguous_reference",
-            _ => "unresolved_reference",
+fn diagnostic_code(kind: ReferenceKind, severity: DiagnosticSeverity, requested: &str) -> String {
+    match requested {
+        "ambiguous_reference" => match kind {
+            ReferenceKind::NamespaceImport | ReferenceKind::MembershipImport => {
+                "ambiguous_import_target"
+            }
+            _ => "ambiguous_reference",
         },
-    };
-    base.to_string()
+        "unsupported_reference" => match kind {
+            ReferenceKind::NamespaceImport | ReferenceKind::MembershipImport => {
+                "unsupported_filtered_import"
+            }
+            _ => "unsupported_reference",
+        },
+        _ => match kind {
+            ReferenceKind::FeatureTyping => "unresolved_type_reference",
+            ReferenceKind::Specialization => "unresolved_specializes_reference",
+            ReferenceKind::NamespaceImport | ReferenceKind::MembershipImport => {
+                "unresolved_import_target"
+            }
+            _ => match severity {
+                DiagnosticSeverity::Error => "ambiguous_reference",
+                _ => "unresolved_reference",
+            },
+        },
+    }
+    .to_string()
 }
 
 fn parse_diagnostics(uri: &Url, text: &str) -> Vec<SemanticDiagnostic> {
