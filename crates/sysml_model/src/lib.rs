@@ -75,12 +75,12 @@ pub use semantic::publication::{
     ConnectionDiagnosticInput, ConnectionDiagnosticRelationship, ConstructionStrategy,
     DerivedRelationshipRule, EvaluationPolicy, ExpressionDiagnosticFact, ExpressionDiagnosticInput,
     ImmutableSourceSnapshot, ReferenceKind, RequirementCaseDiagnosticInput,
-    RequirementCaseDiagnosticRelationship, ResolutionDiagnosticInput,
-    ResolutionDiagnosticReference, ResolutionFact, ResolutionOutcome, ResolutionProvenance,
-    ResolutionState, ResolutionView, SemanticBuildFailure, SemanticBuildRequest,
-    SemanticCompleteness, SemanticConfiguration, SemanticModel, SemanticModelIdentity,
-    SemanticPhase, StructuralDiagnosticFact, StructuralDiagnosticInput, UnitDiagnosticFact,
-    UnitDiagnosticInput, ViewDiagnosticInput, ViewDiagnosticRelationship,
+    RequirementCaseDiagnosticRelationship, ResolutionDiagnosticCandidate,
+    ResolutionDiagnosticInput, ResolutionDiagnosticReference, ResolutionFact, ResolutionOutcome,
+    ResolutionProvenance, ResolutionState, ResolutionView, SemanticBuildFailure,
+    SemanticBuildRequest, SemanticCompleteness, SemanticConfiguration, SemanticModel,
+    SemanticModelIdentity, SemanticPhase, StructuralDiagnosticFact, StructuralDiagnosticInput,
+    UnitDiagnosticFact, UnitDiagnosticInput, ViewDiagnosticInput, ViewDiagnosticRelationship,
 };
 pub use semantic::reference_resolution::{
     parse_expose_target_suffix, resolve_expose_target, resolve_expression_endpoint_strict,

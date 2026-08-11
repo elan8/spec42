@@ -433,6 +433,7 @@ where
 pub struct ResolutionState {
     facts: Vec<ResolutionFact>,
     relationships: Vec<ResolvedRelationship>,
+    inherited_features: Vec<StructuralDiagnosticFact>,
 }
 
 impl ResolutionState {
@@ -449,6 +450,10 @@ impl ResolutionState {
 
     pub fn relationships(&self) -> &[ResolvedRelationship] {
         &self.relationships
+    }
+
+    pub(crate) fn inherited_features(&self) -> &[StructuralDiagnosticFact] {
+        &self.inherited_features
     }
 
     pub(crate) fn install_relationship_projection(&self, graph: &mut SemanticGraph) {
@@ -665,8 +670,12 @@ impl<'a> ResolutionDb<'a> {
                             ResolutionOutcome::Unresolved
                         }
                         crate::semantic::import_resolution::ImportTargetResolution::Ambiguous {
-                            candidates,
-                        } => ResolutionOutcome::Ambiguous { candidates },
+                            mut candidates,
+                        } => {
+                            candidates.sort_by(node_id_order);
+                            candidates.dedup();
+                            ResolutionOutcome::Ambiguous { candidates }
+                        }
                         crate::semantic::import_resolution::ImportTargetResolution::UnsupportedFiltered => {
                             ResolutionOutcome::UnsupportedFiltered
                         }
@@ -703,6 +712,7 @@ impl<'a> ResolutionDb<'a> {
         }
         derive_implied_relationships(self.graph, &mut relationships);
         derive_case_subject_relationships(self.graph, &facts, &mut relationships);
+        let inherited_features = derive_inherited_feature_diagnostics(self.graph, &facts);
 
         facts.sort_by(|left, right| left.reference.cmp(&right.reference));
         relationships.sort_by(|left, right| {
@@ -721,8 +731,96 @@ impl<'a> ResolutionDb<'a> {
         ResolutionState {
             facts,
             relationships,
+            inherited_features,
         }
     }
+}
+
+fn derive_inherited_feature_diagnostics(
+    graph: &SemanticGraph,
+    facts: &[ResolutionFact],
+) -> Vec<StructuralDiagnosticFact> {
+    let resolved_targets = |source: &NodeId, kind: ReferenceKind| {
+        facts
+            .iter()
+            .filter(|fact| fact.reference.source == *source && fact.reference.kind == kind)
+            .filter_map(|fact| fact.outcome.resolved_target().cloned())
+            .collect::<Vec<_>>()
+    };
+
+    let nodes = graph.semantic_nodes();
+    let mut output = Vec::new();
+    for node in &nodes {
+        if node.element_kind == ElementKind::Ref
+            || !node.declared_facts.relationships.redefinition.is_empty()
+        {
+            continue;
+        }
+        let Some(authored_value) = node
+            .attributes
+            .get("value")
+            .and_then(|value| value.as_str())
+            .map(str::to_string)
+        else {
+            continue;
+        };
+        let Some(owner_id) = node.parent_id.as_ref() else {
+            continue;
+        };
+        let Some(owner) = graph.get_node(owner_id) else {
+            continue;
+        };
+        if owner.element_kind == ElementKind::MetadataUsage || node.name.trim().is_empty() {
+            continue;
+        }
+
+        let mut pending = resolved_targets(&owner.id, ReferenceKind::FeatureTyping);
+        if pending.is_empty() {
+            pending.push(owner.id.clone());
+        }
+        let mut visited = std::collections::BTreeSet::new();
+        let mut inherited = None;
+        while let Some(type_id) = pending.pop() {
+            if !visited.insert(type_id.clone()) {
+                continue;
+            }
+            if let Some(candidate) = nodes.iter().find(|candidate| {
+                candidate.parent_id.as_ref() == Some(&type_id) && candidate.name == node.name
+            }) {
+                inherited = Some(candidate);
+                break;
+            }
+            pending.extend(resolved_targets(&type_id, ReferenceKind::Specialization));
+        }
+        let Some(inherited) = inherited else {
+            continue;
+        };
+        let inherited_type = inherited
+            .declared_facts
+            .relationships
+            .typing
+            .first()
+            .map(|target| target.reference.clone());
+        let inherited_is_enum = resolved_targets(&inherited.id, ReferenceKind::FeatureTyping)
+            .into_iter()
+            .filter_map(|target| graph.get_node(&target))
+            .any(|target| target.element_kind == ElementKind::EnumDef);
+        output.push(StructuralDiagnosticFact {
+            feature: node.id.clone(),
+            inherited_feature: inherited.id.clone(),
+            feature_name: node.name.clone(),
+            feature_kind: node.element_kind.clone(),
+            range: node.range,
+            inherited_range: inherited.range,
+            inherited_feature_name: inherited.name.clone(),
+            inherited_feature_kind: inherited.element_kind.clone(),
+            inherited_type,
+            inherited_is_enum,
+            authored_value: Some(authored_value),
+        });
+    }
+    output.sort_by(|left, right| left.feature.cmp(&right.feature));
+    output
 }
 
 fn resolve_expression_relationship(
@@ -1329,6 +1427,18 @@ pub struct ResolutionDiagnosticReference {
     pub kind: ReferenceKind,
     pub authored_ordinal: u32,
     pub outcome: ResolutionOutcome,
+    pub provenance: ResolutionProvenance,
+    pub candidates: Vec<ResolutionDiagnosticCandidate>,
+}
+
+/// A candidate attached to an ambiguous authored reference. The resolver owns both the
+/// canonical candidate order and the source location needed by diagnostics; consumers do not
+/// rediscover candidates from names or graph indexes.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ResolutionDiagnosticCandidate {
+    pub target: NodeId,
+    pub kind: ElementKind,
+    pub range: TextRange,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -1345,12 +1455,14 @@ impl ResolutionDiagnosticInput {
 /// The structural facts needed by inherited-feature diagnostics. The resolver computes the
 /// inherited comparison before publication; diagnostics therefore do not walk nodes, indexes,
 /// or relationship adjacency themselves.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct StructuralDiagnosticFact {
     pub feature: NodeId,
+    pub inherited_feature: NodeId,
     pub feature_name: String,
     pub feature_kind: ElementKind,
     pub range: TextRange,
+    pub inherited_range: TextRange,
     pub inherited_feature_name: String,
     pub inherited_feature_kind: ElementKind,
     pub inherited_type: Option<String>,
@@ -1574,6 +1686,8 @@ impl SemanticModel {
                     kind: fact.reference.kind,
                     authored_ordinal: fact.reference.authored_ordinal,
                     outcome: fact.outcome.clone(),
+                    provenance: ResolutionProvenance::Authored,
+                    candidates: diagnostic_candidates(&self.structural_graph, &fact.outcome),
                 })
             })
             .collect();
@@ -1593,91 +1707,7 @@ impl SemanticModel {
 
     /// Returns structural inherited-value comparisons computed at the publication barrier.
     pub fn structural_diagnostics(&self) -> StructuralDiagnosticInput {
-        let nodes = self
-            .structural_graph
-            .semantic_nodes()
-            .into_iter()
-            .map(|node| (node.id.clone(), node))
-            .collect::<HashMap<_, _>>();
-        let mut typing = HashMap::<NodeId, Vec<NodeId>>::new();
-        let mut specializes = HashMap::<NodeId, Vec<NodeId>>::new();
-        for relationship in &self.resolution.relationships {
-            match relationship.kind {
-                RelationshipKind::Typing => typing
-                    .entry(relationship.source.clone())
-                    .or_default()
-                    .push(relationship.target.clone()),
-                RelationshipKind::Specializes => specializes
-                    .entry(relationship.source.clone())
-                    .or_default()
-                    .push(relationship.target.clone()),
-                _ => {}
-            }
-        }
-        let mut facts = Vec::new();
-        for node in nodes.values() {
-            let Some(value) = node
-                .attributes
-                .get("value")
-                .and_then(|value| value.as_str())
-                .map(str::to_string)
-            else {
-                continue;
-            };
-            if node.element_kind == ElementKind::Ref
-                || !node.declared_facts.relationships.redefinition.is_empty()
-            {
-                continue;
-            }
-            let Some(owner_id) = node.parent_id.as_ref() else {
-                continue;
-            };
-            let Some(owner) = nodes.get(owner_id) else {
-                continue;
-            };
-            let mut pending = typing.get(&owner.id).cloned().unwrap_or_default();
-            if pending.is_empty() {
-                pending.push(owner.id.clone());
-            }
-            let mut visited = std::collections::HashSet::new();
-            let mut inherited = None;
-            while let Some(type_id) = pending.pop() {
-                if !visited.insert(type_id.clone()) {
-                    continue;
-                }
-                if let Some(candidate) = nodes.values().find(|candidate| {
-                    candidate.parent_id.as_ref() == Some(&type_id) && candidate.name == node.name
-                }) {
-                    inherited = Some(candidate);
-                    break;
-                }
-                pending.extend(specializes.get(&type_id).into_iter().flatten().cloned());
-            }
-            let Some(inherited) = inherited else {
-                continue;
-            };
-            facts.push(StructuralDiagnosticFact {
-                feature: node.id.clone(),
-                feature_name: node.name.clone(),
-                feature_kind: node.element_kind.clone(),
-                range: node.range,
-                inherited_feature_name: inherited.name.clone(),
-                inherited_feature_kind: inherited.element_kind.clone(),
-                inherited_type: inherited
-                    .declared_facts
-                    .relationships
-                    .typing
-                    .first()
-                    .map(|target| target.reference.clone()),
-                inherited_is_enum: typing
-                    .get(&inherited.id)
-                    .and_then(|targets| targets.first())
-                    .and_then(|target| nodes.get(target))
-                    .is_some_and(|target| target.element_kind == ElementKind::EnumDef),
-                authored_value: Some(value),
-            });
-        }
-        facts.sort_by(|left, right| left.feature.cmp(&right.feature));
+        let facts = self.resolution.inherited_features().to_vec();
         StructuralDiagnosticInput { facts }
     }
 
@@ -1939,6 +1969,34 @@ impl SemanticModel {
             .collect();
         BuilderDiagnosticInput { references }
     }
+}
+
+fn diagnostic_candidates(
+    graph: &SemanticGraph,
+    outcome: &ResolutionOutcome,
+) -> Vec<ResolutionDiagnosticCandidate> {
+    let ResolutionOutcome::Ambiguous { candidates } = outcome else {
+        return Vec::new();
+    };
+    let mut candidates = candidates
+        .iter()
+        .filter_map(|target| {
+            graph
+                .get_node(target)
+                .map(|node| ResolutionDiagnosticCandidate {
+                    target: target.clone(),
+                    kind: node.element_kind.clone(),
+                    range: node.range,
+                })
+        })
+        .collect::<Vec<_>>();
+    candidates.sort_by(|left, right| {
+        left.target
+            .cmp(&right.target)
+            .then(range_order(Some(left.range)).cmp(&range_order(Some(right.range))))
+    });
+    candidates.dedup_by(|left, right| left.target == right.target);
+    candidates
 }
 
 fn range_order(range: Option<TextRange>) -> (u32, u32, u32, u32) {
