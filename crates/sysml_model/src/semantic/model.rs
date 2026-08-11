@@ -18,7 +18,7 @@ fn deserialize_url<'de, D: Deserializer<'de>>(d: D) -> Result<Url, D::Error> {
 
 /// Unique identifier for a node in the semantic graph.
 /// Combines document URI and qualified name for workspace-wide uniqueness.
-#[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct NodeId {
     #[serde(serialize_with = "serialize_url", deserialize_with = "deserialize_url")]
     pub uri: Url,
@@ -36,7 +36,7 @@ impl NodeId {
 
 /// SysML v2 relationship kinds (edges in the graph).
 #[allow(dead_code)] // some relationship kinds are staged for upcoming semantic features
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum RelationshipKind {
     Typing,

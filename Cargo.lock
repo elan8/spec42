@@ -1936,6 +1936,7 @@ dependencies = [
  "rayon",
  "serde",
  "serde_json",
+ "sha2",
  "sysml-v2-parser",
  "sysml_diagnostics",
  "tempfile",

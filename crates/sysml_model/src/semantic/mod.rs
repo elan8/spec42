@@ -23,6 +23,7 @@ pub mod model;
 pub mod model_projection;
 pub mod pipeline;
 pub mod prepared_view;
+pub mod publication;
 pub mod reference_resolution;
 pub mod relationships;
 pub mod render_snapshot;

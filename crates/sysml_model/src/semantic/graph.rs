@@ -1007,6 +1007,20 @@ impl SemanticGraphData {
         })
     }
 
+    /// Returns a stable snapshot of all nodes for crate-private semantic phases.
+    ///
+    /// Published consumers must use `SemanticModel`/`ResolutionView`; this is intentionally
+    /// crate-private so the resolver can construct its immutable publication without exposing
+    /// the mutable graph representation as another semantic authority.
+    pub(crate) fn semantic_nodes(&self) -> Vec<SemanticNode> {
+        self.iter_nodes().map(|(_, node)| node.clone()).collect()
+    }
+
+    /// Returns a stable snapshot of all graph edges for crate-private semantic phases.
+    pub(crate) fn semantic_edges(&self) -> Vec<(NodeId, NodeId, SemanticEdge)> {
+        self.iter_edges().collect()
+    }
+
     pub fn node_ids_for_qualified_name(&self, qualified_name: &str) -> Option<&[NodeId]> {
         self.node_ids_by_qualified_name
             .get(qualified_name)
