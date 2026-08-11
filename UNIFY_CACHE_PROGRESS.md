@@ -51,7 +51,8 @@ the same files; ownership is per key, not per file.
 | C | state machine: `source`, `target`, `isInitial`, `targetIsDone`, `stateName`, `finalStateCount` | merged | `feat/b9-state-facts` |
 | D | source fidelity: `doc`, `body`, `text`, `language`, `keyword` (hover use) | merged | `feat/b9-source-fidelity` |
 | E | analysis and expression: `value`, `defaultValue`, `lhs`, `rhs`, `condition`, `isThen`, `analysis*`, `objectiveBoundTo`, `originRange` | merged | `feat/b9-analysis-expression` |
-| F | relationship endpoints, type classification, and semantic classification keys | partly merged; `*Type` family and presentation readers in progress | `feat/b9-type-family-cutover` |
+| F | relationship endpoints and semantic classification keys | merged |  |
+| F2 | the `*Type` classification family (37 keys) | in progress | `feat/b9-type-family` |
 | G | presentation cutover and field deletion: `generalView*` rollups, remaining `lsp_server`/`server`/`generator_api`/`workspace` consumers, then delete the field | not started | |
 
 Chunk C additionally deleted `stateName` outright as a redundant duplicate of the node's own
@@ -210,11 +211,11 @@ Tracked against `ROUNDTRIP_SEMGRAPH_PREREQS.md` §8. Persistent `LibrarySemantic
 |---------|---------|--------|
 | B1 | Typed edge construction ownership; rebuild cross-document ownership from it | done |
 | B2 | Omit lookup/containment indexes from the record; rebuild and validate them | not started |
-| B3 | Complete source roles and canonical resolution precedence | in progress |
+| B3 | Complete source roles and canonical resolution precedence | done |
 | B4 | `SemanticPublication` identity, phase, completeness | done |
 | B5 | `SemanticGraphRecordV1` replaces direct runtime serde | not started |
 | B6 | Graph hit rehydrates sources and ASTs; no concealed missing input | not started |
-| B7 | Typed `GraphInvariantError` and single cache-import validator | not started |
+| B7 | Typed `GraphInvariantError` and single cache-import validator | in progress |
 | B8 | Canonical, byte-stable encoding | not started |
 | B9 | Attribute bag removed | in progress |
 | B10 | Decode bounds; no stack overflow on hostile nesting | in progress (store layer) |
