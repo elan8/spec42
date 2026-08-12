@@ -145,6 +145,7 @@ enum DiagnosticOutcome {
     Resolved,
     Unresolved,
     Unsupported,
+    NonConverged,
     Ambiguous {
         candidates: Box<[DiagnosticCandidate]>,
     },
@@ -211,6 +212,7 @@ impl ResolvedSemanticModel {
                 ResolutionStatus::Resolved(_) => DiagnosticOutcome::Resolved,
                 ResolutionStatus::Unresolved => DiagnosticOutcome::Unresolved,
                 ResolutionStatus::Unsupported => DiagnosticOutcome::Unsupported,
+                ResolutionStatus::NonConverged => DiagnosticOutcome::NonConverged,
                 ResolutionStatus::Ambiguous(candidate_range) => {
                     let mut candidates = Vec::new();
                     for target in self.resolution.ambiguous_candidates(candidate_range) {
