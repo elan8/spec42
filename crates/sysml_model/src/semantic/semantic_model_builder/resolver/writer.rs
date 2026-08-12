@@ -323,8 +323,13 @@ mod tests {
             symbols: SymbolTableBuilder::default().freeze(),
             paths: SymbolPathArenaBuilder::default().freeze(),
         };
-        let (direct_names, effective_imports, resolution) =
-            resolve_dense(&storage.declarations, &storage.paths, &storage.references).unwrap();
+        let (direct_names, effective_imports, resolution) = resolve_dense(
+            &storage.declarations,
+            &storage.memberships,
+            &storage.paths,
+            &storage.references,
+        )
+        .unwrap();
         let model = ResolvedSemanticModel {
             storage,
             direct_names,

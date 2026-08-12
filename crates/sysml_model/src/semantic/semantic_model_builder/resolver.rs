@@ -54,6 +54,87 @@ struct NameIndex {
     candidates: Box<[DeclarationId]>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum EffectiveVisibility {
+    Public,
+    Private,
+    Protected,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct EffectiveMembership {
+    visibility: EffectiveVisibility,
+}
+
+/// Dense, declaration-aligned membership facts used by resolution. Authored `Default` is settled
+/// once here, with its owning declaration context, rather than being reinterpreted by each lookup.
+#[derive(Debug)]
+struct MembershipIndex {
+    by_declaration: Box<[EffectiveMembership]>,
+}
+
+impl MembershipIndex {
+    fn build(
+        declarations: &[Declaration],
+        memberships: &[MembershipRecord],
+    ) -> Result<Self, ResolutionError> {
+        let mut by_declaration = vec![None; declarations.len()];
+        for membership in memberships {
+            let declaration = declarations
+                .get(membership.member.index())
+                .ok_or(ResolutionError::InvalidStorage)?;
+            let slot = by_declaration
+                .get_mut(membership.member.index())
+                .ok_or(ResolutionError::InvalidStorage)?;
+            if slot.is_some()
+                || matches!(declaration.kind, DeclarationKind::Import)
+                    != matches!(membership.kind, MembershipKind::Import)
+            {
+                return Err(ResolutionError::InvalidStorage);
+            }
+            let visibility = match membership.visibility {
+                Visibility::Public => EffectiveVisibility::Public,
+                Visibility::Private => EffectiveVisibility::Private,
+                Visibility::Protected => EffectiveVisibility::Protected,
+                Visibility::Default if membership.kind == MembershipKind::Import => {
+                    EffectiveVisibility::Private
+                }
+                Visibility::Default => match declaration.owner {
+                    None => EffectiveVisibility::Public,
+                    Some(owner)
+                        if declarations.get(owner.index()).is_some_and(|owner| {
+                            matches!(
+                                owner.kind,
+                                DeclarationKind::Package | DeclarationKind::LibraryPackage
+                            )
+                        }) =>
+                    {
+                        EffectiveVisibility::Public
+                    }
+                    Some(_) => EffectiveVisibility::Private,
+                },
+            };
+            *slot = Some(EffectiveMembership { visibility });
+        }
+        let by_declaration = by_declaration
+            .into_iter()
+            .collect::<Option<Vec<_>>>()
+            .ok_or(ResolutionError::InvalidStorage)?;
+        Ok(Self {
+            by_declaration: by_declaration.into_boxed_slice(),
+        })
+    }
+
+    fn get(&self, declaration: DeclarationId) -> Option<EffectiveMembership> {
+        self.by_declaration.get(declaration.index()).copied()
+    }
+
+    fn is_public(&self, declaration: DeclarationId) -> bool {
+        self.get(declaration)
+            .is_some_and(|membership| membership.visibility == EffectiveVisibility::Public)
+    }
+}
+
 impl NameIndex {
     fn build(mut entries: Vec<(NameKey, DeclarationId)>) -> Result<Self, ResolutionError> {
         entries.sort_unstable();
@@ -283,8 +364,12 @@ fn document_range(
 
 impl SemanticModelStorage {
     pub(super) fn resolve(self) -> Result<ResolvedSemanticModel, ResolutionError> {
-        let (direct_names, effective_imports, resolution) =
-            resolve_dense(&self.declarations, &self.paths, &self.references)?;
+        let (direct_names, effective_imports, resolution) = resolve_dense(
+            &self.declarations,
+            &self.memberships,
+            &self.paths,
+            &self.references,
+        )?;
         Ok(ResolvedSemanticModel {
             storage: self,
             direct_names,
@@ -321,6 +406,7 @@ impl ResolutionReferenceFact for AuthoredReference {
 
 fn resolve_dense<R: ResolutionReferenceFact>(
     declarations: &[Declaration],
+    memberships: &[MembershipRecord],
     paths: &SymbolPathArena,
     references: &[R],
 ) -> Result<(NameIndex, NameIndex, ResolutionResults), ResolutionError> {
@@ -337,16 +423,19 @@ fn resolve_dense<R: ResolutionReferenceFact>(
         .and_then(|limit| limit.checked_add(1))
         .ok_or(ResolutionError::Capacity)?
         .max(1);
-    resolve_dense_with_limit(declarations, paths, references, pass_limit)
+    resolve_dense_with_limit(declarations, memberships, paths, references, pass_limit)
 }
 
 fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     declarations: &[Declaration],
+    memberships: &[MembershipRecord],
     paths: &SymbolPathArena,
     references: &[R],
     pass_limit: usize,
 ) -> Result<(NameIndex, NameIndex, ResolutionResults), ResolutionError> {
-    let direct_names = build_direct_name_index(declarations)?;
+    let memberships = MembershipIndex::build(declarations, memberships)?;
+    let direct_names = build_direct_name_index(declarations, None)?;
+    let exported_names = build_direct_name_index(declarations, Some(&memberships))?;
     let mut outcomes = vec![ResolutionStatus::Unsupported; references.len()];
     let import_slots: Vec<usize> = references
         .iter()
@@ -370,6 +459,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         ..ResolutionWork::default()
     };
     let mut effective_imports = NameIndex::build(Vec::new())?;
+    let mut exported_imports = NameIndex::build(Vec::new())?;
     let mut ambiguous_candidates = Vec::new();
     let mut candidates = Vec::new();
     let mut next_candidates = Vec::new();
@@ -392,7 +482,9 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 paths,
                 reference,
                 &direct_names,
+                &exported_names,
                 Some(&effective_imports),
+                Some(&exported_imports),
                 supported_import_domain(reference).ok_or(ResolutionError::InvalidStorage)?,
                 &mut ambiguous_candidates,
                 &mut candidates,
@@ -400,20 +492,24 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 &mut work,
             )?;
         }
-        let next_effective_imports = build_effective_import_index(
+        let (next_effective_imports, next_exported_imports) = build_effective_import_indexes(
             declarations,
+            &memberships,
             references,
             &import_slots,
-            &direct_names,
-            &effective_imports,
+            &exported_names,
+            &exported_imports,
             &outcomes,
         )?;
-        if next_effective_imports == effective_imports {
+        if next_effective_imports == effective_imports && next_exported_imports == exported_imports
+        {
             effective_imports = next_effective_imports;
+            exported_imports = next_exported_imports;
             converged = true;
             break;
         }
         effective_imports = next_effective_imports;
+        exported_imports = next_exported_imports;
     }
 
     let solver_status = if converged {
@@ -437,7 +533,9 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 paths,
                 &references[index],
                 &direct_names,
+                &exported_names,
                 Some(&effective_imports),
+                Some(&exported_imports),
                 DeclarationDomain::Type,
                 &mut ambiguous_candidates,
                 &mut candidates,
@@ -511,34 +609,44 @@ impl DeclarationDomain {
     }
 }
 
-fn build_direct_name_index(declarations: &[Declaration]) -> Result<NameIndex, ResolutionError> {
+fn build_direct_name_index(
+    declarations: &[Declaration],
+    public_only: Option<&MembershipIndex>,
+) -> Result<NameIndex, ResolutionError> {
     let mut entries = Vec::new();
     entries
         .try_reserve(declarations.len())
         .map_err(|_| ResolutionError::Capacity)?;
     for (index, declaration) in declarations.iter().enumerate() {
+        let declaration_id =
+            DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        if public_only.is_some_and(|memberships| !memberships.is_public(declaration_id)) {
+            continue;
+        }
         if let Some(name) = declaration.name {
             entries.push((
                 NameKey {
                     owner: declaration.owner,
                     name,
                 },
-                DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?,
+                declaration_id,
             ));
         }
     }
     NameIndex::build(entries)
 }
 
-fn build_effective_import_index<R: ResolutionReferenceFact>(
+fn build_effective_import_indexes<R: ResolutionReferenceFact>(
     declarations: &[Declaration],
+    memberships: &MembershipIndex,
     references: &[R],
     import_slots: &[usize],
-    direct_names: &NameIndex,
-    previous_effective_imports: &NameIndex,
+    exported_names: &NameIndex,
+    previous_exported_imports: &NameIndex,
     outcomes: &[ResolutionStatus],
-) -> Result<NameIndex, ResolutionError> {
+) -> Result<(NameIndex, NameIndex), ResolutionError> {
     let mut entries = Vec::new();
+    let mut exported_entries = Vec::new();
     for index in import_slots.iter().copied() {
         let reference = references
             .get(index)
@@ -550,44 +658,46 @@ fn build_effective_import_index<R: ResolutionReferenceFact>(
             .get(reference.source().index())
             .ok_or(ResolutionError::InvalidStorage)?
             .owner;
+        let import_is_public = memberships.is_public(reference.source());
         match reference.kind() {
             ReferenceKind::NamespaceImport => {
-                for (name, candidates) in direct_names.entries_for_owner(Some(target)) {
-                    entries.extend(candidates.iter().copied().map(|candidate| {
-                        (
-                            NameKey {
-                                owner: import_owner,
-                                name,
-                            },
-                            candidate,
-                        )
-                    }));
+                for (name, candidates) in exported_names.entries_for_owner(Some(target)) {
+                    extend_import_entries(
+                        &mut entries,
+                        &mut exported_entries,
+                        import_owner,
+                        name,
+                        candidates,
+                        import_is_public,
+                    );
                 }
-                for (name, candidates) in previous_effective_imports.entries_for_owner(Some(target))
+                for (name, candidates) in previous_exported_imports.entries_for_owner(Some(target))
                 {
-                    entries.extend(candidates.iter().copied().map(|candidate| {
-                        (
-                            NameKey {
-                                owner: import_owner,
-                                name,
-                            },
-                            candidate,
-                        )
-                    }));
+                    extend_import_entries(
+                        &mut entries,
+                        &mut exported_entries,
+                        import_owner,
+                        name,
+                        candidates,
+                        import_is_public,
+                    );
                 }
             }
             ReferenceKind::MembershipImport => {
                 let declaration = declarations
                     .get(target.index())
                     .ok_or(ResolutionError::InvalidStorage)?;
-                if let Some(name) = declaration.name {
-                    entries.push((
-                        NameKey {
-                            owner: import_owner,
+                if memberships.is_public(target) {
+                    if let Some(name) = declaration.name {
+                        extend_import_entries(
+                            &mut entries,
+                            &mut exported_entries,
+                            import_owner,
                             name,
-                        },
-                        target,
-                    ));
+                            std::slice::from_ref(&target),
+                            import_is_public,
+                        );
+                    }
                 }
             }
             ReferenceKind::FilterImport
@@ -600,7 +710,25 @@ fn build_effective_import_index<R: ResolutionReferenceFact>(
             | ReferenceKind::Intersects => {}
         }
     }
-    NameIndex::build(entries)
+    Ok((
+        NameIndex::build(entries)?,
+        NameIndex::build(exported_entries)?,
+    ))
+}
+
+fn extend_import_entries(
+    local: &mut Vec<(NameKey, DeclarationId)>,
+    exported: &mut Vec<(NameKey, DeclarationId)>,
+    owner: Option<DeclarationId>,
+    name: SymbolId,
+    candidates: &[DeclarationId],
+    import_is_public: bool,
+) {
+    let key = NameKey { owner, name };
+    local.extend(candidates.iter().copied().map(|candidate| (key, candidate)));
+    if import_is_public {
+        exported.extend(candidates.iter().copied().map(|candidate| (key, candidate)));
+    }
 }
 
 fn resolve_reference<R: ResolutionReferenceFact>(
@@ -608,7 +736,9 @@ fn resolve_reference<R: ResolutionReferenceFact>(
     paths: &SymbolPathArena,
     reference: &R,
     direct_names: &NameIndex,
+    exported_names: &NameIndex,
     effective_imports: Option<&NameIndex>,
+    exported_imports: Option<&NameIndex>,
     domain: DeclarationDomain,
     ambiguous_candidates: &mut Vec<DeclarationId>,
     candidates: &mut Vec<DeclarationId>,
@@ -625,7 +755,7 @@ fn resolve_reference<R: ResolutionReferenceFact>(
     next_candidates.clear();
     if rooted {
         record_lookup(work)?;
-        candidates.extend_from_slice(direct_names.candidates(None, segments[0]));
+        candidates.extend_from_slice(exported_names.candidates(None, segments[0]));
     } else {
         lookup_lexical_into(
             declarations,
@@ -642,10 +772,10 @@ fn resolve_reference<R: ResolutionReferenceFact>(
         next_candidates.clear();
         for candidate in candidates.iter().copied() {
             record_lookup(work)?;
-            let direct = direct_names.candidates(Some(candidate), *segment);
+            let direct = exported_names.candidates(Some(candidate), *segment);
             if !direct.is_empty() {
                 next_candidates.extend_from_slice(direct);
-            } else if let Some(imports) = effective_imports {
+            } else if let Some(imports) = exported_imports {
                 record_lookup(work)?;
                 next_candidates.extend_from_slice(imports.candidates(Some(candidate), *segment));
             }
@@ -786,8 +916,37 @@ mod tests {
 
     struct ResolverFixture {
         declarations: Box<[Declaration]>,
+        memberships: Box<[MembershipRecord]>,
         paths: SymbolPathArena,
         references: Box<[TestReference]>,
+    }
+
+    fn memberships_for(
+        declarations: &[Declaration],
+        public_imports: &[DeclarationId],
+    ) -> Box<[MembershipRecord]> {
+        declarations
+            .iter()
+            .enumerate()
+            .map(|(index, declaration)| {
+                let member = DeclarationId::from_index(index).unwrap();
+                MembershipRecord {
+                    member,
+                    kind: if declaration.kind == DeclarationKind::Import {
+                        MembershipKind::Import
+                    } else {
+                        MembershipKind::Owning
+                    },
+                    visibility: if public_imports.contains(&member) {
+                        Visibility::Public
+                    } else {
+                        Visibility::Default
+                    },
+                    span: Span::dummy(),
+                }
+            })
+            .collect::<Vec<_>>()
+            .into_boxed_slice()
     }
 
     fn cross_file_fixture(duplicate_vehicle: bool) -> ResolverFixture {
@@ -853,15 +1012,23 @@ mod tests {
             reference(v, ReferenceKind::FeatureTyping, vehicle_path, false),
         ];
         let _symbols = symbols.freeze();
+        let memberships = memberships_for(&declarations, &[]);
         ResolverFixture {
             declarations: declarations.into_boxed_slice(),
+            memberships,
             paths: paths.freeze(),
             references: references.into_boxed_slice(),
         }
     }
 
     fn resolve_fixture(fixture: &ResolverFixture) -> (NameIndex, NameIndex, ResolutionResults) {
-        resolve_dense(&fixture.declarations, &fixture.paths, &fixture.references).unwrap()
+        resolve_dense(
+            &fixture.declarations,
+            &fixture.memberships,
+            &fixture.paths,
+            &fixture.references,
+        )
+        .unwrap()
     }
 
     fn transitive_import_fixture() -> ResolverFixture {
@@ -946,8 +1113,10 @@ mod tests {
             ),
         ];
         let _symbols = symbols.freeze();
+        let memberships = memberships_for(&declarations, &[DeclarationId(3), DeclarationId(5)]);
         ResolverFixture {
             declarations: declarations.into_boxed_slice(),
+            memberships,
             paths: paths.freeze(),
             references: references.into_boxed_slice(),
         }
@@ -1020,8 +1189,10 @@ mod tests {
             ),
         ];
         let _symbols = symbols.freeze();
+        let memberships = memberships_for(&declarations, &[]);
         ResolverFixture {
             declarations: declarations.into_boxed_slice(),
+            memberships,
             paths: paths.freeze(),
             references: references.into_boxed_slice(),
         }
@@ -1094,8 +1265,10 @@ mod tests {
             ),
         ];
         let _symbols = symbols.freeze();
+        let memberships = memberships_for(&declarations, &[DeclarationId(2), DeclarationId(6)]);
         ResolverFixture {
             declarations: declarations.into_boxed_slice(),
+            memberships,
             paths: paths.freeze(),
             references: references.into_boxed_slice(),
         }
@@ -1175,8 +1348,10 @@ mod tests {
             ),
         ];
         let _symbols = symbols.freeze();
+        let memberships = memberships_for(&declarations, &[DeclarationId(4)]);
         ResolverFixture {
             declarations: declarations.into_boxed_slice(),
+            memberships,
             paths: paths.freeze(),
             references: references.into_boxed_slice(),
         }
@@ -1208,6 +1383,58 @@ mod tests {
             Some((&[SymbolId(0)][..], false))
         );
         assert_eq!(resolution.outcomes.len(), fixture.references.len());
+    }
+
+    #[test]
+    fn default_visibility_is_settled_once_from_membership_context() {
+        let declarations = [
+            declaration(
+                DocumentId(0),
+                None,
+                Some(SymbolId(0)),
+                DeclarationKind::Package,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(DeclarationId(0)),
+                Some(SymbolId(1)),
+                DeclarationKind::Namespace,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(DeclarationId(1)),
+                Some(SymbolId(2)),
+                DeclarationKind::PartDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(DeclarationId(0)),
+                None,
+                DeclarationKind::Import,
+            ),
+        ];
+        let memberships = memberships_for(&declarations, &[]);
+        let index = MembershipIndex::build(&declarations, &memberships).unwrap();
+
+        assert!(index.is_public(DeclarationId(0)));
+        assert!(index.is_public(DeclarationId(1)));
+        assert!(!index.is_public(DeclarationId(2)));
+        assert!(!index.is_public(DeclarationId(3)));
+    }
+
+    #[test]
+    fn namespace_import_excludes_explicitly_private_members() {
+        let mut fixture = cross_file_fixture(false);
+        fixture.memberships[1].visibility = Visibility::Private;
+        let (_, effective_imports, resolution) = resolve_fixture(&fixture);
+
+        assert!(effective_imports
+            .candidates(Some(DeclarationId(2)), SymbolId(2))
+            .is_empty());
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(1)),
+            Some(ResolutionStatus::Unresolved)
+        );
     }
 
     #[test]
@@ -1303,6 +1530,7 @@ mod tests {
         let fixture = cross_file_fixture(false);
         let (_, _, resolution) = resolve_dense_with_limit(
             &fixture.declarations,
+            &fixture.memberships,
             &fixture.paths,
             &fixture.references,
             1,
