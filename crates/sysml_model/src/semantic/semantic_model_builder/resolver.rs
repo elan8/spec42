@@ -9,6 +9,8 @@
 use super::*;
 use crate::semantic::text_span::{TextPosition, TextRange};
 
+mod writer;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum ResolutionError {
     Capacity,
@@ -244,6 +246,10 @@ impl ResolvedSemanticModel {
             });
         }
         Ok(records.into_boxed_slice())
+    }
+
+    fn write_debug_sexpr(&self, output: &mut dyn std::fmt::Write) -> std::fmt::Result {
+        writer::write(self, output)
     }
 }
 
