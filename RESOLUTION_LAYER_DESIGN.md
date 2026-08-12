@@ -44,6 +44,10 @@ This is a clean migration:
 - Keep unresolved, ambiguous, unsupported, and failed states explicit. Ambiguity retains all
   candidates in canonical order; non-convergence is a failed publication, never a warning followed
   by apparent success.
+- Keep the parser document as the source-fidelity owner. An immutable `ParsedDocument` retains its
+  source storage, parser arena, recovery nodes, spans, and parser-local typed IDs. Semantic
+  compilation borrows that document and constructs the new semantic IR; it does not wholesale-copy
+  or remap the parser arena into a second syntax store.
 - Do not resume persistent semantic-graph caching until this migration lands and the cache branch
   incorporates the new resolution state and semantic contract version.
 
@@ -164,13 +168,20 @@ changed families within a solve, and isolated parallel evaluation followed by de
 It also avoids repeating equivalent lazy queries independently in diagnostics, navigation,
 validation, and generators.
 
-The semantic build and publication own a typed string side table. The parser/source adapter interns
-repeated semantic text as it enters the authored-fact pipeline; internal names, short names,
-qualified-name segments, document identities, and authored semantic-reference segments use compact
-typed IDs rather than independently allocated `String` values. Source bytes and original authored
-spelling remain available separately where syntax fidelity or provenance requires them. Renderers,
-protocol adapters, and stable external identity projections resolve IDs back to text only at their
-boundaries.
+The parser owns source bytes, authored spelling, token spans, qualified-reference segments, and
+parser-local IDs inside each immutable `ParsedDocument`. A compound syntax identity is therefore
+`(DocumentId, ParserLocalId)`, where `DocumentId` is the immutable source-snapshot document identity
+and `ParserLocalId` is meaningful only in that document's arena. A parser-local integer is never
+used without its document. This compound identity is the one consumed by source-fidelity,
+diagnostics-range, and syntax-aware services.
+
+Semantic compilation owns a separate typed string side table for semantic entities only. It borrows
+parser segments and provenance while constructing dense model-owned declaration and semantic-
+reference IDs. It interns normalized cross-document semantic names and other lookup keys exactly
+once in the publication, while retaining the parser identity for authored provenance. It does not
+copy every parser node, source string, or arena entry into the semantic model, and it never asks a
+consumer to reconstruct a parser reference from display text. Renderers, protocol adapters, and
+stable external identity projections cross this boundary explicitly through typed APIs.
 
 The publication string table stores each distinct UTF-8 byte sequence once in one contiguous byte
 arena. A dense span table maps opaque `TextId` values to byte ranges, and a private hash index stores
@@ -181,12 +192,15 @@ typed IDs remain stable, while `&str` borrows exist only for the duration of an 
 borrow. Freezing converts the byte and span stores to immutable slices and retains or rebuilds the
 lookup index only where a supported service requires text-to-ID lookup.
 
-Document workers use a distinct `LocalTextId` domain and a disposable local byte table. Canonical
-merge visits fragments in immutable-source order and local strings in ascending local-ID order,
-interns them into the publication table, and builds a checked local-to-publication remap. Temporary
-worker copies are discarded at the merge barrier; the published model contains one copy. Cache
-encoding serializes canonical bytes and spans, never hash buckets, random seeds, or capacity, and
-rebuilds the disposable index after validating UTF-8 and every range.
+The semantic compiler may use private per-document scratch buffers during sequential or parallel
+construction, but those buffers are not a second parser representation and are never published as
+another document representation. Compilation visits immutable `ParsedDocument` values in canonical source order,
+assigns dense model-owned IDs only to semantic declarations, memberships, authored references, and
+other semantic entities, then discards its scratch state at the publication barrier. Parser-local
+IDs remain valid only through their owning `(DocumentId, ParsedDocument)` pair. Cache encoding of
+parser results retains the parser's source/arena envelope; semantic cache encoding retains the
+compiled semantic publication. Neither format serializes disposable hash buckets, random seeds, or
+capacity.
 
 Every compact identity domain is represented by a distinct opaque newtype: string symbols, node
 ordinals, authored-reference ordinals, fact slots, and similar indexes are never aliases for
@@ -202,33 +216,23 @@ maps while resolving a reference. Conversion back to stable public identities ha
 publication boundary. The string table is owned immutable publication data; lookup indexes over
 its IDs remain private disposable accelerators and never become semantic authorities.
 
-Construction uses isolated document-local fragments. A worker owns local typed node, symbol,
-qualified-name, path, and authored-reference domains and cannot allocate publication-global IDs.
-The publication barrier consumes those fragments in the immutable source snapshot's canonical
-document order, interns their strings into the one publication-owned string store, and remaps every
-local ID into its corresponding global typed domain. Worker completion order therefore cannot
-affect document ordinals, symbol IDs, authored-reference ordinals, diagnostics, or rendered output.
-The merge validates all remapped parents, sources, paths, and ranges before publishing; it does not
-discard duplicate names or apply shadowing and import precedence, because those are resolution
-decisions rather than construction conflict rules.
+Construction borrows immutable parser documents. An exhaustive parser-to-semantic compiler
+classifies every encountered AST family as modeled, unsupported, or recovery-produced while
+constructing semantic entities. An absent family is recorded as absent; an unclassified family is
+an input-construction failure. Unsupported and recovery facts retain `(DocumentId, ParserLocalId)`
+and exact parser provenance, but do not mint settled semantic IDs. There is no finished document
+fragment abstraction that can become a second source of truth, and no generic builder method may
+assert completeness for an unvisited family.
 
-Document completeness is also constructed, not asserted. The exhaustive parser visitor classifies
-every encountered AST family as modeled, unsupported, or recovery-produced, while an absent family
-is recorded as absent. Only that visitor can mint a finished document fragment. Finalization rejects
-an unclassified family, and deterministic merge retains document identity on every unsupported or
-recovery fact. A generic builder method that marks arbitrary families complete would make omitted
-semantic constructs indistinguishable from successfully modeled ones and is therefore forbidden.
-
-Qualified names and feature chains are segmented by the parser/source adapter while typed token
-boundaries are still available. It interns each segment once and records separator semantics,
-absolute scope, authored spelling, and range as distinct typed facts. The resolver consumes a
-borrowed compact slice of segment IDs; it never reconstructs grammar by splitting or joining text,
-and it never allocates a per-lookup segment vector. This follows the sibling compiler's
-canonicalization model: token-driven segment extraction followed by compact segment-block storage.
-Segment blocks live in a build/publication-owned arena, and authored facts hold opaque typed ranges
-into that arena; they do not own a `Vec`, boxed slice, or string collection per reference. Adapter
-scratch storage is phase-owned and reusable, and unsupported parser forms roll back their arena
-checkpoint rather than publishing a partial path.
+Qualified names and feature chains are segmented by the parser while typed token boundaries are
+still available. Semantic compilation consumes the parser's borrowed segment view, preserving
+separator semantics, absolute scope, authored spelling, and exact ranges through the compound
+document/parser-local identity. For a semantic reference, it creates a compact model-owned path
+record or segment range and interns only the normalized semantic names required by cross-document
+lookup. It never reconstructs grammar by splitting or joining text, and never allocates a
+per-lookup segment vector. This follows the sibling compiler's token-driven canonicalization model
+without duplicating the parser's source arena. Unsupported parser forms remain explicit and cannot
+publish a partial semantic path.
 
 The sibling implementation provides useful performance evidence for this representation: its typed
 `u32` node domains, flat extra-data arenas, dense resolution slots, ordinal parent arrays, and
@@ -250,8 +254,8 @@ Performance is nevertheless a measured acceptance criterion, not an article of f
 whole-model solver is the correctness oracle. Representative CLI and LSP benchmarks must record
 construction, solve, and downstream query time separately. If solving is too slow, optimization
 stays inside this one engine: improve indexes and algorithms, reuse immutable standard-library
-products with complete identity, and reuse content-addressed parse or validated authored-fragment
-work before the semantic solve. Performance pressure must not reintroduce scoped resolution or
+products with complete identity, and reuse content-addressed parser documents before semantic
+compilation and the solve. Performance pressure must not reintroduce scoped resolution or
 cross-model reuse of settled resolution outcomes.
 
 Fine-grained incremental semantic resolution is intentionally outside the chosen architecture. It
@@ -502,9 +506,9 @@ The target pipeline is:
 ```text
 immutable sources
     -> parse/recovery results
-    -> per-document authored nodes and facts
-    -> deterministic whole-model merge
-    -> stable authored semantic input
+    -> immutable per-document ParsedDocument values
+    -> semantic compilation in deterministic document order
+    -> stable model-owned authored semantic input
     -> ResolutionDb.solve()
     -> immutable ResolutionState
     -> diagnostics / evaluation / projections through ResolutionView
@@ -846,17 +850,19 @@ pub fn build_semantic_model(
 ) -> Result<SemanticModel, SemanticBuildFailure>;
 ```
 
-`ConstructionStrategy` controls parsing and isolated per-document authored-graph construction. It
-is not passed to `ResolutionDb` and cannot affect `ResolutionState`. Both strategies merge at the
-same deterministic barrier and call the same resolver.
+`ConstructionStrategy` controls parsing and semantic compilation from immutable per-document
+`ParsedDocument` values. It is not passed to `ResolutionDb` and cannot affect `ResolutionState`.
+Both strategies retain the same parser documents, compile semantic entities in canonical source
+order, and call the same resolver.
 
 `EvaluationPolicy::ResolvedOnly` may omit expression evaluation, but it never omits semantic
 resolution. It publishes a coherent resolved phase with explicit completeness. `Evaluate`
 publishes a separate later model including evaluation facts. There is no boolean whose false value
 returns a graph with an unspecified mixture of local and cross-document relationships.
 
-An editor replacement captures a new `ImmutableSourceSnapshot`, reuses content-addressed parse
-results or internal authored document fragments where valid, and calls this service. The returned
+An editor replacement captures a new `ImmutableSourceSnapshot`, reuses content-addressed immutable
+`ParsedDocument` results where the source and parser contract identity remain valid, and calls this
+service. The returned
 `SemanticModel` is atomically swapped into the workspace. Readers retain the prior model while the
 new one is building. If parsing, resolution, evaluation, or cancellation prevents the requested
 phase from completing, no partially mutated replacement is exposed.
@@ -891,8 +897,8 @@ convenient graph method cannot become a second resolved-fact authority.
 
 Do not replace these with deprecated functions that call the whole resolver. A call site must
 migrate to `build_semantic_model`, an immutable `SemanticModel`, or `ResolutionView`. Low-level
-per-document graph construction becomes crate-private and returns an explicitly incomplete
-authored fragment that cannot be used as a semantic model. After the cutover, a repository
+per-document semantic compilation becomes crate-private and consumes a retained `ParsedDocument`;
+its private construction scratch cannot be used as a semantic model. After the cutover, a repository
 search for the deleted semantic symbols must return no production or test references.
 
 The word "scoped" remains valid in unrelated presentation features such as diagram view scoping;
@@ -916,9 +922,10 @@ the deletion applies specifically to semantic name/relationship resolution.
 
 ### 8.1 Supported semantic rebuild policy
 
-The supported implementation does no scoped semantic reuse. An edit may reuse parsing and
-validated authored document fragments, but it constructs a new whole-model input and solves the
-complete merged model. The canonical full solve is the semantic execution model, not a fallback.
+The supported implementation does no scoped semantic reuse. An edit may reuse immutable parser
+documents and their source arenas, but semantic compilation assigns a new whole-model set of
+model-owned semantic IDs and solves the complete model. The canonical full solve is the semantic
+execution model, not a fallback.
 
 For editor latency, syntax/recovery diagnostics may be published under their own explicit source
 revision and incomplete phase. If supported recovery input can be resolved coherently, the build
@@ -959,13 +966,13 @@ model, while creating a second difficult correctness surface. The cache does not
 whole-model cache identity commits the complete source/configuration snapshot and stores one
 settled publication.
 
-Safe reuse in this design stops before semantic resolution:
+Safe reuse in this design stops before semantic compilation and resolution:
 
-- content-addressed source acquisition and parse results;
-- immutable, source-local authored document fragments whose identity commits every construction
-  input;
+- content-addressed source acquisition and immutable parser `ParsedDocument` results, including
+  their source storage and parser arena;
+- parser-local typed identities only with their owning `DocumentId` and parser contract identity;
 - pinned standard-library structural or resolved products with complete verified identity;
-- disposable indexes rebuilt for the new whole-model input.
+- semantic indexes rebuilt for the new whole-model input.
 
 Settled workspace `ResolutionState` is not reused across source snapshots.
 
@@ -1008,6 +1015,15 @@ resolution engine and never materializes missing outcomes by guessing.
 
 The sibling compiler's parser cache and pinned stdlib index summary do not change this contract:
 they do not cache mutable project semantic analysis.
+
+This is also the boundary for the existing [cache work in PR #73](https://github.com/elan8/spec42/pull/73).
+That work may cache or reuse immutable source acquisition and parser `ParsedDocument` results when
+their content, parser contract, source role, and document identity match. It must not treat a
+parser arena, parser-local reference ID, or decoded syntax document as a published semantic model.
+Every cache hit still runs semantic compilation into fresh model-owned dense IDs and either runs
+the canonical whole-model solve or decodes one complete, identity-validated semantic publication.
+PR #73 therefore cannot introduce fragment-arena remapping, a second semantic authority, or a
+scoped resolution shortcut; its artifact boundary ends before semantic resolution.
 
 ## 9. Diagnostics and consumers
 
@@ -1055,19 +1071,23 @@ facts that participate in scope, effective naming, or type-directed continuation
 - multiplicity, feature values/properties, and owned expressions required for downstream semantic
   parity even when they are not lexical-lookup inputs.
 
-An exhaustive parser-to-fragment visitor accounts for every AST variant. Parser fields that lack a
-typed path, absolute scope, separator semantics, or exact target provenance publish an explicit
-unsupported construction fact; adapters do not split a `String`, inspect a sentinel spelling, use a
-debug formatter, or assign the containing range to missing segment spans. In particular, alias,
+An exhaustive parser-to-semantic compiler accounts for every AST variant while borrowing the
+retained `ParsedDocument` and its arena. Parser fields that lack a typed path, absolute scope,
+separator semantics, or exact target provenance publish an explicit unsupported construction fact;
+adapters do not split a `String`, inspect a sentinel spelling, use a debug formatter, or assign the
+containing range to missing segment spans. Semantic compilation assigns model-owned dense IDs only
+to entities that enter the semantic IR and interns normalized cross-document names; it does not
+copy or remap all parser nodes, paths, expressions, or source storage. In particular, alias,
 dependency, derivation, view-body satisfy, intersecting, and conjugated typing cannot disappear
 because the previous mutable builder failed to feed them into its canonical fact collection.
 
 The solve order reflects the actual dependency closure:
 
-1. construct and deterministically merge nodes, memberships, bindings, typed paths, source roles,
-   and exact provenance;
+1. retain the immutable `ParsedDocument` set in canonical `DocumentId` order and compile semantic
+   declarations, memberships, bindings, typed paths, source roles, and exact provenance into dense
+   model-owned IDs;
 2. compile parent/child, local-binding, authored-reference, import, standard-library, and direct
-   structural-relationship indexes;
+   structural-relationship indexes over those semantic entities;
 3. solve the cyclic scope component containing alias binding, specialization, redefinition and
    effective names, inherited membership, imports, exports, visibility, and recursion;
 4. solve typing and the remaining simple authored paths against the settled scope products;
@@ -1077,8 +1097,9 @@ The solve order reflects the actual dependency closure:
    adjacency, diagnostic, navigation, and query indexes at the publication barrier.
 
 No intermediate semantic publication places this IR beside a graph-backed resolver. Preparatory
-parser and fragment infrastructure may land privately, but the semantic cutover replaces the whole
-closure above and deletes its graph-based construction, resolution, and consumer paths together.
+parser/document and semantic-compilation infrastructure may land privately, but the semantic
+cutover replaces the whole closure above and deletes its graph-based construction, resolution, and
+consumer paths together.
 
 ### Step 1: evidence harness and blast-radius gate
 
@@ -1206,7 +1227,7 @@ Before implementation, capture the current whole-build baseline on representativ
 and large workspace/library models. The migration benchmark records these phases separately:
 
 - source acquisition and parsing;
-- authored document construction and merge;
+- semantic compilation from retained parser documents into model-owned entities;
 - `ResolutionDb` initialization and each solver family/pass;
 - query-index construction;
 - validation/evaluation;
