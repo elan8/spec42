@@ -41,5 +41,5 @@ clap = { version = "4", features = ["derive"] }
 petgraph = { version = "0.8", features = ["serde-1"] }
 sha2 = "0.10"
 sysml-v2-parser = { version = "0.54.0", features = ["serde"] }
-sysml-v2-parser-next = { git = "https://github.com/lukewilliamboswell/sysml-v2-parser.git", rev = "560d12828019c6b0720199ec92c54ea7b21d0526", package = "sysml-v2-parser", features = ["serde"] }
+sysml-v2-parser-next = { git = "https://github.com/lukewilliamboswell/sysml-v2-parser.git", rev = "c40b544", package = "sysml-v2-parser", features = ["serde"] }
 ts-rs = { version = "11", features = ["serde-compat", "serde-json-impl"] }
