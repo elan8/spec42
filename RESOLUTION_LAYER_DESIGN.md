@@ -507,21 +507,27 @@ The target pipeline is:
 immutable sources
     -> parse/recovery results
     -> immutable per-document ParsedDocument values
-    -> semantic compilation in deterministic document order
-    -> stable model-owned authored semantic input
-    -> ResolutionDb.solve()
-    -> immutable ResolutionState
-    -> diagnostics / evaluation / projections through ResolutionView
-    -> one coherent settled semantic publication
+    -> direct canonicalization into one private SemanticModelBuilder
+    -> ResolutionDb.solve() over that builder's stable authored tables
+    -> freeze once into one coherent settled semantic publication
+    -> diagnostics / evaluation / projections through typed query services
 ```
 
-Per-document builders may publish containment, memberships, syntax-derived facts, and authored
-relationship targets. They must not decide final semantic targets. Import traversal, lexical
-scope, ambiguity, and relationship target resolution belong exclusively to `ResolutionDb`.
+Canonicalization walks each parser document and directly creates containment, memberships,
+syntax-derived semantic facts, and authored relationship slots in the model builder. There is no
+parser-shaped authored-model or document-fragment representation between the parser and semantic
+model. The builder must not decide final semantic targets: import traversal, lexical scope,
+ambiguity, and relationship target resolution belong exclusively to `ResolutionDb`.
 
-The finalization phase constructs `ResolutionState` in isolation and creates `SemanticModel` only
-after a successful solve. `SemanticGraphBuilder`, mutable merge graphs, solver slots, and partial
-indexes are build-private types; they cannot be handed to semantic consumers. A failed or
+Canonicalization mints every declaration identity and authored-reference slot at the point where
+it recognizes the corresponding semantic construct. Later resolution uses those existing slots;
+it does not invent publication-visible semantic identities. This preserves a checked
+construct-to-slot correspondence for diagnostics and navigation while still allowing the solver
+to allocate private temporary work slots that never escape in results.
+
+The finalization phase constructs resolution state in isolation and freezes `SemanticModel` only
+after a successful solve. `SemanticModelBuilder`, solver slots, and partial indexes are
+build-private types; they cannot be handed to semantic consumers. A failed or
 cancelled solve leaves the prior coherent publication active. A new build with no prior
 publication returns a failed construction result.
 
@@ -897,8 +903,9 @@ convenient graph method cannot become a second resolved-fact authority.
 
 Do not replace these with deprecated functions that call the whole resolver. A call site must
 migrate to `build_semantic_model`, an immutable `SemanticModel`, or `ResolutionView`. Low-level
-per-document semantic compilation becomes crate-private and consumes a retained `ParsedDocument`;
-its private construction scratch cannot be used as a semantic model. After the cutover, a repository
+canonicalization becomes crate-private and consumes retained `ParsedDocument` values directly into
+the one `SemanticModelBuilder`; its private construction state cannot be used as a semantic model.
+After the cutover, a repository
 search for the deleted semantic symbols must return no production or test references.
 
 The word "scoped" remains valid in unrelated presentation features such as diagram view scoping;
@@ -1071,21 +1078,22 @@ facts that participate in scope, effective naming, or type-directed continuation
 - multiplicity, feature values/properties, and owned expressions required for downstream semantic
   parity even when they are not lexical-lookup inputs.
 
-An exhaustive parser-to-semantic compiler accounts for every AST variant while borrowing the
+An exhaustive parser-to-semantic canonicalizer accounts for every AST variant while borrowing the
 retained `ParsedDocument` and its arena. Parser fields that lack a typed path, absolute scope,
 separator semantics, or exact target provenance publish an explicit unsupported construction fact;
 adapters do not split a `String`, inspect a sentinel spelling, use a debug formatter, or assign the
-containing range to missing segment spans. Semantic compilation assigns model-owned dense IDs only
-to entities that enter the semantic IR and interns normalized cross-document names; it does not
-copy or remap all parser nodes, paths, expressions, or source storage. In particular, alias,
+containing range to missing segment spans. Canonicalization assigns model-owned dense IDs only to
+entities that enter the semantic model and interns normalized cross-document names; it does not
+copy or remap all parser nodes, paths, expressions, or source storage, and it does not first create
+a parser-shaped authored IR. In particular, alias,
 dependency, derivation, view-body satisfy, intersecting, and conjugated typing cannot disappear
 because the previous mutable builder failed to feed them into its canonical fact collection.
 
 The solve order reflects the actual dependency closure:
 
-1. retain the immutable `ParsedDocument` set in canonical `DocumentId` order and compile semantic
-   declarations, memberships, bindings, typed paths, source roles, and exact provenance into dense
-   model-owned IDs;
+1. retain the immutable `ParsedDocument` set in canonical `DocumentId` order and canonicalize
+   semantic declarations, memberships, bindings, source roles, authored reference slots, and exact
+   provenance directly into dense model-owned storage;
 2. compile parent/child, local-binding, authored-reference, import, standard-library, and direct
    structural-relationship indexes over those semantic entities;
 3. solve the cyclic scope component containing alias binding, specialization, redefinition and
@@ -1096,10 +1104,10 @@ The solve order reflects the actual dependency closure:
 6. derive construction-known and settlement-derived relationships, then build immutable outcome,
    adjacency, diagnostic, navigation, and query indexes at the publication barrier.
 
-No intermediate semantic publication places this IR beside a graph-backed resolver. Preparatory
-parser/document and semantic-compilation infrastructure may land privately, but the semantic
-cutover replaces the whole closure above and deletes its graph-based construction, resolution, and
-consumer paths together.
+No intermediate authored model or semantic publication is placed beside the graph-backed resolver.
+Preparatory parser/document and direct-canonicalization infrastructure may land privately, but the
+semantic cutover replaces the whole closure above and deletes its graph-based construction,
+resolution, and consumer paths together.
 
 ### Step 1: evidence harness and blast-radius gate
 
