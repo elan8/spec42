@@ -180,6 +180,10 @@ impl PreparedSemanticBuildRequest {
     pub fn identity(&self) -> &SemanticModelIdentity {
         &self.identity
     }
+
+    pub(crate) fn into_parts(self) -> (SemanticBuildRequest, SemanticModelIdentity) {
+        (self.request, self.identity)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -198,6 +202,107 @@ impl fmt::Display for SemanticBuildFailure {
 }
 
 impl std::error::Error for SemanticBuildFailure {}
+
+/// Private production publication over parser-owned immutable semantic storage.
+///
+/// The state is intentionally opaque.  Callers can inspect identity/status and request owner
+/// rendering, but cannot obtain the parser document, storage, indexes, or resolution facts.
+#[derive(Debug)]
+pub(crate) struct ParserSemanticPublication {
+    identity: SemanticModelIdentity,
+    state: ParserSemanticPublicationState,
+}
+
+#[derive(Debug)]
+enum ParserSemanticPublicationState {
+    Complete(crate::semantic::semantic_model_builder::resolver::ResolvedSemanticModel),
+    Incomplete(ParserPublicationStatus),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ParserPublicationStatus {
+    Complete,
+    EvaluationNotSupported,
+    ParseRecovery,
+    UnsupportedSyntax,
+    NonConverged,
+}
+
+impl ParserSemanticPublication {
+    pub(crate) fn status(&self) -> ParserPublicationStatus {
+        match self.state {
+            ParserSemanticPublicationState::Complete(_) => ParserPublicationStatus::Complete,
+            ParserSemanticPublicationState::Incomplete(status) => status,
+        }
+    }
+
+    pub(crate) fn identity(&self) -> &SemanticModelIdentity {
+        &self.identity
+    }
+
+    pub(crate) fn write_debug_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
+        match &self.state {
+            ParserSemanticPublicationState::Complete(model) => {
+                crate::semantic::semantic_model_builder::write_resolved_debug(model, output)
+            }
+            ParserSemanticPublicationState::Incomplete(status) => {
+                writeln!(output, "(semantic-publication (status {status:?}))")
+            }
+        }
+    }
+}
+
+/// Builds the parser-owned publication from the exact prepared request.
+///
+/// This is deliberately crate-private while consumers migrate.  It is the only construction
+/// seam for the parser-owned model; it never invokes the mutable graph pipeline.
+pub(crate) fn build_parser_semantic_publication(
+    prepared: PreparedSemanticBuildRequest,
+) -> Result<ParserSemanticPublication, crate::semantic::semantic_model_builder::CoordinatorError> {
+    use crate::semantic::semantic_model_builder::{
+        BuildSchedule, CoordinatorIncomplete, CoordinatorOutcome, OwnedSourceRecord,
+        SemanticModelBuildCoordinator,
+    };
+
+    let (request, identity) = prepared.into_parts();
+    if matches!(request.evaluation, EvaluationPolicy::Evaluate) {
+        return Ok(ParserSemanticPublication {
+            identity,
+            state: ParserSemanticPublicationState::Incomplete(
+                ParserPublicationStatus::EvaluationNotSupported,
+            ),
+        });
+    }
+
+    let sources = request
+        .sources
+        .into_documents()
+        .into_iter()
+        .map(|document| OwnedSourceRecord {
+            identity: document.uri.to_string().into_boxed_str(),
+            content: document.content,
+        })
+        .collect();
+    let schedule = match request.construction {
+        ConstructionStrategy::Sequential => BuildSchedule::Sequential,
+        ConstructionStrategy::Parallel => BuildSchedule::Parallel,
+    };
+    let outcome = SemanticModelBuildCoordinator::build(sources, schedule)?;
+    let state = match outcome {
+        CoordinatorOutcome::Complete(model) => ParserSemanticPublicationState::Complete(model),
+        CoordinatorOutcome::Incomplete(incomplete) => {
+            let status = match incomplete {
+                CoordinatorIncomplete::ParseRecovery => ParserPublicationStatus::ParseRecovery,
+                CoordinatorIncomplete::UnsupportedSyntax => {
+                    ParserPublicationStatus::UnsupportedSyntax
+                }
+                CoordinatorIncomplete::NonConverged => ParserPublicationStatus::NonConverged,
+            };
+            ParserSemanticPublicationState::Incomplete(status)
+        }
+    };
+    Ok(ParserSemanticPublication { identity, state })
+}
 
 /// Identity of one authored reference site.  The ordinal preserves repeated source clauses.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]

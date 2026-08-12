@@ -43,8 +43,4 @@ pub mod visualization_workspace;
 pub mod workspace_graph;
 pub mod workspace_uri;
 
-// The parser-owned semantic implementation is intentionally test-only until the complete
-// construction and publication cutover is ready.  This prevents an unconsumed second semantic
-// representation from becoming production state.
-#[cfg(test)]
-mod semantic_model_builder;
+pub(crate) mod semantic_model_builder;

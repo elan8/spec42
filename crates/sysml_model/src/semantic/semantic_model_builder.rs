@@ -1,7 +1,9 @@
 //! Direct parser-to-semantic canonicalization storage.
 //!
-//! This module is test-only until the atomic publication cutover. It deliberately defines no
-//! resolver, renderer, query service, graph adapter, or independently publishable authored model.
+//! Private parser-owned semantic construction.
+//!
+//! This module deliberately exposes no storage, graph adapter, or independently publishable
+//! authored model. The publication owner consumes the typed coordinator outcome below.
 
 use std::{
     collections::{hash_map::RandomState, BTreeMap},
@@ -1475,34 +1477,51 @@ impl SymbolTableBuilder {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-struct OwnedSourceRecord {
-    identity: Box<str>,
-    content: String,
+pub(crate) struct OwnedSourceRecord {
+    pub(crate) identity: Box<str>,
+    pub(crate) content: String,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum BuildSchedule {
+pub(crate) enum BuildSchedule {
     Sequential,
     Parallel,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum CoordinatorError {
+pub(crate) enum CoordinatorError {
     DuplicateSourceIdentity,
     ParseFailed,
+    ConstructionFailed,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum CoordinatorIncomplete {
     ParseRecovery,
     UnsupportedSyntax,
-    ResolutionFailed,
     NonConverged,
 }
 
-struct SemanticModelBuildCoordinator;
+#[derive(Debug)]
+pub(crate) enum CoordinatorOutcome {
+    Complete(resolver::ResolvedSemanticModel),
+    Incomplete(CoordinatorIncomplete),
+}
+
+pub(crate) struct SemanticModelBuildCoordinator;
+
+pub(crate) fn write_resolved_debug(
+    model: &resolver::ResolvedSemanticModel,
+    output: &mut dyn std::fmt::Write,
+) -> std::fmt::Result {
+    model.write_debug_sexpr(output)
+}
 
 impl SemanticModelBuildCoordinator {
-    fn build(
+    pub(crate) fn build(
         mut sources: Vec<OwnedSourceRecord>,
         schedule: BuildSchedule,
-    ) -> Result<resolver::ResolvedSemanticModel, CoordinatorError> {
+    ) -> Result<CoordinatorOutcome, CoordinatorError> {
         sources.sort_unstable_by(|left, right| left.identity.cmp(&right.identity));
         if sources
             .windows(2)
@@ -1536,22 +1555,28 @@ impl SemanticModelBuildCoordinator {
         for document in documents {
             builder
                 .canonicalize_document(document)
-                .map_err(|_| CoordinatorError::ResolutionFailed)?;
+                .map_err(|_| CoordinatorError::ConstructionFailed)?;
         }
         if !builder.recovery.is_empty() {
-            return Err(CoordinatorError::ParseRecovery);
+            return Ok(CoordinatorOutcome::Incomplete(
+                CoordinatorIncomplete::ParseRecovery,
+            ));
         }
         if !builder.unsupported.is_empty() {
-            return Err(CoordinatorError::UnsupportedSyntax);
+            return Ok(CoordinatorOutcome::Incomplete(
+                CoordinatorIncomplete::UnsupportedSyntax,
+            ));
         }
         let model = builder
             .freeze()
             .resolve()
-            .map_err(|_| CoordinatorError::ResolutionFailed)?;
+            .map_err(|_| CoordinatorError::ConstructionFailed)?;
         if !model.is_converged() {
-            return Err(CoordinatorError::NonConverged);
+            return Ok(CoordinatorOutcome::Incomplete(
+                CoordinatorIncomplete::NonConverged,
+            ));
         }
-        Ok(model)
+        Ok(CoordinatorOutcome::Complete(model))
     }
 
     fn parse_source(
@@ -1563,7 +1588,7 @@ impl SemanticModelBuildCoordinator {
     }
 }
 
-mod resolver;
+pub(crate) mod resolver;
 
 #[cfg(test)]
 mod tests {

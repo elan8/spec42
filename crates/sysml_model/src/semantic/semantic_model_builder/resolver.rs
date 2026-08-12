@@ -269,7 +269,7 @@ impl ResolutionResults {
 }
 
 #[derive(Debug)]
-pub(super) struct ResolvedSemanticModel {
+pub(crate) struct ResolvedSemanticModel {
     storage: SemanticModelStorage,
     direct_names: NameIndex,
     effective_imports: NameIndex,
@@ -351,8 +351,29 @@ impl ResolvedSemanticModel {
         Ok(records.into_boxed_slice())
     }
 
-    fn write_debug_sexpr(&self, output: &mut dyn std::fmt::Write) -> std::fmt::Result {
+    pub(super) fn write_debug_sexpr(&self, output: &mut dyn std::fmt::Write) -> std::fmt::Result {
         writer::write(self, output)
+    }
+
+    pub(crate) fn write_semantic_sexpr(
+        &self,
+        output: &mut dyn std::fmt::Write,
+    ) -> std::fmt::Result {
+        writer::write_semantic(self, output)
+    }
+
+    pub(crate) fn write_navigation_sexpr(
+        &self,
+        output: &mut dyn std::fmt::Write,
+    ) -> std::fmt::Result {
+        writer::write_navigation_only(self, output)
+    }
+
+    pub(crate) fn write_diagnostics_sexpr(
+        &self,
+        output: &mut dyn std::fmt::Write,
+    ) -> std::fmt::Result {
+        writer::write_diagnostics(self, output)
     }
 }
 

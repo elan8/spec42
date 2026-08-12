@@ -17,6 +17,83 @@ pub(super) fn write(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) 
     write!(output, ")")
 }
 
+pub(super) fn write_semantic(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    writeln!(output, "(semantic-model")?;
+    write_metadata(model, output)?;
+    write_declarations(model, output)?;
+    write_references(model, output)?;
+    write_relationships(model, output)?;
+    writeln!(output, "  (evaluation\n  )")?;
+    write!(output, ")")
+}
+
+pub(super) fn write_navigation_only(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    write_navigation(model, output)
+}
+
+pub(super) fn write_diagnostics(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let mut records = model.diagnostic_records().map_err(|_| fmt::Error)?;
+    records.sort_by_key(|record| {
+        (
+            document_identity_for_source(model, record.source),
+            record.range.start.line,
+            record.range.start.character,
+            record.range.end.line,
+            record.range.end.character,
+            record.kind,
+            record.reference,
+        )
+    });
+    writeln!(output, "(fixture-diagnostics")?;
+    for document in &model.storage.documents {
+        writeln!(output, "  (document {:?}", document.identity)?;
+        writeln!(output, "    (diagnostics")?;
+        for record in records.iter().filter(|record| {
+            document_identity_for_source(model, record.source) == document.identity.as_ref()
+        }) {
+            let Some((severity, code)) = diagnostic_label(&record.outcome) else {
+                continue;
+            };
+            writeln!(
+                output,
+                "      (diagnostic\n        (severity {severity})\n        (code \"{code}\")\n        (source \"semantic\")\n        (range (start {} {}) (end {} {}))\n      )",
+                record.range.start.line,
+                record.range.start.character,
+                record.range.end.line,
+                record.range.end.character,
+            )?;
+        }
+        writeln!(output, "    )\n  )")?;
+    }
+    write!(output, ")")
+}
+
+fn diagnostic_label(outcome: &DiagnosticOutcome) -> Option<(&'static str, &'static str)> {
+    match outcome {
+        DiagnosticOutcome::Resolved => None,
+        DiagnosticOutcome::Unresolved => Some(("warning", "unresolved_reference")),
+        DiagnosticOutcome::Unsupported => Some(("error", "unsupported_reference")),
+        DiagnosticOutcome::NonConverged => Some(("error", "non_converged_resolution")),
+        DiagnosticOutcome::Ambiguous { .. } => Some(("warning", "ambiguous_reference")),
+    }
+}
+
+fn document_identity_for_source(model: &ResolvedSemanticModel, source: DeclarationId) -> &str {
+    let declaration = model.storage.declaration(source).ok_or(()).ok();
+    declaration
+        .map(|declaration| document_identity(model, declaration.document))
+        .unwrap_or("<invalid-document>")
+}
+
 fn write_metadata(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
     let phase = match model.metadata.phase {
         PublicationPhase::Resolved => "resolved",
@@ -119,14 +196,16 @@ fn write_navigation(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) 
             .storage
             .declaration(reference.source)
             .ok_or(fmt::Error)?;
+        let range = document_range(&model.storage, source.document, &reference.span)
+            .map_err(|_| fmt::Error)?;
         write!(output, "    (query (document ")?;
         write_quoted(output, document_identity(model, source.document))?;
         write!(output, ") (range ")?;
-        write_span(output, &reference.span)?;
+        write_range(output, range)?;
         write!(
             output,
             ") (probe (position {} {}))\n      (reference (id (source ",
-            reference.span.line, reference.span.column,
+            range.start.line, range.start.character,
         )?;
         write_node_identity(model, reference.source, output)?;
         write!(
@@ -245,8 +324,17 @@ fn write_node_identity(
     let declaration = model.storage.declaration(id).ok_or(fmt::Error)?;
     write!(output, "(node (document ")?;
     write_quoted(output, document_identity(model, declaration.document))?;
-    output.write_str(") (qualified-name ")?;
-    write_declaration_name(model, id, output)?;
+    if declaration.name.is_some() {
+        output.write_str(") (qualified-name ")?;
+        write_declaration_name(model, id, output)?;
+    } else {
+        write!(
+            output,
+            ") (anonymous (kind {}) (ordinal {}))",
+            declaration_kind(declaration.kind),
+            id.0,
+        )?;
+    }
     output.write_str("))")
 }
 
@@ -305,14 +393,11 @@ fn write_escaped(output: &mut dyn fmt::Write, value: &str) -> fmt::Result {
     Ok(())
 }
 
-fn write_span(output: &mut dyn fmt::Write, span: &sysml_v2_parser_next::ast::Span) -> fmt::Result {
+fn write_range(output: &mut dyn fmt::Write, range: TextRange) -> fmt::Result {
     write!(
         output,
         "(start {} {}) (end {} {})",
-        span.line,
-        span.column,
-        span.line,
-        span.column.saturating_add(span.len)
+        range.start.line, range.start.character, range.end.line, range.end.character,
     )
 }
 
