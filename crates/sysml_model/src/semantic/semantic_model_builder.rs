@@ -39,6 +39,7 @@ macro_rules! semantic_id {
 semantic_id!(DocumentId);
 semantic_id!(DeclarationId);
 semantic_id!(SymbolId);
+semantic_id!(SymbolPathId);
 semantic_id!(AuthoredReferenceId);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -154,6 +155,7 @@ struct AuthoredReference {
     source: DeclarationId,
     kind: ReferenceKind,
     target: ParserReferenceId,
+    path: SymbolPathId,
     flags: RelationshipFlags,
     span: Span,
 }
@@ -167,6 +169,7 @@ struct SemanticModelStorage {
     unsupported: Box<[UnsupportedRecord]>,
     recovery: Box<[RecoveryRecord]>,
     symbols: SymbolTable,
+    paths: SymbolPathArena,
 }
 
 impl SemanticModelStorage {
@@ -192,6 +195,7 @@ struct SemanticModelBuilder {
     unsupported: Vec<UnsupportedRecord>,
     recovery: Vec<RecoveryRecord>,
     symbols: SymbolTableBuilder,
+    paths: SymbolPathArenaBuilder,
 }
 
 impl SemanticModelBuilder {
@@ -281,20 +285,30 @@ impl SemanticModelBuilder {
         flags: RelationshipFlags,
         span: Span,
     ) -> Result<AuthoredReferenceId, ConstructionError> {
-        if source.index() >= self.declarations.len()
-            || document.index() >= self.documents.len()
-            || self.documents[document.index()]
-                .parsed
-                .qualified_reference(local)
-                .is_none()
-        {
+        if source.index() >= self.declarations.len() || document.index() >= self.documents.len() {
             return Err(ConstructionError::InvalidParserReference);
         }
+        let parsed = Arc::clone(&self.documents[document.index()].parsed);
+        let reference = parsed
+            .qualified_reference(local)
+            .ok_or(ConstructionError::InvalidParserReference)?;
+        let mut segments = Vec::new();
+        segments
+            .try_reserve(reference.segments.len())
+            .map_err(|_| ConstructionError::Capacity)?;
+        for index in 0..reference.segments.len() {
+            let decoded = reference
+                .segment_decoded_text(index)
+                .ok_or(ConstructionError::InvalidParserReference)?;
+            segments.push(self.intern_name(decoded.as_ref())?);
+        }
+        let path = self.paths.push(&segments, reference.metadata.is_absolute)?;
         let id = AuthoredReferenceId::from_index(self.references.len())?;
         self.references.push(AuthoredReference {
             source,
             kind,
             target: ParserReferenceId { document, local },
+            path,
             flags,
             span,
         });
@@ -322,6 +336,7 @@ impl SemanticModelBuilder {
             unsupported: self.unsupported.into_boxed_slice(),
             recovery: self.recovery.into_boxed_slice(),
             symbols: self.symbols.freeze(),
+            paths: self.paths.freeze(),
         }
     }
 
@@ -1156,6 +1171,69 @@ impl SemanticModelBuilder {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct SymbolPath {
+    start: u32,
+    len: u32,
+    rooted: bool,
+}
+
+#[derive(Debug)]
+struct SymbolPathArena {
+    paths: Box<[SymbolPath]>,
+    segments: Box<[SymbolId]>,
+}
+
+impl SymbolPathArena {
+    fn get(&self, id: SymbolPathId) -> Option<(&[SymbolId], bool)> {
+        let path = self.paths.get(id.index())?;
+        if path.len == 0 {
+            return None;
+        }
+        let end = path.start.checked_add(path.len)?;
+        let segments = self.segments.get(path.start as usize..end as usize)?;
+        Some((segments, path.rooted))
+    }
+}
+
+#[derive(Debug, Default)]
+struct SymbolPathArenaBuilder {
+    paths: Vec<SymbolPath>,
+    segments: Vec<SymbolId>,
+}
+
+impl SymbolPathArenaBuilder {
+    fn push(
+        &mut self,
+        segments: &[SymbolId],
+        rooted: bool,
+    ) -> Result<SymbolPathId, ConstructionError> {
+        if segments.is_empty() {
+            return Err(ConstructionError::InvalidParserReference);
+        }
+        let id = SymbolPathId::from_index(self.paths.len())?;
+        let start = u32::try_from(self.segments.len()).map_err(|_| ConstructionError::Capacity)?;
+        let len = u32::try_from(segments.len()).map_err(|_| ConstructionError::Capacity)?;
+        start.checked_add(len).ok_or(ConstructionError::Capacity)?;
+        self.paths
+            .try_reserve(1)
+            .map_err(|_| ConstructionError::Capacity)?;
+        self.segments
+            .try_reserve(segments.len())
+            .map_err(|_| ConstructionError::Capacity)?;
+        self.segments.extend_from_slice(segments);
+        self.paths.push(SymbolPath { start, len, rooted });
+        Ok(id)
+    }
+
+    fn freeze(self) -> SymbolPathArena {
+        SymbolPathArena {
+            paths: self.paths.into_boxed_slice(),
+            segments: self.segments.into_boxed_slice(),
+        }
+    }
+}
+
 #[derive(Debug)]
 struct SymbolTable {
     bytes: Box<str>,
@@ -1229,6 +1307,8 @@ impl SymbolTableBuilder {
         }
     }
 }
+
+mod resolver;
 
 #[cfg(test)]
 mod tests {
