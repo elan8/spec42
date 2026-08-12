@@ -274,6 +274,24 @@ pub(super) struct ResolvedSemanticModel {
     direct_names: NameIndex,
     effective_imports: NameIndex,
     resolution: ResolutionResults,
+    metadata: PublicationMetadata,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum PublicationPhase {
+    Resolved,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum PublicationCompleteness {
+    Complete,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct PublicationMetadata {
+    phase: PublicationPhase,
+    completeness: PublicationCompleteness,
+    has_evaluation: bool,
 }
 
 impl ResolvedSemanticModel {
@@ -375,6 +393,11 @@ impl SemanticModelStorage {
             direct_names,
             effective_imports,
             resolution,
+            metadata: PublicationMetadata {
+                phase: PublicationPhase::Resolved,
+                completeness: PublicationCompleteness::Complete,
+                has_evaluation: false,
+            },
         })
     }
 }

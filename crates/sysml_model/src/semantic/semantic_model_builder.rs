@@ -3,7 +3,11 @@
 //! This module is test-only until the atomic publication cutover. It deliberately defines no
 //! resolver, renderer, query service, graph adapter, or independently publishable authored model.
 
-use std::{collections::hash_map::RandomState, hash::BuildHasher, sync::Arc};
+use std::{
+    collections::{hash_map::RandomState, BTreeMap},
+    hash::BuildHasher,
+    sync::Arc,
+};
 
 use hashbrown::HashTable;
 use sysml_v2_parser_next::{
@@ -80,7 +84,7 @@ enum Visibility {
     Protected,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 enum ReferenceKind {
     NamespaceImport,
     MembershipImport,
@@ -92,6 +96,19 @@ enum ReferenceKind {
     References,
     Crosses,
     Intersects,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum AuthoredImportShape {
+    Membership,
+    Namespace,
+    Filter,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct AuthoredImportFacts {
+    shape: AuthoredImportShape,
+    recursive: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -159,6 +176,8 @@ struct AuthoredReference {
     kind: ReferenceKind,
     target: ParserReferenceId,
     path: SymbolPathId,
+    ordinal: u32,
+    import: Option<AuthoredImportFacts>,
     flags: RelationshipFlags,
     span: Span,
 }
@@ -199,6 +218,7 @@ struct SemanticModelBuilder {
     recovery: Vec<RecoveryRecord>,
     symbols: SymbolTableBuilder,
     paths: SymbolPathArenaBuilder,
+    next_reference_ordinals: BTreeMap<(DeclarationId, ReferenceKind), u32>,
 }
 
 impl SemanticModelBuilder {
@@ -287,6 +307,7 @@ impl SemanticModelBuilder {
         local: QualifiedReferenceId,
         flags: RelationshipFlags,
         span: Span,
+        import: Option<AuthoredImportFacts>,
     ) -> Result<AuthoredReferenceId, ConstructionError> {
         if source.index() >= self.declarations.len() || document.index() >= self.documents.len() {
             return Err(ConstructionError::InvalidParserReference);
@@ -306,12 +327,20 @@ impl SemanticModelBuilder {
             segments.push(self.intern_name(decoded.as_ref())?);
         }
         let path = self.paths.push(&segments, reference.metadata.is_absolute)?;
+        let ordinal = self
+            .next_reference_ordinals
+            .entry((source, kind))
+            .or_insert(0);
+        let authored_ordinal = *ordinal;
+        *ordinal = ordinal.checked_add(1).ok_or(ConstructionError::Capacity)?;
         let id = AuthoredReferenceId::from_index(self.references.len())?;
         self.references.push(AuthoredReference {
             source,
             kind,
             target: ParserReferenceId { document, local },
             path,
+            ordinal: authored_ordinal,
+            import,
             flags,
             span,
         });
@@ -841,6 +870,14 @@ impl SemanticModelBuilder {
                 },
             ),
         };
+        let import = Some(AuthoredImportFacts {
+            shape: match &node.value.target.shape {
+                ImportShape::Membership { .. } => AuthoredImportShape::Membership,
+                ImportShape::Namespace { .. } => AuthoredImportShape::Namespace,
+                ImportShape::Filter { .. } => AuthoredImportShape::Filter,
+            },
+            recursive: flags.recursive,
+        });
         self.push_reference(
             declaration,
             kind,
@@ -848,6 +885,7 @@ impl SemanticModelBuilder {
             node.value.target.reference,
             flags,
             node.value.target.span.clone(),
+            import,
         )?;
         Ok(())
     }
@@ -1225,6 +1263,7 @@ impl SemanticModelBuilder {
                     ..RelationshipFlags::default()
                 },
                 span,
+                None,
             )?;
         }
         Ok(())
@@ -1261,6 +1300,7 @@ impl SemanticModelBuilder {
                     ..RelationshipFlags::default()
                 },
                 span,
+                None,
             )?;
         }
         Ok(())

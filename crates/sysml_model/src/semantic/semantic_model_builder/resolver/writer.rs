@@ -9,6 +9,7 @@ use super::*;
 
 pub(super) fn write(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
     writeln!(output, "(resolved-semantic-model")?;
+    write_metadata(model, output)?;
     write_declarations(model, output)?;
     write_references(model, output)?;
     write_relationships(model, output)?;
@@ -16,9 +17,24 @@ pub(super) fn write(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) 
     write!(output, ")")
 }
 
+fn write_metadata(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
+    let phase = match model.metadata.phase {
+        PublicationPhase::Resolved => "resolved",
+    };
+    let completeness = match model.metadata.completeness {
+        PublicationCompleteness::Complete => "complete",
+    };
+    writeln!(
+        output,
+        "  (publication (phase {phase}) (completeness {completeness}) (has-evaluation {}))",
+        model.metadata.has_evaluation
+    )
+}
+
 fn write_declarations(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
     writeln!(output, "  (declarations")?;
-    for (index, declaration) in model.storage.declarations.iter().enumerate() {
+    for index in 0..model.storage.declarations.len() {
+        let declaration = &model.storage.declarations[index];
         write!(output, "    (declaration (id ")?;
         write_node_identity(model, DeclarationId(index as u32), output)?;
         write!(output, ") (kind {})", declaration_kind(declaration.kind))?;
@@ -35,6 +51,7 @@ fn write_declarations(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write
                 visibility(membership.visibility),
             )?;
         }
+        write_authored(model, DeclarationId(index as u32), output)?;
         writeln!(output, ")")?;
     }
     writeln!(output, "  )")
@@ -42,7 +59,8 @@ fn write_declarations(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write
 
 fn write_references(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
     writeln!(output, "  (references")?;
-    for (index, reference) in model.storage.references.iter().enumerate() {
+    for index in 0..model.storage.references.len() {
+        let reference = &model.storage.references[index];
         let id = AuthoredReferenceId(index as u32);
         writeln!(output, "    (reference (id (source ",)?;
         write_node_identity(model, reference.source, output)?;
@@ -50,7 +68,7 @@ fn write_references(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) 
             output,
             ") (kind {}) (ordinal {}))",
             reference_kind(reference.kind),
-            reference_ordinal(model, index),
+            reference.ordinal,
         )?;
         write!(output, "      (authored-target ")?;
         write_reference_path(model, reference.path, output)?;
@@ -64,7 +82,8 @@ fn write_references(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) 
 
 fn write_relationships(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
     writeln!(output, "  (relationships")?;
-    for (index, reference) in model.storage.references.iter().enumerate() {
+    for index in 0..model.storage.references.len() {
+        let reference = &model.storage.references[index];
         let id = AuthoredReferenceId(index as u32);
         let Some(ResolutionStatus::Resolved(target)) = model.resolution.outcome(id) else {
             continue;
@@ -78,7 +97,14 @@ fn write_relationships(model: &ResolvedSemanticModel, output: &mut dyn fmt::Writ
         write_node_identity(model, target, output)?;
         writeln!(
             output,
-            ") (provenance authored) (authored-reference {index}))"
+            ") (provenance authored) (authored-reference (source "
+        )?;
+        write_node_identity(model, reference.source, output)?;
+        writeln!(
+            output,
+            ") (kind {}) (ordinal {})))",
+            reference_kind(reference.kind),
+            reference.ordinal,
         )?;
     }
     writeln!(output, "  )")
@@ -86,7 +112,8 @@ fn write_relationships(model: &ResolvedSemanticModel, output: &mut dyn fmt::Writ
 
 fn write_navigation(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
     writeln!(output, "  (navigation")?;
-    for (index, reference) in model.storage.references.iter().enumerate() {
+    for index in 0..model.storage.references.len() {
+        let reference = &model.storage.references[index];
         let id = AuthoredReferenceId(index as u32);
         let source = model
             .storage
@@ -106,7 +133,7 @@ fn write_navigation(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) 
             output,
             ") (kind {}) (ordinal {}) (authored-target ",
             reference_kind(reference.kind),
-            reference_ordinal(model, index),
+            reference.ordinal,
         )?;
         write_reference_path(model, reference.path, output)?;
         write!(output, ")\n        ")?;
@@ -138,6 +165,65 @@ fn write_outcome(
             }
             output.write_str("))")
         }
+    }
+}
+
+fn write_authored(
+    model: &ResolvedSemanticModel,
+    source: DeclarationId,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let mut references = model
+        .storage
+        .references
+        .iter()
+        .filter(|reference| reference.source == source)
+        .collect::<Vec<_>>();
+    if references.is_empty() {
+        return Ok(());
+    }
+    references.sort_by_key(|reference| (reference.kind, reference.ordinal));
+    output.write_str(" (authored")?;
+    if let Some(membership) = model
+        .storage
+        .memberships
+        .iter()
+        .find(|membership| membership.member == source)
+    {
+        write!(
+            output,
+            " (membership (kind {}) (visibility {}))",
+            membership_kind(membership.kind),
+            visibility(membership.visibility),
+        )?;
+    }
+    output.write_str(" (relationships")?;
+    for reference in references {
+        write!(output, " ({} (reference ", reference_kind(reference.kind))?;
+        write_reference_path(model, reference.path, output)?;
+        write!(output, ")")?;
+        if let Some(import) = reference.import {
+            write_import(import, output)?;
+        }
+        output.write_char(')')?;
+    }
+    output.write_str(")")
+}
+
+fn write_import(import: AuthoredImportFacts, output: &mut dyn fmt::Write) -> fmt::Result {
+    write!(
+        output,
+        " (import (shape {}) (recursive {}))",
+        import_shape(import.shape),
+        import.recursive,
+    )
+}
+
+fn import_shape(shape: AuthoredImportShape) -> &'static str {
+    match shape {
+        AuthoredImportShape::Membership => "membership",
+        AuthoredImportShape::Namespace => "namespace",
+        AuthoredImportShape::Filter => "filtered-namespace",
     }
 }
 
@@ -335,6 +421,11 @@ mod tests {
             direct_names,
             effective_imports,
             resolution,
+            metadata: PublicationMetadata {
+                phase: PublicationPhase::Resolved,
+                completeness: PublicationCompleteness::Complete,
+                has_evaluation: false,
+            },
         };
         let mut output = String::new();
         model.write_debug_sexpr(&mut output).unwrap();
