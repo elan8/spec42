@@ -1,6 +1,7 @@
 //! Private batch resolution over the dense canonical semantic storage.
 
 use super::*;
+use crate::semantic::text_span::{TextPosition, TextRange};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum ResolutionError {
@@ -116,6 +117,32 @@ enum ResolutionStatus {
     Unsupported,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum DiagnosticOutcome {
+    Resolved,
+    Unresolved,
+    Unsupported,
+    Ambiguous {
+        candidates: Box<[DiagnosticCandidate]>,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct DiagnosticCandidate {
+    target: DeclarationId,
+    kind: DeclarationKind,
+    range: TextRange,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct DiagnosticRecord {
+    reference: AuthoredReferenceId,
+    source: DeclarationId,
+    kind: ReferenceKind,
+    range: TextRange,
+    outcome: DiagnosticOutcome,
+}
+
 #[derive(Debug)]
 struct ResolutionResults {
     outcomes: Box<[ResolutionStatus]>,
@@ -138,6 +165,83 @@ struct ResolvedSemanticModel {
     direct_names: NameIndex,
     effective_imports: NameIndex,
     resolution: ResolutionResults,
+}
+
+impl ResolvedSemanticModel {
+    fn diagnostic_records(&self) -> Result<Box<[DiagnosticRecord]>, ResolutionError> {
+        let mut records = Vec::with_capacity(self.storage.references.len());
+        for (index, reference) in self.storage.references.iter().enumerate() {
+            let reference_id =
+                AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            let source = self
+                .storage
+                .declaration(reference.source)
+                .ok_or(ResolutionError::InvalidStorage)?;
+            let range = document_range(&self.storage, source.document, &reference.span)?;
+            let outcome = match self
+                .resolution
+                .outcome(reference_id)
+                .ok_or(ResolutionError::InvalidStorage)?
+            {
+                ResolutionStatus::Resolved(_) => DiagnosticOutcome::Resolved,
+                ResolutionStatus::Unresolved => DiagnosticOutcome::Unresolved,
+                ResolutionStatus::Unsupported => DiagnosticOutcome::Unsupported,
+                ResolutionStatus::Ambiguous(candidate_range) => {
+                    let mut candidates = Vec::new();
+                    for target in self.resolution.ambiguous_candidates(candidate_range) {
+                        let declaration = self
+                            .storage
+                            .declaration(*target)
+                            .ok_or(ResolutionError::InvalidStorage)?;
+                        candidates.push(DiagnosticCandidate {
+                            target: *target,
+                            kind: declaration.kind,
+                            range: document_range(
+                                &self.storage,
+                                declaration.document,
+                                &declaration.span,
+                            )?,
+                        });
+                    }
+                    DiagnosticOutcome::Ambiguous {
+                        candidates: candidates.into_boxed_slice(),
+                    }
+                }
+            };
+            records.push(DiagnosticRecord {
+                reference: reference_id,
+                source: reference.source,
+                kind: reference.kind,
+                range,
+                outcome,
+            });
+        }
+        Ok(records.into_boxed_slice())
+    }
+}
+
+fn document_range(
+    storage: &SemanticModelStorage,
+    document: DocumentId,
+    span: &Span,
+) -> Result<TextRange, ResolutionError> {
+    let parsed = &storage
+        .document(document)
+        .ok_or(ResolutionError::InvalidStorage)?
+        .parsed;
+    let range = parsed.range(span).ok_or(ResolutionError::InvalidStorage)?;
+    Ok(TextRange::new(
+        TextPosition::new(
+            range.start.line.saturating_sub(1),
+            u32::try_from(range.start.column.saturating_sub(1))
+                .map_err(|_| ResolutionError::Capacity)?,
+        ),
+        TextPosition::new(
+            range.end.line.saturating_sub(1),
+            u32::try_from(range.end.column.saturating_sub(1))
+                .map_err(|_| ResolutionError::Capacity)?,
+        ),
+    ))
 }
 
 impl SemanticModelStorage {
