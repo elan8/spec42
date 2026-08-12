@@ -6,7 +6,15 @@
 use std::{collections::hash_map::RandomState, hash::BuildHasher, sync::Arc};
 
 use hashbrown::HashTable;
-use sysml_v2_parser_next::ParsedDocument;
+use sysml_v2_parser_next::{
+    ast::{
+        AttributeUsage, Import, ImportShape, LibraryPackage, NamespaceDecl, Node, Package,
+        PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage,
+        PartUsageBody, PartUsageBodyElement, QualifiedIdentification, QualifiedReferenceId,
+        RootElement, Span, Visibility as ParserVisibility,
+    },
+    ParsedDocument,
+};
 
 macro_rules! semantic_id {
     ($name:ident) => {
@@ -31,12 +39,91 @@ macro_rules! semantic_id {
 semantic_id!(DocumentId);
 semantic_id!(DeclarationId);
 semantic_id!(SymbolId);
+semantic_id!(AuthoredReferenceId);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum ConstructionError {
     Capacity,
     InvalidIdentity,
     DuplicateDocumentIdentity,
+    InvalidParserReference,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum DeclarationKind {
+    Namespace,
+    Package,
+    LibraryPackage,
+    PartDefinition,
+    PartUsage,
+    AttributeDefinition,
+    AttributeUsage,
+    Import,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum MembershipKind {
+    Owning,
+    Feature,
+    Import,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Visibility {
+    Default,
+    Public,
+    Private,
+    Protected,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ReferenceKind {
+    NamespaceImport,
+    MembershipImport,
+    FilterImport,
+    FeatureTyping,
+    Subclassification,
+    Subsetting,
+    Redefinition,
+    References,
+    Crosses,
+    Intersects,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+struct RelationshipFlags {
+    conjugated: bool,
+    implied: bool,
+    recursive: bool,
+    wildcard: bool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct ParserReferenceId {
+    document: DocumentId,
+    local: QualifiedReferenceId,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum UnsupportedFamily {
+    PackageMember,
+    PartDefinitionMember,
+    PartUsageMember,
+    AttributeMember,
+    ParserUnsupported,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct UnsupportedRecord {
+    document: DocumentId,
+    family: UnsupportedFamily,
+    span: Span,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct RecoveryRecord {
+    document: DocumentId,
+    span: Span,
 }
 
 #[derive(Debug)]
@@ -45,17 +132,40 @@ struct CanonicalDocument {
     parsed: Arc<ParsedDocument>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct Declaration {
     document: DocumentId,
     owner: Option<DeclarationId>,
     name: Option<SymbolId>,
+    kind: DeclarationKind,
+    span: Span,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct MembershipRecord {
+    member: DeclarationId,
+    kind: MembershipKind,
+    visibility: Visibility,
+    span: Span,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct AuthoredReference {
+    source: DeclarationId,
+    kind: ReferenceKind,
+    target: ParserReferenceId,
+    flags: RelationshipFlags,
+    span: Span,
 }
 
 #[derive(Debug)]
 struct SemanticModelStorage {
     documents: Box<[CanonicalDocument]>,
     declarations: Box<[Declaration]>,
+    memberships: Box<[MembershipRecord]>,
+    references: Box<[AuthoredReference]>,
+    unsupported: Box<[UnsupportedRecord]>,
+    recovery: Box<[RecoveryRecord]>,
     symbols: SymbolTable,
 }
 
@@ -77,6 +187,10 @@ impl SemanticModelStorage {
 struct SemanticModelBuilder {
     documents: Vec<CanonicalDocument>,
     declarations: Vec<Declaration>,
+    memberships: Vec<MembershipRecord>,
+    references: Vec<AuthoredReference>,
+    unsupported: Vec<UnsupportedRecord>,
+    recovery: Vec<RecoveryRecord>,
     symbols: SymbolTableBuilder,
 }
 
@@ -105,6 +219,23 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         name: Option<SymbolId>,
     ) -> Result<DeclarationId, ConstructionError> {
+        self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::Package,
+            name,
+            Span::dummy(),
+        )
+    }
+
+    fn push_typed_declaration(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        kind: DeclarationKind,
+        name: Option<SymbolId>,
+        span: Span,
+    ) -> Result<DeclarationId, ConstructionError> {
         if document.index() >= self.documents.len()
             || owner.is_some_and(|id| id.index() >= self.declarations.len())
             || name.is_some_and(|id| id.index() >= self.symbols.len())
@@ -116,15 +247,911 @@ impl SemanticModelBuilder {
             document,
             owner,
             name,
+            kind,
+            span,
         });
         Ok(id)
+    }
+
+    fn push_membership(
+        &mut self,
+        member: DeclarationId,
+        kind: MembershipKind,
+        visibility: Visibility,
+        span: Span,
+    ) -> Result<(), ConstructionError> {
+        if member.index() >= self.declarations.len() {
+            return Err(ConstructionError::InvalidIdentity);
+        }
+        self.memberships.push(MembershipRecord {
+            member,
+            kind,
+            visibility,
+            span,
+        });
+        Ok(())
+    }
+
+    fn push_reference(
+        &mut self,
+        source: DeclarationId,
+        kind: ReferenceKind,
+        document: DocumentId,
+        local: QualifiedReferenceId,
+        flags: RelationshipFlags,
+        span: Span,
+    ) -> Result<AuthoredReferenceId, ConstructionError> {
+        if source.index() >= self.declarations.len()
+            || document.index() >= self.documents.len()
+            || self.documents[document.index()]
+                .parsed
+                .qualified_reference(local)
+                .is_none()
+        {
+            return Err(ConstructionError::InvalidParserReference);
+        }
+        let id = AuthoredReferenceId::from_index(self.references.len())?;
+        self.references.push(AuthoredReference {
+            source,
+            kind,
+            target: ParserReferenceId { document, local },
+            flags,
+            span,
+        });
+        Ok(id)
+    }
+
+    fn push_unsupported(&mut self, document: DocumentId, family: UnsupportedFamily, span: Span) {
+        self.unsupported.push(UnsupportedRecord {
+            document,
+            family,
+            span,
+        });
+    }
+
+    fn push_recovery(&mut self, document: DocumentId, span: Span) {
+        self.recovery.push(RecoveryRecord { document, span });
     }
 
     fn freeze(self) -> SemanticModelStorage {
         SemanticModelStorage {
             documents: self.documents.into_boxed_slice(),
             declarations: self.declarations.into_boxed_slice(),
+            memberships: self.memberships.into_boxed_slice(),
+            references: self.references.into_boxed_slice(),
+            unsupported: self.unsupported.into_boxed_slice(),
+            recovery: self.recovery.into_boxed_slice(),
             symbols: self.symbols.freeze(),
+        }
+    }
+
+    fn canonicalize_document(&mut self, document: DocumentId) -> Result<(), ConstructionError> {
+        let parsed = Arc::clone(
+            &self
+                .documents
+                .get(document.index())
+                .ok_or(ConstructionError::InvalidIdentity)?
+                .parsed,
+        );
+        for element in &parsed.root.elements {
+            self.lower_root_element(document, element)?;
+        }
+        Ok(())
+    }
+
+    fn lower_root_element(
+        &mut self,
+        document: DocumentId,
+        element: &Node<RootElement>,
+    ) -> Result<(), ConstructionError> {
+        match &element.value {
+            RootElement::Package(node) => self.lower_package(document, None, node),
+            RootElement::LibraryPackage(node) => self.lower_library_package(document, None, node),
+            RootElement::Namespace(node) => self.lower_namespace(document, None, node),
+            RootElement::Import(node) => self.lower_import(document, None, node),
+            RootElement::Member(node) => self.lower_package_element(document, None, node),
+        }
+    }
+
+    fn lower_package(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<Package>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.simple_name(&node.identification)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::Package,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        self.lower_package_body(document, Some(declaration), &node.value.body)
+    }
+
+    fn lower_library_package(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<LibraryPackage>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.simple_name(&node.identification)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::LibraryPackage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        self.lower_package_body(document, Some(declaration), &node.value.body)
+    }
+
+    fn lower_namespace(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<NamespaceDecl>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.simple_name(&node.identification)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::Namespace,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        self.lower_package_body(document, Some(declaration), &node.value.body)
+    }
+
+    fn simple_name(
+        &mut self,
+        identification: &QualifiedIdentification,
+    ) -> Result<Option<SymbolId>, ConstructionError> {
+        identification
+            .simple_name()
+            .map(|name| self.intern_name(name))
+            .transpose()
+    }
+
+    fn lower_package_body(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        body: &PackageBody,
+    ) -> Result<(), ConstructionError> {
+        if let PackageBody::Brace { elements } = body {
+            for element in elements {
+                self.lower_package_element(document, owner, element)?;
+            }
+        }
+        Ok(())
+    }
+
+    fn lower_package_element(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        element: &Node<PackageBodyElement>,
+    ) -> Result<(), ConstructionError> {
+        match &element.value {
+            PackageBodyElement::Error(node) => {
+                self.push_recovery(document, node.span.clone());
+            }
+            PackageBodyElement::Unsupported(node) => {
+                self.push_unsupported(
+                    document,
+                    UnsupportedFamily::ParserUnsupported,
+                    node.span.clone(),
+                );
+            }
+            PackageBodyElement::Doc(node) => {
+                self.push_unsupported(
+                    document,
+                    UnsupportedFamily::PackageMember,
+                    node.span.clone(),
+                );
+            }
+            PackageBodyElement::Comment(node) => {
+                self.push_unsupported(
+                    document,
+                    UnsupportedFamily::PackageMember,
+                    node.span.clone(),
+                );
+            }
+            PackageBodyElement::TextualRep(node) => {
+                self.push_unsupported(
+                    document,
+                    UnsupportedFamily::PackageMember,
+                    node.span.clone(),
+                );
+            }
+            PackageBodyElement::Filter(node) => {
+                self.push_unsupported(
+                    document,
+                    UnsupportedFamily::PackageMember,
+                    node.span.clone(),
+                );
+            }
+            PackageBodyElement::Package(node) => self.lower_package(document, owner, node)?,
+            PackageBodyElement::LibraryPackage(node) => {
+                self.lower_library_package(document, owner, node)?
+            }
+            PackageBodyElement::Import(node) => self.lower_import(document, owner, node)?,
+            PackageBodyElement::PartDef(node) => self.lower_part_def(document, owner, node)?,
+            PackageBodyElement::PartUsage(node) => self.lower_part_usage(document, owner, node)?,
+            PackageBodyElement::AttributeUsage(node) => {
+                self.lower_attribute_usage(document, owner, node)?
+            }
+            PackageBodyElement::PortDef(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::InterfaceDef(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::AliasDef(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::AttributeDef(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::ActionDef(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::ActionUsage(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::RequirementDef(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::RequirementUsage(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::Satisfy(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::UseCaseDef(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::Actor(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::StateDef(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::StateUsage(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::ItemDef(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::IndividualDef(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::ConstraintDef(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::ConstraintUsage(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::CalcDef(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::ViewDef(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::ViewpointDef(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::RenderingDef(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::ViewUsage(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::ViewpointUsage(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::RenderingUsage(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::ConnectionDef(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::MetadataDef(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::MetadataUsage(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::EnumDef(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::OccurrenceDef(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::OccurrenceUsage(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::Dependency(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::AllocationDef(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::AllocationUsage(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::FlowDef(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::FlowUsage(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::ConcernUsage(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::CaseDef(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::CaseUsage(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::AnalysisCaseDef(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::AnalysisCaseUsage(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::VerificationCaseDef(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::VerificationCaseUsage(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::UseCaseUsage(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::FeatureDecl(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::ClassifierDecl(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::KermlSemanticDecl(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::KermlFeatureDecl(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::ExtendedLibraryDecl(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::ItemUsage(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::PortUsage(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::ConnectionUsage(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::InterfaceUsage(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::Ref(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::EnumerationUsage(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::MetadataKeywordUsage(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::Connect(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::DefaultReferenceUsage(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::AssertConstraint(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+        }
+        Ok(())
+    }
+
+    fn lower_import(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<Import>,
+    ) -> Result<(), ConstructionError> {
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::Import,
+            None,
+            node.span.clone(),
+        )?;
+        let membership = &node.value.membership;
+        self.push_membership(
+            declaration,
+            MembershipKind::Import,
+            membership
+                .visibility
+                .map(Self::visibility)
+                .unwrap_or(Visibility::Default),
+            membership.span.clone(),
+        )?;
+        let (kind, flags) = match &node.value.target.shape {
+            ImportShape::Membership { recursive_suffix } => (
+                ReferenceKind::MembershipImport,
+                RelationshipFlags {
+                    recursive: recursive_suffix.is_some(),
+                    ..RelationshipFlags::default()
+                },
+            ),
+            ImportShape::Namespace {
+                recursive_suffix, ..
+            } => (
+                ReferenceKind::NamespaceImport,
+                RelationshipFlags {
+                    recursive: recursive_suffix.is_some(),
+                    wildcard: true,
+                    ..RelationshipFlags::default()
+                },
+            ),
+            ImportShape::Filter {
+                recursive_suffix, ..
+            } => (
+                ReferenceKind::FilterImport,
+                RelationshipFlags {
+                    recursive: recursive_suffix.is_some(),
+                    ..RelationshipFlags::default()
+                },
+            ),
+        };
+        self.push_reference(
+            declaration,
+            kind,
+            document,
+            node.value.target.reference,
+            flags,
+            node.value.target.span.clone(),
+        )?;
+        Ok(())
+    }
+
+    fn lower_part_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<PartDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::PartDefinition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            node.value
+                .membership
+                .visibility
+                .map(Self::visibility)
+                .unwrap_or(Visibility::Default),
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        if let PartDefBody::Brace { elements } = &node.value.body {
+            for element in elements {
+                match &element.value {
+                    PartDefBodyElement::Error(error) => {
+                        self.push_recovery(document, error.span.clone());
+                    }
+                    PartDefBodyElement::AttributeDef(attribute) => self.push_unsupported(
+                        document,
+                        UnsupportedFamily::PartDefinitionMember,
+                        attribute.span.clone(),
+                    ),
+                    PartDefBodyElement::AttributeUsage(attribute) => {
+                        self.lower_attribute_usage(document, Some(declaration), attribute)?;
+                    }
+                    PartDefBodyElement::PartUsage(part) => {
+                        self.lower_part_usage(document, Some(declaration), part)?;
+                    }
+                    PartDefBodyElement::PartDef(part) => {
+                        self.lower_part_def(document, Some(declaration), part)?;
+                    }
+                    PartDefBodyElement::Import(import) => {
+                        self.lower_import(document, Some(declaration), import)?;
+                    }
+                    PartDefBodyElement::Doc(_)
+                    | PartDefBodyElement::Comment(_)
+                    | PartDefBodyElement::Annotation(_)
+                    | PartDefBodyElement::MetadataAnnotation(_)
+                    | PartDefBodyElement::MetadataKeywordUsage(_)
+                    | PartDefBodyElement::Dependency(_)
+                    | PartDefBodyElement::Other(_)
+                    | PartDefBodyElement::DefaultReferenceUsage(_)
+                    | PartDefBodyElement::RequirementUsage(_)
+                    | PartDefBodyElement::ItemDef(_)
+                    | PartDefBodyElement::ItemUsage(_)
+                    | PartDefBodyElement::Ref(_)
+                    | PartDefBodyElement::PortUsage(_)
+                    | PartDefBodyElement::OccurrenceUsage(_)
+                    | PartDefBodyElement::InterfaceDef(_)
+                    | PartDefBodyElement::InterfaceUsage(_)
+                    | PartDefBodyElement::Connect(_)
+                    | PartDefBodyElement::FlowUsage(_)
+                    | PartDefBodyElement::Connection(_)
+                    | PartDefBodyElement::Perform(_)
+                    | PartDefBodyElement::Allocate(_)
+                    | PartDefBodyElement::UnsupportedMember(_)
+                    | PartDefBodyElement::ExhibitState(_)
+                    | PartDefBodyElement::CalcUsage(_)
+                    | PartDefBodyElement::ConstraintDef(_)
+                    | PartDefBodyElement::ConstraintUsage(_)
+                    | PartDefBodyElement::ActionUsage(_)
+                    | PartDefBodyElement::ActionDef(_)
+                    | PartDefBodyElement::StateUsage(_)
+                    | PartDefBodyElement::EnumerationUsage(_)
+                    | PartDefBodyElement::AssertConstraint(_)
+                    | PartDefBodyElement::Satisfy(_)
+                    | PartDefBodyElement::VariantUsage(_)
+                    | PartDefBodyElement::StateDef(_)
+                    | PartDefBodyElement::MetadataDef(_)
+                    | PartDefBodyElement::MetadataUsage(_)
+                    | PartDefBodyElement::FlowDef(_)
+                    | PartDefBodyElement::RequirementDef(_)
+                    | PartDefBodyElement::OccurrenceDef(_)
+                    | PartDefBodyElement::ConnectionDef(_)
+                    | PartDefBodyElement::PortDef(_)
+                    | PartDefBodyElement::CalcDef(_)
+                    | PartDefBodyElement::EnumDef(_)
+                    | PartDefBodyElement::AllocationDef(_)
+                    | PartDefBodyElement::AllocationUsage(_)
+                    | PartDefBodyElement::ViewDef(_)
+                    | PartDefBodyElement::ViewUsage(_)
+                    | PartDefBodyElement::ViewpointDef(_)
+                    | PartDefBodyElement::ViewpointUsage(_)
+                    | PartDefBodyElement::RenderingDef(_)
+                    | PartDefBodyElement::RenderingUsage(_)
+                    | PartDefBodyElement::CaseDef(_)
+                    | PartDefBodyElement::CaseUsage(_)
+                    | PartDefBodyElement::UseCaseDef(_)
+                    | PartDefBodyElement::UseCaseUsage(_)
+                    | PartDefBodyElement::AnalysisCaseDef(_)
+                    | PartDefBodyElement::AnalysisCaseUsage(_)
+                    | PartDefBodyElement::VerificationCaseDef(_)
+                    | PartDefBodyElement::VerificationCaseUsage(_)
+                    | PartDefBodyElement::FirstStmt(_)
+                    | PartDefBodyElement::Bind(_)
+                    | PartDefBodyElement::AliasDef(_) => self.push_unsupported(
+                        document,
+                        UnsupportedFamily::PartDefinitionMember,
+                        element.span.clone(),
+                    ),
+                }
+            }
+        }
+        Ok(())
+    }
+
+    fn lower_part_usage(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<PartUsage>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::PartUsage,
+            Some(name),
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            node.value
+                .membership
+                .visibility
+                .map(Self::visibility)
+                .unwrap_or(Visibility::Default),
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.typing {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        if let PartUsageBody::Brace { elements } = &node.value.body {
+            for element in elements {
+                match &element.value {
+                    PartUsageBodyElement::Error(error) => {
+                        self.push_recovery(document, error.span.clone());
+                    }
+                    PartUsageBodyElement::AttributeUsage(attribute) => {
+                        self.lower_attribute_usage(document, Some(declaration), attribute)?;
+                    }
+                    PartUsageBodyElement::PartUsage(part) => {
+                        self.lower_part_usage(document, Some(declaration), part)?;
+                    }
+                    PartUsageBodyElement::Import(import) => {
+                        self.lower_import(document, Some(declaration), import)?;
+                    }
+                    PartUsageBodyElement::Doc(_)
+                    | PartUsageBodyElement::Annotation(_)
+                    | PartUsageBodyElement::DefaultReferenceUsage(_)
+                    | PartUsageBodyElement::EnumerationUsage(_)
+                    | PartUsageBodyElement::OccurrenceUsage(_)
+                    | PartUsageBodyElement::PortUsage(_)
+                    | PartUsageBodyElement::Bind(_)
+                    | PartUsageBodyElement::Ref(_)
+                    | PartUsageBodyElement::InterfaceUsage(_)
+                    | PartUsageBodyElement::Connect(_)
+                    | PartUsageBodyElement::FlowUsage(_)
+                    | PartUsageBodyElement::Perform(_)
+                    | PartUsageBodyElement::SuccessionUsage(_)
+                    | PartUsageBodyElement::Allocate(_)
+                    | PartUsageBodyElement::Satisfy(_)
+                    | PartUsageBodyElement::StateUsage(_)
+                    | PartUsageBodyElement::ActionUsage(_)
+                    | PartUsageBodyElement::MetadataAnnotation(_)
+                    | PartUsageBodyElement::MetadataKeywordUsage(_)
+                    | PartUsageBodyElement::VariantUsage(_)
+                    | PartUsageBodyElement::StateDef(_)
+                    | PartUsageBodyElement::MetadataDef(_)
+                    | PartUsageBodyElement::FlowDef(_)
+                    | PartUsageBodyElement::RequirementDef(_)
+                    | PartUsageBodyElement::OccurrenceDef(_)
+                    | PartUsageBodyElement::PortDef(_)
+                    | PartUsageBodyElement::CalcDef(_)
+                    | PartUsageBodyElement::ConnectionDef(_)
+                    | PartUsageBodyElement::EnumDef(_)
+                    | PartUsageBodyElement::Connection(_)
+                    | PartUsageBodyElement::AssertConstraint(_)
+                    | PartUsageBodyElement::ConstraintDef(_)
+                    | PartUsageBodyElement::ConstraintUsage(_)
+                    | PartUsageBodyElement::CalcUsage(_)
+                    | PartUsageBodyElement::RequirementUsage(_)
+                    | PartUsageBodyElement::ItemDef(_)
+                    | PartUsageBodyElement::ItemUsage(_)
+                    | PartUsageBodyElement::MetadataUsage(_)
+                    | PartUsageBodyElement::AnalysisCaseDef(_)
+                    | PartUsageBodyElement::AnalysisCaseUsage(_)
+                    | PartUsageBodyElement::AliasDef(_)
+                    | PartUsageBodyElement::IncludeUseCase(_)
+                    | PartUsageBodyElement::UseCaseUsage(_)
+                    | PartUsageBodyElement::VerificationCaseUsage(_) => self.push_unsupported(
+                        document,
+                        UnsupportedFamily::PartUsageMember,
+                        element.span.clone(),
+                    ),
+                }
+            }
+        }
+        Ok(())
+    }
+
+    fn lower_attribute_usage(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<AttributeUsage>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::AttributeUsage,
+            Some(name),
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            node.value
+                .membership
+                .visibility
+                .map(Self::visibility)
+                .unwrap_or(Visibility::Default),
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.typing {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        Ok(())
+    }
+
+    fn lower_typing_relationship(
+        &mut self,
+        document: DocumentId,
+        source: DeclarationId,
+        relationship: &Node<sysml_v2_parser_next::ast::TypingRelationship>,
+    ) -> Result<(), ConstructionError> {
+        let kind = match relationship.value.kind {
+            sysml_v2_parser_next::ast::TypingKind::Typing => ReferenceKind::FeatureTyping,
+            sysml_v2_parser_next::ast::TypingKind::Subclassification => {
+                ReferenceKind::Subclassification
+            }
+        };
+        for target in relationship.value.target.iter().copied() {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(target)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(
+                source,
+                kind,
+                document,
+                target,
+                RelationshipFlags {
+                    conjugated: relationship.value.is_conjugated,
+                    implied: relationship.value.is_implied,
+                    ..RelationshipFlags::default()
+                },
+                span,
+            )?;
+        }
+        Ok(())
+    }
+
+    fn visibility(value: ParserVisibility) -> Visibility {
+        match value {
+            ParserVisibility::Public => Visibility::Public,
+            ParserVisibility::Private => Visibility::Private,
+            ParserVisibility::Protected => Visibility::Protected,
         }
     }
 }
