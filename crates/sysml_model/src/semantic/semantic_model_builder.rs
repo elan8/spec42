@@ -8,10 +8,12 @@ use std::{collections::hash_map::RandomState, hash::BuildHasher, sync::Arc};
 use hashbrown::HashTable;
 use sysml_v2_parser_next::{
     ast::{
-        AttributeUsage, Import, ImportShape, LibraryPackage, NamespaceDecl, Node, Package,
-        PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage,
-        PartUsageBody, PartUsageBodyElement, QualifiedIdentification, QualifiedReferenceId,
-        RootElement, Span, Visibility as ParserVisibility,
+        AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, Import, ImportShape,
+        LibraryPackage, Membership, MembershipKind as ParserMembershipKind, NamespaceDecl, Node,
+        Package, PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement,
+        PartUsage, PartUsageBody, PartUsageBodyElement, QualifiedIdentification,
+        QualifiedReferenceId, RootElement, Span, SubsettingKind, SubsettingRelationship,
+        Visibility as ParserVisibility,
     },
     ParsedDocument,
 };
@@ -48,6 +50,7 @@ enum ConstructionError {
     InvalidIdentity,
     DuplicateDocumentIdentity,
     InvalidParserReference,
+    InvalidMembership,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -478,27 +481,9 @@ impl SemanticModelBuilder {
                     node.span.clone(),
                 );
             }
-            PackageBodyElement::Doc(node) => {
-                self.push_unsupported(
-                    document,
-                    UnsupportedFamily::PackageMember,
-                    node.span.clone(),
-                );
-            }
-            PackageBodyElement::Comment(node) => {
-                self.push_unsupported(
-                    document,
-                    UnsupportedFamily::PackageMember,
-                    node.span.clone(),
-                );
-            }
-            PackageBodyElement::TextualRep(node) => {
-                self.push_unsupported(
-                    document,
-                    UnsupportedFamily::PackageMember,
-                    node.span.clone(),
-                );
-            }
+            PackageBodyElement::Doc(_)
+            | PackageBodyElement::Comment(_)
+            | PackageBodyElement::TextualRep(_) => {}
             PackageBodyElement::Filter(node) => {
                 self.push_unsupported(
                     document,
@@ -531,11 +516,9 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::AttributeDef(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::AttributeDef(node) => {
+                self.lower_attribute_def(document, owner, node)?
+            }
             PackageBodyElement::ActionDef(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -827,10 +810,7 @@ impl SemanticModelBuilder {
         self.push_membership(
             declaration,
             MembershipKind::Import,
-            membership
-                .visibility
-                .map(Self::visibility)
-                .unwrap_or(Visibility::Default),
+            self.member_visibility(membership, ParserMembershipKind::Import)?,
             membership.span.clone(),
         )?;
         let (kind, flags) = match &node.value.target.shape {
@@ -895,11 +875,10 @@ impl SemanticModelBuilder {
         self.push_membership(
             declaration,
             MembershipKind::Owning,
-            node.value
-                .membership
-                .visibility
-                .map(Self::visibility)
-                .unwrap_or(Visibility::Default),
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
             node.value.membership.span.clone(),
         )?;
         if let Some(relationship) = &node.value.specializes {
@@ -911,11 +890,9 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span.clone());
                     }
-                    PartDefBodyElement::AttributeDef(attribute) => self.push_unsupported(
-                        document,
-                        UnsupportedFamily::PartDefinitionMember,
-                        attribute.span.clone(),
-                    ),
+                    PartDefBodyElement::AttributeDef(attribute) => {
+                        self.lower_attribute_def(document, Some(declaration), attribute)?;
+                    }
                     PartDefBodyElement::AttributeUsage(attribute) => {
                         self.lower_attribute_usage(document, Some(declaration), attribute)?;
                     }
@@ -928,9 +905,8 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::Import(import) => {
                         self.lower_import(document, Some(declaration), import)?;
                     }
-                    PartDefBodyElement::Doc(_)
-                    | PartDefBodyElement::Comment(_)
-                    | PartDefBodyElement::Annotation(_)
+                    PartDefBodyElement::Doc(_) | PartDefBodyElement::Comment(_) => {}
+                    PartDefBodyElement::Annotation(_)
                     | PartDefBodyElement::MetadataAnnotation(_)
                     | PartDefBodyElement::MetadataKeywordUsage(_)
                     | PartDefBodyElement::Dependency(_)
@@ -949,7 +925,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::Connection(_)
                     | PartDefBodyElement::Perform(_)
                     | PartDefBodyElement::Allocate(_)
-                    | PartDefBodyElement::UnsupportedMember(_)
                     | PartDefBodyElement::ExhibitState(_)
                     | PartDefBodyElement::CalcUsage(_)
                     | PartDefBodyElement::ConstraintDef(_)
@@ -994,6 +969,11 @@ impl SemanticModelBuilder {
                         UnsupportedFamily::PartDefinitionMember,
                         element.span.clone(),
                     ),
+                    PartDefBodyElement::UnsupportedMember(node) => self.push_unsupported(
+                        document,
+                        UnsupportedFamily::ParserUnsupported,
+                        node.span.clone(),
+                    ),
                 }
             }
         }
@@ -1017,15 +997,20 @@ impl SemanticModelBuilder {
         self.push_membership(
             declaration,
             MembershipKind::Feature,
-            node.value
-                .membership
-                .visibility
-                .map(Self::visibility)
-                .unwrap_or(Visibility::Default),
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
             node.value.membership.span.clone(),
         )?;
         if let Some(relationship) = &node.value.typing {
             self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        if let Some((relationship, _)) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
         if let PartUsageBody::Brace { elements } = &node.value.body {
             for element in elements {
@@ -1042,8 +1027,8 @@ impl SemanticModelBuilder {
                     PartUsageBodyElement::Import(import) => {
                         self.lower_import(document, Some(declaration), import)?;
                     }
-                    PartUsageBodyElement::Doc(_)
-                    | PartUsageBodyElement::Annotation(_)
+                    PartUsageBodyElement::Doc(_) => {}
+                    PartUsageBodyElement::Annotation(_)
                     | PartUsageBodyElement::DefaultReferenceUsage(_)
                     | PartUsageBodyElement::EnumerationUsage(_)
                     | PartUsageBodyElement::OccurrenceUsage(_)
@@ -1113,15 +1098,134 @@ impl SemanticModelBuilder {
         self.push_membership(
             declaration,
             MembershipKind::Feature,
-            node.value
-                .membership
-                .visibility
-                .map(Self::visibility)
-                .unwrap_or(Visibility::Default),
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
             node.value.membership.span.clone(),
         )?;
         if let Some(relationship) = &node.value.typing {
             self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.references {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.crosses {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.intersects {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        self.lower_attribute_body(document, declaration, &node.value.body)?;
+        Ok(())
+    }
+
+    fn lower_attribute_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<AttributeDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::AttributeDefinition,
+            Some(name),
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.typing {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        self.lower_attribute_body(document, declaration, &node.value.body)
+    }
+
+    fn lower_attribute_body(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        body: &AttributeBody,
+    ) -> Result<(), ConstructionError> {
+        let AttributeBody::Brace { elements } = body else {
+            return Ok(());
+        };
+        for element in elements {
+            match &element.value {
+                AttributeBodyElement::Error(error) => {
+                    self.push_recovery(document, error.span.clone());
+                }
+                AttributeBodyElement::Doc(_) => {}
+                AttributeBodyElement::AttributeDef(attribute) => {
+                    self.lower_attribute_def(document, Some(owner), attribute)?;
+                }
+                AttributeBodyElement::AttributeUsage(attribute) => {
+                    self.lower_attribute_usage(document, Some(owner), attribute)?;
+                }
+                AttributeBodyElement::PartUsage(part) => {
+                    self.lower_part_usage(document, Some(owner), part)?;
+                }
+                AttributeBodyElement::Connect(_)
+                | AttributeBodyElement::MetadataKeywordUsage(_)
+                | AttributeBodyElement::AssertConstraint(_)
+                | AttributeBodyElement::RefDecl(_)
+                | AttributeBodyElement::OccurrenceUsage(_)
+                | AttributeBodyElement::Other(_) => self.push_unsupported(
+                    document,
+                    UnsupportedFamily::AttributeMember,
+                    element.span.clone(),
+                ),
+            }
+        }
+        Ok(())
+    }
+
+    fn lower_subsetting_relationship(
+        &mut self,
+        document: DocumentId,
+        source: DeclarationId,
+        relationship: &Node<SubsettingRelationship>,
+    ) -> Result<(), ConstructionError> {
+        let kind = match relationship.value.kind {
+            SubsettingKind::Subsets => ReferenceKind::Subsetting,
+            SubsettingKind::References => ReferenceKind::References,
+            SubsettingKind::Redefines => ReferenceKind::Redefinition,
+            SubsettingKind::Crosses => ReferenceKind::Crosses,
+            SubsettingKind::Intersects => ReferenceKind::Intersects,
+        };
+        for target in relationship.value.target.iter().copied() {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(target)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(
+                source,
+                kind,
+                document,
+                target,
+                RelationshipFlags {
+                    implied: relationship.value.is_implied,
+                    ..RelationshipFlags::default()
+                },
+                span,
+            )?;
         }
         Ok(())
     }
@@ -1160,6 +1264,28 @@ impl SemanticModelBuilder {
             )?;
         }
         Ok(())
+    }
+
+    fn member_visibility(
+        &self,
+        membership: &Membership,
+        expected: ParserMembershipKind,
+    ) -> Result<Visibility, ConstructionError> {
+        let actual = match membership.kind {
+            ParserMembershipKind::OwningMembership => ParserMembershipKind::OwningMembership,
+            ParserMembershipKind::FeatureMembership => ParserMembershipKind::FeatureMembership,
+            ParserMembershipKind::Import => ParserMembershipKind::Import,
+            ParserMembershipKind::Alias => ParserMembershipKind::Alias,
+            ParserMembershipKind::VariantMembership => ParserMembershipKind::VariantMembership,
+            ParserMembershipKind::ActorMembership => ParserMembershipKind::ActorMembership,
+        };
+        if actual != expected {
+            return Err(ConstructionError::InvalidMembership);
+        }
+        Ok(membership
+            .visibility
+            .map(Self::visibility)
+            .unwrap_or(Visibility::Default))
     }
 
     fn visibility(value: ParserVisibility) -> Visibility {
