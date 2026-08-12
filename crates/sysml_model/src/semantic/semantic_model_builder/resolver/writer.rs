@@ -54,13 +54,14 @@ pub(super) fn write_diagnostics(
         )
     });
     writeln!(output, "(fixture-diagnostics")?;
-    for document in &model.storage.documents {
+    for document_index in canonical_document_indices(model) {
+        let document = &model.storage.documents[document_index];
         writeln!(output, "  (document {:?}", document.identity)?;
         writeln!(output, "    (diagnostics")?;
         for record in records.iter().filter(|record| {
             document_identity_for_source(model, record.source) == document.identity.as_ref()
         }) {
-            let Some((severity, code)) = diagnostic_label(&record.outcome) else {
+            let Some((severity, code)) = diagnostic_label(record.kind, &record.outcome) else {
                 continue;
             };
             writeln!(
@@ -71,19 +72,76 @@ pub(super) fn write_diagnostics(
                 record.range.end.line,
                 record.range.end.character,
             )?;
+            if let DiagnosticOutcome::Ambiguous { candidates } = &record.outcome {
+                writeln!(output, "        (related-information")?;
+                for candidate in candidates {
+                    let declaration = model
+                        .storage
+                        .declaration(candidate.target)
+                        .ok_or(fmt::Error)?;
+                    let range =
+                        document_range(&model.storage, declaration.document, &declaration.span)
+                            .map_err(|_| fmt::Error)?;
+                    writeln!(output, "          (related")?;
+                    writeln!(
+                        output,
+                        "            (uri {:?})",
+                        document_identity(model, declaration.document)
+                    )?;
+                    writeln!(
+                        output,
+                        "            (range (start {} {}) (end {} {}))",
+                        range.start.line,
+                        range.start.character,
+                        range.end.line,
+                        range.end.character,
+                    )?;
+                    writeln!(output, "          )")?;
+                }
+                writeln!(output, "        )")?;
+            }
         }
         writeln!(output, "    )\n  )")?;
     }
     write!(output, ")")
 }
 
-fn diagnostic_label(outcome: &DiagnosticOutcome) -> Option<(&'static str, &'static str)> {
+fn diagnostic_label(
+    kind: ReferenceKind,
+    outcome: &DiagnosticOutcome,
+) -> Option<(&'static str, &'static str)> {
     match outcome {
         DiagnosticOutcome::Resolved => None,
-        DiagnosticOutcome::Unresolved => Some(("warning", "unresolved_reference")),
-        DiagnosticOutcome::Unsupported => Some(("error", "unsupported_reference")),
+        DiagnosticOutcome::Unresolved => Some((
+            "warning",
+            match kind {
+                ReferenceKind::FeatureTyping => "unresolved_type_reference",
+                ReferenceKind::Subclassification => "unresolved_specializes_reference",
+                ReferenceKind::NamespaceImport | ReferenceKind::MembershipImport => {
+                    "unresolved_import_target"
+                }
+                _ => "unresolved_reference",
+            },
+        )),
+        DiagnosticOutcome::Unsupported => Some((
+            "warning",
+            match kind {
+                ReferenceKind::NamespaceImport
+                | ReferenceKind::MembershipImport
+                | ReferenceKind::FilterImport => "unsupported_filtered_import",
+                _ => "unsupported_reference",
+            },
+        )),
         DiagnosticOutcome::NonConverged => Some(("error", "non_converged_resolution")),
-        DiagnosticOutcome::Ambiguous { .. } => Some(("warning", "ambiguous_reference")),
+        DiagnosticOutcome::Ambiguous { .. } => Some((
+            "error",
+            match kind {
+                ReferenceKind::NamespaceImport | ReferenceKind::MembershipImport => {
+                    "ambiguous_import_target"
+                }
+                _ => "ambiguous_reference",
+            },
+        )),
     }
 }
 
@@ -110,7 +168,7 @@ fn write_metadata(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) ->
 
 fn write_declarations(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
     writeln!(output, "  (declarations")?;
-    for index in 0..model.storage.declarations.len() {
+    for index in canonical_declaration_indices(model) {
         let declaration = &model.storage.declarations[index];
         write!(output, "    (declaration (id ")?;
         write_node_identity(model, DeclarationId(index as u32), output)?;
@@ -136,7 +194,7 @@ fn write_declarations(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write
 
 fn write_references(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
     writeln!(output, "  (references")?;
-    for index in 0..model.storage.references.len() {
+    for index in canonical_reference_indices(model) {
         let reference = &model.storage.references[index];
         let id = AuthoredReferenceId(index as u32);
         writeln!(output, "    (reference (id (source ",)?;
@@ -159,7 +217,7 @@ fn write_references(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) 
 
 fn write_relationships(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
     writeln!(output, "  (relationships")?;
-    for index in 0..model.storage.references.len() {
+    for index in canonical_reference_indices(model) {
         let reference = &model.storage.references[index];
         let id = AuthoredReferenceId(index as u32);
         let Some(ResolutionStatus::Resolved(target)) = model.resolution.outcome(id) else {
@@ -189,7 +247,7 @@ fn write_relationships(model: &ResolvedSemanticModel, output: &mut dyn fmt::Writ
 
 fn write_navigation(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
     writeln!(output, "  (navigation")?;
-    for index in 0..model.storage.references.len() {
+    for index in canonical_reference_indices(model) {
         let reference = &model.storage.references[index];
         let id = AuthoredReferenceId(index as u32);
         let source = model
@@ -391,6 +449,76 @@ fn write_escaped(output: &mut dyn fmt::Write, value: &str) -> fmt::Result {
         }
     }
     Ok(())
+}
+
+fn canonical_document_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
+    let mut indices = (0..model.storage.documents.len()).collect::<Vec<_>>();
+    indices.sort_by(|left, right| {
+        model.storage.documents[*left]
+            .identity
+            .cmp(&model.storage.documents[*right].identity)
+            .then_with(|| left.cmp(right))
+    });
+    indices
+}
+
+fn canonical_declaration_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
+    let mut indices = (0..model.storage.declarations.len()).collect::<Vec<_>>();
+    indices.sort_by(|left, right| {
+        let left_declaration = &model.storage.declarations[*left];
+        let right_declaration = &model.storage.declarations[*right];
+        document_identity(model, left_declaration.document)
+            .cmp(document_identity(model, right_declaration.document))
+            .then_with(|| {
+                declaration_path_key(model, DeclarationId(*left as u32))
+                    .cmp(&declaration_path_key(model, DeclarationId(*right as u32)))
+            })
+            .then_with(|| left.cmp(right))
+    });
+    indices
+}
+
+fn canonical_reference_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
+    let mut indices = (0..model.storage.references.len()).collect::<Vec<_>>();
+    indices.sort_by(|left, right| {
+        let left_reference = &model.storage.references[*left];
+        let right_reference = &model.storage.references[*right];
+        let left_source = model.storage.declaration(left_reference.source);
+        let right_source = model.storage.declaration(right_reference.source);
+        let left_document = left_source
+            .map(|source| document_identity(model, source.document))
+            .unwrap_or("<invalid-document>");
+        let right_document = right_source
+            .map(|source| document_identity(model, source.document))
+            .unwrap_or("<invalid-document>");
+        left_document
+            .cmp(right_document)
+            .then_with(|| {
+                declaration_path_key(model, left_reference.source)
+                    .cmp(&declaration_path_key(model, right_reference.source))
+            })
+            .then_with(|| left_reference.kind.cmp(&right_reference.kind))
+            .then_with(|| left_reference.ordinal.cmp(&right_reference.ordinal))
+            .then_with(|| left.cmp(right))
+    });
+    indices
+}
+
+fn declaration_path_key(model: &ResolvedSemanticModel, id: DeclarationId) -> String {
+    let mut path = String::new();
+    if write_declaration_name_body(model, id, &mut path).is_err() {
+        path.push('\u{fffd}');
+    }
+    if path.is_empty() {
+        if let Some(declaration) = model.storage.declaration(id) {
+            path = format!(
+                "<anonymous:{}:{}>",
+                declaration_kind(declaration.kind),
+                id.0
+            );
+        }
+    }
+    path
 }
 
 fn write_range(output: &mut dyn fmt::Write, range: TextRange) -> fmt::Result {
