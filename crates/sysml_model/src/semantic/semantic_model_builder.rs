@@ -1434,6 +1434,95 @@ impl SymbolTableBuilder {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct OwnedSourceRecord {
+    identity: Box<str>,
+    content: String,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum BuildSchedule {
+    Sequential,
+    Parallel,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum CoordinatorError {
+    DuplicateSourceIdentity,
+    ParseFailed,
+    ParseRecovery,
+    UnsupportedSyntax,
+    ResolutionFailed,
+    NonConverged,
+}
+
+struct SemanticModelBuildCoordinator;
+
+impl SemanticModelBuildCoordinator {
+    fn build(
+        mut sources: Vec<OwnedSourceRecord>,
+        schedule: BuildSchedule,
+    ) -> Result<resolver::ResolvedSemanticModel, CoordinatorError> {
+        sources.sort_unstable_by(|left, right| left.identity.cmp(&right.identity));
+        if sources
+            .windows(2)
+            .any(|pair| pair[0].identity == pair[1].identity)
+        {
+            return Err(CoordinatorError::DuplicateSourceIdentity);
+        }
+
+        let parsed = match schedule {
+            BuildSchedule::Sequential => sources
+                .into_iter()
+                .map(Self::parse_source)
+                .collect::<Result<Vec<_>, _>>()?,
+            BuildSchedule::Parallel => {
+                use rayon::prelude::*;
+                sources
+                    .into_par_iter()
+                    .map(Self::parse_source)
+                    .collect::<Result<Vec<_>, _>>()?
+            }
+        };
+
+        let mut builder = SemanticModelBuilder::default();
+        let mut documents = Vec::with_capacity(parsed.len());
+        for (identity, parsed) in parsed {
+            let document = builder
+                .admit_document(identity, Arc::new(parsed))
+                .map_err(|_| CoordinatorError::DuplicateSourceIdentity)?;
+            documents.push(document);
+        }
+        for document in documents {
+            builder
+                .canonicalize_document(document)
+                .map_err(|_| CoordinatorError::ResolutionFailed)?;
+        }
+        if !builder.recovery.is_empty() {
+            return Err(CoordinatorError::ParseRecovery);
+        }
+        if !builder.unsupported.is_empty() {
+            return Err(CoordinatorError::UnsupportedSyntax);
+        }
+        let model = builder
+            .freeze()
+            .resolve()
+            .map_err(|_| CoordinatorError::ResolutionFailed)?;
+        if !model.is_converged() {
+            return Err(CoordinatorError::NonConverged);
+        }
+        Ok(model)
+    }
+
+    fn parse_source(
+        source: OwnedSourceRecord,
+    ) -> Result<(Box<str>, ParsedDocument), CoordinatorError> {
+        let parsed = sysml_v2_parser_next::parse_owned(source.content)
+            .map_err(|_| CoordinatorError::ParseFailed)?;
+        Ok((source.identity, parsed))
+    }
+}
+
 mod resolver;
 
 #[cfg(test)]

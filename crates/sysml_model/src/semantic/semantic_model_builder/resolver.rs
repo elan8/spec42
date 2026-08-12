@@ -12,7 +12,7 @@ use crate::semantic::text_span::{TextPosition, TextRange};
 mod writer;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum ResolutionError {
+pub(super) enum ResolutionError {
     Capacity,
     InvalidStorage,
 }
@@ -188,7 +188,7 @@ impl ResolutionResults {
 }
 
 #[derive(Debug)]
-struct ResolvedSemanticModel {
+pub(super) struct ResolvedSemanticModel {
     storage: SemanticModelStorage,
     direct_names: NameIndex,
     effective_imports: NameIndex,
@@ -196,6 +196,10 @@ struct ResolvedSemanticModel {
 }
 
 impl ResolvedSemanticModel {
+    pub(super) fn is_converged(&self) -> bool {
+        matches!(self.resolution.solver_status, SolverStatus::Converged)
+    }
+
     fn diagnostic_records(&self) -> Result<Box<[DiagnosticRecord]>, ResolutionError> {
         let mut records = Vec::with_capacity(self.storage.references.len());
         for (index, reference) in self.storage.references.iter().enumerate() {
@@ -278,7 +282,7 @@ fn document_range(
 }
 
 impl SemanticModelStorage {
-    fn resolve(self) -> Result<ResolvedSemanticModel, ResolutionError> {
+    pub(super) fn resolve(self) -> Result<ResolvedSemanticModel, ResolutionError> {
         let (direct_names, effective_imports, resolution) =
             resolve_dense(&self.declarations, &self.paths, &self.references)?;
         Ok(ResolvedSemanticModel {
