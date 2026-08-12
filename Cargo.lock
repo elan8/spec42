@@ -892,6 +892,8 @@ version = "0.17.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ed5909b6e89a2db4456e54cd5f673791d7eca6732202bbf2a9cc504fe2f9b84a"
 dependencies = [
+ "allocator-api2",
+ "equivalent",
  "foldhash 0.2.0",
  "serde",
  "serde_core",
@@ -1084,7 +1086,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
- "sysml-v2-parser",
+ "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "tempfile",
  "thiserror 2.0.19",
  "walkdir",
@@ -1097,7 +1099,7 @@ version = "0.50.0"
 dependencies = [
  "serde",
  "serde_json",
- "sysml-v2-parser",
+ "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sysml_model",
  "tempfile",
  "url",
@@ -1189,7 +1191,7 @@ dependencies = [
  "serde",
  "serde_json",
  "server",
- "sysml-v2-parser",
+ "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sysml_diagnostics",
  "sysml_model",
  "sysml_tokens",
@@ -1740,7 +1742,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
- "sysml-v2-parser",
+ "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sysml_model",
  "tempfile",
  "tokio",
@@ -1938,11 +1940,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "sysml-v2-parser"
+version = "0.54.0"
+source = "git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=560d12828019c6b0720199ec92c54ea7b21d0526#560d12828019c6b0720199ec92c54ea7b21d0526"
+dependencies = [
+ "log",
+ "nom",
+ "nom_locate",
+ "serde",
+ "stacker",
+]
+
+[[package]]
 name = "sysml_diagnostics"
 version = "0.50.0"
 dependencies = [
  "serde_json",
- "sysml-v2-parser",
+ "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sysml_model",
  "url",
 ]
@@ -1951,13 +1965,15 @@ dependencies = [
 name = "sysml_model"
 version = "0.50.0"
 dependencies = [
+ "hashbrown 0.17.1",
  "ignore",
  "petgraph",
  "rayon",
  "serde",
  "serde_json",
  "sha2",
- "sysml-v2-parser",
+ "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sysml-v2-parser 0.54.0 (git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=560d12828019c6b0720199ec92c54ea7b21d0526)",
  "sysml_diagnostics",
  "tempfile",
  "ts-rs",
@@ -1981,7 +1997,7 @@ name = "sysml_tokens"
 version = "0.50.0"
 dependencies = [
  "serde",
- "sysml-v2-parser",
+ "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -2772,7 +2788,7 @@ dependencies = [
  "serde_json",
  "sha2",
  "syn 2.0.119",
- "sysml-v2-parser",
+ "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sysml_diagnostics",
  "sysml_model",
  "tempfile",
