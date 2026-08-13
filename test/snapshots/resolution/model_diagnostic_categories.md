@@ -38,12 +38,6 @@ package Demo {
         (source "semantic")
         (range (start 5 4) (end 5 33))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 9 4) (end 9 20))
-      )
     )
   )
 )
@@ -54,6 +48,7 @@ package Demo {
   (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:da0fb148812ffa25232dd185bbc99d7b2a453339523d0bbb99c5adb721dc30b3") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (anonymous (kind satisfy) (ordinal 0))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (satisfySource (reference "system")) (satisfyTarget (reference "system"))))
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::ArchitectureView"))) (kind view-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::ArchitectureViewpoint"))) (kind viewpoint-def) (membership (kind owning) (visibility default)))

@@ -112,12 +112,6 @@ package 'Time Constraints' {
         (severity warning)
         (code "unsupported_state_definition_member")
         (source "semantic")
-        (range (start 18 2) (end 18 2))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
         (range (start 20 2) (end 20 8))
       )
       (diagnostic
@@ -178,6 +172,7 @@ package 'Time Constraints' {
     (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (anonymous (kind transition) (ordinal 1))))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionTarget (reference "normal")) (transitionTrigger (reference "MaintenanceDone"))))
     (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::maintenance"))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::normal"))) (kind state) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::vehicle"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle") (direction in))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/31_time_constraints.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
@@ -222,12 +217,16 @@ package 'Time Constraints' {
     (reference (id (source (node (document "memory://snapshot/31_time_constraints.md") (anonymous (kind transition) (ordinal 1))))) (kind transitionTrigger) (ordinal 0))
       (authored-target "MaintenanceDone")
       (outcome (status resolved) (target (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::MaintenanceDone")))))
+    (reference (id (source (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::vehicle"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::Vehicle")))))
   )
   (relationships
     (relationship (kind initialState) (source (node (document "memory://snapshot/31_time_constraints.md") (anonymous (kind initial-state) (ordinal 0))))) (target (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::normal"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/31_time_constraints.md") (anonymous (kind initial-state) (ordinal 0))))) (kind initialState) (ordinal 0)))
     (relationship (kind transitionTarget) (source (node (document "memory://snapshot/31_time_constraints.md") (anonymous (kind transition) (ordinal 0))))) (target (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::maintenance"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/31_time_constraints.md") (anonymous (kind transition) (ordinal 0))))) (kind transitionTarget) (ordinal 0)))
     (relationship (kind transitionTarget) (source (node (document "memory://snapshot/31_time_constraints.md") (anonymous (kind transition) (ordinal 1))))) (target (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::normal"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/31_time_constraints.md") (anonymous (kind transition) (ordinal 1))))) (kind transitionTarget) (ordinal 0)))
     (relationship (kind transitionTrigger) (source (node (document "memory://snapshot/31_time_constraints.md") (anonymous (kind transition) (ordinal 1))))) (target (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::MaintenanceDone"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/31_time_constraints.md") (anonymous (kind transition) (ordinal 1))))) (kind transitionTrigger) (ordinal 0)))
+    (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::vehicle"))) (target (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::vehicle"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -291,6 +290,10 @@ package 'Time Constraints' {
   (query (document "memory://snapshot/31_time_constraints.md") (range (start 31 9) (end 31 24)) (probe (position 31 9))
     (reference (id (source (node (document "memory://snapshot/31_time_constraints.md") (anonymous (kind transition) (ordinal 1))))) (kind transitionTrigger) (ordinal 0) (authored-target "MaintenanceDone")
       (outcome (status resolved) (target (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::MaintenanceDone")))))
+  )
+  (query (document "memory://snapshot/31_time_constraints.md") (range (start 18 15) (end 18 22)) (probe (position 18 15))
+    (reference (id (source (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::vehicle"))) (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::Vehicle")))))
   )
 )
 ~~~

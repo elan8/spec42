@@ -72,18 +72,6 @@ package 'Flashlight Example' {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_port_definition_member")
-        (source "semantic")
-        (range (start 6 2) (end 6 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_port_definition_member")
-        (source "semantic")
-        (range (start 10 2) (end 10 19))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_action_usage_member")
         (source "semantic")
         (range (start 17 4) (end 17 41))
@@ -136,8 +124,10 @@ package 'Flashlight Example' {
     (declaration (id (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::Light"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::LightPort"))) (kind port-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::LightPort::light"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Light") (direction out))))
     (declaration (id (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::OnOffCmd"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::OnOffCmdPort"))) (kind port-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::OnOffCmdPort::onOffCmd"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "OnOffCmd") (direction out))))
     (declaration (id (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::context"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::context::flashlight"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/flashlight_example.md") (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)))
@@ -159,6 +149,12 @@ package 'Flashlight Example' {
     (declaration (id (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::illuminateRegion::sendOnOffCmd::onOffCmd"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "OnOffCmd") (direction out))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::LightPort::light"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Light")
+      (outcome (status resolved) (target (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::Light")))))
+    (reference (id (source (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::OnOffCmdPort::onOffCmd"))) (kind featureTyping) (ordinal 0))
+      (authored-target "OnOffCmd")
+      (outcome (status resolved) (target (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::OnOffCmd")))))
     (reference (id (source (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::context::flashlight::lightPort"))) (kind featureTyping) (ordinal 0))
       (authored-target "LightPort")
       (outcome (status resolved) (target (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::LightPort")))))
@@ -182,6 +178,8 @@ package 'Flashlight Example' {
       (outcome (status resolved) (target (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::OnOffCmd")))))
   )
   (relationships
+    (relationship (kind typing) (direction out) (source (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::LightPort::light"))) (target (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::Light"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::LightPort::light"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (direction out) (source (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::OnOffCmdPort::onOffCmd"))) (target (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::OnOffCmd"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::OnOffCmdPort::onOffCmd"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::context::flashlight::lightPort"))) (target (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::LightPort"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::context::flashlight::lightPort"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (conjugated true) (source (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::context::flashlight::onOffCmdPort"))) (target (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::OnOffCmdPort"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::context::flashlight::onOffCmdPort"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (conjugated true) (source (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::context::reflectingSource::lightPort"))) (target (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::LightPort"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::context::reflectingSource::lightPort"))) (kind featureTyping) (ordinal 0)))
@@ -197,6 +195,14 @@ package 'Flashlight Example' {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/flashlight_example.md") (range (start 10 13) (end 10 18)) (probe (position 10 13))
+    (reference (id (source (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::LightPort::light"))) (kind featureTyping) (ordinal 0) (authored-target "Light")
+      (outcome (status resolved) (target (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::Light")))))
+  )
+  (query (document "memory://snapshot/flashlight_example.md") (range (start 6 17) (end 6 25)) (probe (position 6 17))
+    (reference (id (source (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::OnOffCmdPort::onOffCmd"))) (kind featureTyping) (ordinal 0) (authored-target "OnOffCmd")
+      (outcome (status resolved) (target (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::OnOffCmd")))))
+  )
   (query (document "memory://snapshot/flashlight_example.md") (range (start 33 19) (end 33 28)) (probe (position 33 19))
     (reference (id (source (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::context::flashlight::lightPort"))) (kind featureTyping) (ordinal 0) (authored-target "LightPort")
       (outcome (status resolved) (target (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::LightPort")))))

@@ -1113,6 +1113,10 @@ enum UnsupportedFamily {
     AttributeMember,
     RequirementDefinitionMember,
     PortDefinitionMember,
+    /// No remaining `PortBodyElement` fallback variant constructs this family (every variant is
+    /// now dispatched to a lowering function), but the diagnostic code itself remains part of
+    /// `writer.rs`'s exhaustive mapping for schema stability.
+    #[allow(dead_code)]
     PortUsageMember,
     ActionDefinitionMember,
     ActionUsageMember,
@@ -1878,22 +1882,23 @@ impl SemanticModelBuilder {
                     node.span.clone(),
                 ),
             },
-            PackageBodyElement::PerformUsage(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::PerformUsage(node) => self.lower_perform(document, owner, node)?,
             PackageBodyElement::BindingConnectorUsage(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
             PackageBodyElement::ClassDef(node) => self.lower_class_def(document, owner, node)?,
-            PackageBodyElement::Succession(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::Succession(node) => match owner {
+                Some(owner) => {
+                    self.lower_first_stmt(document, owner, UnsupportedFamily::PackageMember, node)?
+                }
+                None => self.push_unsupported(
+                    document,
+                    UnsupportedFamily::PackageMember,
+                    node.span.clone(),
+                ),
+            },
             PackageBodyElement::ExhibitState(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -2177,6 +2182,14 @@ impl SemanticModelBuilder {
                             node,
                         )?;
                     }
+                    PartDefBodyElement::FirstStmt(first_stmt) => {
+                        self.lower_first_stmt(
+                            document,
+                            declaration,
+                            UnsupportedFamily::PartDefinitionMember,
+                            first_stmt,
+                        )?;
+                    }
                     PartDefBodyElement::Annotation(_)
                     | PartDefBodyElement::MetadataKeywordUsage(_)
                     | PartDefBodyElement::Dependency(_)
@@ -2194,7 +2207,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::RenderingUsage(_)
                     | PartDefBodyElement::UseCaseUsage(_)
                     | PartDefBodyElement::VerificationCaseUsage(_)
-                    | PartDefBodyElement::FirstStmt(_)
                     | PartDefBodyElement::Bind(_) => self.push_unsupported(
                         document,
                         UnsupportedFamily::PartDefinitionMember,
@@ -3786,10 +3798,12 @@ impl SemanticModelBuilder {
                 StateDefBodyElement::MetadataAnnotation(node) => {
                     self.lower_metadata_annotation(document, owner, node)?;
                 }
+                StateDefBodyElement::InOutDecl(param) => {
+                    self.lower_parameter_declaration(document, Some(owner), param)?;
+                }
                 StateDefBodyElement::Annotation(_)
                 | StateDefBodyElement::MetadataKeywordUsage(_)
                 | StateDefBodyElement::Other(_)
-                | StateDefBodyElement::InOutDecl(_)
                 | StateDefBodyElement::FinalState(_)
                 | StateDefBodyElement::Ref(_) => self.push_unsupported(
                     document,
@@ -5068,13 +5082,16 @@ impl SemanticModelBuilder {
                         self.lower_item_usage(document, Some(declaration), item_usage)?;
                     }
                     PortDefBodyElement::Doc(_) => {}
-                    PortDefBodyElement::InOutDecl(_)
-                    | PortDefBodyElement::MetadataKeywordUsage(_)
-                    | PortDefBodyElement::Other(_) => self.push_unsupported(
-                        document,
-                        UnsupportedFamily::PortDefinitionMember,
-                        element.span.clone(),
-                    ),
+                    PortDefBodyElement::InOutDecl(param) => {
+                        self.lower_parameter_declaration(document, Some(declaration), param)?;
+                    }
+                    PortDefBodyElement::MetadataKeywordUsage(_) | PortDefBodyElement::Other(_) => {
+                        self.push_unsupported(
+                            document,
+                            UnsupportedFamily::PortDefinitionMember,
+                            element.span.clone(),
+                        )
+                    }
                 }
             }
         }
@@ -5145,11 +5162,9 @@ impl SemanticModelBuilder {
                         self.lower_item_usage(document, Some(declaration), item_usage)?;
                     }
                     PortBodyElement::Doc(_) => {}
-                    PortBodyElement::InOutDecl(_) => self.push_unsupported(
-                        document,
-                        UnsupportedFamily::PortUsageMember,
-                        element.span.clone(),
-                    ),
+                    PortBodyElement::InOutDecl(param) => {
+                        self.lower_parameter_declaration(document, Some(declaration), param)?;
+                    }
                 }
             }
         }
@@ -5768,13 +5783,19 @@ impl SemanticModelBuilder {
                     ViewDefBodyElement::MetadataAnnotation(node) => {
                         self.lower_metadata_annotation(document, declaration, node)?;
                     }
-                    ViewDefBodyElement::Filter(_)
-                    | ViewDefBodyElement::ViewRendering(_)
-                    | ViewDefBodyElement::Other(_) => self.push_unsupported(
-                        document,
-                        UnsupportedFamily::ViewDefinitionMember,
-                        element.span.clone(),
-                    ),
+                    ViewDefBodyElement::Filter(filter) => {
+                        self.lower_filter_expression(
+                            document,
+                            declaration,
+                            &filter.value.condition,
+                        )?;
+                    }
+                    ViewDefBodyElement::ViewRendering(_) | ViewDefBodyElement::Other(_) => self
+                        .push_unsupported(
+                            document,
+                            UnsupportedFamily::ViewDefinitionMember,
+                            element.span.clone(),
+                        ),
                 }
             }
         }
@@ -5855,8 +5876,14 @@ impl SemanticModelBuilder {
                     ViewBodyElement::Satisfy(node) => {
                         self.lower_view_satisfy(document, declaration, node)?;
                     }
-                    ViewBodyElement::Filter(_)
-                    | ViewBodyElement::ViewRendering(_)
+                    ViewBodyElement::Filter(filter) => {
+                        self.lower_filter_expression(
+                            document,
+                            declaration,
+                            &filter.value.condition,
+                        )?;
+                    }
+                    ViewBodyElement::ViewRendering(_)
                     | ViewBodyElement::Expose(_)
                     | ViewBodyElement::Other(_) => self.push_unsupported(
                         document,
@@ -5951,8 +5978,10 @@ impl SemanticModelBuilder {
                     ConstraintDefBodyElement::MetadataAnnotation(node) => {
                         self.lower_metadata_annotation(document, declaration, node)?;
                     }
-                    ConstraintDefBodyElement::AttributeUsage(_)
-                    | ConstraintDefBodyElement::Other(_) => self.push_unsupported(
+                    ConstraintDefBodyElement::AttributeUsage(attribute) => {
+                        self.lower_attribute_usage(document, Some(declaration), attribute)?;
+                    }
+                    ConstraintDefBodyElement::Other(_) => self.push_unsupported(
                         document,
                         UnsupportedFamily::ConstraintDefinitionMember,
                         element.span.clone(),
@@ -6240,13 +6269,16 @@ impl SemanticModelBuilder {
                     self.push_recovery(document, error.span.clone());
                 }
                 RenderingDefBodyElement::Doc(_) => {}
-                RenderingDefBodyElement::Filter(_)
-                | RenderingDefBodyElement::ViewRendering(_)
-                | RenderingDefBodyElement::Other(_) => self.push_unsupported(
-                    document,
-                    UnsupportedFamily::RenderingDefinitionMember,
-                    element.span.clone(),
-                ),
+                RenderingDefBodyElement::Filter(filter) => {
+                    self.lower_filter_expression(document, declaration, &filter.value.condition)?;
+                }
+                RenderingDefBodyElement::ViewRendering(_) | RenderingDefBodyElement::Other(_) => {
+                    self.push_unsupported(
+                        document,
+                        UnsupportedFamily::RenderingDefinitionMember,
+                        element.span.clone(),
+                    )
+                }
             }
         }
         Ok(())

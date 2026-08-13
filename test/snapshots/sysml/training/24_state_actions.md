@@ -50,18 +50,6 @@ package 'State Actions' {
         (severity warning)
         (code "unsupported_state_definition_member")
         (source "semantic")
-        (range (start 10 27) (end 10 27))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
-        (range (start 13 2) (end 13 2))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
         (range (start 15 2) (end 15 8))
       )
       (diagnostic
@@ -91,6 +79,7 @@ package 'State Actions' {
     (declaration (id (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::VehicleOnSignal"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::VehicleStartSignal"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::VehicleStates"))) (kind state-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::VehicleStates::operatingVehicle"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle") (direction in))))
     (declaration (id (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::performSelfTest"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::performSelfTest::vehicle"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle") (direction in))))
     (declaration (id (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::vehicleStates"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "VehicleStates"))))
@@ -103,9 +92,13 @@ package 'State Actions' {
     (declaration (id (node (document "memory://snapshot/24_state_actions.md") (anonymous (kind entry-action-binding) (ordinal 0))))) (kind entry-action-binding) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (entryActionBinding (reference "performSelfTest"))))
     (declaration (id (node (document "memory://snapshot/24_state_actions.md") (anonymous (kind do-action-binding) (ordinal 0))))) (kind do-action-binding) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (doActionBinding (reference "providePower"))))
     (declaration (id (node (document "memory://snapshot/24_state_actions.md") (anonymous (kind exit-action-binding) (ordinal 0))))) (kind exit-action-binding) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (exitActionBinding (reference "applyParkingBrake"))))
+    (declaration (id (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::vehicleStates::operatingVehicle"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle") (direction in))))
     (declaration (id (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::vehicleStates::starting"))) (kind state) (membership (kind feature) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::VehicleStates::operatingVehicle"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::Vehicle")))))
     (reference (id (source (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::performSelfTest::vehicle"))) (kind featureTyping) (ordinal 0))
       (authored-target "Vehicle")
       (outcome (status resolved) (target (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::Vehicle")))))
@@ -142,8 +135,12 @@ package 'State Actions' {
     (reference (id (source (node (document "memory://snapshot/24_state_actions.md") (anonymous (kind exit-action-binding) (ordinal 0))))) (kind exitActionBinding) (ordinal 0))
       (authored-target "applyParkingBrake")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::vehicleStates::operatingVehicle"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::Vehicle")))))
   )
   (relationships
+    (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::VehicleStates::operatingVehicle"))) (target (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::VehicleStates::operatingVehicle"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::performSelfTest::vehicle"))) (target (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::performSelfTest::vehicle"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::vehicleStates"))) (target (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::VehicleStates"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::vehicleStates"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind initialState) (source (node (document "memory://snapshot/24_state_actions.md") (anonymous (kind initial-state) (ordinal 0))))) (target (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::vehicleStates::off"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/24_state_actions.md") (anonymous (kind initial-state) (ordinal 0))))) (kind initialState) (ordinal 0)))
@@ -154,6 +151,7 @@ package 'State Actions' {
     (relationship (kind transitionTrigger) (source (node (document "memory://snapshot/24_state_actions.md") (anonymous (kind transition) (ordinal 1))))) (target (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::VehicleOnSignal"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/24_state_actions.md") (anonymous (kind transition) (ordinal 1))))) (kind transitionTrigger) (ordinal 0)))
     (relationship (kind transitionTrigger) (source (node (document "memory://snapshot/24_state_actions.md") (anonymous (kind transition) (ordinal 2))))) (target (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::VehicleOffSignal"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/24_state_actions.md") (anonymous (kind transition) (ordinal 2))))) (kind transitionTrigger) (ordinal 0)))
     (relationship (kind entryActionBinding) (source (node (document "memory://snapshot/24_state_actions.md") (anonymous (kind entry-action-binding) (ordinal 0))))) (target (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::performSelfTest"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/24_state_actions.md") (anonymous (kind entry-action-binding) (ordinal 0))))) (kind entryActionBinding) (ordinal 0)))
+    (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::vehicleStates::operatingVehicle"))) (target (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::vehicleStates::operatingVehicle"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -162,6 +160,10 @@ package 'State Actions' {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/24_state_actions.md") (range (start 10 49) (end 10 56)) (probe (position 10 49))
+    (reference (id (source (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::VehicleStates::operatingVehicle"))) (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::Vehicle")))))
+  )
   (query (document "memory://snapshot/24_state_actions.md") (range (start 8 39) (end 8 46)) (probe (position 8 39))
     (reference (id (source (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::performSelfTest::vehicle"))) (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
       (outcome (status resolved) (target (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::Vehicle")))))
@@ -209,6 +211,10 @@ package 'State Actions' {
   (query (document "memory://snapshot/24_state_actions.md") (range (start 28 15) (end 28 32)) (probe (position 28 15))
     (reference (id (source (node (document "memory://snapshot/24_state_actions.md") (anonymous (kind exit-action-binding) (ordinal 0))))) (kind exitActionBinding) (ordinal 0) (authored-target "applyParkingBrake")
       (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/24_state_actions.md") (range (start 13 24) (end 13 31)) (probe (position 13 24))
+    (reference (id (source (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::vehicleStates::operatingVehicle"))) (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::Vehicle")))))
   )
 )
 ~~~
