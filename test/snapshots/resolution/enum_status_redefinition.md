@@ -24,6 +24,12 @@ package Demo {
 (fixture-diagnostics
   (document "memory://snapshot/enum_status_redefinition.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 10 31) (end 10 62))
+      )
     )
   )
 )
@@ -41,7 +47,7 @@ package Demo {
     (declaration (id (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::RequirementStatusKind::approved"))) (kind enum-literal) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::UserRequirement"))) (kind requirement-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "ManagedRequirement"))))
     (declaration (id (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::need"))) (kind requirement) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Need"))))
-    (declaration (id (node (document "memory://snapshot/enum_status_redefinition.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "status"))))
+    (declaration (id (node (document "memory://snapshot/enum_status_redefinition.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "status")) (expressionOperand (reference "RequirementStatusKind::approved"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement::status"))) (kind featureTyping) (ordinal 0))
@@ -59,6 +65,9 @@ package Demo {
     (reference (id (source (node (document "memory://snapshot/enum_status_redefinition.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "status")
       (outcome (status resolved) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement::status")))))
+    (reference (id (source (node (document "memory://snapshot/enum_status_redefinition.md") (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "RequirementStatusKind::approved")
+      (outcome (status unresolved)))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement::status"))) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::RequirementStatusKind"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement::status"))) (kind featureTyping) (ordinal 0)))
@@ -93,6 +102,10 @@ package Demo {
   (query (document "memory://snapshot/enum_status_redefinition.md") (range (start 10 22) (end 10 28)) (probe (position 10 22))
     (reference (id (source (node (document "memory://snapshot/enum_status_redefinition.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "status")
       (outcome (status resolved) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement::status")))))
+  )
+  (query (document "memory://snapshot/enum_status_redefinition.md") (range (start 10 31) (end 10 62)) (probe (position 10 31))
+    (reference (id (source (node (document "memory://snapshot/enum_status_redefinition.md") (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "RequirementStatusKind::approved")
+      (outcome (status unresolved)))
   )
 )
 ~~~

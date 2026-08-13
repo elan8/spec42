@@ -29,6 +29,12 @@ package DefaultValueTest {
 (fixture-diagnostics
   (document "memory://snapshot/default_value_test.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 12 28) (end 12 29))
+      )
     )
   )
 )
@@ -43,7 +49,7 @@ package DefaultValueTest {
     (declaration (id (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::m"))) (kind attribute) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::n"))) (kind attribute) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::W"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "V"))))
-    (declaration (id (node (document "memory://snapshot/default_value_test.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "m"))))
+    (declaration (id (node (document "memory://snapshot/default_value_test.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "m")) (expressionOperand (reference "n"))))
     (declaration (id (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::v1"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "V"))))
     (declaration (id (node (document "memory://snapshot/default_value_test.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "m"))))
     (declaration (id (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::v2"))) (kind part) (membership (kind feature) (visibility default)))
@@ -55,6 +61,9 @@ package DefaultValueTest {
     (reference (id (source (node (document "memory://snapshot/default_value_test.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "m")
       (outcome (status resolved) (target (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::m")))))
+    (reference (id (source (node (document "memory://snapshot/default_value_test.md") (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "n")
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::v1"))) (kind featureTyping) (ordinal 0))
       (authored-target "V")
       (outcome (status resolved) (target (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V")))))
@@ -85,6 +94,10 @@ package DefaultValueTest {
   (query (document "memory://snapshot/default_value_test.md") (range (start 12 16) (end 12 17)) (probe (position 12 16))
     (reference (id (source (node (document "memory://snapshot/default_value_test.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "m")
       (outcome (status resolved) (target (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::m")))))
+  )
+  (query (document "memory://snapshot/default_value_test.md") (range (start 12 28) (end 12 29)) (probe (position 12 28))
+    (reference (id (source (node (document "memory://snapshot/default_value_test.md") (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "n")
+      (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/default_value_test.md") (range (start 7 11) (end 7 12)) (probe (position 7 11))
     (reference (id (source (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::v1"))) (kind featureTyping) (ordinal 0) (authored-target "V")

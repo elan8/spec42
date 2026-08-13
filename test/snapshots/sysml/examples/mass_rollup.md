@@ -60,6 +60,12 @@ package MassRollup {
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
+        (range (start 9 34) (end 9 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
         (range (start 20 32) (end 20 41))
       )
       (diagnostic
@@ -88,7 +94,7 @@ package MassRollup {
     (declaration (id (node (document "memory://snapshot/mass_rollup.md") (qualified-name "MassRollup::filteredMassThing"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "compositeThing"))))
     (declaration (id (node (document "memory://snapshot/mass_rollup.md") (qualified-name "MassRollup::filteredMassThing::minMass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "ISQ::mass"))))
     (declaration (id (node (document "memory://snapshot/mass_rollup.md") (qualified-name "MassRollup::simpleThing"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassedThing"))))
-    (declaration (id (node (document "memory://snapshot/mass_rollup.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "totalMass"))))
+    (declaration (id (node (document "memory://snapshot/mass_rollup.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "totalMass")) (expressionOperand (reference "mass"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/mass_rollup.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
@@ -121,6 +127,9 @@ package MassRollup {
     (reference (id (source (node (document "memory://snapshot/mass_rollup.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "totalMass")
       (outcome (status resolved) (target (node (document "memory://snapshot/mass_rollup.md") (qualified-name "MassRollup::MassedThing::totalMass")))))
+    (reference (id (source (node (document "memory://snapshot/mass_rollup.md") (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "mass")
+      (outcome (status unresolved)))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/mass_rollup.md") (qualified-name "MassRollup::compositeThing"))) (target (node (document "memory://snapshot/mass_rollup.md") (qualified-name "MassRollup::MassedThing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/mass_rollup.md") (qualified-name "MassRollup::compositeThing"))) (kind featureTyping) (ordinal 0)))
@@ -176,6 +185,10 @@ package MassRollup {
   (query (document "memory://snapshot/mass_rollup.md") (range (start 9 22) (end 9 31)) (probe (position 9 22))
     (reference (id (source (node (document "memory://snapshot/mass_rollup.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "totalMass")
       (outcome (status resolved) (target (node (document "memory://snapshot/mass_rollup.md") (qualified-name "MassRollup::MassedThing::totalMass")))))
+  )
+  (query (document "memory://snapshot/mass_rollup.md") (range (start 9 34) (end 9 38)) (probe (position 9 34))
+    (reference (id (source (node (document "memory://snapshot/mass_rollup.md") (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "mass")
+      (outcome (status unresolved)))
   )
 )
 ~~~

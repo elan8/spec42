@@ -391,6 +391,12 @@ package '14c-Language-Extensions' {
       )
       (diagnostic
         (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 157 13) (end 157 19))
+      )
+      (diagnostic
+        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 160 2) (end 160 8))
@@ -625,7 +631,7 @@ package '14c-Language-Extensions' {
     (declaration (id (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAUserModel::req1"))) (kind requirement) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAUserModel::req2"))) (kind requirement) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAUserModel::req3"))) (kind requirement) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "RequirementWithSIL")) (metadataAnnotation (reference "StatusHolder"))))
-    (declaration (id (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "sil"))))
+    (declaration (id (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "sil")) (expressionOperand (reference "SIL::A"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
@@ -859,6 +865,9 @@ package '14c-Language-Extensions' {
     (reference (id (source (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "sil")
       (outcome (status resolved) (target (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEALibrary::RequirementWithSIL::sil")))))
+    (reference (id (source (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "SIL::A")
+      (outcome (status unresolved)))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEALibrary::Causation::cause"))) (target (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEALibrary::Situation"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEALibrary::Causation::cause"))) (kind featureTyping) (ordinal 0)))
@@ -1229,6 +1238,10 @@ package '14c-Language-Extensions' {
   (query (document "memory://snapshot/14c_language_extensions.md") (range (start 157 7) (end 157 10)) (probe (position 157 7))
     (reference (id (source (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "sil")
       (outcome (status resolved) (target (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEALibrary::RequirementWithSIL::sil")))))
+  )
+  (query (document "memory://snapshot/14c_language_extensions.md") (range (start 157 13) (end 157 19)) (probe (position 157 13))
+    (reference (id (source (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "SIL::A")
+      (outcome (status unresolved)))
   )
 )
 ~~~

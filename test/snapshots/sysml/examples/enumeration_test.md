@@ -85,6 +85,12 @@ package EnumerationTest {
       )
       (diagnostic
         (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 27 32) (end 27 38))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 39 23) (end 39 41))
@@ -125,7 +131,7 @@ package EnumerationTest {
     (declaration (id (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::Size"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "ScalarValues::Real"))))
     (declaration (id (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::SizeChoice"))) (kind enum-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Size"))))
     (declaration (id (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::color"))) (kind enum) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ColorKind"))))
-    (declaration (id (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::color2"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "ColorKind"))))
+    (declaration (id (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::color2"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "ColorKind")) (expressionOperand (reference "color1"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::Color::val"))) (kind featureTyping) (ordinal 0))
@@ -146,6 +152,9 @@ package EnumerationTest {
     (reference (id (source (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::color2"))) (kind featureTyping) (ordinal 0))
       (authored-target "ColorKind")
       (outcome (status resolved) (target (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::ColorKind")))))
+    (reference (id (source (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::color2"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "color1")
+      (outcome (status unresolved)))
   )
   (relationships
     (relationship (kind specialization) (source (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::ColorKind"))) (target (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::Color"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::ColorKind"))) (kind specialization) (ordinal 0)))
@@ -183,6 +192,10 @@ package EnumerationTest {
   (query (document "memory://snapshot/enumeration_test.md") (range (start 27 20) (end 27 29)) (probe (position 27 20))
     (reference (id (source (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::color2"))) (kind featureTyping) (ordinal 0) (authored-target "ColorKind")
       (outcome (status resolved) (target (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::ColorKind")))))
+  )
+  (query (document "memory://snapshot/enumeration_test.md") (range (start 27 32) (end 27 38)) (probe (position 27 32))
+    (reference (id (source (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::color2"))) (kind expressionOperand) (ordinal 0) (authored-target "color1")
+      (outcome (status unresolved)))
   )
 )
 ~~~

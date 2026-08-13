@@ -797,6 +797,19 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             .then_some(index)
         })
         .collect();
+    // `MemberAccessOperand` (a dotted feature-chain access, e.g. `t.bead`, `f.a`) must run after
+    // `typing_slots` has resolved and `inherited_names` has been extended with usage-typing entries
+    // below (`extend_inherited_names_with_usage_typing`), because its interior segments are looked
+    // up as members of each hop's resolved *type*, not the hop's own declaration -- exactly the
+    // index that extension builds. It cannot join `state_binding_slots` above, which runs before
+    // that extension exists.
+    let member_access_slots: Vec<usize> = references
+        .iter()
+        .enumerate()
+        .filter_map(|(index, reference)| {
+            (reference.kind() == ReferenceKind::MemberAccessOperand).then_some(index)
+        })
+        .collect();
     let mut work = ResolutionWork {
         direct_index_entries: u64::try_from(direct_names.candidates.len())
             .map_err(|_| ResolutionError::Capacity)?,
@@ -875,6 +888,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             .chain(&succession_slots)
             .chain(&state_binding_slots)
             .chain(&metadata_annotation_slots)
+            .chain(&member_access_slots)
             .copied()
         {
             outcomes[index] = ResolutionStatus::NonConverged;
@@ -1114,6 +1128,36 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             &outcomes,
             &typing_slots,
         )?;
+
+        // `MemberAccessOperand` (dotted feature-chain access, e.g. `t.bead`) resolves its root
+        // segment through the same `DeclarationDomain::Any` lexical lookup every other operand
+        // kind uses, then chases each subsequent segment as a member owned (directly or through
+        // inheritance) by the *type* of the previously resolved segment, via the just-extended
+        // `inherited_names` index -- see `resolve_member_access_reference`'s own doc comment.
+        for index in member_access_slots.iter().copied() {
+            work.downstream_evaluations = work
+                .downstream_evaluations
+                .checked_add(1)
+                .ok_or(ResolutionError::Capacity)?;
+            outcomes[index] = resolve_member_access_reference(
+                declarations,
+                paths,
+                &references[index],
+                ResolutionIndexes {
+                    direct_names: &direct_names,
+                    exported_names: &exported_names,
+                    effective_imports: Some(&effective_imports),
+                    exported_imports: Some(&exported_imports),
+                    inherited_names: Some(&inherited_names),
+                },
+                ResolutionScratch {
+                    ambiguous_candidates: &mut ambiguous_candidates,
+                    candidates: &mut candidates,
+                    next_candidates: &mut next_candidates,
+                    work: &mut work,
+                },
+            )?;
+        }
 
         for index in subsetting_slots.iter().copied() {
             work.downstream_evaluations = work
@@ -1666,7 +1710,8 @@ fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<D
         | ReferenceKind::BindSource
         | ReferenceKind::BindTarget
         | ReferenceKind::Variant
-        | ReferenceKind::IncludeUseCase => None,
+        | ReferenceKind::IncludeUseCase
+        | ReferenceKind::MemberAccessOperand => None,
     }
 }
 
@@ -1846,7 +1891,8 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::BindSource
             | ReferenceKind::BindTarget
             | ReferenceKind::Variant
-            | ReferenceKind::IncludeUseCase => {}
+            | ReferenceKind::IncludeUseCase
+            | ReferenceKind::MemberAccessOperand => {}
         }
     }
     Ok((
@@ -2036,6 +2082,77 @@ fn lookup_lexical_into(
             .ok_or(ResolutionError::InvalidStorage)?
             .owner;
     }
+}
+
+/// Resolves a `ReferenceKind::MemberAccessOperand` reference (a dotted feature-chain access, e.g.
+/// `t.bead`, `f.a`, chained `a.b.c`): the reference's `path()` is the flattened chain built by
+/// `SemanticModelBuilder::push_member_access_reference` -- the root segment(s) followed by each
+/// subsequent dotted member segment, all in one `SymbolPathId`.
+///
+/// The root segment resolves through the ordinary `DeclarationDomain::Any` lexical lookup every
+/// other operand kind's single-segment path uses (`lookup_lexical_into`, walking `owner`'s
+/// enclosing-namespace chain). Each subsequent segment is then looked up as a member OWNED
+/// (directly or through inheritance) by the *type* of the previously resolved segment, never as a
+/// member of the previous segment's own declaration -- reusing `inherited_names`, which by the
+/// time this runs has already been extended with usage-typing entries
+/// (`extend_inherited_names_with_usage_typing`): for a declaration `usage` whose own `FeatureTyping`
+/// reference resolved to `target`, `inherited_names.candidates(Some(usage), name)` already contains
+/// every name owned (directly or by inheritance) by `target`. This is exactly "member of the
+/// previously resolved segment's type."
+///
+/// If the root segment does not resolve to exactly one candidate, or any subsequent segment finds
+/// no owned-by-type member, the whole chain publishes `Unresolved`; if an intermediate or final
+/// segment is ambiguous, the whole chain publishes `Ambiguous`. The chain never partially resolves
+/// -- there is no way to publish "the first two segments resolved but the third didn't."
+fn resolve_member_access_reference<R: ResolutionReferenceFact>(
+    declarations: &[Declaration],
+    paths: &SymbolPathArena,
+    reference: &R,
+    indexes: ResolutionIndexes<'_>,
+    scratch: ResolutionScratch<'_>,
+) -> Result<ResolutionStatus, ResolutionError> {
+    let (segments, rooted) = paths
+        .get(reference.path())
+        .ok_or(ResolutionError::InvalidStorage)?;
+    if rooted {
+        // A dotted member-access chain is never `::`-absolute; defensive, not reachable from the
+        // lowering side today.
+        return Ok(ResolutionStatus::Unsupported);
+    }
+    let source = declarations
+        .get(reference.source().index())
+        .ok_or(ResolutionError::InvalidStorage)?;
+    scratch.candidates.clear();
+    scratch.next_candidates.clear();
+    lookup_lexical_into(
+        declarations,
+        &indexes,
+        source.owner,
+        segments[0],
+        DeclarationDomain::Any,
+        scratch.candidates,
+        scratch.work,
+    )?;
+    for segment in &segments[1..] {
+        if scratch.candidates.len() != 1 {
+            // Zero candidates (Unresolved) or more than one (Ambiguous) -- either way the chain
+            // cannot continue past this hop; publish that outcome directly rather than silently
+            // dropping the remaining segments.
+            return status_from_candidates(scratch.candidates, scratch.ambiguous_candidates);
+        }
+        let candidate = scratch.candidates[0];
+        scratch.next_candidates.clear();
+        record_lookup(scratch.work)?;
+        if let Some(inherited) = indexes.inherited_names {
+            scratch
+                .next_candidates
+                .extend_from_slice(inherited.candidates(Some(candidate), *segment));
+        }
+        scratch.next_candidates.sort_unstable();
+        scratch.next_candidates.dedup();
+        std::mem::swap(scratch.candidates, scratch.next_candidates);
+    }
+    status_from_candidates(scratch.candidates, scratch.ambiguous_candidates)
 }
 
 fn record_lookup(work: &mut ResolutionWork) -> Result<(), ResolutionError> {

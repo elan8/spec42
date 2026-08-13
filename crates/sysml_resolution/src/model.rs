@@ -735,6 +735,27 @@ enum ReferenceKind {
     /// package-level `binding` statement (`Bind.right` / `BindingConnectorUsage.right`), same
     /// shape and scope as `BindSource`.
     BindTarget,
+    /// A dotted feature-chain access (`Expression::MemberAccess`, e.g. `t.bead`, `f.a`, chained
+    /// `a.b.c`), found wherever `ConnectorEnd`/`Succession`/`TransitionSource`/`TransitionTarget`/
+    /// `TransitionTrigger`/`TransitionEffect`/`SatisfySource`/`SatisfyTarget`/`AllocateSource`/
+    /// `AllocateTarget`/`BindSource`/`BindTarget`/`ExpressionOperand` previously fell through to
+    /// an unsupported-member diagnostic on this exact expression shape. Resolved as a two-step
+    /// chase through the same `DeclarationDomain::Any` lexical lookup fixed point every other
+    /// operand kind uses for its own first (root) segment, continued through each subsequent
+    /// dotted segment by looking the segment up as a member OWNED (directly or through
+    /// inheritance) by the *type* of the previously resolved segment -- never as a member of the
+    /// previous segment's own declaration -- reusing the ancestor-closure/usage-typing-extended
+    /// `inherited_names` index built for `Subsetting`/`Redefinition` (see
+    /// `extend_inherited_names_with_usage_typing` in resolver.rs). If the root segment fails to
+    /// resolve to exactly one declaration, or any subsequent segment is not found on the current
+    /// segment's resolved type, the whole chain publishes an explicit `Unresolved`/`Ambiguous`
+    /// outcome -- it never fabricates a partial result. This unifies every deferred dotted-path
+    /// call site under one `ReferenceKind` and one resolution algorithm rather than growing a
+    /// distinct kind per call site, at the cost of the diagnostics/query surface reporting these
+    /// specific references as `MemberAccessOperand` rather than under their originating relation
+    /// (e.g. a dotted connector end is `MemberAccessOperand`, not `ConnectorEnd`); each call site's
+    /// own doc comment cross-references this trade-off.
+    MemberAccessOperand,
 }
 
 /// The computed or explicit outcome of evaluating one supported constraint/calc expression
@@ -1167,6 +1188,27 @@ fn is_arithmetic_operator(op: &BinaryOperator) -> bool {
     )
 }
 
+/// Flattens a dotted `Expression::MemberAccess` chain (`a.b.c`, parsed as nested
+/// `MemberAccess(MemberAccess(FeatureRef(a), b), c)`) into its ordered list of qualified-reference
+/// segments: the innermost `FeatureRef`/`FeatureChainRef`'s own (possibly multi-segment) path,
+/// followed by each subsequent `member` segment outward. Returns `None` when the chain's root is
+/// anything other than a `FeatureRef`/`FeatureChainRef` (an index expression, invocation, literal,
+/// etc.), since this pipeline has no lexical-lookup starting point for those shapes -- the caller
+/// falls through to its existing unsupported-member diagnostic in that case. A bare
+/// `FeatureRef`/`FeatureChainRef` (no `MemberAccess` wrapper at all) flattens to a single-entry
+/// list, letting callers route both shapes through the same chain-resolution path uniformly.
+fn flatten_member_access_chain(node: &Node<Expression>) -> Option<Vec<QualifiedReferenceId>> {
+    match &node.value {
+        Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => Some(vec![*target]),
+        Expression::MemberAccess { base, member, .. } => {
+            let mut chain = flatten_member_access_chain(base)?;
+            chain.push(*member);
+            Some(chain)
+        }
+        _ => None,
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum AuthoredImportShape {
     Membership,
@@ -1583,6 +1625,78 @@ impl SemanticModelBuilder {
             ordinal: authored_ordinal,
             import,
             flags,
+            span,
+        });
+        Ok(id)
+    }
+
+    /// Pushes one `ReferenceKind::MemberAccessOperand` reference for a flattened dotted
+    /// feature-chain (`flatten_member_access_chain`'s output): `chain` is the ordered list of
+    /// parser `QualifiedReferenceId`s from the root segment outward (a bare `FeatureRef`/
+    /// `FeatureChainRef` flattens to a one-entry chain). Builds one combined `SymbolPathId` by
+    /// concatenating every chain entry's own segments in order -- mirroring `push_reference`'s
+    /// single-reference path construction, but across multiple parser references -- so
+    /// `resolve_member_access_reference` in resolver.rs can walk the whole dotted path as one
+    /// path with a root-lookup first segment followed by type-directed member segments. Always
+    /// non-rooted (`::`-absolute chains do not occur in dotted member-access position), matching
+    /// `ConnectorEnd`/`ExpressionOperand`'s existing `DeclarationDomain::Any` shape.
+    fn push_member_access_reference(
+        &mut self,
+        source: DeclarationId,
+        document: DocumentId,
+        chain: &[QualifiedReferenceId],
+        span: Span,
+    ) -> Result<AuthoredReferenceId, ConstructionError> {
+        if chain.is_empty()
+            || source.index() >= self.declarations.len()
+            || document.index() >= self.documents.len()
+        {
+            return Err(ConstructionError::InvalidParserReference);
+        }
+        let parsed = Arc::clone(&self.documents[document.index()].parsed);
+        let mut segments = std::mem::take(&mut self.path_scratch);
+        segments.clear();
+        let path = (|| {
+            for local in chain {
+                let reference = parsed
+                    .qualified_reference(*local)
+                    .ok_or(ConstructionError::InvalidParserReference)?;
+                segments
+                    .try_reserve(reference.segments.len())
+                    .map_err(|_| ConstructionError::Capacity)?;
+                for index in 0..reference.segments.len() {
+                    let decoded = reference
+                        .segment_decoded_text(index)
+                        .ok_or(ConstructionError::InvalidParserReference)?;
+                    segments.push(self.intern_name(decoded.as_ref())?);
+                }
+            }
+            self.paths.push(&segments, false)
+        })();
+        segments.clear();
+        self.path_scratch = segments;
+        let path = path?;
+        let kind = ReferenceKind::MemberAccessOperand;
+        let ordinal = self
+            .next_reference_ordinals
+            .entry((source, kind))
+            .or_insert(0);
+        let authored_ordinal = *ordinal;
+        *ordinal = ordinal.checked_add(1).ok_or(ConstructionError::Capacity)?;
+        let id = AuthoredReferenceId::from_index(self.references.len())?;
+        self.references.push(AuthoredReference {
+            source,
+            kind,
+            target: ParserReferenceId {
+                document,
+                local: *chain
+                    .last()
+                    .ok_or(ConstructionError::InvalidParserReference)?,
+            },
+            path,
+            ordinal: authored_ordinal,
+            import: None,
+            flags: RelationshipFlags::default(),
             span,
         });
         Ok(id)
@@ -2710,7 +2824,7 @@ impl SemanticModelBuilder {
         if let Some(relationship) = &node.value.intersects {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
-        self.lower_attribute_default_value(declaration, node.value.value.as_ref());
+        self.lower_attribute_default_value(document, declaration, node.value.value.as_ref())?;
         self.lower_attribute_body(document, declaration, &node.value.body)?;
         Ok(())
     }
@@ -2724,27 +2838,67 @@ impl SemanticModelBuilder {
     /// (`compute_evaluation` in resolver.rs) looks up when a constraint/calc expression's operand
     /// reference resolves to this declaration. Deliberately narrow: only a bare
     /// `LiteralInteger`/`LiteralReal`/`LiteralBoolean` expression (optionally parenthesized)
-    /// publishes a fact; any other default-value expression shape (arithmetic, another feature
-    /// reference, an invocation, etc.) is left entirely untouched -- no fact, no reference, no
-    /// diagnostic -- since general default-value expression lowering (arithmetic, feature-ref
-    /// operands with their own resolution) is out of scope here and deferred to a future slice
-    /// (see `REMAINING_WORK_TO_PORT.md`'s "default value expressions on attributes/parameters").
+    /// publishes a fact. A plain/qualified feature reference (`part g = f;`) or a dotted
+    /// feature-chain (`part g = f.a;`) is *resolved* (as `ExpressionOperand`/
+    /// `MemberAccessOperand` respectively, through the same shared lookup every other operand
+    /// kind uses) but not evaluated -- no evaluation fact, consistent with how a constraint/calc
+    /// expression's own `FeatureRef` operands are resolved-but-may-stay-non-constant. Any other
+    /// default-value expression shape (arithmetic, an invocation, etc.) is left entirely
+    /// untouched -- no fact, no reference, no diagnostic -- since general default-value
+    /// expression lowering is out of scope here and deferred to a future slice (see
+    /// `REMAINING_WORK_TO_PORT.md`'s "default value expressions on attributes/parameters").
     fn lower_attribute_default_value(
         &mut self,
+        document: DocumentId,
         declaration: DeclarationId,
         value: Option<&Node<FeatureValue>>,
-    ) {
+    ) -> Result<(), ConstructionError> {
         fn unwrap_literal(node: &Expression) -> Option<EvaluatedValue> {
             match node {
                 Expression::Parenthesized(inner) => unwrap_literal(&inner.value),
                 other => literal_expression_value(other),
             }
         }
-        if let Some(feature_value) = value {
-            if let Some(literal) = unwrap_literal(&feature_value.value.expression.value) {
-                self.push_evaluation_fact(declaration, ExpressionEvalShape::Literal(literal));
-            }
+        let Some(feature_value) = value else {
+            return Ok(());
+        };
+        let expression = &feature_value.value.expression;
+        if let Some(literal) = unwrap_literal(&expression.value) {
+            self.push_evaluation_fact(declaration, ExpressionEvalShape::Literal(literal));
+            return Ok(());
         }
+        match &expression.value {
+            Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
+                let span = self.documents[document.index()]
+                    .parsed
+                    .qualified_reference(*target)
+                    .ok_or(ConstructionError::InvalidParserReference)?
+                    .metadata
+                    .span
+                    .clone();
+                self.push_reference(PendingReference {
+                    source: declaration,
+                    kind: ReferenceKind::ExpressionOperand,
+                    document,
+                    local: *target,
+                    flags: RelationshipFlags::default(),
+                    span,
+                    import: None,
+                })?;
+            }
+            Expression::MemberAccess { .. } => {
+                if let Some(chain) = flatten_member_access_chain(expression) {
+                    self.push_member_access_reference(
+                        declaration,
+                        document,
+                        &chain,
+                        expression.span.clone(),
+                    )?;
+                }
+            }
+            _ => {}
+        }
+        Ok(())
     }
 
     fn lower_attribute_def(
@@ -2773,7 +2927,7 @@ impl SemanticModelBuilder {
         if let Some(relationship) = &node.value.typing {
             self.lower_typing_relationship(document, declaration, relationship)?;
         }
-        self.lower_attribute_default_value(declaration, node.value.value.as_ref());
+        self.lower_attribute_default_value(document, declaration, node.value.value.as_ref())?;
         self.lower_attribute_body(document, declaration, &node.value.body)
     }
 
@@ -3805,6 +3959,13 @@ impl SemanticModelBuilder {
                     import: None,
                 })?;
             }
+            Expression::MemberAccess { .. } => {
+                if let Some(chain) = flatten_member_access_chain(node) {
+                    self.push_member_access_reference(owner, document, &chain, node.span.clone())?;
+                } else {
+                    self.push_unsupported(document, family, node.span.clone());
+                }
+            }
             _ => self.push_unsupported(document, family, node.span.clone()),
         }
         Ok(())
@@ -3851,6 +4012,19 @@ impl SemanticModelBuilder {
                     span,
                     import: None,
                 })?;
+                Ok(())
+            }
+            Expression::MemberAccess { .. } => {
+                if let Some(chain) = flatten_member_access_chain(node) {
+                    self.push_member_access_reference(
+                        declaration,
+                        document,
+                        &chain,
+                        node.span.clone(),
+                    )?;
+                } else {
+                    self.push_unsupported(document, family, node.span.clone());
+                }
                 Ok(())
             }
             Expression::Parenthesized(inner) => {
@@ -3907,6 +4081,19 @@ impl SemanticModelBuilder {
                     span,
                     import: None,
                 })?;
+                Ok(())
+            }
+            Expression::MemberAccess { .. } => {
+                if let Some(chain) = flatten_member_access_chain(node) {
+                    self.push_member_access_reference(
+                        declaration,
+                        document,
+                        &chain,
+                        node.span.clone(),
+                    )?;
+                } else {
+                    self.push_unsupported(document, family, node.span.clone());
+                }
                 Ok(())
             }
             Expression::Parenthesized(inner) => {
@@ -3994,6 +4181,23 @@ impl SemanticModelBuilder {
                     span,
                     import: None,
                 })?;
+                Ok(())
+            }
+            Expression::MemberAccess { .. } => {
+                if let Some(chain) = flatten_member_access_chain(node) {
+                    self.push_member_access_reference(
+                        declaration,
+                        document,
+                        &chain,
+                        node.span.clone(),
+                    )?;
+                } else {
+                    self.push_unsupported(
+                        document,
+                        UnsupportedFamily::PackageMember,
+                        node.span.clone(),
+                    );
+                }
                 Ok(())
             }
             Expression::Parenthesized(inner) => {
@@ -4446,6 +4650,17 @@ impl SemanticModelBuilder {
                     import: None,
                 })?;
             }
+            Expression::MemberAccess { .. } => {
+                if let Some(chain) = flatten_member_access_chain(node) {
+                    self.push_member_access_reference(owner, document, &chain, node.span.clone())?;
+                } else {
+                    self.push_unsupported(
+                        document,
+                        UnsupportedFamily::StateDefinitionMember,
+                        node.span.clone(),
+                    );
+                }
+            }
             _ => self.push_unsupported(
                 document,
                 UnsupportedFamily::StateDefinitionMember,
@@ -4548,6 +4763,13 @@ impl SemanticModelBuilder {
                     span,
                     import: None,
                 })?;
+            }
+            Expression::MemberAccess { .. } => {
+                if let Some(chain) = flatten_member_access_chain(node) {
+                    self.push_member_access_reference(owner, document, &chain, node.span.clone())?;
+                } else {
+                    self.push_unsupported(document, family, node.span.clone());
+                }
             }
             _ => self.push_unsupported(document, family, node.span.clone()),
         }
@@ -5950,11 +6172,11 @@ impl SemanticModelBuilder {
     /// `ConnectionUsageMember`'s inline `connect` clause): its path expression is a structured
     /// `Expression` (not a flattened string), so a simple/qualified name (`Expression::FeatureRef`)
     /// resolves as an authored `ConnectorEnd` reference through the same shared lexical lookup as
-    /// `AliasBinding`. A dotted feature-chain path (`Expression::MemberAccess`, e.g. `a.portA`) or
-    /// any other expression shape has no chained-feature-access resolution anywhere in this
-    /// pipeline yet (a materially larger resolution problem than a single-segment reference), so
-    /// it is left as an explicit `unsupported_connection_definition_member` diagnostic here rather
-    /// than a fabricated or partial resolution.
+    /// `AliasBinding`. A dotted feature-chain path (`Expression::MemberAccess`, e.g. `t.bead`)
+    /// resolves as a `ReferenceKind::MemberAccessOperand` reference instead (see its doc comment
+    /// for the algorithm), through `flatten_member_access_chain`/`push_member_access_reference`.
+    /// Any other expression shape is left as an explicit `unsupported_connection_definition_member`
+    /// diagnostic rather than a fabricated or partial resolution.
     fn lower_connector_end(
         &mut self,
         document: DocumentId,
@@ -5979,6 +6201,22 @@ impl SemanticModelBuilder {
                     span,
                     import: None,
                 })?;
+            }
+            Expression::MemberAccess { .. } | Expression::FeatureChainRef(_) => {
+                if let Some(chain) = flatten_member_access_chain(&node.value.expression) {
+                    self.push_member_access_reference(
+                        owner,
+                        document,
+                        &chain,
+                        node.value.expression.span.clone(),
+                    )?;
+                } else {
+                    self.push_unsupported(
+                        document,
+                        UnsupportedFamily::ConnectionDefinitionMember,
+                        node.span.clone(),
+                    );
+                }
             }
             _ => self.push_unsupported(
                 document,
@@ -6238,6 +6476,17 @@ impl SemanticModelBuilder {
                     span,
                     import: None,
                 })?;
+            }
+            Expression::MemberAccess { .. } | Expression::FeatureChainRef(_) => {
+                if let Some(chain) = flatten_member_access_chain(node) {
+                    self.push_member_access_reference(owner, document, &chain, node.span.clone())?;
+                } else {
+                    self.push_unsupported(
+                        document,
+                        UnsupportedFamily::InterfaceDefinitionMember,
+                        node.span.clone(),
+                    );
+                }
             }
             _ => self.push_unsupported(
                 document,
@@ -8067,6 +8316,101 @@ mod tests {
                 "(kind connectorEnd) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::bus\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::d2\")))"
             ),
             "expected bus's connector-end reference to d2 to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn connector_end_dotted_member_access_resolves_through_its_bases_type() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def T {\n\
+             \t\tpart bead;\n\
+             \t}\n\
+             \tconnection def C;\n\
+             \tpart t : T;\n\
+             \tpart d2;\n\
+             \tconnection bus : C connect t.bead to d2;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind memberAccessOperand) (ordinal 0))\n      (authored-target \"t::bead\")\n      (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::T::bead\")))))"
+            ),
+            "expected t.bead to resolve to T's owned `bead` member, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn attribute_default_value_dotted_member_access_resolves_through_its_bases_type() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def F {\n\
+             \t\tattribute a;\n\
+             \t}\n\
+             \tpart f : F;\n\
+             \tattribute g = f.a;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind memberAccessOperand) (ordinal 0))\n      (authored-target \"f::a\")\n      (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::F::a\")))))"
+            ),
+            "expected f.a to resolve to F's owned `a` member, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn attribute_default_value_dotted_member_access_chain_resolves_through_multiple_hops() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def C3 {\n\
+             \t\tattribute z;\n\
+             \t}\n\
+             \tpart def B3 {\n\
+             \t\tpart c : C3;\n\
+             \t}\n\
+             \tpart def A3 {\n\
+             \t\tpart b : B3;\n\
+             \t}\n\
+             \tpart a : A3;\n\
+             \tattribute g = a.b.c.z;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind memberAccessOperand) (ordinal 0))\n      (authored-target \"a::b::c::z\")\n      (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C3::z\")))))"
+            ),
+            "expected the a.b.c.z chain to resolve through three hops to C3's owned `z` member, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn attribute_default_value_dotted_member_access_with_unresolvable_base_stays_unresolved() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute g = nope.a;\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind memberAccessOperand) (ordinal 0))\n      (authored-target \"nope::a\")\n      (outcome (status unresolved))"),
+            "expected an unresolvable base to leave the whole chain explicitly unresolved (never fabricated), got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn attribute_default_value_dotted_member_access_with_missing_member_stays_unresolved() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def F {\n\
+             \t\tattribute a;\n\
+             \t}\n\
+             \tpart f : F;\n\
+             \tattribute g = f.missing;\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind memberAccessOperand) (ordinal 0))\n      (authored-target \"f::missing\")\n      (outcome (status unresolved))"),
+            "expected a member absent from f's type F to leave the chain explicitly unresolved (never fabricated), got:\n{output}"
         );
     }
 

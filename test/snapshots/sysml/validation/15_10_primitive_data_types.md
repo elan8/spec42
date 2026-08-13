@@ -166,6 +166,12 @@ package '15.10-Primitive Data Types' {
         (source "semantic")
         (range (start 80 27) (end 80 43))
       )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 86 47) (end 86 68))
+      )
     )
   )
 )
@@ -201,7 +207,7 @@ package '15.10-Primitive Data Types' {
     (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::UnsignedReal"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Real"))))
     (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (anonymous (kind constraint) (ordinal 0))))) (kind constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "x"))))
     (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::UnsignedReal::x"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real")) (redefinition (reference "self"))))
-    (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::aperatureDiameter"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "DiameterChoice"))))
+    (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::aperatureDiameter"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "DiameterChoice")) (expressionOperand (reference "DiameterChoice::small"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
@@ -252,6 +258,9 @@ package '15.10-Primitive Data Types' {
     (reference (id (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::aperatureDiameter"))) (kind featureTyping) (ordinal 0))
       (authored-target "DiameterChoice")
       (outcome (status resolved) (target (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::DiameterChoice")))))
+    (reference (id (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::aperatureDiameter"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "DiameterChoice::small")
+      (outcome (status unresolved)))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::ConditionLevel::associatedColor"))) (target (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::ConditionColor"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::ConditionLevel::associatedColor"))) (kind featureTyping) (ordinal 0)))
@@ -331,6 +340,10 @@ package '15.10-Primitive Data Types' {
   (query (document "memory://snapshot/15_10_primitive_data_types.md") (range (start 86 30) (end 86 44)) (probe (position 86 30))
     (reference (id (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::aperatureDiameter"))) (kind featureTyping) (ordinal 0) (authored-target "DiameterChoice")
       (outcome (status resolved) (target (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::DiameterChoice")))))
+  )
+  (query (document "memory://snapshot/15_10_primitive_data_types.md") (range (start 86 47) (end 86 68)) (probe (position 86 47))
+    (reference (id (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::aperatureDiameter"))) (kind expressionOperand) (ordinal 0) (authored-target "DiameterChoice::small")
+      (outcome (status unresolved)))
   )
 )
 ~~~

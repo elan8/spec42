@@ -69,6 +69,12 @@ package Connectors {
         (range (start 7 2) (end 7 29))
       )
       (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 8 14) (end 8 16))
+      )
+      (diagnostic
         (severity error)
         (code "unexpected_keyword_in_scope")
         (source "parser")
@@ -152,11 +158,14 @@ package Connectors {
     (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::binding"))) (kind attribute) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::connector"))) (kind attribute) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::connector"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "c2"))))
     (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::succession"))) (kind attribute) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::B"))) (kind class-def) (membership (kind owning) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::connector"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "c2")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -167,5 +176,9 @@ package Connectors {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/connectors.md") (range (start 8 14) (end 8 16)) (probe (position 8 14))
+    (reference (id (source (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::connector"))) (kind expressionOperand) (ordinal 0) (authored-target "c2")
+      (outcome (status unresolved)))
+  )
 )
 ~~~
