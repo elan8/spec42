@@ -460,4 +460,97 @@ mod tests {
             "did not expect unsupported_occurrence_definition_member, got: {sexpr}"
         );
     }
+
+    /// A `transition ... first X then Y;` body element's `source`/`target` operands must each
+    /// resolve to their sibling state declarations, not fall through to
+    /// `unsupported_state_definition_member`.
+    #[test]
+    fn transition_source_and_target_resolve() {
+        let sexpr = semantic_sexpr_for(
+            "package P { state def S { state off; state on; transition first off then on; } }",
+        );
+        assert!(
+            sexpr.contains("(kind transitionSource)"),
+            "expected a transitionSource relationship kind, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(kind transitionTarget)"),
+            "expected a transitionTarget relationship kind, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("(status unresolved)"),
+            "expected both transition ends to resolve to their sibling state declarations, got: {sexpr}"
+        );
+    }
+
+    /// A transition whose `source`/`target` are not declared anywhere in the model must stay an
+    /// explicit unresolved reference fact, not a fabricated or guessed target.
+    #[test]
+    fn transition_source_and_target_unresolvable_stay_unresolved() {
+        let sexpr = semantic_sexpr_for(
+            "package P { state def S { transition first missingOff then missingOn; } }",
+        );
+        assert!(
+            sexpr.contains("(kind transitionSource)") && sexpr.contains("(kind transitionTarget)"),
+            "expected transitionSource/transitionTarget references to be authored, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(status unresolved)"),
+            "expected the unresolvable transition ends to remain explicitly unresolved, got: {sexpr}"
+        );
+    }
+
+    /// A transition `if <guard>;` boolean expression with literal comparison operands must
+    /// evaluate to a constant `Boolean` through the exact same `classify_constraint_expression`/
+    /// `EvalNode` machinery a `constraint`/`calc` body uses (see `9f63c5a4` and earlier
+    /// expression/evaluation slices), not a separate transition-specific evaluator.
+    #[test]
+    fn transition_guard_with_literal_operands_evaluates() {
+        let sexpr = semantic_sexpr_for(
+            "package P { state def S { state off; state on; transition first off if 1 < 2 then on; } }",
+        );
+        assert!(
+            sexpr.contains("(value (boolean true))") || sexpr.contains("(boolean true)"),
+            "expected the literal guard `1 < 2` to fold to a constant true, got: {sexpr}"
+        );
+    }
+
+    /// A transition guard referencing an operand with no known constant value must stay
+    /// non-constant, not fabricate a truth value.
+    #[test]
+    fn transition_guard_with_unresolvable_operand_stays_non_constant() {
+        let sexpr = semantic_sexpr_for(
+            "package P { state def S { state off; state on; transition first off if missingFlag then on; } }",
+        );
+        assert!(
+            sexpr.contains("(kind expressionOperand)"),
+            "expected the guard's feature reference to be lowered as an expressionOperand, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("(value (boolean true))") && !sexpr.contains("(value (boolean false))"),
+            "did not expect an unresolvable guard operand to fold to a concrete boolean, got: {sexpr}"
+        );
+    }
+
+    /// A transition's shorthand `accept <trigger>;` and `do action <effect>;` clauses must each
+    /// resolve to their sibling declarations, not fall through to
+    /// `unsupported_state_definition_member`.
+    #[test]
+    fn transition_trigger_and_effect_resolve() {
+        let sexpr = semantic_sexpr_for(
+            "package P { action doStuff; state def S { state off; state on; transition first off accept trigger1 do doStuff then on; } action trigger1; }",
+        );
+        assert!(
+            sexpr.contains("(kind transitionTrigger)"),
+            "expected a transitionTrigger relationship kind, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(kind transitionEffect)"),
+            "expected a transitionEffect relationship kind, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("(status unresolved)"),
+            "expected both the trigger and effect to resolve to their sibling declarations, got: {sexpr}"
+        );
+    }
 }

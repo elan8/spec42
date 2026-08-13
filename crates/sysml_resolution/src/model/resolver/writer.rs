@@ -828,6 +828,7 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::ParameterUsage => "parameter",
         DeclarationKind::SubjectUsage => "subject",
         DeclarationKind::PerformActionUsage => "perform-action",
+        DeclarationKind::Transition => "transition",
     }
 }
 
@@ -869,6 +870,10 @@ fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::ExitActionBinding => "exitActionBinding",
         ReferenceKind::InitialState => "initialState",
         ReferenceKind::ExpressionOperand => "expressionOperand",
+        ReferenceKind::TransitionSource => "transitionSource",
+        ReferenceKind::TransitionTarget => "transitionTarget",
+        ReferenceKind::TransitionTrigger => "transitionTrigger",
+        ReferenceKind::TransitionEffect => "transitionEffect",
     }
 }
 
@@ -889,6 +894,10 @@ fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::ExitActionBinding => Some("exitActionBinding"),
         ReferenceKind::InitialState => Some("initialState"),
         ReferenceKind::ExpressionOperand => Some("expressionOperand"),
+        ReferenceKind::TransitionSource => Some("transitionSource"),
+        ReferenceKind::TransitionTarget => Some("transitionTarget"),
+        ReferenceKind::TransitionTrigger => Some("transitionTrigger"),
+        ReferenceKind::TransitionEffect => Some("transitionEffect"),
         ReferenceKind::NamespaceImport
         | ReferenceKind::MembershipImport
         | ReferenceKind::FilterImport => None,

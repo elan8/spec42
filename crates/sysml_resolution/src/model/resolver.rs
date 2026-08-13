@@ -748,6 +748,10 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::ExitActionBinding
                     | ReferenceKind::InitialState
                     | ReferenceKind::ExpressionOperand
+                    | ReferenceKind::TransitionSource
+                    | ReferenceKind::TransitionTarget
+                    | ReferenceKind::TransitionTrigger
+                    | ReferenceKind::TransitionEffect
             )
             .then_some(index)
         })
@@ -1574,7 +1578,11 @@ fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<D
         | ReferenceKind::DoActionBinding
         | ReferenceKind::ExitActionBinding
         | ReferenceKind::InitialState
-        | ReferenceKind::ExpressionOperand => None,
+        | ReferenceKind::ExpressionOperand
+        | ReferenceKind::TransitionSource
+        | ReferenceKind::TransitionTarget
+        | ReferenceKind::TransitionTrigger
+        | ReferenceKind::TransitionEffect => None,
     }
 }
 
@@ -1739,7 +1747,11 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::DoActionBinding
             | ReferenceKind::ExitActionBinding
             | ReferenceKind::InitialState
-            | ReferenceKind::ExpressionOperand => {}
+            | ReferenceKind::ExpressionOperand
+            | ReferenceKind::TransitionSource
+            | ReferenceKind::TransitionTarget
+            | ReferenceKind::TransitionTrigger
+            | ReferenceKind::TransitionEffect => {}
         }
     }
     Ok((

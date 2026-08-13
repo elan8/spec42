@@ -38,10 +38,10 @@ use sysml_v2_parser_next::{
         RenderingDefBodyElement, RequirementDef, RequirementDefBody, RequirementDefBodyElement,
         RequirementUsage as ParserRequirementUsage, ReturnDecl, RootElement, Span, StateDef,
         StateDefBody, StateDefBodyElement, StateUsage as ParserStateUsage, SubjectDecl,
-        SubsettingKind, SubsettingRelationship, ThenStmt, UseCaseDef, UseCaseDefBody,
-        UseCaseDefBodyElement, VerificationCaseDef, ViewBody, ViewBodyElement, ViewDef,
-        ViewDefBody, ViewDefBodyElement, ViewUsage as ParserViewUsage, ViewpointDef,
-        Visibility as ParserVisibility,
+        SubsettingKind, SubsettingRelationship, ThenStmt, Transition, TransitionAccept,
+        TransitionEffect, UseCaseDef, UseCaseDefBody, UseCaseDefBodyElement, VerificationCaseDef,
+        ViewBody, ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement,
+        ViewUsage as ParserViewUsage, ViewpointDef, Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
 };
@@ -441,6 +441,24 @@ enum DeclarationKind {
     /// <path>;` reference form (`Perform::action_reference`, no declaration label) and body
     /// content beyond nested `part`/`item` usages are out of scope for this slice.
     PerformActionUsage,
+    /// An anonymous `transition` feature synthesized for a state def/usage's `transition ...;`
+    /// body element (BNF `Transition`, `ast::Transition`), owned by the enclosing state
+    /// declaration, mirroring `Succession`'s nested-declaration shape (this task picks up the
+    /// full construct explicitly deferred by `4762b875`). `source`/`target` are lowered as
+    /// `ReferenceKind::TransitionSource`/`TransitionTarget` references (mirroring
+    /// `lower_succession_end`), a supported `guard` boolean expression is lowered/evaluated
+    /// through the exact same `ExpressionOperand`/`classify_constraint_expression` machinery a
+    /// `constraint`/`calc` body uses, an `accept` shorthand trigger (`TransitionAccept::
+    /// Shorthand`) that is a simple/qualified name is lowered as a `TransitionTrigger`
+    /// reference, and a `do` effect that is either `TransitionEffect::Perform`'s typed
+    /// `type_name` or a simple/qualified-name `TransitionEffect::Expression` is lowered as a
+    /// `TransitionEffect` reference (mirroring `EntryActionBinding`'s action-reference shape).
+    /// A typed `accept` payload declaration (`TransitionAccept::Payload`), a time trigger
+    /// (`TransitionAccept::TimeTrigger`), and the richer `Accept`/`Send`/`Assign` effect shapes
+    /// are out of scope for this slice (not a parser gap -- the typed AST is adequate, this is a
+    /// deliberate scope boundary) and fall through to the existing
+    /// `unsupported_state_definition_member` diagnostic.
+    Transition,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -527,6 +545,30 @@ enum ReferenceKind {
     /// an actual truth value) is explicitly out of scope for this slice; only the operand
     /// references themselves are resolved.
     ExpressionOperand,
+    /// The authored `source` operand of a `transition ...;` body element (BNF `Transition.
+    /// source`), resolved through the same `DeclarationDomain::Any` lexical lookup as
+    /// `Succession`: a transition end can reference any owned sibling state feature, not just a
+    /// Type. Sourced at an anonymous `DeclarationKind::Transition` feature owned by the
+    /// enclosing state declaration, mirroring `Succession`'s nested-declaration shape. Only a
+    /// simple/qualified name (`Expression::FeatureRef`) is resolved, exactly like
+    /// `lower_succession_end`.
+    TransitionSource,
+    /// The authored `target` operand of a `transition ...;` body element (BNF `Transition.
+    /// target`), same shape and scope as `TransitionSource`.
+    TransitionTarget,
+    /// The authored shorthand `accept` trigger of a `transition ...;` body element
+    /// (`TransitionAccept::Shorthand`'s expression, when it is a simple/qualified name), resolved
+    /// through the same `DeclarationDomain::Any` lexical lookup as `TransitionSource`. The typed
+    /// `TransitionAccept::Payload` form (an inline declared parameter, not a reference) and the
+    /// `TransitionAccept::TimeTrigger` form are out of scope.
+    TransitionTrigger,
+    /// The authored `do` effect target of a `transition ...;` body element -- either
+    /// `TransitionEffect::Perform`'s typed `type_name` (a structured `QualifiedReferenceId`,
+    /// resolved the same way `EntryActionBinding` resolves `EntryAction.action_reference`) or a
+    /// simple/qualified-name `TransitionEffect::Expression` (resolved the same way
+    /// `TransitionSource` resolves `Transition.source`). The richer `Accept`/`Send`/`Assign`
+    /// effect shapes are out of scope.
+    TransitionEffect,
 }
 
 /// The computed or explicit outcome of evaluating one supported constraint/calc expression
@@ -3505,14 +3547,16 @@ impl SemanticModelBuilder {
                 StateDefBodyElement::Then(then) => {
                     self.lower_state_then_stmt(document, owner, then)?;
                 }
+                StateDefBodyElement::Transition(transition) => {
+                    self.lower_transition(document, owner, transition)?;
+                }
                 StateDefBodyElement::Annotation(_)
                 | StateDefBodyElement::MetadataAnnotation(_)
                 | StateDefBodyElement::MetadataKeywordUsage(_)
                 | StateDefBodyElement::Other(_)
                 | StateDefBodyElement::InOutDecl(_)
                 | StateDefBodyElement::FinalState(_)
-                | StateDefBodyElement::Ref(_)
-                | StateDefBodyElement::Transition(_) => self.push_unsupported(
+                | StateDefBodyElement::Ref(_) => self.push_unsupported(
                     document,
                     UnsupportedFamily::StateDefinitionMember,
                     element.span.clone(),
@@ -3701,6 +3745,159 @@ impl SemanticModelBuilder {
             span,
             import: None,
         })?;
+        Ok(())
+    }
+
+    /// Lowers a `transition ...;` body element (BNF `Transition`, `ast::Transition`) found inside
+    /// a state def/usage body as an anonymous `DeclarationKind::Transition` feature owned by the
+    /// enclosing state `owner` declaration, mirroring `lower_first_stmt`/`lower_state_entry_
+    /// action`'s nested-declaration shape so `source`/`target`/`guard`/`accept`/`effect` all
+    /// resolve against the state's own scope (where sibling states/actions are declared), not
+    /// the state's enclosing scope. Picks up the full construct explicitly deferred by
+    /// `4762b875`; see `DeclarationKind::Transition`'s doc comment for the exact sub-piece scope
+    /// boundary.
+    fn lower_transition(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        node: &Node<Transition>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::Transition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        if let Some(source) = &node.value.source {
+            self.lower_transition_end(
+                document,
+                declaration,
+                ReferenceKind::TransitionSource,
+                source,
+            )?;
+        }
+        self.lower_transition_end(
+            document,
+            declaration,
+            ReferenceKind::TransitionTarget,
+            &node.value.target,
+        )?;
+        if let Some(guard) = &node.value.guard {
+            self.push_evaluation_fact(declaration, classify_constraint_expression(&guard.value));
+            self.lower_constraint_expression(
+                document,
+                declaration,
+                UnsupportedFamily::StateDefinitionMember,
+                guard,
+            )?;
+        }
+        match &node.value.accept {
+            None => {}
+            Some(TransitionAccept::Shorthand(expression, _via)) => {
+                self.lower_transition_end(
+                    document,
+                    declaration,
+                    ReferenceKind::TransitionTrigger,
+                    expression,
+                )?;
+            }
+            Some(TransitionAccept::Payload(_, _)) | Some(TransitionAccept::TimeTrigger(_, _)) => {
+                self.push_unsupported(
+                    document,
+                    UnsupportedFamily::StateDefinitionMember,
+                    node.span.clone(),
+                );
+            }
+        }
+        match &node.value.effect {
+            None => {}
+            Some(TransitionEffect::Perform {
+                type_name: Some(type_name),
+                ..
+            }) => {
+                self.push_action_binding_reference(
+                    document,
+                    declaration,
+                    ReferenceKind::TransitionEffect,
+                    *type_name,
+                )?;
+            }
+            Some(TransitionEffect::Expression(expression)) => {
+                self.lower_transition_end(
+                    document,
+                    declaration,
+                    ReferenceKind::TransitionEffect,
+                    expression,
+                )?;
+            }
+            Some(TransitionEffect::Perform {
+                type_name: None, ..
+            })
+            | Some(TransitionEffect::Accept { .. })
+            | Some(TransitionEffect::Send { .. })
+            | Some(TransitionEffect::Assign { .. }) => {
+                self.push_unsupported(
+                    document,
+                    UnsupportedFamily::StateDefinitionMember,
+                    node.span.clone(),
+                );
+            }
+        }
+        Ok(())
+    }
+
+    /// Lowers one `Transition` operand (`source`/`target`/shorthand `accept`/`Expression`
+    /// effect): its path expression is a structured `Expression` (not a flattened string), so a
+    /// simple/qualified name (`Expression::FeatureRef`) resolves as an authored reference of
+    /// `kind` through the same shared `DeclarationDomain::Any` lexical lookup as
+    /// `lower_succession_end`. Any other expression shape is left as an explicit unsupported-
+    /// member diagnostic, mirroring `lower_succession_end`'s scope boundary.
+    fn lower_transition_end(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        kind: ReferenceKind,
+        node: &Node<Expression>,
+    ) -> Result<(), ConstructionError> {
+        match &node.value {
+            Expression::FeatureRef(target) => {
+                let span = self.documents[document.index()]
+                    .parsed
+                    .qualified_reference(*target)
+                    .ok_or(ConstructionError::InvalidParserReference)?
+                    .metadata
+                    .span
+                    .clone();
+                self.push_reference(PendingReference {
+                    source: owner,
+                    kind,
+                    document,
+                    local: *target,
+                    flags: RelationshipFlags::default(),
+                    span,
+                    import: None,
+                })?;
+            }
+            _ => self.push_unsupported(
+                document,
+                UnsupportedFamily::StateDefinitionMember,
+                node.span.clone(),
+            ),
+        }
         Ok(())
     }
 
@@ -8591,8 +8788,15 @@ mod tests {
         );
     }
 
+    /// A `transition t first s1 then s2;` body element's `source`/`target` operands now resolve
+    /// to their sibling state declarations (this task picks up the full `transition` construct
+    /// explicitly deferred by `4762b875`), so it no longer surfaces as an explicit unsupported
+    /// state-definition-member diagnostic. See `TransitionEffect`/`TransitionAccept`-specific
+    /// unsupported sub-piece coverage in `lib.rs`'s `transition_*` tests for what remains
+    /// deliberately out of scope (typed `accept` payload declarations, time triggers, and the
+    /// richer `Accept`/`Send`/`Assign` effect shapes).
     #[test]
-    fn transition_inside_a_state_def_still_surfaces_as_unsupported() {
+    fn transition_inside_a_state_def_resolves_source_and_target() {
         let request = crate::BuildRequest::new(
             vec![crate::SourceInput::new(
                 "memory://test/enum.sysml",
@@ -8617,9 +8821,19 @@ mod tests {
             .write_diagnostics_sexpr(&mut output)
             .unwrap();
         assert!(
-            output.contains("unsupported_state_definition_member"),
-            "expected the transition statement to surface as an explicit unsupported \
-             state-definition-member diagnostic, got:\n{output}"
+            !output.contains("unsupported_state_definition_member"),
+            "did not expect an unsupported state-definition-member diagnostic for a fully \
+             resolvable transition, got:\n{output}"
+        );
+        let mut semantic = String::new();
+        published
+            .debug()
+            .write_semantic_sexpr(&mut semantic)
+            .unwrap();
+        assert!(
+            semantic.contains("(kind transitionSource)")
+                && semantic.contains("(kind transitionTarget)"),
+            "expected transitionSource/transitionTarget relationship kinds, got:\n{semantic}"
         );
     }
 
