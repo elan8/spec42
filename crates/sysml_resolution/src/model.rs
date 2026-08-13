@@ -570,6 +570,19 @@ pub(crate) enum EvaluatedValue {
     /// cycles (`422e2216`): an explicit typed non-converged outcome, never a fabricated value, an
     /// infinite loop, or a panic.
     NonConverged,
+    /// Slice 4 (arithmetic calc-body evaluation): a constant `Div`/`Mod` whose divisor evaluated
+    /// to zero (integer `0` or real `0.0`). Rust's `i64`/`i32` division panics on a zero divisor
+    /// and `f64` division silently yields `inf`/`NaN`; both are explicitly intercepted before the
+    /// arithmetic operation runs (see `fold_arithmetic`) so this typed outcome publishes instead
+    /// of a panic or a fabricated "valid" `Real` infinity.
+    DivisionByZero,
+    /// Slice 4: an arithmetic `BinaryOp` operand folded to `Boolean` where a numeric (Integer/
+    /// Real) operand is structurally expected. The grammar makes this effectively unreachable
+    /// today (a `Boolean` leaf only arises from a literal or a propagated constant, and nothing
+    /// currently propagates a `Boolean` into an arithmetic position from real corpus input), but
+    /// `fold_arithmetic` handles it defensively rather than panicking, mirroring
+    /// `fold_literal_comparison`'s own defensive `NonConstant` fallback for a mistyped pairing.
+    TypeMismatch,
 }
 
 /// A construction-time-classified mirror of a supported constraint/calc expression tree, built by
@@ -587,6 +600,11 @@ enum EvalNode {
     /// left-to-right expression order.
     Operand(u32),
     Comparison(BinaryOperator, Box<EvalNode>, Box<EvalNode>),
+    /// Slice 4: an arithmetic `BinaryOp` (`Add`/`Sub`/`Mul`/`Div`/`Mod`) found in a calc-body
+    /// expression. Constraint bodies never build this variant -- `classify_constraint_node` has no
+    /// arithmetic arm, only `classify_calc_node` does -- keeping constraint evaluation strictly
+    /// comparison-only, unchanged from slices 1-3.
+    Arithmetic(BinaryOperator, Box<EvalNode>, Box<EvalNode>),
 }
 
 /// The classification `classify_constraint_expression`/`classify_calc_expression` assign to one
@@ -644,6 +662,95 @@ fn fold_literal_comparison(
     result.map_or(EvaluatedValue::NonConstant, EvaluatedValue::Boolean)
 }
 
+/// Folds an arithmetic operation of two already-constant operands (slice 4). Numeric promotion
+/// rule: `Integer op Integer` stays `Integer` via checked arithmetic (overflow is reported as
+/// `NonConstant` rather than panicking or silently wrapping -- the same conservative "cannot fold
+/// this" posture the house convention already uses for a mistyped comparison pairing); any pairing
+/// involving a `Real` operand (`Real op Real` or mixed `Integer op Real`/`Real op Integer`)
+/// promotes the `Integer` side to `f64` and produces a `Real`, matching Rust's/IEEE754's usual
+/// widen-to-float promotion and the same `as f64` widening `fold_literal_comparison` already uses
+/// for mixed-numeric comparisons -- i.e. no separate reference implementation was consulted, since
+/// this repository already committed to that promotion rule for comparisons and arithmetic should
+/// not diverge from it. `Div`/`Mod` by a constant zero divisor (integer or real) is intercepted
+/// explicitly *before* the operation runs and reports `DivisionByZero`, never a panic (`i64 / 0`
+/// panics) or a silently "valid" `f64` infinity/NaN. A `Boolean` operand in an arithmetic position
+/// reports `TypeMismatch` (defensive; unreachable via today's supported shapes). `NonConverged`/
+/// `UnresolvedOperand`/`NonConstant` operands propagate through unchanged, in the same priority
+/// order `fold_literal_comparison`/`fold_eval_node_pending`'s comparison arm already uses.
+fn fold_arithmetic(
+    op: BinaryOperator,
+    left: EvaluatedValue,
+    right: EvaluatedValue,
+) -> EvaluatedValue {
+    match (left, right) {
+        (EvaluatedValue::NonConverged, _) | (_, EvaluatedValue::NonConverged) => {
+            EvaluatedValue::NonConverged
+        }
+        (EvaluatedValue::UnresolvedOperand, _) | (_, EvaluatedValue::UnresolvedOperand) => {
+            EvaluatedValue::UnresolvedOperand
+        }
+        (EvaluatedValue::NonConstant, _) | (_, EvaluatedValue::NonConstant) => {
+            EvaluatedValue::NonConstant
+        }
+        (EvaluatedValue::Boolean(_), _) | (_, EvaluatedValue::Boolean(_)) => {
+            EvaluatedValue::TypeMismatch
+        }
+        (EvaluatedValue::Integer(left), EvaluatedValue::Integer(right)) => {
+            let result = match op {
+                BinaryOperator::Add => left.checked_add(right),
+                BinaryOperator::Sub => left.checked_sub(right),
+                BinaryOperator::Mul => left.checked_mul(right),
+                BinaryOperator::Div => {
+                    if right == 0 {
+                        return EvaluatedValue::DivisionByZero;
+                    }
+                    left.checked_div(right)
+                }
+                BinaryOperator::Mod => {
+                    if right == 0 {
+                        return EvaluatedValue::DivisionByZero;
+                    }
+                    left.checked_rem(right)
+                }
+                _ => return EvaluatedValue::NonConstant,
+            };
+            result.map_or(EvaluatedValue::NonConstant, EvaluatedValue::Integer)
+        }
+        (left, right) => {
+            fn as_f64(value: EvaluatedValue) -> Option<f64> {
+                match value {
+                    EvaluatedValue::Integer(value) => Some(value as f64),
+                    EvaluatedValue::Real(value) => Some(value),
+                    _ => None,
+                }
+            }
+            let (Some(left), Some(right)) = (as_f64(left), as_f64(right)) else {
+                return EvaluatedValue::NonConstant;
+            };
+            match op {
+                BinaryOperator::Add => EvaluatedValue::Real(left + right),
+                BinaryOperator::Sub => EvaluatedValue::Real(left - right),
+                BinaryOperator::Mul => EvaluatedValue::Real(left * right),
+                BinaryOperator::Div => {
+                    if right == 0.0 {
+                        EvaluatedValue::DivisionByZero
+                    } else {
+                        EvaluatedValue::Real(left / right)
+                    }
+                }
+                BinaryOperator::Mod => {
+                    if right == 0.0 {
+                        EvaluatedValue::DivisionByZero
+                    } else {
+                        EvaluatedValue::Real(left % right)
+                    }
+                }
+                _ => EvaluatedValue::NonConstant,
+            }
+        }
+    }
+}
+
 fn literal_expression_value(node: &Expression) -> Option<EvaluatedValue> {
     match node {
         Expression::LiteralBoolean(value) => Some(EvaluatedValue::Boolean(*value)),
@@ -682,7 +789,9 @@ fn classify_constraint_node(node: &Expression, ordinal: &mut u32) -> Option<Eval
 }
 
 /// Recursively builds the `EvalNode` mirror for a calc-body expression, mirroring
-/// `lower_calc_expression`'s supported shapes (no comparison-operator support).
+/// `lower_calc_expression`'s supported shapes: no comparison-operator support (calc bodies stay
+/// comparison-free, per slice 1), plus slice 4's arithmetic `BinaryOp` (`Add`/`Sub`/`Mul`/`Div`/
+/// `Mod`) support.
 fn classify_calc_node(node: &Expression, ordinal: &mut u32) -> Option<EvalNode> {
     match node {
         Expression::LiteralInteger(_)
@@ -694,6 +803,15 @@ fn classify_calc_node(node: &Expression, ordinal: &mut u32) -> Option<EvalNode> 
             Some(leaf)
         }
         Expression::Parenthesized(inner) => classify_calc_node(&inner.value, ordinal),
+        Expression::BinaryOp { op, left, right } if is_arithmetic_operator(op) => {
+            let left = classify_calc_node(&left.value, ordinal)?;
+            let right = classify_calc_node(&right.value, ordinal)?;
+            Some(EvalNode::Arithmetic(
+                op.clone(),
+                Box::new(left),
+                Box::new(right),
+            ))
+        }
         _ => None,
     }
 }
@@ -704,7 +822,7 @@ fn eval_node_is_pure_literal(node: &EvalNode) -> bool {
     match node {
         EvalNode::Literal(_) => true,
         EvalNode::Operand(_) => false,
-        EvalNode::Comparison(_, left, right) => {
+        EvalNode::Comparison(_, left, right) | EvalNode::Arithmetic(_, left, right) => {
             eval_node_is_pure_literal(left) && eval_node_is_pure_literal(right)
         }
     }
@@ -749,6 +867,11 @@ fn fold_eval_node_pending(
                 (left, right) => fold_literal_comparison(op.clone(), left, right),
             })
         }
+        EvalNode::Arithmetic(op, left, right) => {
+            let left = fold_eval_node_pending(left, resolve_operand)?;
+            let right = fold_eval_node_pending(right, resolve_operand)?;
+            Some(fold_arithmetic(op.clone(), left, right))
+        }
     }
 }
 
@@ -771,8 +894,8 @@ fn classify_constraint_expression(node: &Expression) -> ExpressionEvalShape {
 
 /// Classifies a calc-body expression exactly along `lower_calc_expression`'s supported-shape
 /// boundary (the same leaf/reference/parenthesized shapes as `classify_constraint_expression`,
-/// minus comparison-operator support, since calc bodies are typically arithmetic formulas and
-/// arithmetic `BinaryOp`s are not part of slice 1's supported scope).
+/// minus comparison-operator support, plus slice 4's arithmetic `BinaryOp` support -- see
+/// `classify_calc_node`).
 fn classify_calc_expression(node: &Expression) -> ExpressionEvalShape {
     let mut ordinal = 0u32;
     match classify_calc_node(node, &mut ordinal) {
@@ -800,6 +923,30 @@ fn is_comparison_operator(op: &BinaryOperator) -> bool {
             | BinaryOperator::Le
             | BinaryOperator::Gt
             | BinaryOperator::Ge
+    )
+}
+
+/// Whether a `BinaryOperator` is one of the five basic arithmetic operators
+/// (`lower_calc_expression`'s slice-4 supported `BinaryOp` shape): `+`, `-`, `*`, `/`, `%`.
+/// `Exp`/`Pow` (KerML's two distinct exponentiation-like variants) are deliberately excluded from
+/// this slice: real-corpus `**` usage (the only exponentiation spelling found in the corpus, e.g.
+/// `turbojet_stage_analysis.md`'s `(p_2 / p_1)**((gamma - 1) / gamma)`,
+/// `sys_ml_v2_spec_annex_a_simple_vehicle_model.md`'s `tpd_avg **(-3)`) is consistently mixed with
+/// unary negation, nested division, and fractional/negative real exponents in the same expression
+/// -- shapes well outside this slice's scope regardless of whether `Exp`/`Pow` themselves were
+/// supported, so including just the operator would not make any additional real-corpus expression
+/// foldable. `is_arithmetic_operator` excludes them; `classify_calc_node`/`lower_calc_expression`
+/// therefore fall through to the existing `Unsupported`/`unsupported_calc_definition_member` path
+/// for any `BinaryOp` using `Exp`/`Pow`, exactly like every other still-unsupported shape -- never
+/// a panic.
+fn is_arithmetic_operator(op: &BinaryOperator) -> bool {
+    matches!(
+        op,
+        BinaryOperator::Add
+            | BinaryOperator::Sub
+            | BinaryOperator::Mul
+            | BinaryOperator::Div
+            | BinaryOperator::Mod
     )
 }
 
@@ -3152,15 +3299,17 @@ impl SemanticModelBuilder {
     }
 
     /// Lowers a `calc def`/`calc` usage body's formula expression (slice 1 of the constraint/calc
-    /// expression fact family). Calc bodies are typically arithmetic-result formulas rather than
-    /// boolean comparisons, so comparison-operator support (`lower_constraint_expression`'s
-    /// `BinaryOp` arm) deliberately does not apply here; this slice supports only the same minimal
-    /// leaf shapes -- a literal, a feature/feature-chain reference (resolved as an
-    /// `ExpressionOperand` reference exactly like `lower_constraint_expression`), and a
-    /// parenthesized wrapper -- as a low-risk extension of the same scope. Arithmetic `BinaryOp`s
-    /// (`Add`/`Sub`/`Mul`/`Div`/etc.), invocations, and every other expression shape stay
-    /// unsupported, falling through to the existing `unsupported_calc_definition_member`
-    /// diagnostic, unchanged from prior behavior.
+    /// expression fact family, extended by slice 4 for arithmetic). Calc bodies are typically
+    /// arithmetic-result formulas rather than boolean comparisons, so comparison-operator support
+    /// (`lower_constraint_expression`'s `BinaryOp` arm) deliberately does not apply here; this slice
+    /// supports the minimal leaf shapes -- a literal, a feature/feature-chain reference (resolved
+    /// as an `ExpressionOperand` reference exactly like `lower_constraint_expression`), a
+    /// parenthesized wrapper -- plus (slice 4) an arithmetic `BinaryOp` (`Add`/`Sub`/`Mul`/`Div`/
+    /// `Mod`, see `is_arithmetic_operator`; `Exp`/`Pow` deliberately excluded, see
+    /// `is_arithmetic_operator`'s doc comment) whose operands are recursed into just like
+    /// `lower_constraint_expression`'s comparison arm. Invocations, unary ops, `Exp`/`Pow`, and
+    /// every other expression shape stay unsupported, falling through to the existing
+    /// `unsupported_calc_definition_member` diagnostic, unchanged from prior behavior.
     fn lower_calc_expression(
         &mut self,
         document: DocumentId,
@@ -3193,6 +3342,10 @@ impl SemanticModelBuilder {
             }
             Expression::Parenthesized(inner) => {
                 self.lower_calc_expression(document, declaration, family, inner)
+            }
+            Expression::BinaryOp { op, left, right } if is_arithmetic_operator(op) => {
+                self.lower_calc_expression(document, declaration, family, left)?;
+                self.lower_calc_expression(document, declaration, family, right)
             }
             _ => {
                 self.push_unsupported(document, family, node.span.clone());
@@ -6907,6 +7060,127 @@ mod tests {
         assert!(
             output.contains("(has-evaluation false)"),
             "expected has-evaluation to stay false when nothing evaluates, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_literal_addition_evaluates_to_integer() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcalc def Calc { 2 + 3 }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::Calc\"))) (value (kind integer) (integer 5)))"
+            ),
+            "expected `2 + 3` to fold to a published Integer(5) evaluation fact, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_mixed_multiplication_evaluates_to_promoted_real() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcalc def Calc { 2.0 * 3 }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::Calc\"))) (value (kind real) (real 6"
+            ),
+            "expected `2.0 * 3` to fold to a promoted Real(6.0) evaluation fact, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_integer_division_by_zero_publishes_typed_division_by_zero_not_a_panic() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcalc def Calc { 10 / 0 }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::Calc\"))) (value (kind division-by-zero)))"
+            ),
+            "expected `10 / 0` to publish a typed DivisionByZero outcome rather than panicking, \
+             got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_real_division_by_zero_publishes_typed_division_by_zero() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcalc def Calc { 10.0 / 0.0 }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::Calc\"))) (value (kind division-by-zero)))"
+            ),
+            "expected `10.0 / 0.0` to publish a typed DivisionByZero outcome rather than a \
+             fabricated infinity, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_propagates_constant_operands_through_referenced_attribute_default_values() {
+        // `length` and `width` are both literal-default-valued attributes (slice 3); `Calc`
+        // arithmetic-propagates through both, mirroring the constraint-body propagation tests.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute length = 4;\n\
+             \tattribute width = 5;\n\
+             \tcalc def Calc { length * width }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::Calc\"))) (value (kind integer) (integer 20)))"
+            ),
+            "expected `length * width` to propagate both attributes' literal defaults and fold to \
+             Integer(20), got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_exponent_operator_stays_unsupported_not_a_panic() {
+        // `**` (BinaryOperator::Pow) is deliberately excluded from slice 4's arithmetic scope
+        // (see `is_arithmetic_operator`'s doc comment); it must fall through to the existing
+        // unsupported-shape path, publishing no evaluation fact, not panic.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcalc def Calc { 2 ** 3 }\n\
+             }\n",
+        );
+        assert!(
+            !output.contains("(evaluated (declaration"),
+            "expected `2 ** 3` (Exp/Pow, out of slice-4 scope) to publish no evaluation fact, \
+             got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_arithmetic_mixed_with_comparison_stays_unsupported_not_a_panic() {
+        // Mixing arithmetic into a constraint's comparison shape (`(a + b) > c`) is deliberately
+        // out of scope: constraint bodies remain comparison-only (slice 1), and calc bodies never
+        // get comparison support, so this combination is never recognized by either lowering path.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tconstraint def C { (1 + 2) > 0 }\n\
+             }\n",
+        );
+        assert!(
+            !output.contains("(evaluated (declaration"),
+            "expected `(1 + 2) > 0` (arithmetic mixed with comparison) to publish no evaluation \
+             fact, got:\n{output}"
         );
     }
 
