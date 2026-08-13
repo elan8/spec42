@@ -200,6 +200,103 @@ entry should carry enough detail to file/update an upstream issue against
   the specialization clauses independently (duplicating parser logic, fragile) or (b) shipping
   interface usage declarations with unconditionally-absent subsetting/redefinition facts.
 
+### 7. `individual <kind> <name>;` short usage forms are misparsed or entirely unparseable for `item`, `occurrence`, and `port`
+
+- **Symptom:** Three distinct parser-side bugs, all discovered via
+  `test/snapshots/sysml/coverage_individual.md`'s bottom (usage) block:
+  1. `individual item i1;` lowers as `(kind item-def)` (an `ItemDefinition`), not
+     `(kind item)` (an `ItemUsage`) — the wrong declaration kind entirely, worse than an
+     `unsupported` diagnostic.
+  2. `individual occurrence o1;` is dropped silently: no declaration, no per-line
+     `unsupported` diagnostic — instead a parse-recovery cascade (`recovered_package_body_element`
+     / `recovery_cascade_suppressed`, source `parser`) swallows it and the following line.
+  3. `individual port po1;` is dropped the same way as (2) — the same recovery cascade absorbs
+     it.
+  Compare with `individual part p2;` / `individual action a1;` / `individual state s1;` in the
+  same fixture, which all lower correctly as their usage kinds (`part`/`action`/`state`) — so
+  this is specific to `item`/`occurrence`/`port`, not `individual` usages in general.
+- **Root cause (three separate parser bugs, all in `sysml-v2-parser`
+  `src/parser/package.rs`'s `try_package_body_element`/`try_package_body_behavior` `alt` chains
+  and their constituent parsers):**
+  1. **`item` (dispatch-order shadowing):** `src/parser/item.rs::item_usage` already has
+     correct, dedicated support for this exact form (`let (input, is_individual) =
+     opt(preceded(tag(b"individual"), ws1))...` — comment even cites `individual item ii : II1;`
+     from `Simple Tests/IndividualTest.sysml:4`). The bug is dispatch order:
+     `try_package_body_behavior` tries `item_def` (package-level, **`require_def: false`** via
+     `parse_item_def(input, false)`) *before* `item_usage`. `item_def`'s
+     `DefinitionPrefixOptions::new(b"item").individual_allowed()` has no `.def_required()`, so it
+     happily matches `individual item i1` treating `i1` as the *definition's* identification
+     name with no `def` keyword present at all, and wins the `alt` race before `item_usage` is
+     ever tried. `action_def`/`state_def` do not have this problem because both correctly set
+     `.def_required()` on their package-level parser (see `src/parser/action.rs::action_def`,
+     `src/parser/state.rs::state_def`), so `individual action a1;`/`individual state s1;`
+     legitimately fail `action_def`/`state_def` and fall through to `action_usage`/`state_usage`.
+     `item_def`'s package-level variant is the odd one out. Since `ast::ItemDef` has no field
+     recording whether a `def` keyword was actually present in the source, this cannot be
+     disambiguated downstream in `sysml_resolution` — the AST node spec42 receives is already the
+     wrong shape by the time it arrives.
+  2. **`occurrence` (missing kind-keyword handling in `individual_usage`):**
+     `src/parser/occurrence_body.rs::individual_usage` consumes the literal `individual` token
+     and then goes straight to `occurrence_usage_tail`, which expects the *name* next — it has no
+     handling for an intervening kind keyword (`occurrence`/`item`/`port`/etc., BNF
+     `OccurrenceUsagePrefix` a la `individual occurrence o1;`). So on `individual occurrence o1;`
+     it consumes `individual`, then misreads the literal token `occurrence` as the usage's *name*
+     (`name = "occurrence"`), successfully parses a short, nameless-bodied `OccurrenceUsage`, and
+     leaves `o1;` as unconsumed trailing input — which the outer package-body loop then can't
+     parse as a fresh statement, producing the recovery cascade that swallows both `o1` and
+     whatever follows. `occurrence_def`/`occurrence_usage` (no `individual` prefix) are tried
+     first in the same `alt` chain but both require the literal `occurrence` keyword up front, so
+     neither matches a bare `individual occurrence o1;` (they need `occurrence` first, not
+     `individual`).
+  3. **`port` (no `individual` support anywhere):** `src/parser/port.rs` has zero references to
+     `"individual"` — neither `port_def`/`parse_port_def` nor `port_usage` accept an `individual`
+     prefix in any form. `individual port po1;` therefore cannot be parsed as a `PortDef` or
+     `PortUsage` by any code path; it also isn't recognized by `occurrence_def`/`occurrence_usage`
+     (wrong keyword) and hits the same `individual_usage` name-misparse trap as (2) (`port`
+     misread as the name, `po1;` left dangling), landing in the same recovery cascade.
+- **Also affects the `def` side, and is the actual trigger of the cascade:** the fixture's
+  `recovered_package_body_element`/`recovery_cascade_suppressed` pair is anchored at source line
+  6 (`individual state def D6;`), not at the usage block — i.e. the cascade *starts* at D6 and
+  swallows everything from there through the end of the usage block (D6 through D17, then
+  o1/po1 within the usage block, resyncing only at statement boundaries the recovery logic
+  happens to regain, e.g. `p1`/`i1`(misclassified)/`p2`/`a1`/`s1`). `state_def`
+  (`src/parser/state.rs::state_def`) and `connection_def`
+  (`src/parser/connection.rs::connection_def`) both omit `.individual_allowed()` on their
+  `DefinitionPrefixOptions` (unlike `occurrence_def`/`item_def`/`part_def`/`action_def`/
+  `analysis_case_def`, which all set it and correctly lower D2/D3/D4/D5/D13), so `individual
+  state def D6;`/`individual connection def D7;` fail to parse as `StateDef`/`ConnectionDef` at
+  all even though `sysml_resolution` already has working `lower_state_def`/`lower_connection_def`
+  dispatch arms that would lower them correctly if the parser produced the node. D8/D9/D11/D12/
+  D14/D15/D16/D17 (`calc`/`constraint`/`concern`/`case`/`verification`/`view`/`viewpoint`/
+  `rendering` def) are separately not yet wired to any lowering arm in `sysml_resolution`
+  (unconditional `push_unsupported`) regardless of `individual`, so those are not new gaps here —
+  D6/D7 are the only two definitions in this fixture blocked specifically by a missing
+  `individual_allowed()` parser option that otherwise has a working consumer. D1 (bare
+  `individual def D1;`, no kind keyword) has no defined SysML semantic without a following kind
+  keyword and is correctly left unsupported (`IndividualDef` → `push_unsupported`) — not a bug.
+- **Representative input:** the full `test/snapshots/sysml/coverage_individual.md` source (D1–D17
+  def block plus the `individual p1; individual occurrence o1; individual item i1; individual
+  part p2; individual port po1; individual action a1; individual state s1;` usage block).
+- **Representative snapshot:** `test/snapshots/sysml/coverage_individual.md`.
+- **Impact:** blocks correctly lowering `individual item`/`individual occurrence`/
+  `individual port` package/definition/usage-level short usage forms; `individual item x;`
+  actively mis-lowers as a definition rather than merely being unsupported, which is worse than
+  silence. Not fixable in `sysml_resolution` without either re-parsing text independently
+  (fragile, out of scope) or accepting the wrong classification.
+- **Status:** blocking. Needs upstream `sysml-v2-parser` changes: (1) reorder
+  `try_package_body_behavior` to try `item_usage` before `item_def`, or switch the package-level
+  `item_def` dispatch to `item_def_required` (mirroring `action_def`/`state_def`) so `item_def`
+  no longer shadows `individual item x;`; (2) teach
+  `src/parser/occurrence_body.rs::individual_usage` to optionally consume a following kind
+  keyword (`occurrence`/`item`/`port`/etc, per BNF `OccurrenceUsagePrefix`) before parsing the
+  name, instead of misreading the keyword as the name; (3) add `individual`-prefix support to
+  `src/parser/port.rs::port_usage` (and decide whether `port_def` should accept it too, mirroring
+  `item_def`'s `individual_allowed()`); (4) add `.individual_allowed()` to
+  `src/parser/state.rs::state_def` and `src/parser/connection.rs::connection_def` so `individual
+  state def`/`individual connection def` parse at all (their `sysml_resolution` lowering already
+  exists and would work once the parser stops rejecting the input). Not attempted here — out of
+  scope for `sysml_resolution`/`sysml_query`/`spec42-snapshot` to work around.
+
 ## Resolved / not blocked (kept for history)
 
 - Alias declarations (`alias X for Y;`) — investigated as a possible parser gap, but the typed
