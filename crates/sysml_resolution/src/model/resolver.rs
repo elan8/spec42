@@ -520,15 +520,22 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         .enumerate()
         .filter_map(|(index, reference)| supported_import_domain(reference).map(|_| index))
         .collect();
-    let downstream_slots: Vec<usize> = references
+    // Subclassification is resolved first because the ancestor-scoped inherited-member lookup used
+    // by FeatureTyping is built directly from settled Subclassification outcomes; splitting the two
+    // kinds avoids depending on source order between an owned specialization and an owned typing
+    // reference within the same document.
+    let subclass_slots: Vec<usize> = references
         .iter()
         .enumerate()
         .filter_map(|(index, reference)| {
-            matches!(
-                reference.kind(),
-                ReferenceKind::FeatureTyping | ReferenceKind::Subclassification
-            )
-            .then_some(index)
+            (reference.kind() == ReferenceKind::Subclassification).then_some(index)
+        })
+        .collect();
+    let typing_slots: Vec<usize> = references
+        .iter()
+        .enumerate()
+        .filter_map(|(index, reference)| {
+            (reference.kind() == ReferenceKind::FeatureTyping).then_some(index)
         })
         .collect();
     let mut work = ResolutionWork {
@@ -565,6 +572,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     exported_names: &exported_names,
                     effective_imports: Some(&effective_imports),
                     exported_imports: Some(&exported_imports),
+                    inherited_names: None,
                 },
                 ResolutionScratch {
                     ambiguous_candidates: &mut ambiguous_candidates,
@@ -597,7 +605,12 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let solver_status = if converged {
         SolverStatus::Converged
     } else {
-        for index in import_slots.iter().chain(&downstream_slots).copied() {
+        for index in import_slots
+            .iter()
+            .chain(&subclass_slots)
+            .chain(&typing_slots)
+            .copied()
+        {
             outcomes[index] = ResolutionStatus::NonConverged;
         }
         ambiguous_candidates.clear();
@@ -605,7 +618,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     };
 
     if converged {
-        for index in downstream_slots {
+        for index in subclass_slots.iter().copied() {
             work.downstream_evaluations = work
                 .downstream_evaluations
                 .checked_add(1)
@@ -620,6 +633,46 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     exported_names: &exported_names,
                     effective_imports: Some(&effective_imports),
                     exported_imports: Some(&exported_imports),
+                    inherited_names: None,
+                },
+                ResolutionScratch {
+                    ambiguous_candidates: &mut ambiguous_candidates,
+                    candidates: &mut candidates,
+                    next_candidates: &mut next_candidates,
+                    work: &mut work,
+                },
+            )?;
+        }
+
+        // Ancestor-scoped inherited-member lookup is built once here, over the now-settled
+        // Subclassification outcomes above, as its own bounded fixed point: diamond ancestry
+        // (Left -> Base and Right -> Base) is visited once per declaration because the closure is a
+        // set, and a specialization cycle is detected explicitly rather than looped forever.
+        let (ancestor_closures, cyclic_ancestry) =
+            build_ancestor_closures(declarations, references, &outcomes)?;
+        let inherited_names = build_inherited_name_index(&direct_names, &ancestor_closures)?;
+
+        for index in typing_slots.iter().copied() {
+            work.downstream_evaluations = work
+                .downstream_evaluations
+                .checked_add(1)
+                .ok_or(ResolutionError::Capacity)?;
+            let reference = &references[index];
+            if owner_chain_is_cyclic(declarations, reference.source(), &cyclic_ancestry)? {
+                outcomes[index] = ResolutionStatus::NonConverged;
+                continue;
+            }
+            outcomes[index] = resolve_reference(
+                declarations,
+                paths,
+                reference,
+                DeclarationDomain::Type,
+                ResolutionIndexes {
+                    direct_names: &direct_names,
+                    exported_names: &exported_names,
+                    effective_imports: Some(&effective_imports),
+                    exported_imports: Some(&exported_imports),
+                    inherited_names: Some(&inherited_names),
                 },
                 ResolutionScratch {
                     ambiguous_candidates: &mut ambiguous_candidates,
@@ -733,6 +786,140 @@ fn synthesize_implied_redefinitions<R: ResolutionReferenceFact>(
     implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
     implied.dedup();
     Ok(implied.into_boxed_slice())
+}
+
+/// Computes, for every declaration, the transitive set of Subclassification ancestors reached
+/// through resolved Subclassification outcomes, as a bounded fixed point over the immutable
+/// previous-pass state (mirroring the effective-import fixed point above): each pass reads the
+/// prior complete closure array and writes a fresh next array, swapped only at the pass barrier.
+///
+/// A diamond (`Diamond :> Left, Right` where both specialize `Base`) naturally dedups to a single
+/// `Base` entry because each declaration's closure is a set. A specialization cycle is detected
+/// explicitly: if a declaration's own closure would come to include itself, that declaration is
+/// reported as cyclic instead of being handed an ever-growing or self-referential ancestor list.
+/// Because each pass only ever unions in previously-discovered ancestors, the closure array is
+/// bounded by the total declaration count and this loop is guaranteed to reach a fixed point well
+/// inside `declarations.len() + 1` passes even in the presence of a cycle; it never spins forever.
+type AncestorClosures = (
+    Vec<Box<[DeclarationId]>>,
+    std::collections::BTreeSet<DeclarationId>,
+);
+
+fn build_ancestor_closures<R: ResolutionReferenceFact>(
+    declarations: &[Declaration],
+    references: &[R],
+    outcomes: &[ResolutionStatus],
+) -> Result<AncestorClosures, ResolutionError> {
+    let mut direct_parents: Vec<std::collections::BTreeSet<DeclarationId>> =
+        vec![Default::default(); declarations.len()];
+    for (index, reference) in references.iter().enumerate() {
+        if reference.kind() != ReferenceKind::Subclassification {
+            continue;
+        }
+        if let ResolutionStatus::Resolved(target) = outcomes[index] {
+            let slot = direct_parents
+                .get_mut(reference.source().index())
+                .ok_or(ResolutionError::InvalidStorage)?;
+            slot.insert(target);
+        }
+    }
+
+    let mut closure = direct_parents.clone();
+    let pass_limit = declarations
+        .len()
+        .checked_add(1)
+        .ok_or(ResolutionError::Capacity)?;
+    for _ in 0..pass_limit {
+        let mut next = closure.clone();
+        let mut changed = false;
+        for (index, parents) in direct_parents.iter().enumerate() {
+            for parent in parents {
+                for ancestor in
+                    std::iter::once(*parent).chain(closure[parent.index()].iter().copied())
+                {
+                    if next[index].insert(ancestor) {
+                        changed = true;
+                    }
+                }
+            }
+        }
+        closure = next;
+        if !changed {
+            break;
+        }
+    }
+
+    let mut cyclic = std::collections::BTreeSet::new();
+    let mut closures = Vec::with_capacity(declarations.len());
+    for (index, ancestors) in closure.into_iter().enumerate() {
+        let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        if ancestors.contains(&id) {
+            cyclic.insert(id);
+            closures.push(Box::default());
+        } else {
+            closures.push(ancestors.into_iter().collect::<Vec<_>>().into_boxed_slice());
+        }
+    }
+    Ok((closures, cyclic))
+}
+
+/// Builds the ancestor-scoped inherited-member lookup index: for each non-cyclic declaration with
+/// a non-empty ancestor closure, every name directly owned by any ancestor becomes a candidate for
+/// that declaration. `NameIndex::build` sorts and dedups `(owner, name, candidate)` triples, so a
+/// member reached through two different ancestor paths to the same target (the diamond case)
+/// collapses to one candidate, while two different ancestors that directly own two different
+/// same-named members remain two distinct candidates and therefore resolve as ambiguous.
+fn build_inherited_name_index(
+    direct_names: &NameIndex,
+    ancestor_closures: &[Box<[DeclarationId]>],
+) -> Result<NameIndex, ResolutionError> {
+    let mut entries = Vec::new();
+    for (index, ancestors) in ancestor_closures.iter().enumerate() {
+        if ancestors.is_empty() {
+            continue;
+        }
+        let child = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        for &ancestor in ancestors.iter() {
+            for (name, candidates) in direct_names.entries_for_owner(Some(ancestor)) {
+                for &candidate in candidates {
+                    entries.push((
+                        NameKey {
+                            owner: Some(child),
+                            name,
+                        },
+                        candidate,
+                    ));
+                }
+            }
+        }
+    }
+    NameIndex::build(entries)
+}
+
+/// True when `source`'s owning namespace chain passes through a declaration whose Subclassification
+/// ancestry was found to be cyclic. A FeatureTyping reference owned (directly or via an enclosing
+/// scope) by such a declaration cannot have its inherited scope computed and is published as an
+/// explicit `NonConverged` outcome rather than silently falling back to local/import-only lookup or
+/// looping.
+fn owner_chain_is_cyclic(
+    declarations: &[Declaration],
+    source: DeclarationId,
+    cyclic_ancestry: &std::collections::BTreeSet<DeclarationId>,
+) -> Result<bool, ResolutionError> {
+    let mut owner = declarations
+        .get(source.index())
+        .ok_or(ResolutionError::InvalidStorage)?
+        .owner;
+    while let Some(current) = owner {
+        if cyclic_ancestry.contains(&current) {
+            return Ok(true);
+        }
+        owner = declarations
+            .get(current.index())
+            .ok_or(ResolutionError::InvalidStorage)?
+            .owner;
+    }
+    Ok(false)
 }
 
 fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<DeclarationDomain> {
@@ -912,6 +1099,10 @@ struct ResolutionIndexes<'a> {
     exported_names: &'a NameIndex,
     effective_imports: Option<&'a NameIndex>,
     exported_imports: Option<&'a NameIndex>,
+    /// Ancestor-scoped inherited-member lookup, keyed by `(child type declaration, name)`. Absent
+    /// for the Subclassification pass itself (it is built from Subclassification's own settled
+    /// outcomes) and present for reference kinds resolved afterward, such as FeatureTyping.
+    inherited_names: Option<&'a NameIndex>,
 }
 
 struct ResolutionScratch<'a> {
@@ -945,8 +1136,7 @@ fn resolve_reference<R: ResolutionReferenceFact>(
     } else {
         lookup_lexical_into(
             declarations,
-            indexes.direct_names,
-            indexes.effective_imports,
+            &indexes,
             source.owner,
             segments[0],
             scratch.candidates,
@@ -980,10 +1170,14 @@ fn resolve_reference<R: ResolutionReferenceFact>(
     status_from_candidates(scratch.candidates, scratch.ambiguous_candidates)
 }
 
+/// Walks the enclosing-namespace chain from `owner` outward. At each level, owned members take
+/// precedence over inherited (ancestor-scoped) members, which take precedence over imports, per
+/// the scope-origin precedence in `RESOLUTION_LAYER_DESIGN.md` section 6 ("owned members, then
+/// inherited/general members, then imports"). `inherited_names` is `None` for reference kinds that
+/// do not read inherited scope (for example Subclassification itself).
 fn lookup_lexical_into(
     declarations: &[Declaration],
-    direct_names: &NameIndex,
-    effective_imports: Option<&NameIndex>,
+    indexes: &ResolutionIndexes<'_>,
     mut owner: Option<DeclarationId>,
     name: SymbolId,
     candidates: &mut Vec<DeclarationId>,
@@ -991,12 +1185,20 @@ fn lookup_lexical_into(
 ) -> Result<(), ResolutionError> {
     loop {
         record_lookup(work)?;
-        let direct = direct_names.candidates(owner, name);
+        let direct = indexes.direct_names.candidates(owner, name);
         if !direct.is_empty() {
             candidates.extend_from_slice(direct);
             return Ok(());
         }
-        if let Some(imports) = effective_imports {
+        if let Some(inherited) = indexes.inherited_names {
+            record_lookup(work)?;
+            let inherited = inherited.candidates(owner, name);
+            if !inherited.is_empty() {
+                candidates.extend_from_slice(inherited);
+                return Ok(());
+            }
+        }
+        if let Some(imports) = indexes.effective_imports {
             record_lookup(work)?;
             let imported = imports.candidates(owner, name);
             if !imported.is_empty() {
@@ -1880,6 +2082,310 @@ mod tests {
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(1)),
             Some(ResolutionStatus::Unresolved)
+        );
+    }
+
+    /// Builds `package Diamond { part def Base { part def Member; } part def Left :> Base;
+    /// part def Right :> Base; part def Diamond :> Left, Right { part <feature_name> : <typed>; } }`.
+    /// `feature_name`/`typed` let the ambiguous-diamond test override the leaf feature and its
+    /// authored typing target while sharing the rest of the diamond shape.
+    fn diamond_fixture(feature_name: &str, typed: &str) -> ResolverFixture {
+        let mut symbols = SymbolTableBuilder::default();
+        let diamond_pkg = symbols.intern("Diamond").unwrap();
+        let base_name = symbols.intern("Base").unwrap();
+        let member_name = symbols.intern("Member").unwrap();
+        let left_name = symbols.intern("Left").unwrap();
+        let right_name = symbols.intern("Right").unwrap();
+        let diamond_name = symbols.intern("Diamond").unwrap();
+        let feature = symbols.intern(feature_name).unwrap();
+        let typed_name = symbols.intern(typed).unwrap();
+
+        let mut paths = SymbolPathArenaBuilder::default();
+        let base_path = paths.push(&[base_name], false).unwrap();
+        let left_path = paths.push(&[left_name], false).unwrap();
+        let right_path = paths.push(&[right_name], false).unwrap();
+        let typed_path = paths.push(&[typed_name], false).unwrap();
+
+        let package = DeclarationId(0);
+        let base = DeclarationId(1);
+        let left = DeclarationId(3);
+        let right = DeclarationId(4);
+        let diamond = DeclarationId(5);
+        let declarations = vec![
+            declaration(
+                DocumentId(0),
+                None,
+                Some(diamond_pkg),
+                DeclarationKind::Package,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(package),
+                Some(base_name),
+                DeclarationKind::PartDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(base),
+                Some(member_name),
+                DeclarationKind::PartDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(package),
+                Some(left_name),
+                DeclarationKind::PartDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(package),
+                Some(right_name),
+                DeclarationKind::PartDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(package),
+                Some(diamond_name),
+                DeclarationKind::PartDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(diamond),
+                Some(feature),
+                DeclarationKind::PartUsage,
+            ),
+        ];
+        let references = vec![
+            reference(left, ReferenceKind::Subclassification, base_path, false),
+            reference(right, ReferenceKind::Subclassification, base_path, false),
+            reference(diamond, ReferenceKind::Subclassification, left_path, false),
+            reference(diamond, ReferenceKind::Subclassification, right_path, false),
+            reference(
+                DeclarationId(6),
+                ReferenceKind::FeatureTyping,
+                typed_path,
+                false,
+            ),
+        ];
+        let memberships = memberships_for(&declarations, &[]);
+        let _symbols = symbols.freeze();
+        ResolverFixture {
+            declarations: declarations.into_boxed_slice(),
+            memberships,
+            paths: paths.freeze(),
+            references: references.into_boxed_slice(),
+        }
+    }
+
+    #[test]
+    fn diamond_inherited_member_lookup_dedups_to_a_single_target() {
+        let fixture = diamond_fixture("p", "Member");
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        // Member is owned only by Base (id 2), reached via both Left -> Base and Right -> Base;
+        // the diamond must dedup to exactly one Resolved outcome rather than an Ambiguous one.
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(4)),
+            Some(ResolutionStatus::Resolved(DeclarationId(2)))
+        );
+    }
+
+    #[test]
+    fn single_ancestor_inherited_lookup_resolves_through_one_specialization_hop() {
+        // A minimal non-diamond case: Diamond specializes only Left (drop the Right edge by
+        // reusing the diamond fixture's Left -> Base -> Member chain through a direct
+        // single-parent shape) still exercises the same inherited-lookup path.
+        let mut fixture = diamond_fixture("p", "Member");
+        // Remove the `Diamond :> Right` edge (reference index 3) and the `Right :> Base` edge
+        // (reference index 1) so only one specialization hop feeds the closure.
+        let mut references = fixture.references.into_vec();
+        references.remove(3);
+        references.remove(1);
+        fixture.references = references.into_boxed_slice();
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(2)),
+            Some(ResolutionStatus::Resolved(DeclarationId(2)))
+        );
+    }
+
+    /// `package P { part def Left { part def Special; } part def Right { part def Special; }
+    /// part def Diamond :> Left, Right { part q : Special; } }`. Left and Right each directly own
+    /// their own distinct `Special` member (no `Base`), so the diamond conflict is genuine: two
+    /// different ancestors reach two different same-named targets, not one target through two
+    /// paths.
+    fn diamond_conflict_fixture() -> ResolverFixture {
+        let mut symbols = SymbolTableBuilder::default();
+        let package_name = symbols.intern("P").unwrap();
+        let left_name = symbols.intern("Left").unwrap();
+        let right_name = symbols.intern("Right").unwrap();
+        let diamond_name = symbols.intern("Diamond").unwrap();
+        let special_name = symbols.intern("Special").unwrap();
+        let q_name = symbols.intern("q").unwrap();
+
+        let mut paths = SymbolPathArenaBuilder::default();
+        let left_path = paths.push(&[left_name], false).unwrap();
+        let right_path = paths.push(&[right_name], false).unwrap();
+        let special_path = paths.push(&[special_name], false).unwrap();
+
+        let package = DeclarationId(0);
+        let left = DeclarationId(1);
+        let right = DeclarationId(3);
+        let diamond = DeclarationId(5);
+        let declarations = vec![
+            declaration(
+                DocumentId(0),
+                None,
+                Some(package_name),
+                DeclarationKind::Package,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(package),
+                Some(left_name),
+                DeclarationKind::PartDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(left),
+                Some(special_name),
+                DeclarationKind::PartDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(package),
+                Some(right_name),
+                DeclarationKind::PartDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(right),
+                Some(special_name),
+                DeclarationKind::PartDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(package),
+                Some(diamond_name),
+                DeclarationKind::PartDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(diamond),
+                Some(q_name),
+                DeclarationKind::PartUsage,
+            ),
+        ];
+        let references = vec![
+            reference(diamond, ReferenceKind::Subclassification, left_path, false),
+            reference(diamond, ReferenceKind::Subclassification, right_path, false),
+            reference(
+                DeclarationId(6),
+                ReferenceKind::FeatureTyping,
+                special_path,
+                false,
+            ),
+        ];
+        let memberships = memberships_for(&declarations, &[]);
+        let _symbols = symbols.freeze();
+        ResolverFixture {
+            declarations: declarations.into_boxed_slice(),
+            memberships,
+            paths: paths.freeze(),
+            references: references.into_boxed_slice(),
+        }
+    }
+
+    #[test]
+    fn diamond_with_conflicting_ancestor_members_publishes_an_explicit_ambiguous_outcome() {
+        let fixture = diamond_conflict_fixture();
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        match resolution.outcome(AuthoredReferenceId(2)) {
+            Some(ResolutionStatus::Ambiguous(range)) => {
+                let mut candidates = resolution.ambiguous_candidates(range).to_vec();
+                candidates.sort_by_key(|id| id.0);
+                assert_eq!(candidates, vec![DeclarationId(2), DeclarationId(4)]);
+            }
+            other => panic!("expected an explicit ambiguous outcome, got {other:?}"),
+        }
+    }
+
+    fn cyclic_specialization_fixture() -> ResolverFixture {
+        let mut symbols = SymbolTableBuilder::default();
+        let package_name = symbols.intern("P").unwrap();
+        let a_name = symbols.intern("A").unwrap();
+        let b_name = symbols.intern("B").unwrap();
+        let f_name = symbols.intern("f").unwrap();
+        let x_name = symbols.intern("X").unwrap();
+
+        let mut paths = SymbolPathArenaBuilder::default();
+        let a_path = paths.push(&[a_name], false).unwrap();
+        let b_path = paths.push(&[b_name], false).unwrap();
+        let x_path = paths.push(&[x_name], false).unwrap();
+
+        let package = DeclarationId(0);
+        let a = DeclarationId(1);
+        let b = DeclarationId(2);
+        let declarations = vec![
+            declaration(
+                DocumentId(0),
+                None,
+                Some(package_name),
+                DeclarationKind::Package,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(package),
+                Some(a_name),
+                DeclarationKind::PartDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(package),
+                Some(b_name),
+                DeclarationKind::PartDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(a),
+                Some(f_name),
+                DeclarationKind::PartUsage,
+            ),
+        ];
+        let references = vec![
+            reference(a, ReferenceKind::Subclassification, b_path, false),
+            reference(b, ReferenceKind::Subclassification, a_path, false),
+            reference(
+                DeclarationId(3),
+                ReferenceKind::FeatureTyping,
+                x_path,
+                false,
+            ),
+        ];
+        let memberships = memberships_for(&declarations, &[]);
+        let _symbols = symbols.freeze();
+        ResolverFixture {
+            declarations: declarations.into_boxed_slice(),
+            memberships,
+            paths: paths.freeze(),
+            references: references.into_boxed_slice(),
+        }
+    }
+
+    #[test]
+    fn cyclic_specialization_yields_a_typed_non_converged_typing_outcome_not_a_loop() {
+        let fixture = cyclic_specialization_fixture();
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        // The import/typing fixed point above this family still converges; only the
+        // ancestor-closure-dependent FeatureTyping outcome for the cyclically-specialized owner
+        // is explicitly NonConverged, rather than the solver looping forever or silently guessing
+        // an inherited candidate through the self-referential closure.
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(2)),
+            Some(ResolutionStatus::NonConverged)
         );
     }
 

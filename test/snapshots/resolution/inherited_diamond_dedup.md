@@ -21,12 +21,6 @@ package Diamond {
 (fixture-diagnostics
   (document "memory://snapshot/inherited_diamond_dedup.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 7 17) (end 7 23))
-      )
     )
   )
 )
@@ -53,7 +47,7 @@ package Diamond {
       (outcome (status resolved) (target (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Right")))))
     (reference (id (source (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Diamond::p"))) (kind featureTyping) (ordinal 0))
       (authored-target "Member")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Base::Member")))))
     (reference (id (source (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Left"))) (kind specialization) (ordinal 0))
       (authored-target "Base")
       (outcome (status resolved) (target (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Base")))))
@@ -64,6 +58,7 @@ package Diamond {
   (relationships
     (relationship (kind specialization) (source (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Diamond"))) (target (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Left"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Diamond"))) (kind specialization) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Diamond"))) (target (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Right"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Diamond"))) (kind specialization) (ordinal 1)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Diamond::p"))) (target (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Base::Member"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Diamond::p"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Left"))) (target (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Left"))) (kind specialization) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Right"))) (target (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Right"))) (kind specialization) (ordinal 0)))
   )
@@ -84,7 +79,7 @@ package Diamond {
   )
   (query (document "memory://snapshot/inherited_diamond_dedup.md") (range (start 7 17) (end 7 23)) (probe (position 7 17))
     (reference (id (source (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Diamond::p"))) (kind featureTyping) (ordinal 0) (authored-target "Member")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Base::Member")))))
   )
   (query (document "memory://snapshot/inherited_diamond_dedup.md") (range (start 4 21) (end 4 25)) (probe (position 4 21))
     (reference (id (source (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Left"))) (kind specialization) (ordinal 0) (authored-target "Base")
