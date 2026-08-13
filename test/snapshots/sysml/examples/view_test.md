@@ -59,15 +59,27 @@ package ViewTest {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_requirement_definition_member")
         (source "semantic")
-        (range (start 8 1) (end 11 2))
+        (range (start 9 5) (end 9 13))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_requirement_definition_member")
         (source "semantic")
-        (range (start 13 1) (end 16 2))
+        (range (start 10 2) (end 10 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_requirement_definition_member")
+        (source "semantic")
+        (range (start 14 5) (end 14 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_requirement_definition_member")
+        (source "semantic")
+        (range (start 15 2) (end 15 17))
       )
       (diagnostic
         (severity warning)
@@ -109,6 +121,7 @@ package ViewTest {
   (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:150602796e98ab955e756693987d3669c877d4c7667d84a2dcf3071d6b5af48f") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::C"))) (kind concern-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::P::p1"))) (kind part) (membership (kind feature) (visibility public)))
     (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::P::p2"))) (kind part) (membership (kind feature) (visibility private)))
@@ -116,10 +129,15 @@ package ViewTest {
     (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::S"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::V"))) (kind view-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::VP"))) (kind viewpoint-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::c"))) (kind concern) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "C"))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::c"))) (kind featureTyping) (ordinal 0))
+      (authored-target "C")
+      (outcome (status resolved) (target (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::C")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::c"))) (target (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::C"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::c"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -128,5 +146,9 @@ package ViewTest {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/view_test.md") (range (start 13 13) (end 13 14)) (probe (position 13 13))
+    (reference (id (source (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::c"))) (kind featureTyping) (ordinal 0) (authored-target "C")
+      (outcome (status resolved) (target (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::C")))))
+  )
 )
 ~~~

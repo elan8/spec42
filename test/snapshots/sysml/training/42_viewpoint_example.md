@@ -51,15 +51,33 @@ package 'Viewpoint Example' {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_requirement_definition_member")
         (source "semantic")
-        (range (start 4 1) (end 13 2))
+        (range (start 10 2) (end 10 10))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_requirement_definition_member")
         (source "semantic")
-        (range (start 15 1) (end 23 2))
+        (range (start 11 2) (end 11 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_requirement_definition_member")
+        (source "semantic")
+        (range (start 12 2) (end 12 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_requirement_definition_member")
+        (source "semantic")
+        (range (start 21 8) (end 21 16))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_requirement_definition_member")
+        (source "semantic")
+        (range (start 22 2) (end 22 38))
       )
       (diagnostic
         (severity warning)
@@ -79,6 +97,8 @@ package 'Viewpoint Example' {
     (declaration (id (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::IV&V"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::Systems Engineer"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::modularity"))) (kind concern) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::system breakdown"))) (kind concern) (membership (kind feature) (visibility default)))
   )
   (references
   )

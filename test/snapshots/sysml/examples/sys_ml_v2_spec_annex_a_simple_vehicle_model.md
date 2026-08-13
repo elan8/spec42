@@ -4023,9 +4023,15 @@ package SimpleVehicleModel{
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_requirement_definition_member")
         (source "semantic")
-        (range (start 1548 12) (end 1552 13))
+        (range (start 1550 16) (end 1550 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_requirement_definition_member")
+        (source "semantic")
+        (range (start 1551 16) (end 1551 46))
       )
       (diagnostic
         (severity warning)
@@ -4676,6 +4682,7 @@ package SimpleVehicleModel{
     (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::BehaviorViewpoint"))) (kind viewpoint-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::SafetyEngineer"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::SafetyViewpoint"))) (kind viewpoint-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::VehicleSafety"))) (kind concern-def) (membership (kind owning) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))

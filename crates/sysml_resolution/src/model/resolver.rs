@@ -1393,6 +1393,7 @@ impl DeclarationDomain {
                     | DeclarationKind::AllocationDefinition
                     | DeclarationKind::FlowDefinition
                     | DeclarationKind::ConstraintDefinition
+                    | DeclarationKind::ConcernDefinition
                     | DeclarationKind::Alias
             ),
         }

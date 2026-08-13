@@ -17,15 +17,15 @@ use sysml_v2_parser_next::{
         ActionDef, ActionDefBody, ActionDefBodyElement, ActionUsage as ParserActionUsage,
         ActionUsageBody, ActionUsageBodyElement, AliasDef, AllocationDef, AnalysisCaseDef,
         AnalysisCaseUsage as ParserAnalysisCaseUsage, AttributeBody, AttributeBodyElement,
-        AttributeDef, AttributeUsage, CaseDef, CaseUsage as ParserCaseUsage, ConnectStmt,
-        ConnectionDef, ConnectionDefBody, ConnectionDefBodyElement, ConnectionEnd,
-        ConnectionUsageMember as ParserConnectionUsage, ConstraintDef, ConstraintDefBody,
-        ConstraintDefBodyElement, ConstraintUsage as ParserConstraintUsage, DefinitionBody,
-        DefinitionBodyElement, EndDecl, EndIdentity, EnumDef, EnumerationBody,
-        EnumerationUsage as ParserEnumerationUsage, Expression, FlowDef, Import, ImportShape,
-        InterfaceDef, InterfaceDefBody, InterfaceDefBodyElement,
-        InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement, ItemDef,
-        ItemUsage as ParserItemUsage, LibraryPackage, Membership,
+        AttributeDef, AttributeUsage, CaseDef, CaseUsage as ParserCaseUsage,
+        ConcernUsage as ParserConcernUsage, ConnectStmt, ConnectionDef, ConnectionDefBody,
+        ConnectionDefBodyElement, ConnectionEnd, ConnectionUsageMember as ParserConnectionUsage,
+        ConstraintDef, ConstraintDefBody, ConstraintDefBodyElement,
+        ConstraintUsage as ParserConstraintUsage, DefinitionBody, DefinitionBodyElement, EndDecl,
+        EndIdentity, EnumDef, EnumerationBody, EnumerationUsage as ParserEnumerationUsage,
+        Expression, FlowDef, Import, ImportShape, InterfaceDef, InterfaceDefBody,
+        InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement,
+        ItemDef, ItemUsage as ParserItemUsage, LibraryPackage, Membership,
         MembershipKind as ParserMembershipKind, MetadataDef, MetadataUsage as ParserMetadataUsage,
         NamespaceDecl, Node, OccurrenceBodyElement, OccurrenceDef,
         OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package, PackageBody,
@@ -338,6 +338,20 @@ enum DeclarationKind {
     /// (UPSTREAM_PARSER_GAPS.md #4): `ConstraintUsage` previously had no `subsets`/`redefines`
     /// fields at all.
     ConstraintUsage,
+    /// `concern def` (BNF ConcernDefinition, Clause 8.2.2.11): a type whose owned members share
+    /// `RequirementDefBody`/`RequirementDefBodyElement` with `RequirementDefinition`, mirroring
+    /// `lower_viewpoint_def`. The parser models both `concern def` and `concern` under a single
+    /// `ast::requirement::ConcernUsage` struct discriminated by `is_definition`, rather than a
+    /// distinct `ConcernDef` type -- see that struct's doc comment. Genuinely new: previously
+    /// blocked entirely (UPSTREAM_PARSER_GAPS.md #9: no `specializes`/`subsets`/`redefines` field
+    /// at all). Stakeholder/subject-binding semantics are out of scope, sharing
+    /// `UnsupportedFamily::RequirementDefinitionMember` with `requirement def`/`viewpoint def`.
+    ConcernDefinition,
+    /// A package/definition/usage-level `concern` feature member (BNF ConcernUsage), mirroring
+    /// `lower_requirement_usage`: ownership, membership, a `:` typing target, and
+    /// `subsets`/`redefines` subsetting relationships. Resolved upstream in `0757de13`
+    /// (UPSTREAM_PARSER_GAPS.md #9).
+    ConcernUsage,
     Import,
     Alias,
 }
@@ -1049,11 +1063,9 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::ConcernUsage(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::ConcernUsage(node) => {
+                self.lower_concern_usage(document, owner, node)?
+            }
             PackageBodyElement::CaseDef(node) => self.lower_case_def(document, owner, node)?,
             PackageBodyElement::CaseUsage(node) => self.lower_case_usage(document, owner, node)?,
             PackageBodyElement::AnalysisCaseDef(node) => {
@@ -2607,6 +2619,80 @@ impl SemanticModelBuilder {
         )?;
         if let Some(relationship) = &node.value.specializes {
             self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        self.lower_requirement_shaped_body(
+            document,
+            declaration,
+            &node.value.body,
+            UnsupportedFamily::RequirementDefinitionMember,
+        )
+    }
+
+    /// Lowers a package-level `concern` member (BNF ConcernUsage), dispatching on
+    /// `is_definition` to either `concern def` (`DeclarationKind::ConcernDefinition`, Owning
+    /// membership, mirroring `lower_viewpoint_def`'s owned-type shape) or a bare `concern` usage
+    /// (`DeclarationKind::ConcernUsage`, Feature membership, mirroring `lower_requirement_usage`).
+    /// Both forms share the same parsed fields -- `parser::requirement::concern_usage` calls the
+    /// same `feature_usage_header` for both textual forms, so there is no separate `specializes:
+    /// Node<TypingRelationship>` for the `def` form the way `RequirementDef`/`ViewpointDef` have;
+    /// `type_name`/`subsets`/`redefines` are lowered identically (`FeatureTyping`/`Subsetting`/
+    /// `Redefinition`) regardless of `is_definition`. The parser folds both textual forms into
+    /// this single struct (see `ast::requirement::ConcernUsage`'s doc comment) rather than a
+    /// distinct `ConcernDef` type. Genuinely new: previously blocked entirely
+    /// (UPSTREAM_PARSER_GAPS.md #9), resolved upstream in `0757de13`. Stakeholder/subject-binding
+    /// semantics are out of scope, sharing `UnsupportedFamily::RequirementDefinitionMember` with
+    /// `requirement def`/`viewpoint def`.
+    fn lower_concern_usage(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ParserConcernUsage>,
+    ) -> Result<(), ConstructionError> {
+        // `parser::requirement::concern_usage` always constructs `Membership::feature(...)`
+        // regardless of `is_definition` (there is no distinct owning-membership constructor call
+        // for the `def` textual form the way other `*Def`/`*Usage` pairs have), so
+        // `member_visibility` is always checked against `FeatureMembership` here even though the
+        // `def` form maps to our own `MembershipKind::Owning`.
+        let (kind, membership_kind) = if node.value.is_definition {
+            (DeclarationKind::ConcernDefinition, MembershipKind::Owning)
+        } else {
+            (DeclarationKind::ConcernUsage, MembershipKind::Feature)
+        };
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration =
+            self.push_typed_declaration(document, owner, kind, name, node.span.clone())?;
+        self.push_membership(
+            declaration,
+            membership_kind,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(type_name) = node.value.type_name {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
         self.lower_requirement_shaped_body(
             document,
@@ -5310,6 +5396,64 @@ mod tests {
                 "(kind subsetting) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::derivedConstraint\")))"
             ),
             "expected derivedConstraint's subsetting of baseConstraint to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn concern_def_lowers_to_a_declaration() {
+        // UPSTREAM_PARSER_GAPS.md #9 was resolved upstream in `0757de13`: `ConcernUsage`
+        // (which models both `concern def` and `concern` textual forms) now carries a
+        // `type_name`/`subsets`/`redefines` field at all, previously entirely blocked.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tconcern def C;\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::C\"))) (kind concern-def)"),
+            "expected a concern-def declaration, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn concern_usage_typed_by_a_concern_def_resolves() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tconcern def C;\n\
+             \tconcern c : C;\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::c\"))) (kind concern)"),
+            "expected concern c to lower to a declaration with kind concern, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::c\")))"
+            ) && output.contains(
+                "(target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C\")))"
+            ),
+            "expected c's featureTyping of C to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn concern_usage_subsetting_another_concern_usage_resolves() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tconcern baseConcern;\n\
+             \tconcern derivedConcern :> baseConcern;\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::derivedConcern\"))) (kind concern)"),
+            "expected a concern usage declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind subsetting) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::derivedConcern\")))"
+            ),
+            "expected derivedConcern's subsetting of baseConcern to resolve, got:\n{output}"
         );
     }
 

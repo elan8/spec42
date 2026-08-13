@@ -100,9 +100,15 @@ package '11a-View-Viewpoint' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_requirement_definition_member")
         (source "semantic")
-        (range (start 36 2) (end 39 3))
+        (range (start 37 3) (end 37 11))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_requirement_definition_member")
+        (source "semantic")
+        (range (start 38 3) (end 38 38))
       )
       (diagnostic
         (severity warning)
@@ -159,6 +165,7 @@ package '11a-View-Viewpoint' {
     (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::rearAxleAssembly::rearWheel"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Wheel"))))
     (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Views") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::system breakdown"))) (kind concern) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::system structure generation"))) (kind view) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::systems engineer"))) (kind part) (membership (kind feature) (visibility default)))
   )

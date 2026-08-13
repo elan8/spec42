@@ -743,6 +743,8 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::InterfaceUsage => "interface",
         DeclarationKind::ConstraintDefinition => "constraint-def",
         DeclarationKind::ConstraintUsage => "constraint",
+        DeclarationKind::ConcernDefinition => "concern-def",
+        DeclarationKind::ConcernUsage => "concern",
     }
 }
 
