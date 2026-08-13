@@ -273,6 +273,39 @@ entry should carry enough detail to file/update an upstream issue against
   declarations or `ConnectionUsage`'s connector ends) added to `FlowUsage`, filed upstream
   against `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
 
+- Gap 29. `RequireConstraint` (`src/ast/requirement.rs`), the `require`/`assume`-prefixed
+  constraint member inside `requirement def`/`requirement usage` bodies (BNF form: `(require|
+  assume) constraint`? name? body), captures its target/usage `name` as a bare `Option<String>`,
+  not a structured `QualifiedReferenceId`: `struct RequireConstraint { is_assume: bool,
+  has_constraint_keyword: bool, name: Option<String>, body: RequireConstraintBody }`. Verified
+  directly against the pinned `0757de13` checkout while attempting to lower the shorthand
+  `require <name>;`/`assume <name>;` form (representative fixture:
+  `test/snapshots/sysml/training/32_requirement_groups.md`'s `require fullVehicleMassLimit;`) into
+  a resolved required-/assumed-constraint relationship, following `daf4dd3d`'s `Succession`
+  end-reference lowering as the template (a plain/qualified name resolved via
+  `Expression::FeatureRef` -> `push_reference` with a `local: QualifiedReferenceId`). Every
+  working authored-reference case in `sysml_resolution` (`AliasBinding`, `Succession`,
+  `FeatureTyping`, `VerifyRequirementMember.target`, etc.) sources its target from a typed
+  `QualifiedReferenceId` index into the parser's own qualified-reference table, which carries the
+  span and (if present) dotted segments `push_reference` needs to resolve and render the
+  relationship; `RequireConstraint.name` is parsed via the plain unqualified-identifier
+  `parser::lex::name` combinator (`alt((quoted_name, basic_name))`, no `::`-segment support) into
+  a raw `String` with no separate span and no parser-table entry at all, so there is no
+  `QualifiedReferenceId` to hand to `push_reference` and no way for `sysml_resolution` to
+  synthesize one (the qualified-reference table belongs to the immutable, parser-owned document).
+  This blocks the shorthand `require <name>;`/`require <name> { ... }`/`assume <name>;` reference
+  form specifically (`has_constraint_keyword == false`); the `require constraint <name>? { ... }`
+  form (`has_constraint_keyword == true`) is a genuine new nested-declaration site (like `subject`/
+  `perform action`) and not blocked by this gap, but is left unimplemented in this slice to keep
+  the change focused on the reference case the task targeted. Left routed through the existing
+  `unsupported_requirement_definition_member`/`unsupported_requirement_usage_member` fallback via
+  `RequirementDefBodyElement::RequireConstraint`. Needs `name` changed to
+  `Option<QualifiedReferenceId>` (or a new `Option<Node<QualifiedReferenceId>>` field alongside a
+  separate declared-name string for the `has_constraint_keyword` case, since the field currently
+  serves both a reference-target role and a declared-name role depending on
+  `has_constraint_keyword`), filed upstream against `feat/gh-119-arena-backed-references`
+  (elan8/sysml-v2-parser#121).
+
 ## False-positive check (spec42-side surfacing bug?)
 Traced end-to-end for a diverse sample (Gap 15's `feature` case, Gap 17's `portion` case, Gap 22's
 `type`/`subset` case, and Gap 23's bare-identifier case) plus a repo-wide search:
