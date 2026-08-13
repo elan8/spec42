@@ -797,6 +797,11 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::Variant
                     | ReferenceKind::IncludeUseCase
                     | ReferenceKind::InvocationCallee
+                    | ReferenceKind::DecisionInput
+                    | ReferenceKind::MergeInput
+                    | ReferenceKind::ForkInput
+                    | ReferenceKind::JoinInput
+                    | ReferenceKind::ThenTarget
             )
             .then_some(index)
         })
@@ -1716,7 +1721,12 @@ fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<D
         | ReferenceKind::Variant
         | ReferenceKind::IncludeUseCase
         | ReferenceKind::MemberAccessOperand
-        | ReferenceKind::InvocationCallee => None,
+        | ReferenceKind::InvocationCallee
+        | ReferenceKind::DecisionInput
+        | ReferenceKind::MergeInput
+        | ReferenceKind::ForkInput
+        | ReferenceKind::JoinInput
+        | ReferenceKind::ThenTarget => None,
     }
 }
 
@@ -1898,7 +1908,12 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::Variant
             | ReferenceKind::IncludeUseCase
             | ReferenceKind::MemberAccessOperand
-            | ReferenceKind::InvocationCallee => {}
+            | ReferenceKind::InvocationCallee
+            | ReferenceKind::DecisionInput
+            | ReferenceKind::MergeInput
+            | ReferenceKind::ForkInput
+            | ReferenceKind::JoinInput
+            | ReferenceKind::ThenTarget => {}
         }
     }
     Ok((

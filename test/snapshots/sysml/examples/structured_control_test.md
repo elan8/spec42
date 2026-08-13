@@ -75,12 +75,6 @@ package StructuredControlTest {
         (severity warning)
         (code "unsupported_action_usage_member")
         (source "semantic")
-        (range (start 18 2) (end 19 2))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_action_usage_member")
-        (source "semantic")
         (range (start 19 2) (end 21 3))
       )
       (diagnostic
@@ -124,6 +118,7 @@ package StructuredControlTest {
   (declarations
     (declaration (id (node (document "memory://snapshot/structured_control_test.md") (qualified-name "StructuredControlTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/structured_control_test.md") (anonymous (kind action) (ordinal 0))))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/structured_control_test.md") (qualified-name "StructuredControlTest::::aLoop"))) (kind action) (membership (kind feature) (visibility default)))
   )
   (references
   )

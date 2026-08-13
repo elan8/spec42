@@ -26,10 +26,11 @@ use sysml_v2_parser_next::{
         ConstraintUsage as ParserConstraintUsage, DefinitionBody, DefinitionBodyElement,
         DefinitionPrefix, DoAction, EndDecl, EndIdentity, EntryAction, EnumDef, EnumerationBody,
         EnumerationUsage as ParserEnumerationUsage, ExitAction, Expression, FeatureValue,
-        FirstStmt, FlowDef, Import, ImportShape, InOut, InOutDecl, IncludeUseCase, InterfaceDef,
-        InterfaceDefBody, InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage,
-        InterfaceUsageBodyElement, ItemDef, ItemUsage as ParserItemUsage, LibraryPackage,
-        Membership, MembershipKind as ParserMembershipKind, MetadataAnnotation, MetadataDef,
+        FirstMergeBody, FirstMergeBodyElement, FirstStmt, FlowDef, Import, ImportShape, InOut,
+        InOutDecl, IncludeUseCase, InterfaceDef, InterfaceDefBody, InterfaceDefBodyElement,
+        InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement, ItemDef,
+        ItemUsage as ParserItemUsage, LibraryPackage, Membership,
+        MembershipKind as ParserMembershipKind, MetadataAnnotation, MetadataDef,
         MetadataUsage as ParserMetadataUsage, NamespaceDecl, Node, OccurrenceBodyElement,
         OccurrenceDef, OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package,
         PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage,
@@ -41,10 +42,10 @@ use sysml_v2_parser_next::{
         RequirementUsage as ParserRequirementUsage, ReturnDecl, RootElement, Satisfy,
         SatisfyViewMember, Span, StateDef, StateDefBody, StateDefBodyElement,
         StateUsage as ParserStateUsage, SubjectDecl, SubsettingKind, SubsettingRelationship,
-        ThenStmt, Transition, TransitionAccept, TransitionEffect, UseCaseDef, UseCaseDefBody,
-        UseCaseDefBodyElement, VariantUsage, VerificationCaseDef, ViewBody, ViewBodyElement,
-        ViewDef, ViewDefBody, ViewDefBodyElement, ViewUsage as ParserViewUsage, ViewpointDef,
-        Visibility as ParserVisibility,
+        ThenAction, ThenStmt, ThenTarget, Transition, TransitionAccept, TransitionEffect,
+        UseCaseDef, UseCaseDefBody, UseCaseDefBodyElement, VariantUsage, VerificationCaseDef,
+        ViewBody, ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement,
+        ViewUsage as ParserViewUsage, ViewpointDef, Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
 };
@@ -503,6 +504,40 @@ enum DeclarationKind {
     /// slice; only the ref declaration itself -- name, typing, redefines, subsets -- is lowered.
     /// See `UnsupportedFamily::ReferenceUsageMember`.
     ReferenceUsage,
+    /// An anonymous feature synthesized for a `decide <expr>;`/`decide <expr> { ... }` decision
+    /// control node (BNF `DecisionStmt`, `ast::DecisionStmt`) found either as a standalone action
+    /// def/usage body element or as a `then decide <expr>;` continuation (`ThenTarget::Decide`).
+    /// Owned by the enclosing action def/usage declaration, mirroring `Succession`/`Transition`'s
+    /// nested-declaration shape: the required `decide` operand is lowered as a
+    /// `ReferenceKind::DecisionInput` reference exactly like `lower_succession_end` resolves a
+    /// `FirstStmt` end, and a braced body's nested members (in/out parameters, nested action
+    /// usages, further `then <target>;` continuations) recurse through the same dispatch as an
+    /// ordinary action def body. This is the priority construct for this slice -- the `if <guard>
+    /// then <target>;` branches a decision fans out to are ordinary sibling `IfStmt`/`ThenAction`
+    /// body elements (not nested inside the decision node's own body), already reusing the
+    /// existing `classify_constraint_expression`/lexical-lookup machinery via `lower_then_action`.
+    Decide,
+    /// An anonymous feature synthesized for a `merge <expr>;`/`merge <expr> { ... }` merge
+    /// control node (BNF `MergeStmt`, `ast::MergeStmt`), same shape and scope as `Decide`: the
+    /// required `merge` operand is a `ReferenceKind::MergeInput` reference.
+    Merge,
+    /// An anonymous feature synthesized for a `fork <expr>;`/`fork <expr> { ... }` fork control
+    /// node (BNF `ForkStmt`, `ast::ForkStmt`), same shape and scope as `Decide`: the required
+    /// `fork` operand is a `ReferenceKind::ForkInput` reference. A braced body's `in`/`out`
+    /// parameter declarations (the fork's output flows) lower through the same
+    /// `lower_parameter_declaration` as an ordinary action def body.
+    Fork,
+    /// An anonymous feature synthesized for a `join <expr>;`/`join <expr> { ... }` join control
+    /// node (BNF `JoinStmt`, `ast::JoinStmt`), same shape and scope as `Decide`: the required
+    /// `join` operand is a `ReferenceKind::JoinInput` reference.
+    Join,
+    /// An anonymous feature synthesized for a bare `then <target>;` continuation statement (BNF
+    /// `ThenAction`, `ThenTarget::Feature`) found in an action def/usage body, mirroring
+    /// `Succession`'s nested-declaration shape: the reference must be sourced at a declaration
+    /// owned by the enclosing action (not the action itself) so the shared `DeclarationDomain::
+    /// Any` lexical lookup searches the action's own children (its sibling control-flow nodes),
+    /// exactly like every other paired/single-operand control-flow reference kind.
+    ThenContinuation,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -778,6 +813,41 @@ enum ReferenceKind {
     /// itself an invocation result -- is out of scope and left unresolved by `lower_invocation_
     /// callee`.
     InvocationCallee,
+    /// The required `decide` operand of a `decide <expr>;` control node (BNF `DecisionStmt.
+    /// decide`), resolved through the same `DeclarationDomain::Any` lexical lookup as
+    /// `Succession`/`TransitionSource`: the decision input can be any owned sibling action
+    /// feature, not just a Type. Sourced at an anonymous `DeclarationKind::Decide` feature owned
+    /// by the enclosing action def/usage declaration, mirroring `Transition`'s nested-declaration
+    /// shape. Only a simple/qualified name (`Expression::FeatureRef`) or a dotted feature-chain
+    /// (`Expression::MemberAccess`, via `MemberAccessOperand`) is resolved.
+    DecisionInput,
+    /// The required `merge` operand of a `merge <expr>;` control node (BNF `MergeStmt.merge`),
+    /// same shape and scope as `DecisionInput`, sourced at an anonymous
+    /// `DeclarationKind::Merge` feature.
+    MergeInput,
+    /// The required `fork` operand of a `fork <expr>;` control node (BNF `ForkStmt.fork`), same
+    /// shape and scope as `DecisionInput`, sourced at an anonymous `DeclarationKind::Fork`
+    /// feature.
+    ForkInput,
+    /// The required `join` operand of a `join <expr>;` control node (BNF `JoinStmt.join`), same
+    /// shape and scope as `DecisionInput`, sourced at an anonymous `DeclarationKind::Join`
+    /// feature.
+    JoinInput,
+    /// The target of a bare `then <target>;` continuation statement (BNF `ThenAction`,
+    /// `ThenTarget::Feature`) found in an action def/usage body -- a reference to an
+    /// already-declared sibling control-flow node (an action, decide/merge/fork/join node, or the
+    /// `done` pseudo-action marker), distinct from `Succession`'s paired `first`/`then` ends since
+    /// a `then <target>;` on its own references an implicit predecessor rather than declaring both
+    /// ends. Resolved through the same `DeclarationDomain::Any` lexical lookup as `Succession`,
+    /// sourced at an anonymous `DeclarationKind::ThenContinuation` feature owned by the enclosing
+    /// action def/usage declaration (mirroring `Succession`'s own nested-declaration scope shift
+    /// -- sourcing directly at the action itself would search the action's own siblings rather
+    /// than its children, where the referenced sibling control-flow nodes actually live) via the
+    /// same `lower_succession_end` dispatch every other paired-operand kind uses. The `done`
+    /// marker itself is an ordinary identifier reference that legitimately fails to resolve
+    /// because no such declaration is synthesized, exactly like `Succession`'s `start`/`done`
+    /// scope note.
+    ThenTarget,
 }
 
 /// The computed or explicit outcome of evaluating one supported constraint/calc expression
@@ -3857,21 +3927,64 @@ impl SemanticModelBuilder {
                 ActionDefBodyElement::RefDecl(node) => {
                     self.lower_ref_decl(document, Some(owner), node)?;
                 }
+                ActionDefBodyElement::MergeStmt(node) => self.lower_first_merge_stmt(
+                    document,
+                    owner,
+                    UnsupportedFamily::ActionDefinitionMember,
+                    DeclarationKind::Merge,
+                    ReferenceKind::MergeInput,
+                    node.span.clone(),
+                    &node.value.merge,
+                    &node.value.body,
+                )?,
+                ActionDefBodyElement::DecisionStmt(node) => self.lower_first_merge_stmt(
+                    document,
+                    owner,
+                    UnsupportedFamily::ActionDefinitionMember,
+                    DeclarationKind::Decide,
+                    ReferenceKind::DecisionInput,
+                    node.span.clone(),
+                    &node.value.decide,
+                    &node.value.body,
+                )?,
+                ActionDefBodyElement::JoinStmt(node) => self.lower_first_merge_stmt(
+                    document,
+                    owner,
+                    UnsupportedFamily::ActionDefinitionMember,
+                    DeclarationKind::Join,
+                    ReferenceKind::JoinInput,
+                    node.span.clone(),
+                    &node.value.join,
+                    &node.value.body,
+                )?,
+                ActionDefBodyElement::ForkStmt(node) => self.lower_first_merge_stmt(
+                    document,
+                    owner,
+                    UnsupportedFamily::ActionDefinitionMember,
+                    DeclarationKind::Fork,
+                    ReferenceKind::ForkInput,
+                    node.span.clone(),
+                    &node.value.fork,
+                    &node.value.body,
+                )?,
+                ActionDefBodyElement::ThenAction(node) => {
+                    self.lower_then_action(
+                        document,
+                        owner,
+                        UnsupportedFamily::ActionDefinitionMember,
+                        node,
+                    )?;
+                }
                 ActionDefBodyElement::Annotation(_)
                 | ActionDefBodyElement::MetadataKeywordUsage(_)
                 | ActionDefBodyElement::TextualRep(_)
                 | ActionDefBodyElement::FlowUsage(_)
-                | ActionDefBodyElement::MergeStmt(_)
-                | ActionDefBodyElement::DecisionStmt(_)
-                | ActionDefBodyElement::JoinStmt(_)
-                | ActionDefBodyElement::ForkStmt(_)
                 | ActionDefBodyElement::TerminateStmt(_)
                 | ActionDefBodyElement::WhileStmt(_)
                 | ActionDefBodyElement::LoopStmt(_)
                 | ActionDefBodyElement::IfStmt(_)
                 | ActionDefBodyElement::Assign(_)
                 | ActionDefBodyElement::ForLoop(_)
-                | ActionDefBodyElement::ThenAction(_)
                 | ActionDefBodyElement::Decl(_)
                 | ActionDefBodyElement::DefaultReferenceUsage(_) => self.push_unsupported(
                     document,
@@ -3990,21 +4103,64 @@ impl SemanticModelBuilder {
                 ActionUsageBodyElement::RefDecl(node) => {
                     self.lower_ref_decl(document, Some(owner), node)?;
                 }
+                ActionUsageBodyElement::MergeStmt(node) => self.lower_first_merge_stmt(
+                    document,
+                    owner,
+                    UnsupportedFamily::ActionUsageMember,
+                    DeclarationKind::Merge,
+                    ReferenceKind::MergeInput,
+                    node.span.clone(),
+                    &node.value.merge,
+                    &node.value.body,
+                )?,
+                ActionUsageBodyElement::DecisionStmt(node) => self.lower_first_merge_stmt(
+                    document,
+                    owner,
+                    UnsupportedFamily::ActionUsageMember,
+                    DeclarationKind::Decide,
+                    ReferenceKind::DecisionInput,
+                    node.span.clone(),
+                    &node.value.decide,
+                    &node.value.body,
+                )?,
+                ActionUsageBodyElement::JoinStmt(node) => self.lower_first_merge_stmt(
+                    document,
+                    owner,
+                    UnsupportedFamily::ActionUsageMember,
+                    DeclarationKind::Join,
+                    ReferenceKind::JoinInput,
+                    node.span.clone(),
+                    &node.value.join,
+                    &node.value.body,
+                )?,
+                ActionUsageBodyElement::ForkStmt(node) => self.lower_first_merge_stmt(
+                    document,
+                    owner,
+                    UnsupportedFamily::ActionUsageMember,
+                    DeclarationKind::Fork,
+                    ReferenceKind::ForkInput,
+                    node.span.clone(),
+                    &node.value.fork,
+                    &node.value.body,
+                )?,
+                ActionUsageBodyElement::ThenAction(node) => {
+                    self.lower_then_action(
+                        document,
+                        owner,
+                        UnsupportedFamily::ActionUsageMember,
+                        node,
+                    )?;
+                }
                 ActionUsageBodyElement::Annotation(_)
                 | ActionUsageBodyElement::MetadataKeywordUsage(_)
                 | ActionUsageBodyElement::TextualRep(_)
                 | ActionUsageBodyElement::FlowUsage(_)
-                | ActionUsageBodyElement::MergeStmt(_)
-                | ActionUsageBodyElement::DecisionStmt(_)
-                | ActionUsageBodyElement::JoinStmt(_)
-                | ActionUsageBodyElement::ForkStmt(_)
                 | ActionUsageBodyElement::TerminateStmt(_)
                 | ActionUsageBodyElement::WhileStmt(_)
                 | ActionUsageBodyElement::LoopStmt(_)
                 | ActionUsageBodyElement::IfStmt(_)
                 | ActionUsageBodyElement::Assign(_)
                 | ActionUsageBodyElement::ForLoop(_)
-                | ActionUsageBodyElement::ThenAction(_)
                 | ActionUsageBodyElement::Decl(_)
                 | ActionUsageBodyElement::DefaultReferenceUsage(_)
                 | ActionUsageBodyElement::VariantUsage(_) => self.push_unsupported(
@@ -4047,9 +4203,21 @@ impl SemanticModelBuilder {
             Visibility::Default,
             node.span.clone(),
         )?;
-        self.lower_succession_end(document, declaration, family, &node.value.first)?;
+        self.lower_succession_end(
+            document,
+            declaration,
+            family,
+            ReferenceKind::Succession,
+            &node.value.first,
+        )?;
         if let Some(then) = &node.value.then {
-            self.lower_succession_end(document, declaration, family, then)?;
+            self.lower_succession_end(
+                document,
+                declaration,
+                family,
+                ReferenceKind::Succession,
+                then,
+            )?;
         }
         Ok(())
     }
@@ -4068,6 +4236,7 @@ impl SemanticModelBuilder {
         document: DocumentId,
         owner: DeclarationId,
         family: UnsupportedFamily,
+        kind: ReferenceKind,
         node: &Node<Expression>,
     ) -> Result<(), ConstructionError> {
         match &node.value {
@@ -4081,7 +4250,7 @@ impl SemanticModelBuilder {
                     .clone();
                 self.push_reference(PendingReference {
                     source: owner,
-                    kind: ReferenceKind::Succession,
+                    kind,
                     document,
                     local: *target,
                     flags: RelationshipFlags::default(),
@@ -4097,6 +4266,201 @@ impl SemanticModelBuilder {
                 }
             }
             _ => self.push_unsupported(document, family, node.span.clone()),
+        }
+        Ok(())
+    }
+
+    /// Lowers a `decide`/`merge`/`fork`/`join` control node (BNF `DecisionStmt`/`MergeStmt`/
+    /// `ForkStmt`/`JoinStmt`, which all share the identical `<keyword> <expr> <FirstMergeBody>`
+    /// shape) as its own anonymous nested-declaration feature owned by `owner`, mirroring
+    /// `lower_first_stmt`'s `Succession` shape: the required operand expression is lowered as a
+    /// `kind` reference through `lower_succession_end`'s exact `FeatureRef`/`MemberAccess`
+    /// dispatch, and a braced body's members recurse through `lower_first_merge_body`.
+    #[allow(clippy::too_many_arguments)]
+    fn lower_first_merge_stmt(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        decl_kind: DeclarationKind,
+        ref_kind: ReferenceKind,
+        span: Span,
+        operand: &Node<Expression>,
+        body: &FirstMergeBody,
+    ) -> Result<(), ConstructionError> {
+        let declaration =
+            self.push_typed_declaration(document, Some(owner), decl_kind, None, span.clone())?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            span,
+        )?;
+        self.lower_succession_end(document, declaration, family, ref_kind, operand)?;
+        self.lower_first_merge_body(document, declaration, family, body)
+    }
+
+    /// Lowers a `decide`/`merge`/`fork`/`join` node's optional braced body (BNF
+    /// `FirstMergeBody::Brace`): each retained member is an ordinary `ActionDefBodyElement`, so
+    /// the common nested shapes actually authored -- `in`/`out` parameter declarations (a fork's
+    /// output flows, e.g. `fork F { in a; out b1; out b2; }`), nested action usages, and further
+    /// `then <target>;` continuations -- recurse through the same lowering functions an ordinary
+    /// action def/usage body uses. Anything else falls through to the existing
+    /// unsupported-member diagnostic, unchanged in kind from prior behavior.
+    fn lower_first_merge_body(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        body: &FirstMergeBody,
+    ) -> Result<(), ConstructionError> {
+        let FirstMergeBody::Brace(brace) = body else {
+            return Ok(());
+        };
+        for element in &brace.value.elements {
+            match &element.value {
+                FirstMergeBodyElement::Error(error) => {
+                    self.push_recovery(document, error.span.clone());
+                }
+                FirstMergeBodyElement::Unsupported(_) => {
+                    self.push_unsupported(document, family, element.span.clone());
+                }
+                FirstMergeBodyElement::Member(member) => match &member.value {
+                    ActionDefBodyElement::ActionUsage(action_usage) => {
+                        self.lower_action_usage(document, Some(owner), action_usage)?;
+                    }
+                    ActionDefBodyElement::InOutDecl(param) => {
+                        self.lower_parameter_declaration(document, Some(owner), param)?;
+                    }
+                    ActionDefBodyElement::ThenAction(then_action) => {
+                        self.lower_then_action(document, owner, family, then_action)?;
+                    }
+                    ActionDefBodyElement::Doc(_) => {}
+                    ActionDefBodyElement::MergeStmt(node) => self.lower_first_merge_stmt(
+                        document,
+                        owner,
+                        family,
+                        DeclarationKind::Merge,
+                        ReferenceKind::MergeInput,
+                        node.span.clone(),
+                        &node.value.merge,
+                        &node.value.body,
+                    )?,
+                    ActionDefBodyElement::DecisionStmt(node) => self.lower_first_merge_stmt(
+                        document,
+                        owner,
+                        family,
+                        DeclarationKind::Decide,
+                        ReferenceKind::DecisionInput,
+                        node.span.clone(),
+                        &node.value.decide,
+                        &node.value.body,
+                    )?,
+                    ActionDefBodyElement::JoinStmt(node) => self.lower_first_merge_stmt(
+                        document,
+                        owner,
+                        family,
+                        DeclarationKind::Join,
+                        ReferenceKind::JoinInput,
+                        node.span.clone(),
+                        &node.value.join,
+                        &node.value.body,
+                    )?,
+                    ActionDefBodyElement::ForkStmt(node) => self.lower_first_merge_stmt(
+                        document,
+                        owner,
+                        family,
+                        DeclarationKind::Fork,
+                        ReferenceKind::ForkInput,
+                        node.span.clone(),
+                        &node.value.fork,
+                        &node.value.body,
+                    )?,
+                    _ => self.push_unsupported(document, family, element.span.clone()),
+                },
+            }
+        }
+        Ok(())
+    }
+
+    /// Lowers a `then <target>;` continuation statement (BNF `ThenAction`) found either as a
+    /// direct action def/usage body element or nested inside a `decide`/`merge`/`fork`/`join`
+    /// node's braced body: dispatches on `ThenTarget` to whichever existing lowering function
+    /// already handles that target's own AST shape (an inline `action`/`perform` declaration, a
+    /// nested `merge`/`fork`/`decide` control node, or a bare feature reference to an
+    /// already-declared sibling node), so no new resolution machinery is written here. The
+    /// `Accept` shorthand-trigger target is deliberately out of scope for this slice (mirroring
+    /// `Transition`'s own `TransitionAccept::Payload`/`TimeTrigger` deferral) and falls through to
+    /// the existing unsupported-member diagnostic.
+    fn lower_then_action(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        node: &Node<ThenAction>,
+    ) -> Result<(), ConstructionError> {
+        match &node.value.target {
+            ThenTarget::Action(action_usage) => {
+                self.lower_action_usage(document, Some(owner), action_usage)?;
+            }
+            ThenTarget::Perform(perform) => {
+                self.lower_perform(document, Some(owner), perform)?;
+            }
+            ThenTarget::Merge(merge_stmt) => self.lower_first_merge_stmt(
+                document,
+                owner,
+                family,
+                DeclarationKind::Merge,
+                ReferenceKind::MergeInput,
+                merge_stmt.span.clone(),
+                &merge_stmt.value.merge,
+                &merge_stmt.value.body,
+            )?,
+            ThenTarget::Fork(fork_stmt) => self.lower_first_merge_stmt(
+                document,
+                owner,
+                family,
+                DeclarationKind::Fork,
+                ReferenceKind::ForkInput,
+                fork_stmt.span.clone(),
+                &fork_stmt.value.fork,
+                &fork_stmt.value.body,
+            )?,
+            ThenTarget::Decide(decision_stmt) => self.lower_first_merge_stmt(
+                document,
+                owner,
+                family,
+                DeclarationKind::Decide,
+                ReferenceKind::DecisionInput,
+                decision_stmt.span.clone(),
+                &decision_stmt.value.decide,
+                &decision_stmt.value.body,
+            )?,
+            ThenTarget::Feature(expression) => {
+                let declaration = self.push_typed_declaration(
+                    document,
+                    Some(owner),
+                    DeclarationKind::ThenContinuation,
+                    None,
+                    node.span.clone(),
+                )?;
+                self.push_membership(
+                    declaration,
+                    MembershipKind::Feature,
+                    Visibility::Default,
+                    node.span.clone(),
+                )?;
+                self.lower_succession_end(
+                    document,
+                    declaration,
+                    family,
+                    ReferenceKind::ThenTarget,
+                    expression,
+                )?;
+            }
+            ThenTarget::Accept(_) => {
+                self.push_unsupported(document, family, node.span.clone());
+            }
         }
         Ok(())
     }

@@ -41,9 +41,9 @@ action def DecisionTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_action_definition_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 3 1) (end 3 17))
+        (range (start 3 8) (end 3 16))
       )
       (diagnostic
         (severity warning)
@@ -59,9 +59,9 @@ action def DecisionTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_action_definition_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 8 1) (end 8 15))
+        (range (start 8 13) (end 8 14))
       )
       (diagnostic
         (severity warning)
@@ -97,6 +97,8 @@ action def DecisionTest {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:040cf77bfeccd08e8998112b0cb9f03441d2a7e57bec5bd99dd79ad132370220") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/decision_test.md") (anonymous (kind decide) (ordinal 0))))) (kind decide) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (decisionInput (reference "test x"))))
+    (declaration (id (node (document "memory://snapshot/decision_test.md") (anonymous (kind decide) (ordinal 1))))) (kind decide) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (decisionInput (reference "D"))))
     (declaration (id (node (document "memory://snapshot/decision_test.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "A3"))))
     (declaration (id (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest::A1"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest::A2"))) (kind action) (membership (kind feature) (visibility default)))
@@ -106,6 +108,12 @@ action def DecisionTest {
     (reference (id (source (node (document "memory://snapshot/decision_test.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0))
       (authored-target "A3")
       (outcome (status resolved) (target (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest::A3")))))
+    (reference (id (source (node (document "memory://snapshot/decision_test.md") (anonymous (kind decide) (ordinal 0))))) (kind decisionInput) (ordinal 0))
+      (authored-target "test x")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/decision_test.md") (anonymous (kind decide) (ordinal 1))))) (kind decisionInput) (ordinal 0))
+      (authored-target "D")
+      (outcome (status unresolved)))
   )
   (relationships
     (relationship (kind succession) (source (node (document "memory://snapshot/decision_test.md") (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest::A3"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/decision_test.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0)))
@@ -120,6 +128,14 @@ action def DecisionTest {
   (query (document "memory://snapshot/decision_test.md") (range (start 19 7) (end 19 9)) (probe (position 19 7))
     (reference (id (source (node (document "memory://snapshot/decision_test.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0) (authored-target "A3")
       (outcome (status resolved) (target (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest::A3")))))
+  )
+  (query (document "memory://snapshot/decision_test.md") (range (start 3 8) (end 3 16)) (probe (position 3 8))
+    (reference (id (source (node (document "memory://snapshot/decision_test.md") (anonymous (kind decide) (ordinal 0))))) (kind decisionInput) (ordinal 0) (authored-target "test x")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/decision_test.md") (range (start 8 13) (end 8 14)) (probe (position 8 13))
+    (reference (id (source (node (document "memory://snapshot/decision_test.md") (anonymous (kind decide) (ordinal 1))))) (kind decisionInput) (ordinal 0) (authored-target "D")
+      (outcome (status unresolved)))
   )
 )
 ~~~

@@ -840,6 +840,11 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::Allocate => "allocate",
         DeclarationKind::Bind => "bind",
         DeclarationKind::ReferenceUsage => "ref",
+        DeclarationKind::Decide => "decide",
+        DeclarationKind::Merge => "merge",
+        DeclarationKind::Fork => "fork",
+        DeclarationKind::Join => "join",
+        DeclarationKind::ThenContinuation => "then-continuation",
     }
 }
 
@@ -898,6 +903,11 @@ fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::IncludeUseCase => "includeUseCase",
         ReferenceKind::MemberAccessOperand => "memberAccessOperand",
         ReferenceKind::InvocationCallee => "invocationCallee",
+        ReferenceKind::DecisionInput => "decisionInput",
+        ReferenceKind::MergeInput => "mergeInput",
+        ReferenceKind::ForkInput => "forkInput",
+        ReferenceKind::JoinInput => "joinInput",
+        ReferenceKind::ThenTarget => "thenTarget",
     }
 }
 
@@ -935,6 +945,11 @@ fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::IncludeUseCase => Some("includeUseCase"),
         ReferenceKind::MemberAccessOperand => Some("memberAccessOperand"),
         ReferenceKind::InvocationCallee => Some("invocationCallee"),
+        ReferenceKind::DecisionInput => Some("decisionInput"),
+        ReferenceKind::MergeInput => Some("mergeInput"),
+        ReferenceKind::ForkInput => Some("forkInput"),
+        ReferenceKind::JoinInput => Some("joinInput"),
+        ReferenceKind::ThenTarget => Some("thenTarget"),
         ReferenceKind::NamespaceImport
         | ReferenceKind::MembershipImport
         | ReferenceKind::FilterImport => None,

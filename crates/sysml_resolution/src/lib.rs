@@ -553,4 +553,105 @@ mod tests {
             "expected both the trigger and effect to resolve to their sibling declarations, got: {sexpr}"
         );
     }
+
+    /// A standalone `decide <expr>;` decision control node (BNF `DecisionStmt`) must lower as a
+    /// `DeclarationKind::Decide` feature whose `decide` operand resolves as a `decisionInput`
+    /// reference to its sibling action, not fall through to `unsupported_action_definition_member`.
+    #[test]
+    fn decide_stmt_input_resolves() {
+        let sexpr = semantic_sexpr_for("package P { action def A { action x; decide x; } }");
+        assert!(
+            sexpr.contains("(kind decide)"),
+            "expected a decide declaration, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(kind decisionInput)"),
+            "expected a decisionInput relationship kind, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_definition_member"),
+            "did not expect unsupported_action_definition_member, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("(status unresolved)"),
+            "expected the decide operand to resolve to its sibling action, got: {sexpr}"
+        );
+    }
+
+    /// A `decide <expr>;` node whose operand is not declared anywhere in the model must stay an
+    /// explicit unresolved reference fact, not a fabricated or guessed target.
+    #[test]
+    fn decide_stmt_unresolvable_input_stays_unresolved() {
+        let sexpr = semantic_sexpr_for("package P { action def A { decide missing; } }");
+        assert!(
+            sexpr.contains("(kind decisionInput)"),
+            "expected a decisionInput reference to be authored, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(status unresolved)"),
+            "expected the unresolvable decide operand to remain explicitly unresolved, got: {sexpr}"
+        );
+    }
+
+    /// A `then decide <expr>;` continuation (`ThenTarget::Decide`) inside an action body must
+    /// lower through the same `lower_first_merge_stmt` dispatch as a standalone `decide`
+    /// statement, not fall through to `unsupported_action_definition_member`.
+    #[test]
+    fn then_decide_target_lowers_as_decide_declaration() {
+        let sexpr = semantic_sexpr_for("package P { action def A { action x; then decide x; } }");
+        assert!(
+            sexpr.contains("(kind decide)") && sexpr.contains("(kind decisionInput)"),
+            "expected a decide declaration reached via `then decide`, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_definition_member"),
+            "did not expect unsupported_action_definition_member, got: {sexpr}"
+        );
+    }
+
+    /// A standalone `merge <expr>;`/`fork <expr>;`/`join <expr>;` control node must each lower as
+    /// their own anonymous declaration kind with a resolved input reference, mirroring `decide`.
+    #[test]
+    fn merge_fork_join_stmts_resolve() {
+        let sexpr =
+            semantic_sexpr_for("package P { action def A { action x; merge x; fork x; join x; } }");
+        for kind in ["merge", "fork", "join"] {
+            assert!(
+                sexpr.contains(&format!("(kind {kind})")),
+                "expected a {kind} declaration, got: {sexpr}"
+            );
+            assert!(
+                sexpr.contains(&format!("(kind {kind}Input)")),
+                "expected a {kind}Input relationship kind, got: {sexpr}"
+            );
+        }
+        assert!(
+            !sexpr.contains("unsupported_action_definition_member"),
+            "did not expect unsupported_action_definition_member, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("(status unresolved)"),
+            "expected every control node's input to resolve to the sibling action, got: {sexpr}"
+        );
+    }
+
+    /// A bare `then <target>;` continuation (`ThenTarget::Feature`) referencing an
+    /// already-declared sibling action must resolve as a `thenTarget` reference sourced at the
+    /// enclosing action, not fall through to `unsupported_action_definition_member`.
+    #[test]
+    fn then_target_feature_resolves() {
+        let sexpr = semantic_sexpr_for("package P { action def A { action x; then x; } }");
+        assert!(
+            sexpr.contains("(kind thenTarget)"),
+            "expected a thenTarget relationship kind, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_definition_member"),
+            "did not expect unsupported_action_definition_member, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("(status unresolved)"),
+            "expected the `then` target to resolve to its sibling action, got: {sexpr}"
+        );
+    }
 }

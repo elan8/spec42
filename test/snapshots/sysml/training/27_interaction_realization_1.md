@@ -104,18 +104,6 @@ package 'Interaction Realization-1' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_action_usage_member")
-        (source "semantic")
-        (range (start 13 4) (end 13 35))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_action_usage_member")
-        (source "semantic")
-        (range (start 14 4) (end 14 67))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 18 23) (end 18 34))
@@ -215,7 +203,9 @@ package 'Interaction Realization-1' {
     (declaration (id (node (document "memory://snapshot/27_interaction_realization_1.md") (qualified-name "Interaction Realization-1::vehicle_a"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
     (declaration (id (node (document "memory://snapshot/27_interaction_realization_1.md") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "CruiseController"))))
     (declaration (id (node (document "memory://snapshot/27_interaction_realization_1.md") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a::controllerBehavior"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/27_interaction_realization_1.md") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a::controllerBehavior::receiveSensedSpeed"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_interaction_realization_1.md") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a::controllerBehavior::receiveSetSpeed"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/27_interaction_realization_1.md") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a::controllerBehavior::sendFuelCommand"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_interaction_realization_1.md") (qualified-name "Interaction Realization-1::vehicle_a::engine_a"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Engine"))))
     (declaration (id (node (document "memory://snapshot/27_interaction_realization_1.md") (qualified-name "Interaction Realization-1::vehicle_a::engine_a::engineBehavior"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_interaction_realization_1.md") (qualified-name "Interaction Realization-1::vehicle_a::engine_a::engineBehavior::receiveFuelCommand"))) (kind action) (membership (kind feature) (visibility default)))

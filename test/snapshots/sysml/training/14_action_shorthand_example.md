@@ -44,12 +44,6 @@ package 'Action Shorthand Example' {
         (range (start 17 2) (end 17 39))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_action_definition_member")
-        (source "semantic")
-        (range (start 19 2) (end 22 3))
-      )
-      (diagnostic
         (severity error)
         (code "recovered_action_body_element")
         (source "parser")
@@ -80,6 +74,8 @@ package 'Action Shorthand Example' {
     (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::focus::scene"))) (kind item) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::picture"))) (kind item) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Picture"))))
     (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::scene"))) (kind item) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Scene"))))
+    (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::shoot"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Shoot"))))
+    (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::shoot::picture"))) (kind item) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Focus::image"))) (kind featureTyping) (ordinal 0))
@@ -103,6 +99,9 @@ package 'Action Shorthand Example' {
     (reference (id (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::scene"))) (kind featureTyping) (ordinal 0))
       (authored-target "Scene")
       (outcome (status resolved) (target (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Scene")))))
+    (reference (id (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::shoot"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Shoot")
+      (outcome (status resolved) (target (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Shoot")))))
   )
   (relationships
     (relationship (kind typing) (direction out) (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Focus::image"))) (target (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Image"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Focus::image"))) (kind featureTyping) (ordinal 0)))
@@ -112,6 +111,7 @@ package 'Action Shorthand Example' {
     (relationship (kind typing) (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::focus"))) (target (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Focus"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::focus"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::picture"))) (target (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Picture"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::picture"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::scene"))) (target (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Scene"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::scene"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::shoot"))) (target (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Shoot"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::shoot"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -147,6 +147,10 @@ package 'Action Shorthand Example' {
   (query (document "memory://snapshot/14_action_shorthand_example.md") (range (start 9 18) (end 9 23)) (probe (position 9 18))
     (reference (id (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::scene"))) (kind featureTyping) (ordinal 0) (authored-target "Scene")
       (outcome (status resolved) (target (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Scene")))))
+  )
+  (query (document "memory://snapshot/14_action_shorthand_example.md") (range (start 19 21) (end 19 26)) (probe (position 19 21))
+    (reference (id (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::shoot"))) (kind featureTyping) (ordinal 0) (authored-target "Shoot")
+      (outcome (status resolved) (target (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Shoot")))))
   )
 )
 ~~~
