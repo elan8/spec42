@@ -58,12 +58,6 @@ package 'Requirement Satisfaction' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
-        (source "semantic")
-        (range (start 9 2) (end 9 26))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 11 18) (end 11 24))
@@ -76,9 +70,9 @@ package 'Requirement Satisfaction' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 13 3) (end 13 64))
+        (range (start 13 49) (end 13 63))
       )
       (diagnostic
         (severity error)
@@ -114,8 +108,10 @@ package 'Requirement Satisfaction' {
     (declaration (id (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::provide power"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::provide power::generate torque"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::vehicle_c1"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
+    (declaration (id (node (document "memory://snapshot/32_requirement_satisfaction.md") (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Engine"))))
     (declaration (id (node (document "memory://snapshot/32_requirement_satisfaction.md") (anonymous (kind port) (ordinal 0))))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "clutchPort"))))
+    (declaration (id (node (document "memory://snapshot/32_requirement_satisfaction.md") (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "generateTorque"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/32_requirement_satisfaction.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
@@ -132,6 +128,9 @@ package 'Requirement Satisfaction' {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/32_requirement_satisfaction.md") (anonymous (kind port) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "clutchPort")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/32_requirement_satisfaction.md") (anonymous (kind perform-action) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "generateTorque")
       (outcome (status unresolved)))
   )
   (relationships
@@ -161,6 +160,10 @@ package 'Requirement Satisfaction' {
   )
   (query (document "memory://snapshot/32_requirement_satisfaction.md") (range (start 12 12) (end 12 22)) (probe (position 12 12))
     (reference (id (source (node (document "memory://snapshot/32_requirement_satisfaction.md") (anonymous (kind port) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "clutchPort")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/32_requirement_satisfaction.md") (range (start 13 49) (end 13 63)) (probe (position 13 49))
+    (reference (id (source (node (document "memory://snapshot/32_requirement_satisfaction.md") (anonymous (kind perform-action) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "generateTorque")
       (outcome (status unresolved)))
   )
 )

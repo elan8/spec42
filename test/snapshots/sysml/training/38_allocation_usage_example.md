@@ -47,18 +47,6 @@ package 'Allocation Usage Example' {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
-        (source "semantic")
-        (range (start 12 3) (end 12 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_usage_member")
-        (source "semantic")
-        (range (start 24 4) (end 24 40))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 28 2) (end 30 3))
@@ -80,12 +68,14 @@ package 'Allocation Usage Example' {
     (declaration (id (node (document "memory://snapshot/38_allocation_usage_example.md") (qualified-name "Allocation Usage Example::LogicalModel::providePower"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ProvidePower"))))
     (declaration (id (node (document "memory://snapshot/38_allocation_usage_example.md") (qualified-name "Allocation Usage Example::LogicalModel::providePower::generateTorque"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "GenerateTorque"))))
     (declaration (id (node (document "memory://snapshot/38_allocation_usage_example.md") (qualified-name "Allocation Usage Example::LogicalModel::torqueGenerator"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TorqueGenerator"))))
+    (declaration (id (node (document "memory://snapshot/38_allocation_usage_example.md") (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/38_allocation_usage_example.md") (qualified-name "Allocation Usage Example::PhysicalModel"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/38_allocation_usage_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "LogicalModel") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/38_allocation_usage_example.md") (qualified-name "Allocation Usage Example::PhysicalModel::Engine"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/38_allocation_usage_example.md") (qualified-name "Allocation Usage Example::PhysicalModel::PowerTrain"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/38_allocation_usage_example.md") (qualified-name "Allocation Usage Example::PhysicalModel::powerTrain"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "PowerTrain"))))
     (declaration (id (node (document "memory://snapshot/38_allocation_usage_example.md") (qualified-name "Allocation Usage Example::PhysicalModel::powerTrain::engine"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Engine"))))
+    (declaration (id (node (document "memory://snapshot/38_allocation_usage_example.md") (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/38_allocation_usage_example.md") (qualified-name "Allocation Usage Example::LogicalModel::providePower"))) (kind featureTyping) (ordinal 0))

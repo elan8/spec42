@@ -51,18 +51,6 @@ package 'Allocation Definition Example' {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
-        (source "semantic")
-        (range (start 13 3) (end 13 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_usage_member")
-        (source "semantic")
-        (range (start 26 4) (end 26 40))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 35 2) (end 35 87))
@@ -85,6 +73,7 @@ package 'Allocation Definition Example' {
     (declaration (id (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::LogicalModel::providePower"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ProvidePower"))))
     (declaration (id (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::LogicalModel::providePower::generateTorque"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "GenerateTorque"))))
     (declaration (id (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::LogicalModel::torqueGenerator"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TorqueGenerator"))))
+    (declaration (id (node (document "memory://snapshot/38_allocation_definition_example.md") (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::PhysicalModel"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/38_allocation_definition_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "LogicalModel") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::PhysicalModel::LogicalToPhysical"))) (kind allocation-def) (membership (kind owning) (visibility default)))
@@ -94,6 +83,7 @@ package 'Allocation Definition Example' {
     (declaration (id (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::PhysicalModel::PowerTrain"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "PhysicalElement"))))
     (declaration (id (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::PhysicalModel::powerTrain"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "PowerTrain"))))
     (declaration (id (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::PhysicalModel::powerTrain::engine"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/38_allocation_definition_example.md") (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::LogicalModel::TorqueGenerator"))) (kind specialization) (ordinal 0))

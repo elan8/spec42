@@ -65,12 +65,6 @@ package 'Verification Case Definition Example' {
         (range (start 3 20) (end 3 29))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_requirement_definition_member")
-        (source "semantic")
-        (range (start 7 2) (end 7 28))
-      )
-      (diagnostic
         (severity error)
         (code "unexpected_keyword_in_scope")
         (source "parser")
@@ -87,12 +81,6 @@ package 'Verification Case Definition Example' {
         (code "unsupported_verification_case_definition_member")
         (source "semantic")
         (range (start 18 2) (end 18 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_verification_case_definition_member")
-        (source "semantic")
-        (range (start 20 2) (end 20 32))
       )
       (diagnostic
         (severity warning)
@@ -158,7 +146,9 @@ package 'Verification Case Definition Example' {
     (declaration (id (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::VehicleMassTest::processData"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::VehicleMassTest::processData::massMeasured"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ISQ::mass") (direction in))))
     (declaration (id (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::VehicleMassTest::processData::massProcessed"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ISQ::mass") (direction out))))
+    (declaration (id (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::VehicleMassTest::testVehicle"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
     (declaration (id (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::vehicleMassRequirement"))) (kind requirement) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::vehicleMassRequirement::vehicle"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::Vehicle::mass"))) (kind subsetting) (ordinal 0))
@@ -182,9 +172,17 @@ package 'Verification Case Definition Example' {
     (reference (id (source (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::VehicleMassTest::processData::massProcessed"))) (kind featureTyping) (ordinal 0))
       (authored-target "ISQ::mass")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::VehicleMassTest::testVehicle"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::Vehicle")))))
+    (reference (id (source (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::vehicleMassRequirement::vehicle"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::Vehicle")))))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::VehicleMassTest::collectData::testVehicle"))) (target (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::VehicleMassTest::collectData::testVehicle"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::VehicleMassTest::testVehicle"))) (target (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::VehicleMassTest::testVehicle"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::vehicleMassRequirement::vehicle"))) (target (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::vehicleMassRequirement::vehicle"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -220,6 +218,14 @@ package 'Verification Case Definition Example' {
   (query (document "memory://snapshot/34_verification_case_definition_example.md") (range (start 33 24) (end 33 33)) (probe (position 33 24))
     (reference (id (source (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::VehicleMassTest::processData::massProcessed"))) (kind featureTyping) (ordinal 0) (authored-target "ISQ::mass")
       (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/34_verification_case_definition_example.md") (range (start 20 24) (end 20 31)) (probe (position 20 24))
+    (reference (id (source (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::VehicleMassTest::testVehicle"))) (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::Vehicle")))))
+  )
+  (query (document "memory://snapshot/34_verification_case_definition_example.md") (range (start 7 20) (end 7 27)) (probe (position 7 20))
+    (reference (id (source (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::vehicleMassRequirement::vehicle"))) (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::Vehicle")))))
   )
 )
 ~~~

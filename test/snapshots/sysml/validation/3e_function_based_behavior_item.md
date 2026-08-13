@@ -77,21 +77,27 @@ package '3e-Function-based Behavior-item' {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
+        (code "unsupported_action_usage_member")
         (source "semantic")
-        (range (start 18 3) (end 46 4))
+        (range (start 20 4) (end 31 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_usage_member")
+        (source "semantic")
+        (range (start 33 4) (end 34 72))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_usage_member")
+        (source "semantic")
+        (range (start 36 4) (end 45 5))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_part_usage_member")
         (source "semantic")
         (range (start 48 3) (end 48 85))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_usage_member")
-        (source "semantic")
-        (range (start 58 4) (end 58 32))
       )
     )
   )
@@ -112,8 +118,10 @@ package '3e-Function-based Behavior-item' {
     (declaration (id (node (document "memory://snapshot/3e_function_based_behavior_item.md") (qualified-name "3e-Function-based Behavior-item::Definitions::VehicleAssembly"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/3e_function_based_behavior_item.md") (qualified-name "3e-Function-based Behavior-item::Usages"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/3e_function_based_behavior_item.md") (qualified-name "3e-Function-based Behavior-item::Usages::AssemblyLine"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/3e_function_based_behavior_item.md") (qualified-name "3e-Function-based Behavior-item::Usages::AssemblyLine::assemble vehicle"))) (kind perform-action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/3e_function_based_behavior_item.md") (qualified-name "3e-Function-based Behavior-item::Usages::AssemblyLine::vehicle"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
     (declaration (id (node (document "memory://snapshot/3e_function_based_behavior_item.md") (qualified-name "3e-Function-based Behavior-item::Usages::AssemblyLine::vehicle::engine"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Engine"))))
+    (declaration (id (node (document "memory://snapshot/3e_function_based_behavior_item.md") (qualified-name "3e-Function-based Behavior-item::Usages::AssemblyLine::vehicle::providePower"))) (kind perform-action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/3e_function_based_behavior_item.md") (qualified-name "3e-Function-based Behavior-item::Usages::AssemblyLine::vehicle::transmission"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Transmission"))))
   )
   (references

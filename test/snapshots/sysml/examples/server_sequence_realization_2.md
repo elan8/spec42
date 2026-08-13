@@ -133,9 +133,9 @@ package ServerSequenceRealization_2 {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
+        (code "unsupported_action_usage_member")
         (source "semantic")
-        (range (start 17 3) (end 19 4))
+        (range (start 18 4) (end 18 84))
       )
       (diagnostic
         (severity warning)
@@ -297,6 +297,7 @@ package ServerSequenceRealization_2 {
     (declaration (id (node (document "memory://snapshot/server_sequence_realization_2.md") (qualified-name "ServerSequenceRealization_2::Configuration::consumer_2::myTopic"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "String"))))
     (declaration (id (node (document "memory://snapshot/server_sequence_realization_2.md") (qualified-name "ServerSequenceRealization_2::Configuration::consumer_2::subscriptionPort"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "SubscriptionPort") (conjugated true))))
     (declaration (id (node (document "memory://snapshot/server_sequence_realization_2.md") (qualified-name "ServerSequenceRealization_2::Configuration::producer_2"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/server_sequence_realization_2.md") (qualified-name "ServerSequenceRealization_2::Configuration::producer_2::producerBehavior"))) (kind perform-action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/server_sequence_realization_2.md") (qualified-name "ServerSequenceRealization_2::Configuration::producer_2::publicationPort"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "PublicationPort") (conjugated true))))
     (declaration (id (node (document "memory://snapshot/server_sequence_realization_2.md") (qualified-name "ServerSequenceRealization_2::Configuration::producer_2::somePublication"))) (kind item) (membership (kind feature) (visibility private)))
     (declaration (id (node (document "memory://snapshot/server_sequence_realization_2.md") (qualified-name "ServerSequenceRealization_2::Configuration::producer_2::someTopic"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "String"))))

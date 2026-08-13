@@ -39,18 +39,6 @@ package '12b-Allocation' {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
-        (source "semantic")
-        (range (start 10 3) (end 10 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_usage_member")
-        (source "semantic")
-        (range (start 17 4) (end 17 40))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 22 1) (end 24 2))
@@ -71,9 +59,11 @@ package '12b-Allocation' {
     (declaration (id (node (document "memory://snapshot/12b_allocation.md") (qualified-name "12b-Allocation::LogicalModel::providePower"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/12b_allocation.md") (qualified-name "12b-Allocation::LogicalModel::providePower::generateTorque"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/12b_allocation.md") (qualified-name "12b-Allocation::LogicalModel::torqueGenerator"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/12b_allocation.md") (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/12b_allocation.md") (qualified-name "12b-Allocation::PhysicalModel"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/12b_allocation.md") (qualified-name "12b-Allocation::PhysicalModel::powerTrain"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/12b_allocation.md") (qualified-name "12b-Allocation::PhysicalModel::powerTrain::engine"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/12b_allocation.md") (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/12b_allocation.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))

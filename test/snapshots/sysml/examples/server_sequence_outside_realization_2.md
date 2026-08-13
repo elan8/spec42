@@ -134,9 +134,9 @@ package ServerSequenceOutsideRealization_2 {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
+        (code "unsupported_action_usage_member")
         (source "semantic")
-        (range (start 21 3) (end 23 4))
+        (range (start 22 4) (end 22 84))
       )
       (diagnostic
         (severity warning)
@@ -276,6 +276,7 @@ package ServerSequenceOutsideRealization_2 {
     (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::consumer_2::subscriptionPort"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "SubscriptionPort") (conjugated true))))
     (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::producer_2"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "incomingTransferSort"))))
+    (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::producer_2::producerBehavior"))) (kind perform-action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::producer_2::publicationPort"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "PublicationPort") (conjugated true))))
     (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::producer_2::somePublication"))) (kind item) (membership (kind feature) (visibility private)))
     (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::producer_2::someTopic"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "String"))))

@@ -49,12 +49,6 @@ package 'Use Case Definition Example' {
         (severity warning)
         (code "unsupported_use_case_definition_member")
         (source "semantic")
-        (range (start 8 2) (end 8 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_use_case_definition_member")
-        (source "semantic")
         (range (start 10 2) (end 10 24))
       )
       (diagnostic
@@ -79,12 +73,6 @@ package 'Use Case Definition Example' {
         (severity warning)
         (code "unsupported_use_case_definition_member")
         (source "semantic")
-        (range (start 23 2) (end 23 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_use_case_definition_member")
-        (source "semantic")
         (range (start 24 2) (end 24 24))
       )
       (diagnostic
@@ -92,12 +80,6 @@ package 'Use Case Definition Example' {
         (code "unsupported_use_case_definition_member")
         (source "semantic")
         (range (start 25 2) (end 25 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_use_case_definition_member")
-        (source "semantic")
-        (range (start 29 2) (end 29 28))
       )
       (diagnostic
         (severity warning)
@@ -122,16 +104,31 @@ package 'Use Case Definition Example' {
   (declarations
     (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Enter Vehicle"))) (kind use-case-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Enter Vehicle::vehicle"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
     (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Environment"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Exit Vehicle"))) (kind use-case-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Exit Vehicle::vehicle"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
     (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Fuel Station"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Person"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Provide Transportation"))) (kind use-case-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Provide Transportation::vehicle"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
     (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Enter Vehicle::vehicle"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Vehicle")))))
+    (reference (id (source (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Exit Vehicle::vehicle"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Vehicle")))))
+    (reference (id (source (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Provide Transportation::vehicle"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Vehicle")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Enter Vehicle::vehicle"))) (target (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Enter Vehicle::vehicle"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Exit Vehicle::vehicle"))) (target (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Exit Vehicle::vehicle"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Provide Transportation::vehicle"))) (target (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Provide Transportation::vehicle"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -140,5 +137,17 @@ package 'Use Case Definition Example' {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/35_use_case_definition_example.md") (range (start 23 20) (end 23 27)) (probe (position 23 20))
+    (reference (id (source (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Enter Vehicle::vehicle"))) (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Vehicle")))))
+  )
+  (query (document "memory://snapshot/35_use_case_definition_example.md") (range (start 29 20) (end 29 27)) (probe (position 29 20))
+    (reference (id (source (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Exit Vehicle::vehicle"))) (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Vehicle")))))
+  )
+  (query (document "memory://snapshot/35_use_case_definition_example.md") (range (start 8 20) (end 8 27)) (probe (position 8 20))
+    (reference (id (source (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Provide Transportation::vehicle"))) (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Vehicle")))))
+  )
 )
 ~~~

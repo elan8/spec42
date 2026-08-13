@@ -44,18 +44,6 @@ package 'Action Performance Example' {
         (source "parser")
         (range (start 9 2) (end 12 2))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_usage_member")
-        (source "semantic")
-        (range (start 13 3) (end 13 27))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_usage_member")
-        (source "semantic")
-        (range (start 17 3) (end 17 27))
-      )
     )
   )
 )
@@ -72,7 +60,9 @@ package 'Action Performance Example' {
     (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::Imager"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::camera"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Camera"))))
     (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::camera::f"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "AutoFocus"))))
+    (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::camera::i"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Imager"))))
+    (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/18_action_performance_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))

@@ -32,15 +32,15 @@ use sysml_v2_parser_next::{
         NamespaceDecl, Node, OccurrenceBodyElement, OccurrenceDef,
         OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package, PackageBody,
         PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage, PartUsageBody,
-        PartUsageBodyElement, PortBody, PortBodyElement, PortDef, PortDefBody, PortDefBodyElement,
-        PortUsage as ParserPortUsage, QualifiedIdentification, QualifiedReferenceId, RenderingDef,
-        RenderingDefBody, RenderingDefBodyElement, RequirementDef, RequirementDefBody,
-        RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage, RootElement, Span,
-        StateDef, StateDefBody, StateDefBodyElement, StateUsage as ParserStateUsage,
-        SubsettingKind, SubsettingRelationship, ThenStmt, UseCaseDef, UseCaseDefBody,
-        UseCaseDefBodyElement, VerificationCaseDef, ViewBody, ViewBodyElement, ViewDef,
-        ViewDefBody, ViewDefBodyElement, ViewUsage as ParserViewUsage, ViewpointDef,
-        Visibility as ParserVisibility,
+        PartUsageBodyElement, Perform as ParserPerform, PerformBody, PerformBodyElement, PortBody,
+        PortBodyElement, PortDef, PortDefBody, PortDefBodyElement, PortUsage as ParserPortUsage,
+        QualifiedIdentification, QualifiedReferenceId, RenderingDef, RenderingDefBody,
+        RenderingDefBodyElement, RequirementDef, RequirementDefBody, RequirementDefBodyElement,
+        RequirementUsage as ParserRequirementUsage, RootElement, Span, StateDef, StateDefBody,
+        StateDefBodyElement, StateUsage as ParserStateUsage, SubjectDecl, SubsettingKind,
+        SubsettingRelationship, ThenStmt, UseCaseDef, UseCaseDefBody, UseCaseDefBodyElement,
+        VerificationCaseDef, ViewBody, ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement,
+        ViewUsage as ParserViewUsage, ViewpointDef, Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
 };
@@ -422,6 +422,24 @@ enum DeclarationKind {
     /// (`[0..*]`) is not modeled anywhere else in this codebase yet (attribute/part usages with
     /// array types don't carry a multiplicity fact either), so it is left unrepresented here too.
     ParameterUsage,
+    /// A `subject` declaration (BNF `SubjectDecl`, `ast::SubjectDecl`) found in a requirement/
+    /// concern/case-family def or usage body, e.g. `subject vehicle : Vehicle;` inside
+    /// `requirement vehicleSpecification`. Structurally a plain typed feature declaration --
+    /// name plus an optional `FeatureTyping` reference to the declared type -- mirroring
+    /// `lower_parameter_declaration`'s shape but without a direction fact. Per
+    /// RESOLUTION_LAYER_DESIGN.md §5.4, `Subject` is a derived case-level relationship projected
+    /// from this ordinary `FeatureTyping` fact by a later query-layer owner, not a distinct
+    /// authored reference kind here; multiplicity and the bare `subject = expr;`/`subject;`
+    /// shorthand forms are left unlowered, matching `ParameterUsage`'s scope.
+    SubjectUsage,
+    /// An explicit `perform action <name> : <Type>;` performance usage (BNF `Perform`,
+    /// `ast::Perform`) found in a part def/usage or action def/usage body, e.g. `perform action
+    /// generateTorque: GenerateTorque;` inside `part def Engine`. Mirrors `lower_action_usage`'s
+    /// shape: ownership, membership, an optional `FeatureTyping`/`Subclassification` reference to
+    /// the performed action type, and `subsets`/`redefines` specialization. The shorthand `perform
+    /// <path>;` reference form (`Perform::action_reference`, no declaration label) and body
+    /// content beyond nested `part`/`item` usages are out of scope for this slice.
+    PerformActionUsage,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -1553,6 +1571,9 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::AliasDef(alias_def) => {
                         self.lower_alias_def(document, Some(declaration), alias_def)?;
                     }
+                    PartDefBodyElement::Perform(perform) => {
+                        self.lower_perform(document, Some(declaration), perform)?;
+                    }
                     PartDefBodyElement::Doc(_) | PartDefBodyElement::Comment(_) => {}
                     PartDefBodyElement::Annotation(_)
                     | PartDefBodyElement::MetadataAnnotation(_)
@@ -1563,7 +1584,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::Ref(_)
                     | PartDefBodyElement::Connect(_)
                     | PartDefBodyElement::FlowUsage(_)
-                    | PartDefBodyElement::Perform(_)
                     | PartDefBodyElement::Allocate(_)
                     | PartDefBodyElement::ExhibitState(_)
                     | PartDefBodyElement::AssertConstraint(_)
@@ -1728,6 +1748,9 @@ impl SemanticModelBuilder {
                     PartUsageBodyElement::AliasDef(alias_def) => {
                         self.lower_alias_def(document, Some(declaration), alias_def)?;
                     }
+                    PartUsageBodyElement::Perform(perform) => {
+                        self.lower_perform(document, Some(declaration), perform)?;
+                    }
                     PartUsageBodyElement::Doc(_) => {}
                     PartUsageBodyElement::Annotation(_)
                     | PartUsageBodyElement::DefaultReferenceUsage(_)
@@ -1735,7 +1758,6 @@ impl SemanticModelBuilder {
                     | PartUsageBodyElement::Ref(_)
                     | PartUsageBodyElement::Connect(_)
                     | PartUsageBodyElement::FlowUsage(_)
-                    | PartUsageBodyElement::Perform(_)
                     | PartUsageBodyElement::SuccessionUsage(_)
                     | PartUsageBodyElement::Allocate(_)
                     | PartUsageBodyElement::Satisfy(_)
@@ -2187,6 +2209,126 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
+    /// Lowers a `subject` declaration (BNF `SubjectDecl`) found in a requirement/concern/case-
+    /// family def or usage body, e.g. `subject vehicle : Vehicle;`, mirroring
+    /// `lower_parameter_declaration`'s shape: ownership, membership, and (when a type is present)
+    /// a `FeatureTyping` reference to the declared type. No direction fact applies here.
+    /// Multiplicity, the bound `= expr` value, and the bare `subject = expr;`/`subject;`
+    /// shorthand forms (`ast::SubjectRef`, handled separately) are out of scope.
+    fn lower_subject_decl(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<SubjectDecl>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::SubjectUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        if let Some(type_name) = node.value.type_name {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        Ok(())
+    }
+
+    /// Lowers an explicit `perform action <name> : <Type>;` performance usage (BNF `Perform`)
+    /// found in a part def/usage or action def/usage body, mirroring `lower_action_usage`'s
+    /// shape: ownership, membership, an optional `FeatureTyping`/`Subclassification` reference to
+    /// the performed action type, and `subsets`/`redefines` specialization. Only nested `part`/
+    /// `item` usages inside the perform's own body are lowered; the shorthand `perform <path>;`
+    /// reference form (no declaration label) and other body content are out of scope.
+    fn lower_perform(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ParserPerform>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.action_name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::PerformActionUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.typing {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        self.lower_perform_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers the `PerformBody` owned by a `perform action` usage (BNF `PerformBodyElement`):
+    /// only nested `part`/`item` usages are recognized; in/out bindings, nested action-body
+    /// content, and variant members are out of scope and fall through to the enclosing
+    /// unsupported-member family via `push_unsupported`.
+    fn lower_perform_body(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        body: &PerformBody,
+    ) -> Result<(), ConstructionError> {
+        let PerformBody::Brace { elements } = body else {
+            return Ok(());
+        };
+        for element in elements {
+            match &element.value {
+                PerformBodyElement::PartUsage(part_usage) => {
+                    self.lower_part_usage(document, Some(owner), part_usage)?;
+                }
+                PerformBodyElement::ItemUsage(item_usage) => {
+                    self.lower_item_usage(document, Some(owner), item_usage)?;
+                }
+                PerformBodyElement::Doc(_) => {}
+                PerformBodyElement::InOut(_)
+                | PerformBodyElement::Variant(_)
+                | PerformBodyElement::Action(_)
+                | PerformBodyElement::AttributeUsage(_) => self.push_unsupported(
+                    document,
+                    UnsupportedFamily::ActionUsageMember,
+                    element.span.clone(),
+                ),
+            }
+        }
+        Ok(())
+    }
+
     /// Lowers a `metadata def` (BNF MetadataDefinition), mirroring `lower_item_def`: ownership,
     /// membership, and an optional `:>` specialization relationship. `MetadataDef`'s body is a
     /// plain `AttributeBody` (shared with `AttributeDef`/`ItemDef`), so its owned members are
@@ -2371,13 +2513,15 @@ impl SemanticModelBuilder {
                 ActionDefBodyElement::InOutDecl(param) => {
                     self.lower_parameter_declaration(document, Some(owner), param)?;
                 }
+                ActionDefBodyElement::Perform(perform) => {
+                    self.lower_perform(document, Some(owner), perform)?;
+                }
                 ActionDefBodyElement::Doc(_) => {}
                 ActionDefBodyElement::Annotation(_)
                 | ActionDefBodyElement::MetadataAnnotation(_)
                 | ActionDefBodyElement::MetadataKeywordUsage(_)
                 | ActionDefBodyElement::TextualRep(_)
                 | ActionDefBodyElement::RefDecl(_)
-                | ActionDefBodyElement::Perform(_)
                 | ActionDefBodyElement::Bind(_)
                 | ActionDefBodyElement::FlowUsage(_)
                 | ActionDefBodyElement::MergeStmt(_)
@@ -3068,6 +3212,9 @@ impl SemanticModelBuilder {
                 RequirementDefBodyElement::Import(import) => {
                     self.lower_import(document, Some(owner), import)?;
                 }
+                RequirementDefBodyElement::SubjectDecl(subject) => {
+                    self.lower_subject_decl(document, Some(owner), subject)?;
+                }
                 RequirementDefBodyElement::Constraint(constraint) => {
                     self.lower_constraint_usage(document, Some(owner), constraint)?;
                 }
@@ -3076,7 +3223,6 @@ impl SemanticModelBuilder {
                 | RequirementDefBodyElement::Annotation(_)
                 | RequirementDefBodyElement::MetadataAnnotation(_)
                 | RequirementDefBodyElement::MetadataKeywordUsage(_)
-                | RequirementDefBodyElement::SubjectDecl(_)
                 | RequirementDefBodyElement::SubjectRef(_)
                 | RequirementDefBodyElement::RequirementActorDecl(_)
                 | RequirementDefBodyElement::Stakeholder(_)
@@ -3579,12 +3725,14 @@ impl SemanticModelBuilder {
                 UseCaseDefBodyElement::PartUsage(part_usage) => {
                     self.lower_part_usage(document, Some(owner), part_usage)?;
                 }
+                UseCaseDefBodyElement::SubjectDecl(subject) => {
+                    self.lower_subject_decl(document, Some(owner), subject)?;
+                }
                 UseCaseDefBodyElement::Doc(_) => {}
                 UseCaseDefBodyElement::Other(_)
                 | UseCaseDefBodyElement::Annotation(_)
                 | UseCaseDefBodyElement::MetadataAnnotation(_)
                 | UseCaseDefBodyElement::MetadataKeywordUsage(_)
-                | UseCaseDefBodyElement::SubjectDecl(_)
                 | UseCaseDefBodyElement::SubjectRef(_)
                 | UseCaseDefBodyElement::ActorUsage(_)
                 | UseCaseDefBodyElement::ActorRedefinitionAssignment(_)
@@ -6853,6 +7001,86 @@ mod tests {
                 "(kind typing) (direction inout) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Focus::image\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Image\")))"
             ),
             "expected image's typing reference to Image to resolve with an `inout` direction fact, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn requirement_subject_declaration_lowers_and_resolves_its_typing() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def Vehicle;\n\
+             \trequirement vehicleSpecification {\n\
+             \t\tsubject vehicle : Vehicle;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(qualified-name \"Demo::vehicleSpecification::vehicle\"))) (kind subject)"
+            ),
+            "expected a subject declaration for vehicle, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::vehicleSpecification::vehicle\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Vehicle\")))"
+            ),
+            "expected vehicle's typing reference to Vehicle to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn use_case_subject_declaration_lowers_and_resolves_its_typing() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def Vehicle;\n\
+             \tcase def Inspect {\n\
+             \t\tsubject vehicle : Vehicle;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Inspect::vehicle\"))) (kind subject)"),
+            "expected a subject declaration for vehicle, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn perform_action_usage_inside_a_part_def_lowers_and_resolves_its_typing() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \taction def GenerateTorque;\n\
+             \tpart def Engine {\n\
+             \t\tperform action generateTorque: GenerateTorque;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(qualified-name \"Demo::Engine::generateTorque\"))) (kind perform-action)"
+            ),
+            "expected a perform-action declaration for generateTorque, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Engine::generateTorque\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::GenerateTorque\")))"
+            ),
+            "expected generateTorque's typing reference to GenerateTorque to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn perform_action_usage_inside_an_action_def_lowers_and_resolves_its_typing() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \taction def Sub;\n\
+             \taction def Main {\n\
+             \t\tperform action step: Sub;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Main::step\"))) (kind perform-action)"),
+            "expected a perform-action declaration for step, got:\n{output}"
         );
     }
 

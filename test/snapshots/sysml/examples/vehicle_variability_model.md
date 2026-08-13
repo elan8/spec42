@@ -256,12 +256,6 @@ package VehicleVariabilityModel {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
-        (source "semantic")
-        (range (start 117 10) (end 117 49))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_action_usage_member")
         (source "semantic")
         (range (start 127 11) (end 127 38))
@@ -342,6 +336,7 @@ package VehicleVariabilityModel {
     (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 0))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "EngineChoices")) (redefinition (reference "engine"))))
     (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 1))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Transmission")) (redefinition (reference "transmission"))))
     (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 2))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "sunroof"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "PartDefinitions") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "PartsTree") (import (shape namespace) (recursive false)))))
