@@ -79,9 +79,9 @@ package CalculationExample {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_calc_definition_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 18 33) (end 18 48))
+        (range (start 18 33) (end 18 36))
       )
       (diagnostic
         (severity warning)
@@ -96,14 +96,14 @@ package CalculationExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:d0c80a0d91a8d81aff9f9961a53c439c40dff92c1b18f08d25eab88a25bd083f") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d0c80a0d91a8d81aff9f9961a53c439c40dff92c1b18f08d25eab88a25bd083f") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/calculation_test.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/calculation_test.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "NumericalFunctions") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::MassSum"))) (kind calc-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::MassSum::partMasses"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassValue") (direction in))))
-    (declaration (id (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::MassSum::totalMass"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassValue"))))
+    (declaration (id (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::MassSum::totalMass"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassValue")) (expressionOperand (reference "partMasses")) (invocationCallee (reference "sum"))))
     (declaration (id (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "VehiclePart"))))
     (declaration (id (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::VehiclePart"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::VehiclePart::m"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassValue"))))
@@ -129,6 +129,12 @@ package CalculationExample {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::MassSum::totalMass"))) (kind featureTyping) (ordinal 0))
       (authored-target "MassValue")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::MassSum::totalMass"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "partMasses")
+      (outcome (status resolved) (target (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::MassSum::partMasses")))))
+    (reference (id (source (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::MassSum::totalMass"))) (kind invocationCallee) (ordinal 0))
+      (authored-target "sum")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::Vehicle"))) (kind specialization) (ordinal 0))
       (authored-target "VehiclePart")
@@ -159,6 +165,7 @@ package CalculationExample {
       (outcome (status resolved) (target (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::VehiclePart")))))
   )
   (relationships
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::MassSum::totalMass"))) (target (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::MassSum::partMasses"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::MassSum::totalMass"))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::Vehicle"))) (target (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::VehiclePart"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::Vehicle"))) (kind specialization) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::ms"))) (target (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::MassSum"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::ms"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::vehicle"))) (target (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::vehicle"))) (kind featureTyping) (ordinal 0)))
@@ -167,6 +174,7 @@ package CalculationExample {
     (relationship (kind typing) (source (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::vehicle::trans"))) (target (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::VehiclePart"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::vehicle::trans"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::MassSum::totalMass"))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::ms"))) (value (kind unresolved-operand)))
   )
 )
@@ -188,6 +196,14 @@ package CalculationExample {
   )
   (query (document "memory://snapshot/calculation_test.md") (range (start 18 21) (end 18 30)) (probe (position 18 21))
     (reference (id (source (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::MassSum::totalMass"))) (kind featureTyping) (ordinal 0) (authored-target "MassValue")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/calculation_test.md") (range (start 18 37) (end 18 47)) (probe (position 18 37))
+    (reference (id (source (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::MassSum::totalMass"))) (kind expressionOperand) (ordinal 0) (authored-target "partMasses")
+      (outcome (status resolved) (target (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::MassSum::partMasses")))))
+  )
+  (query (document "memory://snapshot/calculation_test.md") (range (start 18 33) (end 18 36)) (probe (position 18 33))
+    (reference (id (source (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::MassSum::totalMass"))) (kind invocationCallee) (ordinal 0) (authored-target "sum")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/calculation_test.md") (range (start 8 21) (end 8 32)) (probe (position 8 21))

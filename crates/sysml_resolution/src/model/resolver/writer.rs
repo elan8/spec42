@@ -897,6 +897,7 @@ fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::Variant => "variant",
         ReferenceKind::IncludeUseCase => "includeUseCase",
         ReferenceKind::MemberAccessOperand => "memberAccessOperand",
+        ReferenceKind::InvocationCallee => "invocationCallee",
     }
 }
 
@@ -933,6 +934,7 @@ fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::Variant => Some("variant"),
         ReferenceKind::IncludeUseCase => Some("includeUseCase"),
         ReferenceKind::MemberAccessOperand => Some("memberAccessOperand"),
+        ReferenceKind::InvocationCallee => Some("invocationCallee"),
         ReferenceKind::NamespaceImport
         | ReferenceKind::MembershipImport
         | ReferenceKind::FilterImport => None,

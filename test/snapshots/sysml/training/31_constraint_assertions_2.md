@@ -92,9 +92,15 @@ package 'Constraint Assertions-2' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_constraint_definition_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 17 2) (end 17 17))
+        (range (start 17 2) (end 17 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 17 6) (end 17 16))
       )
       (diagnostic
         (severity warning)
@@ -133,7 +139,7 @@ package 'Constraint Assertions-2' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:6e436aa60e2789297c06a200b91b91fed61c45875d253d75869a4e233bea8f26") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:6e436aa60e2789297c06a200b91b91fed61c45875d253d75869a4e233bea8f26") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/31_constraint_assertions_2.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false)))))
@@ -150,7 +156,7 @@ package 'Constraint Assertions-2' {
     (declaration (id (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::Vehicle::engine::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassValue"))))
     (declaration (id (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::Vehicle::transmission"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Engine"))))
     (declaration (id (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::Vehicle::transmission::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassValue"))))
-    (declaration (id (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::massConstraint"))) (kind constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassConstraint")) (expressionOperand (reference "massLimit"))))
+    (declaration (id (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::massConstraint"))) (kind constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassConstraint")) (expressionOperand (reference "partMasses")) (expressionOperand (reference "massLimit")) (invocationCallee (reference "sum"))))
     (declaration (id (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::massConstraint::massLimit"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassValue") (direction in))))
     (declaration (id (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::massConstraint::partMasses"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassValue") (direction in))))
   )
@@ -189,7 +195,13 @@ package 'Constraint Assertions-2' {
       (authored-target "MassConstraint")
       (outcome (status resolved) (target (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::MassConstraint")))))
     (reference (id (source (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::massConstraint"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "partMasses")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::massConstraint"))) (kind expressionOperand) (ordinal 1))
       (authored-target "massLimit")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::massConstraint"))) (kind invocationCallee) (ordinal 0))
+      (authored-target "sum")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::massConstraint::massLimit"))) (kind featureTyping) (ordinal 0))
       (authored-target "MassValue")
@@ -204,6 +216,7 @@ package 'Constraint Assertions-2' {
     (relationship (kind typing) (source (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::massConstraint"))) (target (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::MassConstraint"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::massConstraint"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::massConstraint"))) (value (kind unresolved-operand)))
   )
 )
 ~~~
@@ -254,8 +267,16 @@ package 'Constraint Assertions-2' {
     (reference (id (source (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::massConstraint"))) (kind featureTyping) (ordinal 0) (authored-target "MassConstraint")
       (outcome (status resolved) (target (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::MassConstraint")))))
   )
+  (query (document "memory://snapshot/31_constraint_assertions_2.md") (range (start 17 6) (end 17 16)) (probe (position 17 6))
+    (reference (id (source (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::massConstraint"))) (kind expressionOperand) (ordinal 0) (authored-target "partMasses")
+      (outcome (status unresolved)))
+  )
   (query (document "memory://snapshot/31_constraint_assertions_2.md") (range (start 17 21) (end 17 30)) (probe (position 17 21))
-    (reference (id (source (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::massConstraint"))) (kind expressionOperand) (ordinal 0) (authored-target "massLimit")
+    (reference (id (source (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::massConstraint"))) (kind expressionOperand) (ordinal 1) (authored-target "massLimit")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/31_constraint_assertions_2.md") (range (start 17 2) (end 17 5)) (probe (position 17 2))
+    (reference (id (source (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::massConstraint"))) (kind invocationCallee) (ordinal 0) (authored-target "sum")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/31_constraint_assertions_2.md") (range (start 15 17) (end 15 26)) (probe (position 15 17))

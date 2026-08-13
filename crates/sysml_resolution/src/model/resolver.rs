@@ -770,6 +770,9 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     // reference any owned feature (not just a Type), exactly like `Succession`/`TransitionSource`,
     // so they join `state_binding_slots`'s `DeclarationDomain::Any` pass rather than the
     // Subclassification/FeatureTyping `Type` domain passes.
+    // An `Expression::Invocation`/`Constructor` callee (`InvocationCallee`) can likewise name any
+    // owned feature (a calc/function) or a type (a constructor), not just a Type, so it joins this
+    // same `DeclarationDomain::Any` pass.
     let state_binding_slots: Vec<usize> = references
         .iter()
         .enumerate()
@@ -793,6 +796,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::BindTarget
                     | ReferenceKind::Variant
                     | ReferenceKind::IncludeUseCase
+                    | ReferenceKind::InvocationCallee
             )
             .then_some(index)
         })
@@ -1711,7 +1715,8 @@ fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<D
         | ReferenceKind::BindTarget
         | ReferenceKind::Variant
         | ReferenceKind::IncludeUseCase
-        | ReferenceKind::MemberAccessOperand => None,
+        | ReferenceKind::MemberAccessOperand
+        | ReferenceKind::InvocationCallee => None,
     }
 }
 
@@ -1892,7 +1897,8 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::BindTarget
             | ReferenceKind::Variant
             | ReferenceKind::IncludeUseCase
-            | ReferenceKind::MemberAccessOperand => {}
+            | ReferenceKind::MemberAccessOperand
+            | ReferenceKind::InvocationCallee => {}
         }
     }
     Ok((

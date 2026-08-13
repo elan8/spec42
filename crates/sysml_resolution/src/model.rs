@@ -756,6 +756,28 @@ enum ReferenceKind {
     /// (e.g. a dotted connector end is `MemberAccessOperand`, not `ConnectorEnd`); each call site's
     /// own doc comment cross-references this trade-off.
     MemberAccessOperand,
+    /// The callee of an `Expression::Invocation` (e.g. `sum` in `sum(partMasses)`) or the
+    /// `type_name` of an `Expression::Constructor` (e.g. `PusherOutput` in `new
+    /// PusherOutput(pusherForce)`) -- both name the function/operation/type being invoked with a
+    /// parenthesized argument list, so they share this one `ReferenceKind` rather than growing a
+    /// separate kind per AST shape. Resolved through the same `DeclarationDomain::Any` lexical
+    /// lookup fixed point as `ExpressionOperand`/`ConnectorEnd`: a callee can name any owned
+    /// feature (a `calc`/function) or a type (a constructor), not just a `Type`. Sourced directly
+    /// at the enclosing declaration whose expression contains the invocation (no anonymous
+    /// nested-declaration scope shift), mirroring `ExpressionOperand`'s shape. Each argument
+    /// expression is recursively resolved through the same operand-resolution dispatch (`lower_
+    /// constraint_expression`/`lower_calc_expression`/`lower_filter_expression`/`lower_satisfy_
+    /// operand`) the invocation itself was reached through, so an argument can itself be a
+    /// literal, `FeatureRef`, dotted `MemberAccess` chain, nested `BinaryOp`, or nested
+    /// `Invocation`/`Constructor` -- each pushing whatever `ReferenceKind` its own shape resolves
+    /// to (typically `ExpressionOperand`/`MemberAccessOperand`/another `InvocationCallee`).
+    /// Evaluating the invocation itself (computing a function's result or a constructed value) is
+    /// explicitly out of scope: see `EvalNode::Invocation`, which always folds to
+    /// `EvaluatedValue::NonConstant`. A callee that is not a simple/qualified name, dotted chain,
+    /// or (for `Constructor`) a type name -- e.g. `(a + b)(x)`, an invocation whose callee is
+    /// itself an invocation result -- is out of scope and left unresolved by `lower_invocation_
+    /// callee`.
+    InvocationCallee,
 }
 
 /// The computed or explicit outcome of evaluating one supported constraint/calc expression
@@ -835,6 +857,15 @@ enum EvalNode {
     /// arithmetic arm, only `classify_calc_node` does -- keeping constraint evaluation strictly
     /// comparison-only, unchanged from slices 1-3.
     Arithmetic(BinaryOperator, Box<EvalNode>, Box<EvalNode>),
+    /// An `Expression::Invocation`/`Expression::Constructor` node (reference-resolution slice; see
+    /// `ReferenceKind::InvocationCallee`). Carries each argument's own classified `EvalNode` purely
+    /// so `ordinal` keeps advancing past every nested `Operand` leaf in exact lockstep with `lower_
+    /// constraint_expression`/`lower_calc_expression`'s traversal (an operand lexically following
+    /// the invocation in the same expression must still get the right ordinal) -- the argument
+    /// values themselves are never read by `fold_eval_node_pending`, which always folds this node
+    /// straight to `EvaluatedValue::NonConstant` regardless of its children's folded values,
+    /// exactly as evaluating an invocation's function/constructor semantics is out of scope.
+    Invocation(Vec<EvalNode>),
 }
 
 /// The classification `classify_constraint_expression`/`classify_calc_expression` assign to one
@@ -1014,6 +1045,20 @@ fn classify_constraint_node(node: &Expression, ordinal: &mut u32) -> Option<Eval
                 Box::new(right),
             ))
         }
+        Expression::Invocation { args, .. } => {
+            let mut children = Vec::with_capacity(args.len());
+            for arg in args {
+                children.push(classify_constraint_node(&arg.value, ordinal)?);
+            }
+            Some(EvalNode::Invocation(children))
+        }
+        Expression::Constructor { args, .. } => {
+            let mut children = Vec::with_capacity(args.len());
+            for arg in args {
+                children.push(classify_constraint_node(&arg.value, ordinal)?);
+            }
+            Some(EvalNode::Invocation(children))
+        }
         _ => None,
     }
 }
@@ -1042,6 +1087,20 @@ fn classify_calc_node(node: &Expression, ordinal: &mut u32) -> Option<EvalNode> 
                 Box::new(right),
             ))
         }
+        Expression::Invocation { args, .. } => {
+            let mut children = Vec::with_capacity(args.len());
+            for arg in args {
+                children.push(classify_calc_node(&arg.value, ordinal)?);
+            }
+            Some(EvalNode::Invocation(children))
+        }
+        Expression::Constructor { args, .. } => {
+            let mut children = Vec::with_capacity(args.len());
+            for arg in args {
+                children.push(classify_calc_node(&arg.value, ordinal)?);
+            }
+            Some(EvalNode::Invocation(children))
+        }
         _ => None,
     }
 }
@@ -1055,6 +1114,9 @@ fn eval_node_is_pure_literal(node: &EvalNode) -> bool {
         EvalNode::Comparison(_, left, right) | EvalNode::Arithmetic(_, left, right) => {
             eval_node_is_pure_literal(left) && eval_node_is_pure_literal(right)
         }
+        // Always `NonConstant` once folded (see `EvalNode::Invocation`'s doc comment), never a
+        // "genuinely known" literal, regardless of how many/which literal arguments it carries.
+        EvalNode::Invocation(_) => false,
     }
 }
 
@@ -1102,6 +1164,7 @@ fn fold_eval_node_pending(
             let right = fold_eval_node_pending(right, resolve_operand)?;
             Some(fold_arithmetic(op.clone(), left, right))
         }
+        EvalNode::Invocation(_) => Some(EvaluatedValue::NonConstant),
     }
 }
 
@@ -1700,6 +1763,73 @@ impl SemanticModelBuilder {
             span,
         });
         Ok(id)
+    }
+
+    /// Resolves the callee of an `Expression::Invocation` (e.g. `sum` in `sum(partMasses)`) as an
+    /// authored `ReferenceKind::InvocationCallee` reference sourced at `declaration`. A simple/
+    /// qualified name (`FeatureRef`/`FeatureChainRef`) resolves through the same
+    /// `DeclarationDomain::Any` lexical lookup fixed point every other operand kind uses; a dotted
+    /// chain (`MemberAccess`, e.g. a callee like `SysML::sum`) resolves through the same
+    /// `flatten_member_access_chain`/`push_member_access_reference` path `ExpressionOperand`'s own
+    /// `MemberAccess` arm uses (publishing `ReferenceKind::MemberAccessOperand`, not
+    /// `InvocationCallee`, matching that shared path's existing "one kind per algorithm" trade-off
+    /// -- see `ReferenceKind::MemberAccessOperand`'s doc comment). Any other callee shape (e.g. an
+    /// invocation whose callee is itself computed, `(a + b)(x)`) is left unresolved: this narrow
+    /// helper has no `UnsupportedFamily` to publish a diagnostic against (the invocation itself is
+    /// a supported shape; only this specific callee sub-shape is not), so it silently resolves
+    /// nothing for that callee rather than fabricating a reference.
+    fn lower_invocation_callee(
+        &mut self,
+        document: DocumentId,
+        declaration: DeclarationId,
+        callee: &Node<Expression>,
+    ) -> Result<(), ConstructionError> {
+        match &callee.value {
+            Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
+                self.push_invocation_callee_reference(document, declaration, *target)
+            }
+            Expression::MemberAccess { .. } => {
+                if let Some(chain) = flatten_member_access_chain(callee) {
+                    self.push_member_access_reference(
+                        declaration,
+                        document,
+                        &chain,
+                        callee.span.clone(),
+                    )?;
+                }
+                Ok(())
+            }
+            _ => Ok(()),
+        }
+    }
+
+    /// Pushes one `ReferenceKind::InvocationCallee` reference for a callee/`Constructor` type name
+    /// that is already a parser `QualifiedReferenceId` (an `Expression::Invocation`'s `FeatureRef`/
+    /// `FeatureChainRef` callee via `lower_invocation_callee`, or an `Expression::Constructor`'s
+    /// `type_name` directly).
+    fn push_invocation_callee_reference(
+        &mut self,
+        document: DocumentId,
+        declaration: DeclarationId,
+        target: QualifiedReferenceId,
+    ) -> Result<(), ConstructionError> {
+        let span = self.documents[document.index()]
+            .parsed
+            .qualified_reference(target)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span
+            .clone();
+        self.push_reference(PendingReference {
+            source: declaration,
+            kind: ReferenceKind::InvocationCallee,
+            document,
+            local: target,
+            flags: RelationshipFlags::default(),
+            span,
+            import: None,
+        })?;
+        Ok(())
     }
 
     fn push_unsupported(&mut self, document: DocumentId, family: UnsupportedFamily, span: Span) {
@@ -3980,10 +4110,14 @@ impl SemanticModelBuilder {
     /// and recursed into), or a comparison `BinaryOp` (`Eq`/`Ne`/`Lt`/`Le`/`Gt`/`Ge` -- `StrictEq`/
     /// `StrictNe` KerML identity comparisons are deliberately excluded from this narrow slice, left
     /// unsupported like every other operator) whose operands are recursed into. Evaluation
-    /// (computing an actual truth value) is out of scope. Any other expression shape -- arithmetic
-    /// ops, invocations, tuples, type-check/classification expressions, unary ops, a dotted
-    /// `MemberAccess` chain, etc. -- falls through to the existing unsupported-member diagnostic,
-    /// unchanged from prior behavior.
+    /// (computing an actual truth value) is out of scope. Also supports `Expression::Invocation`/
+    /// `Expression::Constructor` (reference-resolution slice, see `ReferenceKind::
+    /// InvocationCallee`/`lower_invocation_callee`): the callee/type name resolves as an
+    /// `InvocationCallee` reference and each argument recurses back into this same function, but
+    /// the invocation is never evaluated (`EvalNode::Invocation` always folds to `NonConstant`).
+    /// Any other expression shape -- arithmetic ops, tuples, type-check/classification
+    /// expressions, unary ops, etc. -- falls through to the existing unsupported-member
+    /// diagnostic, unchanged from prior behavior.
     fn lower_constraint_expression(
         &mut self,
         document: DocumentId,
@@ -4034,6 +4168,20 @@ impl SemanticModelBuilder {
                 self.lower_constraint_expression(document, declaration, family, left)?;
                 self.lower_constraint_expression(document, declaration, family, right)
             }
+            Expression::Invocation { callee, args } => {
+                self.lower_invocation_callee(document, declaration, callee)?;
+                for arg in args {
+                    self.lower_constraint_expression(document, declaration, family, &arg.value)?;
+                }
+                Ok(())
+            }
+            Expression::Constructor { type_name, args } => {
+                self.push_invocation_callee_reference(document, declaration, *type_name)?;
+                for arg in args {
+                    self.lower_constraint_expression(document, declaration, family, &arg.value)?;
+                }
+                Ok(())
+            }
             _ => {
                 self.push_unsupported(document, family, node.span.clone());
                 Ok(())
@@ -4050,9 +4198,12 @@ impl SemanticModelBuilder {
     /// parenthesized wrapper -- plus (slice 4) an arithmetic `BinaryOp` (`Add`/`Sub`/`Mul`/`Div`/
     /// `Mod`, see `is_arithmetic_operator`; `Exp`/`Pow` deliberately excluded, see
     /// `is_arithmetic_operator`'s doc comment) whose operands are recursed into just like
-    /// `lower_constraint_expression`'s comparison arm. Invocations, unary ops, `Exp`/`Pow`, and
-    /// every other expression shape stay unsupported, falling through to the existing
-    /// `unsupported_calc_definition_member` diagnostic, unchanged from prior behavior.
+    /// `lower_constraint_expression`'s comparison arm. Also supports `Expression::Invocation`/
+    /// `Expression::Constructor` (e.g. `sum(partMasses)`, `new PusherOutput(pusherForce)`),
+    /// exactly like `lower_constraint_expression`'s own Invocation/Constructor arm: reference
+    /// resolution only, never evaluation. Unary ops, `Exp`/`Pow`, and every other expression shape
+    /// stay unsupported, falling through to the existing `unsupported_calc_definition_member`
+    /// diagnostic, unchanged from prior behavior.
     fn lower_calc_expression(
         &mut self,
         document: DocumentId,
@@ -4102,6 +4253,20 @@ impl SemanticModelBuilder {
             Expression::BinaryOp { op, left, right } if is_arithmetic_operator(op) => {
                 self.lower_calc_expression(document, declaration, family, left)?;
                 self.lower_calc_expression(document, declaration, family, right)
+            }
+            Expression::Invocation { callee, args } => {
+                self.lower_invocation_callee(document, declaration, callee)?;
+                for arg in args {
+                    self.lower_calc_expression(document, declaration, family, &arg.value)?;
+                }
+                Ok(())
+            }
+            Expression::Constructor { type_name, args } => {
+                self.push_invocation_callee_reference(document, declaration, *type_name)?;
+                for arg in args {
+                    self.lower_calc_expression(document, declaration, family, &arg.value)?;
+                }
+                Ok(())
             }
             _ => {
                 self.push_unsupported(document, family, node.span.clone());
@@ -4208,6 +4373,20 @@ impl SemanticModelBuilder {
             {
                 self.lower_filter_expression(document, declaration, left)?;
                 self.lower_filter_expression(document, declaration, right)
+            }
+            Expression::Invocation { callee, args } => {
+                self.lower_invocation_callee(document, declaration, callee)?;
+                for arg in args {
+                    self.lower_filter_expression(document, declaration, &arg.value)?;
+                }
+                Ok(())
+            }
+            Expression::Constructor { type_name, args } => {
+                self.push_invocation_callee_reference(document, declaration, *type_name)?;
+                for arg in args {
+                    self.lower_filter_expression(document, declaration, &arg.value)?;
+                }
+                Ok(())
             }
             _ => {
                 self.push_unsupported(
@@ -4735,8 +4914,11 @@ impl SemanticModelBuilder {
     /// Lowers one `Satisfy` operand (`source`/`target`), mirroring `lower_transition_end`: its
     /// path expression is a structured `Expression`, so a simple/qualified name
     /// (`Expression::FeatureRef`) resolves as an authored reference of `kind` through the shared
-    /// `DeclarationDomain::Any` lexical lookup. Any other expression shape falls through to an
-    /// explicit `family` unsupported diagnostic.
+    /// `DeclarationDomain::Any` lexical lookup. Also supports `Expression::Invocation`/
+    /// `Expression::Constructor` (reference resolution only, via `lower_invocation_callee`/
+    /// `ReferenceKind::InvocationCallee`, recursing arguments back into this same function with
+    /// `kind` unchanged). Any other expression shape falls through to an explicit `family`
+    /// unsupported diagnostic.
     fn lower_satisfy_operand(
         &mut self,
         document: DocumentId,
@@ -4769,6 +4951,18 @@ impl SemanticModelBuilder {
                     self.push_member_access_reference(owner, document, &chain, node.span.clone())?;
                 } else {
                     self.push_unsupported(document, family, node.span.clone());
+                }
+            }
+            Expression::Invocation { callee, args } => {
+                self.lower_invocation_callee(document, owner, callee)?;
+                for arg in args {
+                    self.lower_satisfy_operand(document, owner, family, kind, &arg.value)?;
+                }
+            }
+            Expression::Constructor { type_name, args } => {
+                self.push_invocation_callee_reference(document, owner, *type_name)?;
+                for arg in args {
+                    self.lower_satisfy_operand(document, owner, family, kind, &arg.value)?;
                 }
             }
             _ => self.push_unsupported(document, family, node.span.clone()),
@@ -8652,11 +8846,14 @@ mod tests {
 
     #[test]
     fn constraint_unsupported_expression_shape_still_falls_through_to_diagnostic() {
+        // `Expression::Invocation` (e.g. `compute(x, y)`) is a supported shape as of this slice
+        // (see `lower_invocation_callee`/`ReferenceKind::InvocationCallee`); a unary op remains
+        // genuinely unsupported.
         let request = crate::BuildRequest::new(
             vec![crate::SourceInput::new(
                 "memory://test/enum.sysml",
                 "package Demo {\n\
-                 \tconstraint def C { compute(x, y) }\n\
+                 \tconstraint def C { not x }\n\
                  }\n"
                 .to_string(),
                 crate::SourceKind::Workspace,
@@ -8673,7 +8870,7 @@ mod tests {
             .unwrap();
         assert!(
             output.contains("unsupported_constraint_definition_member"),
-            "expected a function-call expression to still surface as an unsupported \
+            "expected a unary-op expression to still surface as an unsupported \
              constraint-definition-member diagnostic, got:\n{output}"
         );
     }
@@ -8818,9 +9015,12 @@ mod tests {
 
     #[test]
     fn constraint_unsupported_arithmetic_shape_publishes_no_evaluation_fact() {
+        // See `constraint_unsupported_expression_shape_still_falls_through_to_diagnostic`: an
+        // invocation is now a supported (reference-resolvable) shape, so this uses a unary op,
+        // still genuinely unsupported, to exercise the no-evaluation-fact path.
         let output = build_semantic_sexpr(
             "package Demo {\n\
-             \tconstraint def C { compute(x, y) }\n\
+             \tconstraint def C { not x }\n\
              }\n",
         );
         assert!(
