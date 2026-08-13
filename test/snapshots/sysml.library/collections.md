@@ -222,7 +222,7 @@ standard library package Collections {
         (severity warning)
         (code "unsupported_calc_definition_member")
         (source "semantic")
-        (range (start 74 8) (end 74 47))
+        (range (start 74 14) (end 74 45))
       )
       (diagnostic
         (severity warning)
@@ -252,6 +252,7 @@ standard library package Collections {
     (declaration (id (node (document "memory://snapshot/collections.md") (anonymous (kind import) (ordinal 3))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "IntegerFunctions") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/collections.md") (anonymous (kind import) (ordinal 4))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ControlFunctions") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/collections.md") (qualified-name "Collections::Array"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "OrderedCollection"))))
+    (declaration (id (node (document "memory://snapshot/collections.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind kerml-invariant) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/collections.md") (qualified-name "Collections::Array::dimensions"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Positive"))))
     (declaration (id (node (document "memory://snapshot/collections.md") (qualified-name "Collections::Array::flattenedSize"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Positive"))))
     (declaration (id (node (document "memory://snapshot/collections.md") (qualified-name "Collections::Array::rank"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Natural")) (expressionOperand (reference "dimensions")) (invocationCallee (reference "size"))))

@@ -71,9 +71,9 @@ package FuncSpec {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 8 4) (end 8 19))
+        (range (start 8 16) (end 8 17))
       )
     )
   )
@@ -82,12 +82,13 @@ package FuncSpec {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:dfcdfda5c349979d632045feed31aec73306106fb0e6f1511d985d326a0970d9") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:dfcdfda5c349979d632045feed31aec73306106fb0e6f1511d985d326a0970d9") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::F"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base::G"))))
     (declaration (id (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::FI"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base::G"))))
     (declaration (id (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::H"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base::I")) (specialization (reference "Base::J"))))
+    (declaration (id (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::I"))) (kind kerml-invariant) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "x"))))
     (declaration (id (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::K"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base::L"))))
     (declaration (id (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::P"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base::Q"))))
     (declaration (id (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::PI"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base::Q"))))
@@ -106,6 +107,9 @@ package FuncSpec {
     (reference (id (source (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::H"))) (kind specialization) (ordinal 1))
       (authored-target "Base::J")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::I"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "x")
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::K"))) (kind specialization) (ordinal 0))
       (authored-target "Base::L")
       (outcome (status unresolved)))
@@ -122,6 +126,7 @@ package FuncSpec {
   (relationships
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::I"))) (value (kind unresolved-operand)))
   )
 )
 ~~~
@@ -142,6 +147,10 @@ package FuncSpec {
   )
   (query (document "memory://snapshot/function_specialization.md") (range (start 2 27) (end 2 34)) (probe (position 2 27))
     (reference (id (source (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::H"))) (kind specialization) (ordinal 1) (authored-target "Base::J")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/function_specialization.md") (range (start 8 16) (end 8 17)) (probe (position 8 16))
+    (reference (id (source (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::I"))) (kind expressionOperand) (ordinal 0) (authored-target "x")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/function_specialization.md") (range (start 3 27) (end 3 34)) (probe (position 3 27))

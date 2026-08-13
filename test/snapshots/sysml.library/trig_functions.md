@@ -59,9 +59,9 @@ standard library package TrigFunctions {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_calc_definition_member")
         (source "semantic")
-        (range (start 8 4) (end 8 82))
+        (range (start 8 22) (end 8 80))
       )
       (diagnostic
         (severity warning)
@@ -97,7 +97,7 @@ standard library package TrigFunctions {
         (severity warning)
         (code "unsupported_calc_definition_member")
         (source "semantic")
-        (range (start 18 8) (end 18 52))
+        (range (start 18 24) (end 18 50))
       )
       (diagnostic
         (severity warning)
@@ -171,6 +171,7 @@ standard library package TrigFunctions {
     (declaration (id (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/trig_functions.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::UnitBoundedReal"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Real"))))
+    (declaration (id (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::UnitBoundedReal::unitBound"))) (kind kerml-invariant) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::arccos"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/trig_functions.md") (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real"))))
     (declaration (id (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::arccos::x"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "UnitBoundedReal") (direction in))))
@@ -190,6 +191,7 @@ standard library package TrigFunctions {
     (declaration (id (node (document "memory://snapshot/trig_functions.md") (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real")) (expressionOperand (reference "theta_rad")) (expressionOperand (reference "pi"))))
     (declaration (id (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::deg::theta_rad"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real") (direction in))))
     (declaration (id (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::pi"))) (kind default-reference) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real"))))
+    (declaration (id (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::piPrecision"))) (kind kerml-invariant) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::rad"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/trig_functions.md") (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real")) (expressionOperand (reference "theta_deg")) (expressionOperand (reference "pi"))))
     (declaration (id (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::rad::theta_deg"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real") (direction in))))

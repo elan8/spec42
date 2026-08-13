@@ -861,6 +861,9 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::KermlClassifier => "kerml-classifier",
         DeclarationKind::KermlFeature => "kerml-feature",
         DeclarationKind::DefaultReferenceUsage => "default-reference",
+        DeclarationKind::KermlConnector => "kerml-connector",
+        DeclarationKind::KermlBinding => "kerml-binding",
+        DeclarationKind::KermlInvariant => "kerml-invariant",
     }
 }
 

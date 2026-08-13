@@ -30,8 +30,9 @@ use sysml_v2_parser_next::{
         FlowUsage, FrameMember, Import, ImportShape, InOut, InOutDecl, IncludeUseCase,
         InterfaceDef, InterfaceDefBody, InterfaceDefBodyElement,
         InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement, ItemDef,
-        ItemUsage as ParserItemUsage, KermlClassifierDecl, KermlFeatureMember, LibraryPackage,
-        Membership, MembershipKind as ParserMembershipKind, MetadataAnnotation, MetadataDef,
+        ItemUsage as ParserItemUsage, KermlBindingMember, KermlClassifierDecl, KermlConnectorEnd,
+        KermlConnectorMember, KermlFeatureMember, KermlInvariantMember, LibraryPackage, Membership,
+        MembershipKind as ParserMembershipKind, MetadataAnnotation, MetadataDef,
         MetadataUsage as ParserMetadataUsage, NamespaceDecl, Node, OccurrenceBodyElement,
         OccurrenceDef, OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package,
         PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage,
@@ -632,6 +633,29 @@ enum DeclarationKind {
     /// `has_feature_keyword`/`body` shapes are not modeled as distinct facts here (multiplicity
     /// is unmodeled elsewhere in this codebase too, see `ParameterUsage`).
     DefaultReferenceUsage,
+    /// A KerML connector member (`KermlConnectorMember`), e.g. `connector fixWheel :
+    /// BikeWheelFixed from [1] rollsOn to [1] holdsWheel;` (KerML Spec Annex A-3-3). Mirrors
+    /// `lower_connection_def`'s ownership/typing/end shape: ownership, membership, an optional
+    /// `:` typing target (`FeatureTyping`), and `from`/`to` ends resolved as
+    /// `ReferenceKind::ConnectorEnd` references through the same shared lexical lookup
+    /// `connection def`/`interface def` use. `is_all`, end multiplicities, and each end's
+    /// `references` chain are not modeled as distinct facts here.
+    KermlConnector,
+    /// A KerML binding connector member (`KermlBindingMember`), e.g. `binding [1] startShot =
+    /// [1] endShot;` (KerML Spec §8.2.4). Structurally the keyword-full sibling of
+    /// `BindingConnectorUsage`/`Bind` -- mirrors `lower_binding_connector_usage`'s two-reference
+    /// shape (`ReferenceKind::BindSource`/`BindTarget`) applied to each end's `target`. The
+    /// declared name/multiplicity and each end's `references` chain are not modeled as distinct
+    /// facts here.
+    KermlBinding,
+    /// A KerML invariant member (`KermlInvariantMember`), e.g. `inv unitBound { -1.0 <= that &
+    /// that <= 1.0 }` or the anonymous `inv { isClosed == true }` (KerML Spec §8.2.7). Its body
+    /// shares the `CalcDefBody` grammar (not `ConstraintDefBody`), so its boolean expression is
+    /// classified/lowered through the existing `classify_calc_expression`/`lower_calc_expression`
+    /// pipeline via the shared `lower_calc_def_body` walker, mirroring `AssertConstraintMember`'s
+    /// "anonymous nested declaration" pattern. `is_negated` is not modeled as a distinct fact
+    /// here (see `AssertConstraintMember`'s own `is_negated` scope boundary).
+    KermlInvariant,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -2757,11 +2781,9 @@ impl SemanticModelBuilder {
             PackageBodyElement::KermlClassifier(node) => {
                 self.lower_kerml_classifier_decl(document, owner, node)?
             }
-            PackageBodyElement::KermlInvariant(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::KermlInvariant(node) => {
+                self.lower_kerml_invariant_member(document, owner, node)?
+            }
             PackageBodyElement::KermlFeatureMember(node) => self.lower_kerml_feature_member(
                 document,
                 owner,
@@ -3983,6 +4005,196 @@ impl SemanticModelBuilder {
             self.push_evaluation_fact(declaration, classify_calc_expression(&expression.value));
             self.lower_calc_expression(document, declaration, family, &expression)?;
         }
+        self.lower_calc_def_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers a KerML connector member (`KermlConnectorMember`), e.g. `connector fixWheel :
+    /// BikeWheelFixed from [1] rollsOn to [1] holdsWheel;` (KerML Spec Annex A-3-3, gap: this
+    /// construct was previously entirely unlowered -- see `DeclarationKind::KermlConnector`).
+    /// Mirrors `lower_connection_def`: ownership, membership, an optional `:` typing target, and
+    /// `from`/`to` ends resolved through `lower_kerml_connector_end` (the same
+    /// `ReferenceKind::ConnectorEnd` reference kind `connection def`/`interface def` use). `is_all`
+    /// and body content beyond the shared `lower_calc_def_body` walk are not modeled as distinct
+    /// facts here.
+    fn lower_kerml_connector_member(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        node: &Node<KermlConnectorMember>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::KermlConnector,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        if let Some(type_name) = node.value.typing {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        if let Some(end) = &node.value.from {
+            self.lower_kerml_connector_end(document, declaration, end)?;
+        }
+        if let Some(end) = &node.value.to {
+            self.lower_kerml_connector_end(document, declaration, end)?;
+        }
+        self.lower_calc_def_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers one KerML connector/binding end (`KermlConnectorEnd`) as an authored
+    /// `ReferenceKind::ConnectorEnd` reference, mirroring `lower_binding_connector_operand`: its
+    /// `target` is already a structured `QualifiedReferenceId` (not a general `Expression`, unlike
+    /// `ConnectionEnd`), so it resolves directly through the same `DeclarationDomain::Any` lexical
+    /// lookup. The end's own `multiplicity` and `references` chain are not modeled as distinct
+    /// facts here.
+    fn lower_kerml_connector_end(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        node: &Node<KermlConnectorEnd>,
+    ) -> Result<(), ConstructionError> {
+        let span = self.documents[document.index()]
+            .parsed
+            .qualified_reference(node.value.target)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span
+            .clone();
+        self.push_reference(PendingReference {
+            source: owner,
+            kind: ReferenceKind::ConnectorEnd,
+            document,
+            local: node.value.target,
+            flags: RelationshipFlags::default(),
+            span,
+            import: None,
+        })?;
+        Ok(())
+    }
+
+    /// Lowers a KerML binding connector member (`KermlBindingMember`), e.g. `binding [1]
+    /// startShot = [1] endShot;` (KerML Spec §8.2.4, gap: previously entirely unlowered -- see
+    /// `DeclarationKind::KermlBinding`). Structurally the keyword-full sibling of
+    /// `BindingConnectorUsage`/`Bind` -- mirrors `lower_binding_connector_usage`'s two-reference
+    /// shape, resolving `left`/`right` as `ReferenceKind::BindSource`/`BindTarget` references
+    /// through `lower_kerml_connector_end`'s target rather than a bare `QualifiedReferenceId`
+    /// (each end additionally carries an optional multiplicity/`references` chain, both out of
+    /// scope here, same as `KermlConnectorMember`'s ends).
+    fn lower_kerml_binding_member(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        node: &Node<KermlBindingMember>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::KermlBinding,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        self.lower_kerml_binding_operand(
+            document,
+            declaration,
+            ReferenceKind::BindSource,
+            &node.value.left,
+        )?;
+        self.lower_kerml_binding_operand(
+            document,
+            declaration,
+            ReferenceKind::BindTarget,
+            &node.value.right,
+        )?;
+        self.lower_calc_def_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers one `KermlBindingMember` end (`left`/`right`) as an authored reference of `kind`,
+    /// mirroring `lower_binding_connector_operand` but operating on `KermlConnectorEnd.target`
+    /// rather than a bare `QualifiedReferenceId` directly.
+    fn lower_kerml_binding_operand(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        kind: ReferenceKind,
+        end: &Node<KermlConnectorEnd>,
+    ) -> Result<(), ConstructionError> {
+        let span = self.documents[document.index()]
+            .parsed
+            .qualified_reference(end.value.target)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span
+            .clone();
+        self.push_reference(PendingReference {
+            source: owner,
+            kind,
+            document,
+            local: end.value.target,
+            flags: RelationshipFlags::default(),
+            span,
+            import: None,
+        })?;
+        Ok(())
+    }
+
+    /// Lowers a KerML invariant member (`KermlInvariantMember`), e.g. `inv unitBound { -1.0 <=
+    /// that & that <= 1.0 }` or the anonymous `inv { isClosed == true }` (KerML Spec §8.2.7, gap:
+    /// previously entirely unlowered -- see `DeclarationKind::KermlInvariant`). Its body shares
+    /// the `CalcDefBody` grammar (not `ConstraintDefBody`, unlike `AssertConstraintMember`), so it
+    /// is walked through the existing `lower_calc_def_body` -- the same
+    /// `classify_calc_expression`/`lower_calc_expression` pipeline already used for
+    /// `KermlFeatureMember` values applies unchanged to its boolean expression(s). `is_negated` is
+    /// not modeled as a distinct fact here (mirrors `AssertConstraintMember`'s own `is_negated`
+    /// scope boundary).
+    fn lower_kerml_invariant_member(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<KermlInvariantMember>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::KermlInvariant,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
         self.lower_calc_def_body(document, declaration, &node.value.body)
     }
 
@@ -8894,10 +9106,16 @@ impl SemanticModelBuilder {
                             node,
                         )?;
                     }
+                    CalcDefBodyElement::Invariant(node) => {
+                        self.lower_kerml_invariant_member(document, Some(declaration), node)?;
+                    }
+                    CalcDefBodyElement::Connector(node) => {
+                        self.lower_kerml_connector_member(document, declaration, node)?;
+                    }
+                    CalcDefBodyElement::Binding(node) => {
+                        self.lower_kerml_binding_member(document, declaration, node)?;
+                    }
                     CalcDefBodyElement::TypedParameter(_)
-                    | CalcDefBodyElement::Invariant(_)
-                    | CalcDefBodyElement::Connector(_)
-                    | CalcDefBodyElement::Binding(_)
                     | CalcDefBodyElement::Succession(_)
                     | CalcDefBodyElement::EndMember(_)
                     | CalcDefBodyElement::Import(_)
@@ -12805,6 +13023,76 @@ mod tests {
                 "(outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Wheel\"))))"
             ),
             "expected rollsOn's featureTyping reference to Wheel to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn kerml_connector_member_lowers_ends_and_typing() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tclassifier Bicycle {\n\
+             \t\tfeature rollsOn : Wheel;\n\
+             \t\tfeature holdsWheel : BikeFork;\n\
+             \t\tconnector fixWheel : BikeWheelFixed from rollsOn to holdsWheel;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output
+                .contains("(qualified-name \"Demo::Bicycle::fixWheel\"))) (kind kerml-connector)"),
+            "expected a kerml-connector declaration for fixWheel, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind connectorEnd) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Bicycle::fixWheel\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Bicycle::rollsOn\")))"
+            ),
+            "expected fixWheel's `from` end to resolve to rollsOn, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind connectorEnd) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Bicycle::fixWheel\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Bicycle::holdsWheel\")))"
+            ),
+            "expected fixWheel's `to` end to resolve to holdsWheel, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn kerml_binding_member_lowers_left_and_right_ends() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tclassifier Bicycle {\n\
+             \t\tfeature startShot : Integer;\n\
+             \t\tfeature endShot : Integer;\n\
+             \t\tbinding startShot = endShot;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind kerml-binding)"),
+            "expected a kerml-binding declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains("(kind bindSource)") && output.contains("(kind bindTarget)"),
+            "expected bindSource/bindTarget references for startShot/endShot, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn kerml_invariant_member_lowers_its_boolean_expression() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tclassifier Bicycle {\n\
+             \t\tfeature isClosed : Boolean;\n\
+             \t\tinv unitBound {\n\
+             \t\t\tisClosed\n\
+             \t\t}\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output
+                .contains("(qualified-name \"Demo::Bicycle::unitBound\"))) (kind kerml-invariant)"),
+            "expected a kerml-invariant declaration for unitBound, got:\n{output}"
         );
     }
 
