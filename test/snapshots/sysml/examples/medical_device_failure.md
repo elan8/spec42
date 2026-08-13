@@ -46,24 +46,6 @@ package MedicalDeviceFailure {
         (severity warning)
         (code "unsupported_part_usage_member")
         (source "semantic")
-        (range (start 5 3) (end 5 29))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_usage_member")
-        (source "semantic")
-        (range (start 6 3) (end 6 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_usage_member")
-        (source "semantic")
-        (range (start 9 2) (end 9 31))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_usage_member")
-        (source "semantic")
         (range (start 11 2) (end 13 3))
       )
       (diagnostic
@@ -91,6 +73,9 @@ package MedicalDeviceFailure {
     (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "CauseAndEffect") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::battery"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::battery::cannotBeCharged"))) (kind occurrence) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::battery::depleted"))) (kind occurrence) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::deviceFails"))) (kind occurrence) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/medical_device_failure.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))

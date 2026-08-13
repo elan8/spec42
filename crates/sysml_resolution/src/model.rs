@@ -18,10 +18,12 @@ use sysml_v2_parser_next::{
         ActionUsageBody, ActionUsageBodyElement, AliasDef, AttributeBody, AttributeBodyElement,
         AttributeDef, AttributeUsage, ConnectStmt, ConnectionDef, ConnectionDefBody,
         ConnectionDefBodyElement, ConnectionEnd, ConnectionUsageMember as ParserConnectionUsage,
-        EndDecl, EndIdentity, EnumDef, EnumerationBody, EnumerationUsage as ParserEnumerationUsage,
-        Expression, Import, ImportShape, ItemDef, ItemUsage as ParserItemUsage, LibraryPackage,
-        Membership, MembershipKind as ParserMembershipKind, MetadataDef,
-        MetadataUsage as ParserMetadataUsage, NamespaceDecl, Node, Package, PackageBody,
+        DefinitionBody, DefinitionBodyElement, EndDecl, EndIdentity, EnumDef, EnumerationBody,
+        EnumerationUsage as ParserEnumerationUsage, Expression, Import, ImportShape, ItemDef,
+        ItemUsage as ParserItemUsage, LibraryPackage, Membership,
+        MembershipKind as ParserMembershipKind, MetadataDef, MetadataUsage as ParserMetadataUsage,
+        NamespaceDecl, Node, OccurrenceBodyElement, OccurrenceDef,
+        OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package, PackageBody,
         PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage, PartUsageBody,
         PartUsageBodyElement, PortBody, PortBodyElement, PortDef, PortDefBody, PortDefBodyElement,
         PortUsage as ParserPortUsage, QualifiedIdentification, QualifiedReferenceId,
@@ -156,6 +158,20 @@ enum DeclarationKind {
     /// typing target is a bare `QualifiedReferenceId` (like MetadataUsage), not a structured
     /// `TypingRelationship`.
     ConnectionUsage,
+    /// `occurrence def` (BNF OccurrenceDefinition): a type whose owned members are attribute/
+    /// item/part/nested-occurrence usages, mirroring PartDefinition lowering. Occurrence is the
+    /// base kind that `part`/`item`/`state`/`action`/`connection`/`event` etc. specialize from in
+    /// the standard library. Occurrence-specific semantics (individual/portion-of-life,
+    /// time-slicing, snapshot facts, `exhibit`/`succession`/`satisfy`/`allocate`/connector-end
+    /// body constructs) are out of scope here; only ownership, specialization, and owned-member
+    /// structure are lowered.
+    OccurrenceDefinition,
+    /// A package/definition/usage-level `occurrence` feature member (BNF OccurrenceUsage), e.g.
+    /// `occurrence o;` or `occurrence o : SomeOccurrence;`. Mirrors PortUsage lowering; its `:`
+    /// typing target is a bare `QualifiedReferenceId` (like MetadataUsage/ItemUsage), not a
+    /// structured `TypingRelationship`, but does carry an independent conjugation flag
+    /// (`type_is_conjugated`) analogous to PortUsage's conjugated typing target.
+    OccurrenceUsage,
     Import,
     Alias,
 }
@@ -246,6 +262,13 @@ enum UnsupportedFamily {
     /// Shared by `connection def` and `connection` usage bodies (both use `ConnectionDefBody`/
     /// `ConnectionDefBodyElement` in the typed AST -- there is no separate `ConnectionUsageBody`).
     ConnectionDefinitionMember,
+    /// Shared by `occurrence def` and `occurrence` usage bodies (both share `OccurrenceBodyElement`
+    /// -- `OccurrenceDef.body` wraps it in the generic `DefinitionBody`/`DefinitionBodyElement`,
+    /// while `OccurrenceUsage.body` (`OccurrenceUsageBody`) holds it directly). Occurrence-specific
+    /// semantics -- individual/portion-of-life, time-slicing, snapshot facts, `exhibit`/
+    /// `succession`/`satisfy`/`allocate`/connector-end body constructs -- are the out-of-scope
+    /// surface for this slice.
+    OccurrenceDefinitionMember,
     ParserUnsupported,
 }
 
@@ -817,16 +840,12 @@ impl SemanticModelBuilder {
             PackageBodyElement::ConnectionDef(node) => {
                 self.lower_connection_def(document, owner, node)?
             }
-            PackageBodyElement::OccurrenceDef(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
-            PackageBodyElement::OccurrenceUsage(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::OccurrenceDef(node) => {
+                self.lower_occurrence_def(document, owner, node)?
+            }
+            PackageBodyElement::OccurrenceUsage(node) => {
+                self.lower_occurrence_usage(document, owner, node)?
+            }
             PackageBodyElement::Dependency(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -1133,6 +1152,12 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::Connection(connection_usage) => {
                         self.lower_connection_usage(document, Some(declaration), connection_usage)?;
                     }
+                    PartDefBodyElement::OccurrenceDef(occurrence_def) => {
+                        self.lower_occurrence_def(document, Some(declaration), occurrence_def)?;
+                    }
+                    PartDefBodyElement::OccurrenceUsage(occurrence_usage) => {
+                        self.lower_occurrence_usage(document, Some(declaration), occurrence_usage)?;
+                    }
                     PartDefBodyElement::Doc(_) | PartDefBodyElement::Comment(_) => {}
                     PartDefBodyElement::Annotation(_)
                     | PartDefBodyElement::MetadataAnnotation(_)
@@ -1141,7 +1166,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::Other(_)
                     | PartDefBodyElement::DefaultReferenceUsage(_)
                     | PartDefBodyElement::Ref(_)
-                    | PartDefBodyElement::OccurrenceUsage(_)
                     | PartDefBodyElement::InterfaceDef(_)
                     | PartDefBodyElement::InterfaceUsage(_)
                     | PartDefBodyElement::Connect(_)
@@ -1156,7 +1180,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::Satisfy(_)
                     | PartDefBodyElement::VariantUsage(_)
                     | PartDefBodyElement::FlowDef(_)
-                    | PartDefBodyElement::OccurrenceDef(_)
                     | PartDefBodyElement::CalcDef(_)
                     | PartDefBodyElement::AllocationDef(_)
                     | PartDefBodyElement::AllocationUsage(_)
@@ -1288,10 +1311,15 @@ impl SemanticModelBuilder {
                     PartUsageBodyElement::Connection(connection_usage) => {
                         self.lower_connection_usage(document, Some(declaration), connection_usage)?;
                     }
+                    PartUsageBodyElement::OccurrenceDef(occurrence_def) => {
+                        self.lower_occurrence_def(document, Some(declaration), occurrence_def)?;
+                    }
+                    PartUsageBodyElement::OccurrenceUsage(occurrence_usage) => {
+                        self.lower_occurrence_usage(document, Some(declaration), occurrence_usage)?;
+                    }
                     PartUsageBodyElement::Doc(_) => {}
                     PartUsageBodyElement::Annotation(_)
                     | PartUsageBodyElement::DefaultReferenceUsage(_)
-                    | PartUsageBodyElement::OccurrenceUsage(_)
                     | PartUsageBodyElement::Bind(_)
                     | PartUsageBodyElement::Ref(_)
                     | PartUsageBodyElement::InterfaceUsage(_)
@@ -1305,7 +1333,6 @@ impl SemanticModelBuilder {
                     | PartUsageBodyElement::MetadataKeywordUsage(_)
                     | PartUsageBodyElement::VariantUsage(_)
                     | PartUsageBodyElement::FlowDef(_)
-                    | PartUsageBodyElement::OccurrenceDef(_)
                     | PartUsageBodyElement::CalcDef(_)
                     | PartUsageBodyElement::AssertConstraint(_)
                     | PartUsageBodyElement::ConstraintDef(_)
@@ -2679,6 +2706,197 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
+    /// Lowers an `occurrence def` (BNF OccurrenceDefinition), mirroring `lower_port_def`:
+    /// ownership, membership, an optional `:>` specialization relationship, and owned
+    /// attribute/item/part/nested-occurrence declarations. Occurrence-specific semantics
+    /// (individual/portion-of-life, time-slicing, snapshot facts, `exhibit`/`succession`/
+    /// `satisfy`/`allocate`/connector-end body constructs) are explicitly out of scope; unrecognized
+    /// body elements fall through to `unsupported_occurrence_definition_member` via
+    /// `lower_occurrence_body_element`. `OccurrenceDef.body` is the generic `DefinitionBody`
+    /// (shared with e.g. `ItemDef`), which wraps the same `OccurrenceBodyElement` that
+    /// `OccurrenceUsage.body` (`OccurrenceUsageBody`) holds directly -- both def and usage publish
+    /// under one `UnsupportedFamily::OccurrenceDefinitionMember`.
+    fn lower_occurrence_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<OccurrenceDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::OccurrenceDefinition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        let DefinitionBody::Brace { elements } = &node.value.body else {
+            return Ok(());
+        };
+        for element in elements {
+            match &element.value {
+                DefinitionBodyElement::Error(error) => {
+                    self.push_recovery(document, error.span.clone());
+                }
+                DefinitionBodyElement::Doc(_) => {}
+                DefinitionBodyElement::OccurrenceMember(member) => {
+                    self.lower_occurrence_body_element(document, declaration, member)?;
+                }
+                DefinitionBodyElement::Other(_) => self.push_unsupported(
+                    document,
+                    UnsupportedFamily::OccurrenceDefinitionMember,
+                    element.span.clone(),
+                ),
+            }
+        }
+        Ok(())
+    }
+
+    /// Lowers one `OccurrenceBodyElement`, shared by `occurrence def`'s body (wrapped in
+    /// `DefinitionBodyElement::OccurrenceMember`) and by an `occurrence` usage's own owned members
+    /// (`OccurrenceUsageBody` holds `OccurrenceBodyElement` directly): recognized owned members are
+    /// attribute/part/item/nested-occurrence usages; everything else -- `assert constraint`, flow
+    /// usages, succession usages, `satisfy`, `allocate`, `end` declarations, `exhibit` state
+    /// usages -- falls through to `unsupported_occurrence_definition_member`. This is the
+    /// genuinely out-of-scope occurrence-specific surface for this slice.
+    fn lower_occurrence_body_element(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        element: &Node<OccurrenceBodyElement>,
+    ) -> Result<(), ConstructionError> {
+        match &element.value {
+            OccurrenceBodyElement::Error(error) => {
+                self.push_recovery(document, error.span.clone());
+            }
+            OccurrenceBodyElement::Doc(_) => {}
+            OccurrenceBodyElement::AttributeUsage(attribute) => {
+                self.lower_attribute_usage(document, Some(owner), attribute)?;
+            }
+            OccurrenceBodyElement::PartUsage(part) => {
+                self.lower_part_usage(document, Some(owner), part)?;
+            }
+            OccurrenceBodyElement::ItemUsage(item) => {
+                self.lower_item_usage(document, Some(owner), item)?;
+            }
+            OccurrenceBodyElement::OccurrenceUsage(occurrence) => {
+                self.lower_occurrence_usage(document, Some(owner), occurrence)?;
+            }
+            OccurrenceBodyElement::Annotation(_)
+            | OccurrenceBodyElement::AssertConstraint(_)
+            | OccurrenceBodyElement::Other(_)
+            | OccurrenceBodyElement::FlowUsage(_)
+            | OccurrenceBodyElement::SuccessionUsage(_)
+            | OccurrenceBodyElement::Satisfy(_)
+            | OccurrenceBodyElement::Allocate(_)
+            | OccurrenceBodyElement::EndDecl(_)
+            | OccurrenceBodyElement::StateUsage(_) => self.push_unsupported(
+                document,
+                UnsupportedFamily::OccurrenceDefinitionMember,
+                element.span.clone(),
+            ),
+        }
+        Ok(())
+    }
+
+    /// Lowers a package/definition/usage-level `occurrence` feature member (BNF OccurrenceUsage),
+    /// e.g. `occurrence o;` or `occurrence o : SomeOccurrence;`, mirroring `lower_port_usage`.
+    /// `type_name` is a bare `QualifiedReferenceId` (like `ItemUsage`/`MetadataUsage`), not a
+    /// structured `TypingRelationship`, but does carry an independent `type_is_conjugated` flag
+    /// (mirrored as an explicit `RelationshipFlags::conjugated` fact on the pushed `FeatureTyping`
+    /// reference, the same convention `lower_typing_relationship` uses for `PortUsage`). Individual/
+    /// event/portion-of-life prefixes (`individual`/`then`/`event`/`ref`/`abstract`/`constant`,
+    /// `portion_kind`) and the `event path` occurrence-reference shorthand are explicitly out of
+    /// scope -- only the ordinary declaration/typing/subsetting shape is lowered. Owned members
+    /// lower through the shared `lower_occurrence_body_element` (both def and usage share
+    /// `OccurrenceBodyElement`).
+    fn lower_occurrence_usage(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ParserOccurrenceUsage>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::OccurrenceUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(type_name) = node.value.type_name {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags {
+                    conjugated: node.value.type_is_conjugated,
+                    ..RelationshipFlags::default()
+                },
+                span,
+                import: None,
+            })?;
+        }
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.references {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.crosses {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.intersects {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        let OccurrenceUsageBody::Brace { elements } = &node.value.body else {
+            return Ok(());
+        };
+        for element in elements {
+            self.lower_occurrence_body_element(document, declaration, element)?;
+        }
+        Ok(())
+    }
+
     fn lower_subsetting_relationship(
         &mut self,
         document: DocumentId,
@@ -3459,6 +3677,90 @@ mod tests {
                 "(kind connectorEnd) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::bus\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::d2\")))"
             ),
             "expected bus's connector-end reference to d2 to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn occurrence_def_lowers_to_a_declaration() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \toccurrence def Occ {\n\
+             \t\titem x;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Occ\"))) (kind occurrence-def)"),
+            "expected an occurrence-def declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Occ::x\"))) (kind item)"),
+            "expected an owned item usage under the occurrence def, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn occurrence_def_specializing_another_occurrence_def_resolves_its_specialization_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \toccurrence def Base;\n\
+             \toccurrence def Derived :> Base;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn occurrence_usage_typed_by_an_occurrence_def_resolves() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \toccurrence def Occ;\n\
+             \toccurrence o : Occ;\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::o\"))) (kind occurrence)"),
+            "expected an occurrence usage declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::o\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Occ\")))"
+            ),
+            "expected o's typing reference to Occ to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn occurrence_definition_member_body_construct_stays_explicitly_unsupported() {
+        let request = crate::BuildRequest::new(
+            vec![crate::SourceInput::new(
+                "memory://test/enum.sysml",
+                "package Demo {\n\
+                 \toccurrence def Occ {\n\
+                 \t\tsuccession first x then y;\n\
+                 \t}\n\
+                 }\n"
+                .to_string(),
+                crate::SourceKind::Workspace,
+            )],
+            crate::ConstructionSchedule::Sequential,
+            "test-contract-v1",
+        )
+        .unwrap();
+        let published = crate::build(request).unwrap();
+        let mut output = String::new();
+        published
+            .debug()
+            .write_diagnostics_sexpr(&mut output)
+            .unwrap();
+        assert!(
+            output.contains("unsupported_occurrence_definition_member"),
+            "expected the succession usage to surface as an explicit unsupported diagnostic, got:\n{output}"
         );
     }
 

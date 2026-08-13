@@ -114,18 +114,6 @@ standard library package CausationConnections {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 11 21) (end 13 2))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 15 21) (end 17 2))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_connection_definition_member")
         (source "semantic")
         (range (start 31 2) (end 36 3))
@@ -166,6 +154,8 @@ standard library package CausationConnections {
     (declaration (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Causation::theEffects"))) (kind connection) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation"))) (kind connection-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::causations"))) (kind connection-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "multicausations"))))
+    (declaration (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::causes"))) (kind occurrence) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::effects"))) (kind occurrence) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::multicausations"))) (kind connection-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "Multicausation"))))
   )
   (references

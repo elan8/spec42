@@ -51,12 +51,6 @@ abstract part def Container {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 6 0) (end 6 38))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_part_definition_member")
         (source "semantic")
         (range (start 9 4) (end 9 25))
@@ -82,6 +76,7 @@ abstract part def Container {
 (semantic-model
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:78b35de4d04c636bb29de5b8d361ee7022e2ce9eb901ed20f63f349bfb04f71d") (contract-version "parser-owned-resolution-v1"))
   (declarations
+    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "AbstractEvent"))) (kind occurrence-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "AbstractPort"))) (kind port-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "AbstractVehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "AbstractWidget"))) (kind item-def) (membership (kind owning) (visibility default)))

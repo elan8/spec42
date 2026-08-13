@@ -67,21 +67,21 @@ package 'Message Payload Example' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
+        (code "unsupported_occurrence_definition_member")
         (source "semantic")
-        (range (start 13 3) (end 13 40))
+        (range (start 19 2) (end 19 22))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
+        (code "unsupported_occurrence_definition_member")
         (source "semantic")
-        (range (start 14 3) (end 14 46))
+        (range (start 20 2) (end 20 32))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_occurrence_definition_member")
         (source "semantic")
-        (range (start 18 1) (end 34 2))
+        (range (start 22 2) (end 23 73))
       )
       (diagnostic
         (severity error)
@@ -112,6 +112,7 @@ package 'Message Payload Example' {
   (declarations
     (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Event Occurrence Example") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::CruiseControlInteraction"))) (kind occurrence-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::EngineController"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::FuelCommand"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::FuelCommand::fuelFlow"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Real"))))
@@ -119,6 +120,8 @@ package 'Message Payload Example' {
     (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::SetSpeed"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::vehicle1"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "vehicle"))))
     (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::vehicle1::engineController"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "EngineController"))))
+    (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::vehicle1::engineController::fuelCommandForwarded"))) (kind occurrence) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::vehicle1::engineController::fuelCommandReceived"))) (kind occurrence) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/27_message_payload_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
