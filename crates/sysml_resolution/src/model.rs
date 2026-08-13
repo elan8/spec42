@@ -31,21 +31,22 @@ use sysml_v2_parser_next::{
         InterfaceDef, InterfaceDefBody, InterfaceDefBodyElement,
         InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement, ItemDef,
         ItemUsage as ParserItemUsage, KermlBindingMember, KermlClassifierDecl, KermlConnectorEnd,
-        KermlConnectorMember, KermlFeatureMember, KermlInvariantMember, LibraryPackage, Membership,
-        MembershipKind as ParserMembershipKind, MetadataAnnotation, MetadataDef,
-        MetadataUsage as ParserMetadataUsage, NamespaceDecl, Node, OccurrenceBodyElement,
-        OccurrenceDef, OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package,
-        PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage,
-        PartUsageBody, PartUsageBodyElement, Perform as ParserPerform, PerformBody,
-        PerformBodyElement, PortBody, PortBodyElement, PortDef, PortDefBody, PortDefBodyElement,
-        PortUsage as ParserPortUsage, PurposeMember, QualifiedIdentification, QualifiedReferenceId,
-        RefBody, RefBodyElement, RefDecl, RelationshipBodyElement, RenderingDef, RenderingDefBody,
-        RenderingDefBodyElement, RequirementActorDecl, RequirementDef, RequirementDefBody,
-        RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage, ReturnDecl,
-        RootElement, Satisfy, SatisfyViewMember, SendPayload, Span, StakeholderMember, StateDef,
-        StateDefBody, StateDefBodyElement, StateUsage as ParserStateUsage, SubjectDecl,
-        SubsettingKind, SubsettingRelationship, TerminateStmt, ThenAction, ThenStmt, ThenTarget,
-        Transition, TransitionAccept, TransitionEffect, UnaryOperator, UseCaseDef, UseCaseDefBody,
+        KermlConnectorMember, KermlEndMember, KermlFeatureMember, KermlInvariantMember,
+        LibraryPackage, Membership, MembershipKind as ParserMembershipKind, MetadataAnnotation,
+        MetadataDef, MetadataUsage as ParserMetadataUsage, NamespaceDecl, Node,
+        OccurrenceBodyElement, OccurrenceDef, OccurrenceUsage as ParserOccurrenceUsage,
+        OccurrenceUsageBody, Package, PackageBody, PackageBodyElement, PartDef, PartDefBody,
+        PartDefBodyElement, PartUsage, PartUsageBody, PartUsageBodyElement,
+        Perform as ParserPerform, PerformBody, PerformBodyElement, PortBody, PortBodyElement,
+        PortDef, PortDefBody, PortDefBodyElement, PortUsage as ParserPortUsage, PurposeMember,
+        QualifiedIdentification, QualifiedReferenceId, RefBody, RefBodyElement, RefDecl,
+        RelationshipBodyElement, RenderingDef, RenderingDefBody, RenderingDefBodyElement,
+        RequirementActorDecl, RequirementDef, RequirementDefBody, RequirementDefBodyElement,
+        RequirementUsage as ParserRequirementUsage, ReturnDecl, RootElement, Satisfy,
+        SatisfyViewMember, SendPayload, Span, StakeholderMember, StateDef, StateDefBody,
+        StateDefBodyElement, StateUsage as ParserStateUsage, SubjectDecl, SubsettingKind,
+        SubsettingRelationship, TerminateStmt, ThenAction, ThenStmt, ThenTarget, Transition,
+        TransitionAccept, TransitionEffect, UnaryOperator, UseCaseDef, UseCaseDefBody,
         UseCaseDefBodyElement, VariantUsage, VerificationCaseDef, VerifyRequirementMember,
         ViewBody, ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement,
         ViewUsage as ParserViewUsage, ViewpointDef, Visibility as ParserVisibility,
@@ -656,6 +657,17 @@ enum DeclarationKind {
     /// "anonymous nested declaration" pattern. `is_negated` is not modeled as a distinct fact
     /// here (see `AssertConstraintMember`'s own `is_negated` scope boundary).
     KermlInvariant,
+    /// A KerML end member with an owned cross feature (`KermlEndMember`), e.g. `end happensDuring
+    /// [1..*] subsets timeCoincidentOccurrences feature thatOccurrence: Occurrence redefines
+    /// longerOccurrence;` (KerML Spec Annex A-3, association-end form). Distinct from a plain
+    /// `end feature ...` member, which lowers directly as `DeclarationKind::KermlFeature` with
+    /// `is_end` unmodeled -- here the end itself is named/constrained and owns a nested
+    /// `KermlFeatureMember`. Mirrors `lower_kerml_connector_member`'s ownership/membership shape:
+    /// ownership, membership, an optional `subsets` relationship on the end itself (through the
+    /// existing `lower_subsetting_relationship`), and the owned nested feature lowered through
+    /// the existing `lower_kerml_feature_member` (itself owned by this end declaration, not the
+    /// enclosing `assoc`/type). The end's own multiplicity is not modeled as a distinct fact here.
+    KermlEnd,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -4196,6 +4208,50 @@ impl SemanticModelBuilder {
             node.span.clone(),
         )?;
         self.lower_calc_def_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers a KerML end member with an owned cross feature (`KermlEndMember`), e.g. `end
+    /// happensDuring [1..*] subsets timeCoincidentOccurrences feature thatOccurrence: Occurrence
+    /// redefines longerOccurrence;` (KerML Spec Annex A-3, association-end form, gap: previously
+    /// entirely unlowered -- see `DeclarationKind::KermlEnd`). Mirrors
+    /// `lower_kerml_connector_member`'s ownership/membership shape: ownership, membership, and an
+    /// optional `subsets` relationship on the end itself resolved through the existing
+    /// `lower_subsetting_relationship` (the same `SubsettingKind`-dispatched reference machinery
+    /// `KermlFeatureMember`'s own `subsets`/`redefines` clauses use). The owned nested feature is
+    /// lowered through the existing `lower_kerml_feature_member`, owned by this end declaration
+    /// rather than the enclosing `assoc`/type, so its own `subsets`/`redefines`/typing/value/body
+    /// resolve exactly as a bare `KermlFeatureMember` would. The end's own `multiplicity` is not
+    /// modeled as a distinct fact here (matches `KermlConnectorMember`'s own end multiplicity
+    /// scope boundary).
+    fn lower_kerml_end_member(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        node: &Node<KermlEndMember>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::KermlEnd,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        self.lower_kerml_feature_member(
+            document,
+            Some(declaration),
+            UnsupportedFamily::CalcDefinitionMember,
+            &node.value.feature,
+        )
     }
 
     /// Lowers a keyword-less `<name> = <expr>;` / `<name> : <Type>;` binding
@@ -9115,9 +9171,11 @@ impl SemanticModelBuilder {
                     CalcDefBodyElement::Binding(node) => {
                         self.lower_kerml_binding_member(document, declaration, node)?;
                     }
+                    CalcDefBodyElement::EndMember(node) => {
+                        self.lower_kerml_end_member(document, declaration, node)?;
+                    }
                     CalcDefBodyElement::TypedParameter(_)
                     | CalcDefBodyElement::Succession(_)
-                    | CalcDefBodyElement::EndMember(_)
                     | CalcDefBodyElement::Import(_)
                     | CalcDefBodyElement::Comment(_)
                     | CalcDefBodyElement::AssertConstraint(_) => self.push_unsupported(
@@ -13074,6 +13132,44 @@ mod tests {
         assert!(
             output.contains("(kind bindSource)") && output.contains("(kind bindTarget)"),
             "expected bindSource/bindTarget references for startShot/endShot, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn kerml_end_member_lowers_its_subsets_and_nested_feature() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tassoc HappensDuring {\n\
+             \t\tfeature timeCoincidentOccurrences : Occurrence;\n\
+             \t\tfeature longerOccurrence : Occurrence;\n\
+             \t\tend happensDuring subsets timeCoincidentOccurrences feature thatOccurrence: \
+             Occurrence redefines longerOccurrence;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(qualified-name \"Demo::HappensDuring::happensDuring\"))) (kind kerml-end)"
+            ),
+            "expected a kerml-end declaration for happensDuring, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind subsetting) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::HappensDuring::happensDuring\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::HappensDuring::timeCoincidentOccurrences\")))"
+            ),
+            "expected happensDuring's end-level subsets to resolve to timeCoincidentOccurrences, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(qualified-name \"Demo::HappensDuring::happensDuring::thatOccurrence\"))) (kind kerml-feature)"
+            ),
+            "expected the nested feature thatOccurrence to be owned by the happensDuring end, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::HappensDuring::happensDuring::thatOccurrence\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::HappensDuring::longerOccurrence\")))"
+            ),
+            "expected thatOccurrence's redefines to resolve to longerOccurrence, got:\n{output}"
         );
     }
 

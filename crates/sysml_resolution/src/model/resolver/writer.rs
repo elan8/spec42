@@ -864,6 +864,7 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::KermlConnector => "kerml-connector",
         DeclarationKind::KermlBinding => "kerml-binding",
         DeclarationKind::KermlInvariant => "kerml-invariant",
+        DeclarationKind::KermlEnd => "kerml-end",
     }
 }
 

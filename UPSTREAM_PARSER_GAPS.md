@@ -358,6 +358,31 @@ found; all 51 fixtures are genuine upstream parser gaps**, grouped into Gaps 15-
 - Gap 26. `RenderingUsage` had no `subsets`/`redefines` fields. Resolved upstream in cb026cd -- confirmed via direct AST inspection of the pinned checkout (`subsets: Option<Node<SubsettingRelationship>>`/`redefines: Option<Node<SubsettingRelationship>>` now present alongside `multiplicity`/`ordered`/`nonunique`/`value`).
 - Gap 31. `InOutDecl` had no grammar support for the `nonunique`/`ordered` collection modifiers on a parameter declaration. Resolved upstream in cb026cd -- confirmed via direct AST inspection of the pinned checkout (`InOutDecl.ordered`/`InOutDecl.nonunique` fields now present, mirroring the fields already added to sibling usage kinds).
 
+- Gap 32. `KermlFeatureMember` (`src/ast/kerml_fallback.rs`) has no `crosses` field, so a
+  KerML association-end's trailing `crosses <feature>.<path>;` clause on the plain `end feature
+  ...` form (no end-level name before `feature`, distinct from the named `KermlEndMember` form) is
+  parsed but silently dropped, e.g. `end feature shorterOccurrence: Occurrence redefines
+  sourceOccurrence crosses longerOccurrence.timeEnclosedOccurrences;` (representative fixture:
+  `test/snapshots/kerml/end_outer_specializations.md`). Verified directly against the pinned
+  `cb026cd` checkout while wiring `KermlEndMember`/`KermlFeatureMember` association-end lowering
+  for `sysml_resolution`: `struct KermlFeatureMember { ..., subsets:
+  Option<Node<SubsettingRelationship>>, redefines: Option<Node<SubsettingRelationship>>,
+  references: Option<Node<SubsettingRelationship>>, chains: Option<QualifiedReferenceId>,
+  inverse_of: Option<QualifiedReferenceId>, ... }` (`kerml_fallback.rs:272-329`) -- no `crosses`
+  field anywhere on the struct, and a repo-wide grep of `src/ast/*.rs` for `crosses\b` confirms
+  every other typed AST node that models a `crosses` cross-subsetting clause (`ConnectionEnd`,
+  `InterfaceUsage`'s `EndDecl` at `structure.rs:1228`, `OccurrenceUsage` at `structure.rs:1612`)
+  has a dedicated `crosses: Option<Node<SubsettingRelationship>>` field that `KermlFeatureMember`
+  lacks. `sysml_resolution` already has a general `ReferenceKind::Crosses` (mapped from
+  `SubsettingKind::Crosses` in the shared `lower_subsetting_relationship`) ready to consume such a
+  field the moment it exists -- this is purely a missing parser field, not missing
+  `sysml_resolution` wiring. `end happensDuring [1..*] subsets timeCoincidentOccurrences feature
+  thatOccurrence: Occurrence redefines longerOccurrence;`'s `subsets`/`redefines` clauses (the
+  named `KermlEndMember` form) are unaffected and fully lowered. Needs a `crosses:
+  Option<Node<SubsettingRelationship>>` field added to `KermlFeatureMember`, mirroring the fields
+  already present on `ConnectionEnd`/`EndDecl`/`OccurrenceUsage`, filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
 
 - Alias declarations (`alias X for Y;`) — investigated as a possible parser gap, but the typed
   AST (`AliasDef.target`) was already a structured `QualifiedReferenceId`. Fixed entirely in
