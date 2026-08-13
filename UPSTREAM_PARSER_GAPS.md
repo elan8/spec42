@@ -8,44 +8,48 @@ entry should carry enough detail to file/update an upstream issue against
 
 ## Open
 
-- Gap 13. Bare forward-declared `classifier X;` (and `classifier X specializes Y;`, `classifier X
-  [1] specializes Y disjoint from Z;`, etc.) still collapses to the raw-text fallback node
-  `ClassifierDecl { keyword: String, text: String }` in the pinned `0757de13` checkout (see
-  `src/ast/kerml_fallback.rs`). Re-verified directly against the checkout while implementing
-  KerML `class def` lowering: unlike the sibling `ClassDef` (full-body `class` with `{ }`, gap #2,
-  now resolved with typed `identification`/`specializes`/`body`/`membership` fields), this
-  no-body/semicolon-terminated `classifier` form has no typed name, membership, or specialization
-  fields at all -- only the raw keyword and the full source text of the declaration. There is no
-  way to lower this to a named declaration with resolvable specialization without re-parsing the
-  captured `text`, which spec42 deliberately avoids (parser-owned resolution boundary). Currently
-  routed through the generic `unsupported_package_member` fallback in
-  `crates/sysml_resolution/src/model.rs` (`PackageBodyElement::ClassifierDecl` arm). Blocks
-  `test/snapshots/kerml/a_2_atoms.md`, `a_2_modeling_instances.md`, and other fixtures using bare
-  `classifier` declarations from resolving name/specialization facts for those declarations.
-  Needs a typed `ClassifierDecl` shape (e.g. `identification`/`specializes`/`membership` fields
-  mirroring `ClassDef` minus the body) filed upstream against
-  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+- Gap 13. **Partially resolved upstream in `cb026cd`.** Bare forward-declared `classifier X;` with
+  no `specializes`/`disjoint from`/`unions`/`intersects` clause and no body still collapses to the
+  opaque `KermlBareDeclaration { keyword, name_span, multiplicity }` node (see
+  `src/ast/kerml_fallback.rs`) -- it carries a name *span* but no typed identification/membership,
+  so it still can't be lowered to a resolvable declaration and is routed through the generic
+  `unsupported_package_member` fallback (`PackageBodyElement::KermlBareDeclaration` arm). However,
+  every other shape this gap's examples named -- `classifier X specializes Y;`, `classifier X [1]
+  specializes Y disjoint from Z;`, and in fact any bodied/specializing/disjoint-from/unions/
+  intersects form of any KerML classifier keyword (`function`/`datatype`/`metaclass`/`struct`/
+  `assoc`/`behavior`/`interaction`/`predicate`/`multiplicity`/`subclassifier`/`classifier`/`class`/
+  `assoc struct`) -- now parses into the fully typed `KermlClassifierDecl` node (identification,
+  `specializes: Option<Node<TypingRelationship>>`, `type_relationships`, `body: CalcDefBody`,
+  `membership`), confirmed via direct AST inspection and lowered end-to-end in
+  `crates/sysml_resolution/src/model.rs` (`lower_kerml_classifier_decl`,
+  `DeclarationKind::KermlClassifier`). Verified with a resolution-layer probe: `classifier X;`
+  alone still lowers to nothing resolvable, but `classifier Y specializes X;` lowers to a
+  `kerml-classifier` declaration with a resolved `specialization` reference. Re-open a narrower
+  upstream ask if the truly bare no-clause form still matters: give `KermlBareDeclaration` a typed
+  name (not just a span) so it can at least get a named declaration with no relationships, filed
+  upstream against `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
 
-- Gap 14. Bare KerML `feature x : Integer;` (`PackageBodyElement::FeatureDecl`, and its
-  `KermlFeatureDecl` sibling for the bodied form) still collapses to the raw-text fallback node
-  `FeatureDecl { keyword: String, text: String }` in the pinned `0757de13` checkout (see
-  `src/ast/kerml_fallback.rs` and `feature_decl()`/`kerml_feature_decl()` in
-  `src/parser/package.rs`). Re-verified directly against the checkout while attempting to lower
-  the top-level `feature` gap previously (incorrectly) marked resolved as Gap 1 below: unlike
-  `ItemDef`/`ItemUsage` (typed `identification`/`specializes`/`type_name`/`redefines`/`body`
-  fields), this construct has no typed name, typing, specialization, subsetting, or redefinition
-  fields at all -- only the leading keyword and the full captured source text of the declaration.
-  There is no way to lower this to a named declaration with resolvable
-  typing/specialization/subsetting/redefinition facts without re-parsing the captured `text`,
-  which spec42 deliberately avoids (parser-owned resolution boundary). Currently routed through
-  the generic `unsupported_package_member` fallback in `crates/sysml_resolution/src/model.rs`
-  (`PackageBodyElement::FeatureDecl`/`PackageBodyElement::KermlFeatureDecl` arms). Blocks
-  `test/snapshots/feature_typing.md` and the ~86 other fixtures using bare `feature`
-  declarations (see `kerml/feature_chains.md`, `kerml/a_3_8_changing_feature_values.md`, etc.)
-  from resolving name/typing/specialization facts for those declarations. Needs a typed
-  `FeatureDecl` shape (e.g. `identification`/`type_name` (or a `TypingRelationship`)/`subsets`/
-  `redefines`/`membership`/`body` fields mirroring `ItemUsage`) filed upstream against
-  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+- Gap 14. **Mostly resolved upstream in `cb026cd`.** Bare KerML `feature x : Integer;` and its
+  prefixed/typed siblings (`derived`/`abstract`/`composite`/`portion`/`var`/`end`/`member`
+  prefixes; `feature`/`step`/`expr`/`bool` kind keywords; `:`/`:>`/`:>>`/`references`/`chains`/
+  `inverse of`/type-relationship clauses; `= expr`/`:= expr` values; `{ }` bodies) now parse into
+  the fully typed `KermlFeatureMember` node (see `src/ast/kerml_fallback.rs`:
+  `typing`/`subsets`/`redefines`/`value`/`body`/`membership` fields, plus `chains`/`inverse_of`/
+  `type_relationships`/`references` not yet lowered) instead of the old opaque
+  `FeatureDecl { keyword, text }` raw-text fallback -- confirmed via direct AST inspection and
+  lowered end-to-end in `crates/sysml_resolution/src/model.rs` (`lower_kerml_feature_member`,
+  `DeclarationKind::KermlFeature`), covering typing (`FeatureTyping`), `subsets`/`redefines`
+  (`Subsetting`/`Redefinition`), value-expression evaluation, and owned-member structure via the
+  shared `lower_calc_def_body` walker. One narrower case remains genuinely unresolved: the
+  *plainest* unprefixed `feature x : Integer;` (no `derived`/`abstract`/other prefix at all) was
+  observed via a resolution-layer probe to still not reach `KermlFeatureMember` (no declaration
+  is produced for it at all) -- the disambiguation between the old and new productions appears to
+  key off a leading prefix/kind-keyword combination not yet fully characterized. Needs the
+  remaining plain-`feature`-with-no-prefix case folded into the same `KermlFeatureMember`
+  production, filed upstream against `feat/gh-119-arena-backed-references`
+  (elan8/sysml-v2-parser#121). `references`/`chains`/`inverse_of`/`type_relationships` facts on
+  `KermlFeatureMember` are typed but not yet lowered in `sysml_resolution` -- follow-up work, not
+  an upstream gap.
 
 - Gap 15. Bare `feature`-keyword-led members (and the `member feature ...` visibility-prefixed
   variant) are a hard parse error -- `(code "unrecognized_declaration_in_scope")`, `(source
@@ -222,16 +226,6 @@ entry should carry enough detail to file/update an upstream issue against
   Needs `subsets`/`redefines` fields added to `ViewpointUsage` mirroring `ViewUsage`, filed
   upstream against `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
 
-- Gap 26. `RenderingUsage` (`src/ast/view.rs`) has no `subsets`/`redefines` fields at all --
-  `struct RenderingUsage { name, type_name, body: RenderingUsageBody, membership }` -- same gap
-  class as Gap 25/Gap 8. Verified directly against the pinned `0757de13` checkout while
-  attempting `rendering` usage-side lowering (following `04274711`'s def-side `rendering def`
-  work, which mirrors `lower_view_def`, as the template). Without a `SubsettingRelationship`
-  field there is no way to lower a `rendering` usage member with resolvable specialization facts
-  consistent with `ViewUsage`. Left routed through the existing `unsupported_*_member` fallback.
-  Needs `subsets`/`redefines` fields added to `RenderingUsage` mirroring `ViewUsage`, filed
-  upstream against `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
-
 - Gap 27. `AllocationUsage` (`src/ast/behavior.rs`) has no `subsets`/`redefines` fields, and its
   `allocate ... to ...` ends are captured as raw `Option<Node<Expression>>` (`source`/`target`),
   not as typed `end` declarations the way `AllocationDef`'s body uses
@@ -324,33 +318,6 @@ entry should carry enough detail to file/update an upstream issue against
   variant added to `ThenTarget`, mirroring `Merge`/`Fork`/`Decide`'s own dedicated variants, filed
   upstream against `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
 
-- Gap 31. `InOutDecl` (`src/parser/action.rs`, `in_out_decl_inner`) has no grammar support for the
-  ordering/uniqueness collection modifiers `nonunique`/`ordered` on a parameter declaration, e.g.
-  `in seq[1..*] nonunique ordered;` (`sysml.library/interfaces.md`'s `excludingOnce` calc). Traced
-  directly in the pinned `0757de13` checkout: the named-parameter branch parses an optional
-  `qualified_reference` type (`:`/`:>`, folded into `type_name` either way -- see below), then an
-  optional `multiplicity_node`, then jumps straight to an optional `= expr` value and the closing
-  `;`/`{ ... }` terminator -- there is no `nonunique`/`ordered` token handling anywhere in the
-  function, and the `InOutDecl` struct itself (`src/ast/behavior.rs`) has no field to hold such a
-  fact even if there were. Confirmed via a minimal `sysml_resolution` unit-test probe: `in
-  seq[1..*] nonunique;` and `in seq[1..*] ordered;` both push the whole statement into
-  parse-recovery (`CalcDefBodyElement::Error`) -- nothing reaches `lower_parameter_declaration` at
-  all for either modifier, so this is a hard parse failure, not a resolution-layer typing/lowering
-  gap. `in seq[1..*];` alone (no modifiers) parses and lowers cleanly. Blocks
-  `excludingOnce`'s `in seq[1..*] nonunique ordered;` line in `sysml.library/interfaces.md` from
-  producing anything but a parse-recovery diagnostic. Needs `nonunique`/`ordered` (and, per the
-  BNF, `unique`/`nonordered`) modifier tokens recognized after the optional multiplicity in
-  `in_out_decl_inner`, with a corresponding fact field added to `InOutDecl`, filed upstream against
-  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121). Separately noted while tracing
-  this: `in_out_decl_inner`'s named-parameter branch folds a `:>` prefix into `type_name` via the
-  same `qualified_reference` parse as a plain `:` (`action.rs:402-417`) rather than into the
-  `redefines: Option<Node<SubsettingRelationship>>` field -- so `in value[1] :> seq;` is *not* a
-  parser gap needing a resolution-side subsetting fix; it already resolves as an ordinary
-  `FeatureTyping` reference to `seq` via the existing `type_name`-present path. Only the
-  leading-`:>>`/anonymous-redefinition spelling (`in :>> target = expr;`) actually populates
-  `redefines`; `sysml_resolution::lower_parameter_declaration` now lowers that field too (this
-  slice), independent of whether the multiplicity-modifier gap above is ever resolved upstream.
-
 ## False-positive check (spec42-side surfacing bug?)
 Traced end-to-end for a diverse sample (Gap 15's `feature` case, Gap 17's `portion` case, Gap 22's
 `type`/`subset` case, and Gap 23's bare-identifier case) plus a repo-wide search:
@@ -388,6 +355,8 @@ found; all 51 fixtures are genuine upstream parser gaps**, grouped into Gaps 15-
 - Gap 10. Bare forward-declared `classifier X;` collapsed to a raw-text fallback node. **Correction (re-verified while implementing `class def` lowering):** this specific struct (`ClassifierDecl`) is still a raw/opaque fallback (`{ keyword: String, text: String }`, no name/membership/specialization fields) in `0757de13` -- the earlier "resolved" note conflated it with the separate, now-genuinely-resolved `ClassDef` (gap #2). Re-opened and re-tracked as Gap 13 above.
 - Gap 11. `item <name> : <Type>;` nested in an attribute body was captured opaquely. Resolved upstream in 0757de13 -- confirmed via direct AST/parser inspection of the pinned checkout (typed fields/nodes/dispatch now present); wired into `sysml_resolution` lowering where applicable (see commits on `closing-the-gap`).
 - Gap 12. `#<keyword> def <Name> ...` ExtendedDefinition short form had no grammar production. Resolved upstream in 0757de13 -- confirmed via direct AST/parser inspection of the pinned checkout (typed fields/nodes/dispatch now present); wired into `sysml_resolution` lowering where applicable (see commits on `closing-the-gap`).
+- Gap 26. `RenderingUsage` had no `subsets`/`redefines` fields. Resolved upstream in cb026cd -- confirmed via direct AST inspection of the pinned checkout (`subsets: Option<Node<SubsettingRelationship>>`/`redefines: Option<Node<SubsettingRelationship>>` now present alongside `multiplicity`/`ordered`/`nonunique`/`value`).
+- Gap 31. `InOutDecl` had no grammar support for the `nonunique`/`ordered` collection modifiers on a parameter declaration. Resolved upstream in cb026cd -- confirmed via direct AST inspection of the pinned checkout (`InOutDecl.ordered`/`InOutDecl.nonunique` fields now present, mirroring the fields already added to sibling usage kinds).
 
 
 - Alias declarations (`alias X for Y;`) — investigated as a possible parser gap, but the typed

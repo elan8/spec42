@@ -2670,6 +2670,21 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
+            PackageBodyElement::KermlClassifier(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::KermlInvariant(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::KermlFeatureMember(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
             PackageBodyElement::ExtendedLibraryDecl(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -3383,6 +3398,12 @@ impl SemanticModelBuilder {
                     | RefBodyElement::Comment(_)
                     | RefBodyElement::TextualRep(_)
                     | RefBodyElement::MetadataAnnotation(_) => {}
+                    RefBodyElement::Ref(nested) => {
+                        self.lower_ref_decl(document, Some(declaration), nested)?;
+                    }
+                    RefBodyElement::AttributeUsage(nested) => {
+                        self.lower_attribute_usage(document, Some(declaration), nested)?;
+                    }
                     RefBodyElement::Action(_)
                     | RefBodyElement::PartUsage(_)
                     | RefBodyElement::State(_)
@@ -3900,9 +3921,10 @@ impl SemanticModelBuilder {
         // lower_calc_expression wiring for, so this reuses that identical pipeline rather than
         // introducing new logic. Previously deferred (`494b0ba6`) pending value-assignment
         // machinery existing at all.
-        if let Some(expression) = &node.value.value {
+        if let Some(feature_value) = &node.value.value {
+            let expression = feature_value.value.expression.clone();
             self.push_evaluation_fact(declaration, classify_calc_expression(&expression.value));
-            self.lower_calc_expression(document, declaration, family, expression)?;
+            self.lower_calc_expression(document, declaration, family, &expression)?;
         }
         Ok(())
     }
@@ -3949,30 +3971,32 @@ impl SemanticModelBuilder {
             Visibility::Default,
             node.span.clone(),
         )?;
-        let type_name = node.value.type_name;
-        let span = self.documents[document.index()]
-            .parsed
-            .qualified_reference(type_name)
-            .ok_or(ConstructionError::InvalidParserReference)?
-            .metadata
-            .span
-            .clone();
-        self.push_reference(PendingReference {
-            source: declaration,
-            kind: ReferenceKind::FeatureTyping,
-            document,
-            local: type_name,
-            flags: RelationshipFlags::default(),
-            span,
-            import: None,
-        })?;
-        if let Some(expression) = &node.value.value {
+        if let Some(type_name) = node.value.type_name {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        if let Some(feature_value) = &node.value.value {
+            let expression = feature_value.value.expression.clone();
             self.push_evaluation_fact(declaration, classify_calc_expression(&expression.value));
             self.lower_calc_expression(
                 document,
                 declaration,
                 UnsupportedFamily::CalcDefinitionMember,
-                expression,
+                &expression,
             )?;
         }
         Ok(())
@@ -8579,7 +8603,21 @@ impl SemanticModelBuilder {
                     CalcDefBodyElement::MetadataAnnotation(node) => {
                         self.lower_metadata_annotation(document, declaration, node)?;
                     }
-                    CalcDefBodyElement::Other(_) => self.push_unsupported(
+                    CalcDefBodyElement::AttributeUsage(nested) => {
+                        self.lower_attribute_usage(document, Some(declaration), nested)?;
+                    }
+                    CalcDefBodyElement::TypedParameter(_)
+                    | CalcDefBodyElement::KermlFeature(_)
+                    | CalcDefBodyElement::Invariant(_)
+                    | CalcDefBodyElement::Connector(_)
+                    | CalcDefBodyElement::Binding(_)
+                    | CalcDefBodyElement::Succession(_)
+                    | CalcDefBodyElement::EndMember(_)
+                    | CalcDefBodyElement::Import(_)
+                    | CalcDefBodyElement::Comment(_)
+                    | CalcDefBodyElement::AssertConstraint(_)
+                    | CalcDefBodyElement::KermlClassifier(_)
+                    | CalcDefBodyElement::DefaultReferenceUsage(_) => self.push_unsupported(
                         document,
                         UnsupportedFamily::CalcDefinitionMember,
                         element.span.clone(),
