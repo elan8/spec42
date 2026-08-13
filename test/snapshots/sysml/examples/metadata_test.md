@@ -73,15 +73,21 @@ package MetadataTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_reference_usage_member")
         (source "semantic")
-        (range (start 19 1) (end 23 2))
+        (range (start 20 2) (end 22 3))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_reference_usage_member")
         (source "semantic")
-        (range (start 25 1) (end 30 2))
+        (range (start 26 2) (end 28 3))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_reference_usage_member")
+        (source "semantic")
+        (range (start 29 2) (end 29 12))
       )
       (diagnostic
         (severity error)
@@ -97,9 +103,9 @@ package MetadataTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_reference_usage_member")
         (source "semantic")
-        (range (start 35 1) (end 39 2))
+        (range (start 36 5) (end 38 6))
       )
     )
   )
@@ -118,6 +124,9 @@ package MetadataTest {
     (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified::annotatedElement"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "SysML::Usage")) (redefinition (reference "annotatedElement"))))
     (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified::classificationLevel"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ClassificationLevel"))))
     (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Security"))) (kind metadata-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::x"))) (kind ref) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::y"))) (kind ref) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::z"))) (kind ref) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/metadata_test.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))

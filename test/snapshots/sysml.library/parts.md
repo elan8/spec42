@@ -232,9 +232,9 @@ doc
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_action_usage_member")
+        (code "unsupported_reference_usage_member")
         (source "semantic")
-        (range (start 50 4) (end 55 4))
+        (range (start 51 4) (end 54 7))
       )
       (diagnostic
         (severity warning)
@@ -290,6 +290,7 @@ doc
     (declaration (id (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part::done"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Part")) (redefinition (reference "Item::done"))))
     (declaration (id (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part::exhibitedStates"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "StateAction")) (subsetting (reference "stateActions")) (subsetting (reference "performedActions"))))
     (declaration (id (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part::ownedActions"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Action")) (subsetting (reference "actions")) (subsetting (reference "ownedPerformances"))))
+    (declaration (id (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part::ownedActions::part"))) (kind ref) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Port")) (subsetting (reference "ports")) (subsetting (reference "timeEnclosedOccurrences"))))
     (declaration (id (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part::ownedStates"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "StateAction")) (subsetting (reference "stateActions")) (subsetting (reference "ownedActions"))))
     (declaration (id (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part::performedActions"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Action")) (subsetting (reference "actions")) (subsetting (reference "enactedPerformances"))))

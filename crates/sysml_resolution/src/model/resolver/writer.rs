@@ -234,6 +234,7 @@ fn unsupported_code(family: UnsupportedFamily) -> &'static str {
             "unsupported_verification_case_definition_member"
         }
         UnsupportedFamily::UseCaseDefinitionMember => "unsupported_use_case_definition_member",
+        UnsupportedFamily::ReferenceUsageMember => "unsupported_reference_usage_member",
         UnsupportedFamily::ParserUnsupported => "unsupported_parser_construct",
     }
 }
@@ -838,6 +839,7 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::Satisfy => "satisfy",
         DeclarationKind::Allocate => "allocate",
         DeclarationKind::Bind => "bind",
+        DeclarationKind::ReferenceUsage => "ref",
     }
 }
 

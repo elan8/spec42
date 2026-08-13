@@ -15,7 +15,7 @@ use hashbrown::HashTable;
 use sysml_v2_parser_next::{
     ast::{
         ActionDef, ActionDefBody, ActionDefBodyElement, ActionUsage as ParserActionUsage,
-        ActionUsageBody, ActionUsageBodyElement, AliasDef, Allocate, AllocationDef,
+        ActionUsageBody, ActionUsageBodyElement, AliasBody, AliasDef, Allocate, AllocationDef,
         AnalysisCaseDef, AnalysisCaseUsage as ParserAnalysisCaseUsage, AssertConstraintMember,
         AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, BinaryOperator, Bind,
         BindingConnectorUsage, CalcDef, CalcDefBody, CalcDefBodyElement,
@@ -35,10 +35,11 @@ use sysml_v2_parser_next::{
         PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage,
         PartUsageBody, PartUsageBodyElement, Perform as ParserPerform, PerformBody,
         PerformBodyElement, PortBody, PortBodyElement, PortDef, PortDefBody, PortDefBodyElement,
-        PortUsage as ParserPortUsage, QualifiedIdentification, QualifiedReferenceId, RenderingDef,
-        RenderingDefBody, RenderingDefBodyElement, RequirementDef, RequirementDefBody,
-        RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage, ReturnDecl,
-        RootElement, Satisfy, SatisfyViewMember, Span, StateDef, StateDefBody, StateDefBodyElement,
+        PortUsage as ParserPortUsage, QualifiedIdentification, QualifiedReferenceId, RefBody,
+        RefBodyElement, RefDecl, RelationshipBodyElement, RenderingDef, RenderingDefBody,
+        RenderingDefBodyElement, RequirementDef, RequirementDefBody, RequirementDefBodyElement,
+        RequirementUsage as ParserRequirementUsage, ReturnDecl, RootElement, Satisfy,
+        SatisfyViewMember, Span, StateDef, StateDefBody, StateDefBodyElement,
         StateUsage as ParserStateUsage, SubjectDecl, SubsettingKind, SubsettingRelationship,
         ThenStmt, Transition, TransitionAccept, TransitionEffect, UseCaseDef, UseCaseDefBody,
         UseCaseDefBodyElement, VariantUsage, VerificationCaseDef, ViewBody, ViewBodyElement,
@@ -489,6 +490,19 @@ enum DeclarationKind {
     /// optional name on `BindingConnectorUsage`, are both left out of scope -- see their
     /// `ReferenceKind` doc comments).
     Bind,
+    /// A `ref <name>: <Type>;` non-owning referential feature (BNF `ReferenceUsage`,
+    /// `ast::RefDecl`), e.g. `ref self: Part :>> Item::self;` (SysML Systems Library
+    /// `Parts.sysml`). Distinct from `PartUsage`/`AttributeUsage`/etc. even though it shares their
+    /// `FeatureMembership` ownership/typing/redefines/subsets shape: unlike those keyword-typed
+    /// usages, `ref`'s own keyword carries no type-family information at all -- its declared type
+    /// comes entirely from the `:`/`:>>`/`:>` clauses, and the same `ref` syntax is reused verbatim
+    /// across part/action/state/connection/interface/package bodies (`ast::RefBodyElement`'s
+    /// `Action`/`PartUsage`/`State` variants + the plain annotation-only bodies), so it is not a
+    /// specialization of any one existing `*Usage` kind. Nested `RefBodyElement` content (full
+    /// action/part/state member structure inside a `ref { ... }` body) is out of scope for this
+    /// slice; only the ref declaration itself -- name, typing, redefines, subsets -- is lowered.
+    /// See `UnsupportedFamily::ReferenceUsageMember`.
+    ReferenceUsage,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -1269,6 +1283,12 @@ enum UnsupportedFamily {
     /// case def diagnostics stay distinct from case/analysis/verification def ones at the same
     /// span shape.
     UseCaseDefinitionMember,
+    /// Nested `RefBodyElement` content inside a `ref { ... }` body (full action/part/state member
+    /// structure reused verbatim from the enclosing context per `ast::RefBodyElement`'s
+    /// `Action`/`PartUsage`/`State` variants) -- not modeled by this slice. The `ref` declaration
+    /// itself (name, typing, redefines, subsets) is lowered via `DeclarationKind::ReferenceUsage`
+    /// regardless of whether its body is this unsupported braced form.
+    ReferenceUsageMember,
     ParserUnsupported,
 }
 
@@ -1938,11 +1958,7 @@ impl SemanticModelBuilder {
             PackageBodyElement::InterfaceUsage(node) => {
                 self.lower_interface_usage(document, owner, node)?
             }
-            PackageBodyElement::Ref(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::Ref(node) => self.lower_ref_decl(document, owner, node)?,
             PackageBodyElement::MetadataKeywordUsage(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -2088,6 +2104,9 @@ impl SemanticModelBuilder {
             span: node.value.target.span.clone(),
             import,
         })?;
+        if let Some(elements) = &node.value.body_elements {
+            self.lower_relationship_body_elements(document, elements);
+        }
         Ok(())
     }
 
@@ -2326,12 +2345,14 @@ impl SemanticModelBuilder {
                             UnsupportedFamily::PartDefinitionMember,
                             node,
                         )?,
+                    PartDefBodyElement::Ref(node) => {
+                        self.lower_ref_decl(document, Some(declaration), node)?;
+                    }
                     PartDefBodyElement::Annotation(_)
                     | PartDefBodyElement::MetadataKeywordUsage(_)
                     | PartDefBodyElement::Dependency(_)
                     | PartDefBodyElement::Other(_)
                     | PartDefBodyElement::DefaultReferenceUsage(_)
-                    | PartDefBodyElement::Ref(_)
                     | PartDefBodyElement::Connect(_)
                     | PartDefBodyElement::FlowUsage(_)
                     | PartDefBodyElement::ExhibitState(_)
@@ -2543,9 +2564,11 @@ impl SemanticModelBuilder {
                             UnsupportedFamily::PartUsageMember,
                             node,
                         )?,
+                    PartUsageBodyElement::Ref(node) => {
+                        self.lower_ref_decl(document, Some(declaration), node)?;
+                    }
                     PartUsageBodyElement::Annotation(_)
                     | PartUsageBodyElement::DefaultReferenceUsage(_)
-                    | PartUsageBodyElement::Ref(_)
                     | PartUsageBodyElement::Connect(_)
                     | PartUsageBodyElement::FlowUsage(_)
                     | PartUsageBodyElement::SuccessionUsage(_)
@@ -2555,6 +2578,89 @@ impl SemanticModelBuilder {
                     | PartUsageBodyElement::VerificationCaseUsage(_) => self.push_unsupported(
                         document,
                         UnsupportedFamily::PartUsageMember,
+                        element.span.clone(),
+                    ),
+                }
+            }
+        }
+        Ok(())
+    }
+
+    /// Lowers a `ref <name>: <Type>;` non-owning referential feature (BNF `ReferenceUsage`,
+    /// `ast::RefDecl`), reused verbatim across part/attribute/action/state/connection/interface/
+    /// package bodies. Mirrors `lower_part_usage`'s ownership/typing/redefines/subsets shape (`ref`
+    /// is a `FeatureMembership` like any other usage; see `ast::connector::ref_decl`'s
+    /// `Membership::feature` construction), since `RefDecl` carries the same structured
+    /// `typing`/`redefines`/`subsets` clauses as `PartUsage`/`AttributeUsage`. Nested
+    /// `RefBodyElement` content (full action/part/state member structure inside a `ref { ... }`
+    /// body) is out of scope for this slice -- see `UnsupportedFamily::ReferenceUsageMember`.
+    /// Dispatches a shared KerML `RelationshipBody`-shaped element list (BNF `RelationshipBody :
+    /// Relationship = ';' | '{' (ownedRelationship += OwnedAnnotation)* '}'`, `ast::
+    /// RelationshipBodyElement`), used verbatim by `Import`/`Dependency`/plain `connect`
+    /// statements/`alias ... for ...` bodies. Every non-error variant is annotation-only
+    /// (doc/comment/textual-rep/metadata/unmodeled-text) and carries no authored reference to
+    /// resolve, mirroring the no-op `Doc`/`Comment`/`MetadataAnnotation` handling already used
+    /// throughout this module's other body loops; only `Error` needs an explicit recovery fact.
+    fn lower_relationship_body_elements(
+        &mut self,
+        document: DocumentId,
+        elements: &[Node<RelationshipBodyElement>],
+    ) {
+        for element in elements {
+            if let RelationshipBodyElement::Error(error) = &element.value {
+                self.push_recovery(document, error.span.clone());
+            }
+        }
+    }
+
+    fn lower_ref_decl(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<RefDecl>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::ReferenceUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.typing {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let RefBody::Brace { elements } = &node.value.body {
+            for element in elements {
+                match &element.value {
+                    RefBodyElement::Error(error) => {
+                        self.push_recovery(document, error.span.clone());
+                    }
+                    RefBodyElement::Doc(_)
+                    | RefBodyElement::Comment(_)
+                    | RefBodyElement::TextualRep(_)
+                    | RefBodyElement::MetadataAnnotation(_) => {}
+                    RefBodyElement::Action(_)
+                    | RefBodyElement::PartUsage(_)
+                    | RefBodyElement::State(_)
+                    | RefBodyElement::Other(_) => self.push_unsupported(
+                        document,
+                        UnsupportedFamily::ReferenceUsageMember,
                         element.span.clone(),
                     ),
                 }
@@ -2708,9 +2814,11 @@ impl SemanticModelBuilder {
                         UnsupportedFamily::AttributeMember,
                         node,
                     )?,
+                AttributeBodyElement::RefDecl(node) => {
+                    self.lower_ref_decl(document, Some(owner), node)?;
+                }
                 AttributeBodyElement::Connect(_)
                 | AttributeBodyElement::MetadataKeywordUsage(_)
-                | AttributeBodyElement::RefDecl(_)
                 | AttributeBodyElement::Other(_) => self.push_unsupported(
                     document,
                     UnsupportedFamily::AttributeMember,
@@ -3462,10 +3570,12 @@ impl SemanticModelBuilder {
                         UnsupportedFamily::ActionDefinitionMember,
                         node,
                     )?,
+                ActionDefBodyElement::RefDecl(node) => {
+                    self.lower_ref_decl(document, Some(owner), node)?;
+                }
                 ActionDefBodyElement::Annotation(_)
                 | ActionDefBodyElement::MetadataKeywordUsage(_)
                 | ActionDefBodyElement::TextualRep(_)
-                | ActionDefBodyElement::RefDecl(_)
                 | ActionDefBodyElement::FlowUsage(_)
                 | ActionDefBodyElement::MergeStmt(_)
                 | ActionDefBodyElement::DecisionStmt(_)
@@ -3593,10 +3703,12 @@ impl SemanticModelBuilder {
                         UnsupportedFamily::ActionUsageMember,
                         node,
                     )?,
+                ActionUsageBodyElement::RefDecl(node) => {
+                    self.lower_ref_decl(document, Some(owner), node)?;
+                }
                 ActionUsageBodyElement::Annotation(_)
                 | ActionUsageBodyElement::MetadataKeywordUsage(_)
                 | ActionUsageBodyElement::TextualRep(_)
-                | ActionUsageBodyElement::RefDecl(_)
                 | ActionUsageBodyElement::FlowUsage(_)
                 | ActionUsageBodyElement::MergeStmt(_)
                 | ActionUsageBodyElement::DecisionStmt(_)
@@ -3992,11 +4104,13 @@ impl SemanticModelBuilder {
                 StateDefBodyElement::InOutDecl(param) => {
                     self.lower_parameter_declaration(document, Some(owner), param)?;
                 }
+                StateDefBodyElement::Ref(node) => {
+                    self.lower_ref_decl(document, Some(owner), node)?;
+                }
                 StateDefBodyElement::Annotation(_)
                 | StateDefBodyElement::MetadataKeywordUsage(_)
                 | StateDefBodyElement::Other(_)
-                | StateDefBodyElement::FinalState(_)
-                | StateDefBodyElement::Ref(_) => self.push_unsupported(
+                | StateDefBodyElement::FinalState(_) => self.push_unsupported(
                     document,
                     UnsupportedFamily::StateDefinitionMember,
                     element.span.clone(),
@@ -5742,8 +5856,10 @@ impl SemanticModelBuilder {
                             UnsupportedFamily::ConnectionDefinitionMember,
                             node,
                         )?,
-                    ConnectionDefBodyElement::RefDecl(_)
-                    | ConnectionDefBodyElement::SuccessionUsage(_) => self.push_unsupported(
+                    ConnectionDefBodyElement::RefDecl(node) => {
+                        self.lower_ref_decl(document, Some(declaration), node)?;
+                    }
+                    ConnectionDefBodyElement::SuccessionUsage(_) => self.push_unsupported(
                         document,
                         UnsupportedFamily::ConnectionDefinitionMember,
                         element.span.clone(),
@@ -5826,6 +5942,7 @@ impl SemanticModelBuilder {
         for end in &node.value.extra_ends {
             self.lower_connector_end(document, owner, end)?;
         }
+        self.lower_relationship_body_elements(document, &node.value.body_elements);
         Ok(())
     }
 
@@ -5958,13 +6075,14 @@ impl SemanticModelBuilder {
                     InterfaceDefBodyElement::PortUsage(port_usage) => {
                         self.lower_port_usage(document, Some(declaration), port_usage)?;
                     }
-                    InterfaceDefBodyElement::RefDecl(_) | InterfaceDefBodyElement::FlowUsage(_) => {
-                        self.push_unsupported(
-                            document,
-                            UnsupportedFamily::InterfaceDefinitionMember,
-                            element.span.clone(),
-                        )
+                    InterfaceDefBodyElement::RefDecl(node) => {
+                        self.lower_ref_decl(document, Some(declaration), node)?;
                     }
+                    InterfaceDefBodyElement::FlowUsage(_) => self.push_unsupported(
+                        document,
+                        UnsupportedFamily::InterfaceDefinitionMember,
+                        element.span.clone(),
+                    ),
                 }
             }
         }
@@ -7190,6 +7308,9 @@ impl SemanticModelBuilder {
             span,
             import: None,
         })?;
+        if let AliasBody::Brace { elements } = &node.value.body {
+            self.lower_relationship_body_elements(document, elements);
+        }
         Ok(())
     }
 
@@ -10272,6 +10393,79 @@ mod tests {
                 && output.contains("(authored-target \"missingUseCase\")")
                 && output.contains("(status unresolved)"),
             "expected the unresolvable include target to stay explicitly unresolved (not \
+             fabricated), got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn ref_decl_resolves_its_typing_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def Part;\n\
+             \tpart def Holder {\n\
+             \t\tref self: Part;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind ref)"),
+            "expected a `ref` declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains("(kind featureTyping)"),
+            "expected a featureTyping relationship kind for the ref's `:` clause, got:\n{output}"
+        );
+        assert!(
+            output.contains("(authored-target \"Part\")"),
+            "expected the ref's typing target to be authored, got:\n{output}"
+        );
+        assert!(
+            !output.contains("(status unresolved)"),
+            "expected the ref's typing target to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn ref_decl_resolves_its_redefines_reference() {
+        // `part def`/`part` usage bodies parse `ref` through the narrower `part_ref_usage`
+        // production (`ast::part::usage::part_ref_usage`), which does not capture a trailing
+        // `:>>` redefines target at all. `connection def`/`interface def` bodies instead parse
+        // `ref` through `connector::ref_decl`, which captures the full `:`/`:>>`/`:>` clause set
+        // -- use a `connection def` body here so the redefines clause actually round-trips.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def Item {\n\
+             \t\tref self: Item;\n\
+             \t}\n\
+             \tconnection def C {\n\
+             \t\tref self: Item :>> Item::self;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind redefinition)"),
+            "expected a redefinition relationship kind for the ref's `:>>` clause, got:\n{output}"
+        );
+        assert!(
+            output.contains("(authored-target \"Item::self\")"),
+            "expected the ref's redefines target to be authored, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn ref_decl_with_an_unresolvable_typing_target_stays_explicitly_unresolved() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def Holder {\n\
+             \t\tref self: MissingType;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind featureTyping)")
+                && output.contains("(authored-target \"MissingType\")")
+                && output.contains("(status unresolved)"),
+            "expected the unresolvable ref typing target to stay explicitly unresolved (not \
              fabricated), got:\n{output}"
         );
     }

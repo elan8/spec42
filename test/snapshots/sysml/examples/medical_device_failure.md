@@ -44,9 +44,9 @@ package MedicalDeviceFailure {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
+        (code "unsupported_reference_usage_member")
         (source "semantic")
-        (range (start 11 2) (end 13 3))
+        (range (start 12 3) (end 12 35))
       )
       (diagnostic
         (severity warning)
@@ -76,6 +76,7 @@ package MedicalDeviceFailure {
     (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::battery::cannotBeCharged"))) (kind occurrence) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::battery::depleted"))) (kind occurrence) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::deviceFails"))) (kind occurrence) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::patient"))) (kind ref) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/medical_device_failure.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
