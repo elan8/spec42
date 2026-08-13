@@ -588,6 +588,19 @@ enum ReferenceKind {
     /// value-assignment machinery this repository has not built yet (see `lower_attribute_body`
     /// scope notes) -- only the annotation-target reference itself is resolved here.
     MetadataAnnotation,
+    /// The metadata-def operand of an `@Name` metadata-classification test (`Expression::
+    /// Classification`'s `metaclass`) found while walking a package-level `filter <expr>;`
+    /// statement's condition (BNF `ElementFilterMember`, `ast::FilterMember`, distinct from the
+    /// bracketed `import X::** [ ... ]` `FilterPackageMember` form that produces `FilterImport`).
+    /// `@Safety` tests whether an imported member carries the `Safety` metadata annotation, so
+    /// `Safety` names a type -- specifically a metadata def -- exactly like `MetadataAnnotation`'s
+    /// own `@Name{...}` target, and is resolved through the same Subclassification/FeatureTyping
+    /// `DeclarationDomain::Type` lexical lookup fixed point, kept as its own `ReferenceKind` so a
+    /// filter's classification test never collapses into an ordinary `@Name{...}` annotation
+    /// application in query output. Sourced directly at the enclosing package declaration (the
+    /// filter statement's owner), mirroring `ExpressionOperand`'s "no anonymous nested-declaration
+    /// scope shift" shape. See `lower_filter_expression`.
+    FilterMetadataTest,
 }
 
 /// The computed or explicit outcome of evaluating one supported constraint/calc expression
@@ -986,6 +999,14 @@ fn is_comparison_operator(op: &BinaryOperator) -> bool {
             | BinaryOperator::Gt
             | BinaryOperator::Ge
     )
+}
+
+/// Whether a `BinaryOperator` is one of the two boolean-combination operators a `filter <expr>;`
+/// statement's condition supports (`lower_filter_expression`'s `BinaryOp` shape): `and`, `or`.
+/// `xor`/`implies` are deliberately excluded from this narrow slice, mirroring
+/// `is_comparison_operator`'s exclusion of KerML strict-identity comparison.
+fn is_logical_operator(op: &BinaryOperator) -> bool {
+    matches!(op, BinaryOperator::And | BinaryOperator::Or)
 }
 
 /// Whether a `BinaryOperator` is one of the five basic arithmetic operators
@@ -1597,13 +1618,18 @@ impl SemanticModelBuilder {
             PackageBodyElement::Doc(_)
             | PackageBodyElement::Comment(_)
             | PackageBodyElement::TextualRep(_) => {}
-            PackageBodyElement::Filter(node) => {
-                self.push_unsupported(
-                    document,
-                    UnsupportedFamily::PackageMember,
-                    node.span.clone(),
-                );
-            }
+            PackageBodyElement::Filter(node) => match owner {
+                Some(declaration) => {
+                    self.lower_filter_expression(document, declaration, &node.value.condition)?
+                }
+                None => {
+                    self.push_unsupported(
+                        document,
+                        UnsupportedFamily::PackageMember,
+                        node.span.clone(),
+                    );
+                }
+            },
             PackageBodyElement::Package(node) => self.lower_package(document, owner, node)?,
             PackageBodyElement::LibraryPackage(node) => {
                 self.lower_library_package(document, owner, node)?
@@ -3524,6 +3550,99 @@ impl SemanticModelBuilder {
             }
             _ => {
                 self.push_unsupported(document, family, node.span.clone());
+                Ok(())
+            }
+        }
+    }
+
+    /// Lowers a package-level `filter <expr>;` statement's condition (BNF `ElementFilterMember`,
+    /// `ast::FilterMember`, see `PackageBodyElement::Filter`), narrowing a recursive import to only
+    /// members satisfying the expression. Reuses `lower_constraint_expression`'s operand-resolution
+    /// shape as closely as the filter grammar allows: a literal (recognized, no reference), a
+    /// feature/feature-chain reference (`Expression::FeatureRef`/`FeatureChainRef`, e.g.
+    /// `Safety::isMandatory`, resolved as `ReferenceKind::ExpressionOperand` through the same
+    /// `DeclarationDomain::Any` lexical lookup fixed point), a parenthesized wrapper (unwrapped and
+    /// recursed into), and a comparison `BinaryOp` (`is_comparison_operator`) whose operands are
+    /// recursed into, exactly like `lower_constraint_expression`.
+    ///
+    /// Two shapes are specific to filter conditions and have no analog in
+    /// `lower_constraint_expression`: an `@Name` metadata-classification test
+    /// (`Expression::Classification`, e.g. `@Safety`) is resolved as a new
+    /// `ReferenceKind::FilterMetadataTest` reference through the same `DeclarationDomain::Type`
+    /// lexical lookup fixed point `MetadataAnnotation` uses (`Safety` must name a metadata def);
+    /// and a logical `BinaryOp` (`and`/`or`, `is_logical_operator`) whose operands are recursed
+    /// into, alongside comparison operators.
+    ///
+    /// `declaration` is the enclosing package's own declaration (the filter statement's owner,
+    /// sourced directly, no anonymous nested-declaration scope shift -- mirroring
+    /// `ExpressionOperand`'s shape). Evaluation of the filter (computing which imported members
+    /// actually pass it) is explicitly out of scope for this slice; only the condition's own
+    /// references are resolved. Any other expression shape falls through to
+    /// `UnsupportedFamily::PackageMember`'s `unsupported_package_member` diagnostic, matching the
+    /// unconditional `unsupported_package_member` this statement produced before this slice.
+    fn lower_filter_expression(
+        &mut self,
+        document: DocumentId,
+        declaration: DeclarationId,
+        node: &Node<Expression>,
+    ) -> Result<(), ConstructionError> {
+        match &node.value {
+            Expression::LiteralInteger(_)
+            | Expression::LiteralReal(_)
+            | Expression::LiteralBoolean(_) => Ok(()),
+            Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
+                let span = self.documents[document.index()]
+                    .parsed
+                    .qualified_reference(*target)
+                    .ok_or(ConstructionError::InvalidParserReference)?
+                    .metadata
+                    .span
+                    .clone();
+                self.push_reference(PendingReference {
+                    source: declaration,
+                    kind: ReferenceKind::ExpressionOperand,
+                    document,
+                    local: *target,
+                    flags: RelationshipFlags::default(),
+                    span,
+                    import: None,
+                })?;
+                Ok(())
+            }
+            Expression::Classification { metaclass } => {
+                let span = self.documents[document.index()]
+                    .parsed
+                    .qualified_reference(*metaclass)
+                    .ok_or(ConstructionError::InvalidParserReference)?
+                    .metadata
+                    .span
+                    .clone();
+                self.push_reference(PendingReference {
+                    source: declaration,
+                    kind: ReferenceKind::FilterMetadataTest,
+                    document,
+                    local: *metaclass,
+                    flags: RelationshipFlags::default(),
+                    span,
+                    import: None,
+                })?;
+                Ok(())
+            }
+            Expression::Parenthesized(inner) => {
+                self.lower_filter_expression(document, declaration, inner)
+            }
+            Expression::BinaryOp { op, left, right }
+                if is_comparison_operator(op) || is_logical_operator(op) =>
+            {
+                self.lower_filter_expression(document, declaration, left)?;
+                self.lower_filter_expression(document, declaration, right)
+            }
+            _ => {
+                self.push_unsupported(
+                    document,
+                    UnsupportedFamily::PackageMember,
+                    node.span.clone(),
+                );
                 Ok(())
             }
         }
@@ -8745,6 +8864,75 @@ mod tests {
         assert!(
             output.contains("(kind metadataAnnotation)") && output.contains("(status unresolved)"),
             "expected seatBelt's @NoSuchMetadata metadata annotation reference to stay explicitly unresolved, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn filter_metadata_test_resolves_the_metadata_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tmetadata def Safety;\n\
+             \tpackage 'Safety Features' {\n\
+             \t\tpublic import Demo::**;\n\
+             \t\tfilter @Safety;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind filterMetadataTest) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Safety Features\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Safety\")))"
+            ),
+            "expected the filter's @Safety metadata-test reference to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn filter_and_expression_resolves_both_metadata_test_and_operand_references() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tmetadata def Safety {\n\
+             \t\tattribute isMandatory : Boolean;\n\
+             \t}\n\
+             \tpackage 'Mandatory Safety Features' {\n\
+             \t\tpublic import Demo::**;\n\
+             \t\tfilter @Safety and Safety::isMandatory;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind filterMetadataTest) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Mandatory Safety Features\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Safety\")))"
+            ),
+            "expected the filter's @Safety metadata-test reference to resolve, got:\n{output}"
+        );
+        // `Safety::isMandatory`'s second segment is a `metadata def`-owned attribute with default
+        // (non-package-owner) visibility, so it is not effective-public and the qualified lexical
+        // lookup's second segment finds no exported candidate -- exactly the same shape
+        // `40_filtering_example_1.md`'s real-corpus fixture exercises (see `Safety::isMandatory`'s
+        // own `featureTyping` reference staying unresolved there too). The reference is still
+        // authored, sourced, and explicitly unresolved rather than silently dropped or unsupported.
+        assert!(
+            output.contains("(kind expressionOperand)")
+                && output.contains("(authored-target \"Safety::isMandatory\")")
+                && output.contains("(status unresolved)"),
+            "expected the filter's Safety::isMandatory operand reference to be resolved-attempted \
+             and stay explicitly unresolved (not unsupported), got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn filter_with_unresolvable_metadata_target_stays_unresolved() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpackage 'Safety Features' {\n\
+             \t\tpublic import Demo::**;\n\
+             \t\tfilter @NoSuchMetadata;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind filterMetadataTest)") && output.contains("(status unresolved)"),
+            "expected the filter's @NoSuchMetadata metadata-test reference to stay explicitly unresolved, got:\n{output}"
         );
     }
 

@@ -683,11 +683,21 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     // `DeclarationDomain::Type`/ancestor-scoped lexical lookup as `typing_slots` below, kept as its
     // own slot list (and its own `ReferenceKind`) purely so the annotation relationship stays
     // distinct from ordinary typing/specialization in query output.
+    // A filter condition's `@Name` metadata-classification test (`ReferenceKind::
+    // FilterMetadataTest`, e.g. `filter @Safety;`'s `Safety`) names a metadata def exactly like a
+    // `MetadataAnnotation` target, so it joins the same `DeclarationDomain::Type` slot list rather
+    // than a separate one -- both resolve through the identical lexical lookup fixed point, kept
+    // as a distinct `ReferenceKind` purely so filter and annotation relationships stay distinct in
+    // query output.
     let metadata_annotation_slots: Vec<usize> = references
         .iter()
         .enumerate()
         .filter_map(|(index, reference)| {
-            (reference.kind() == ReferenceKind::MetadataAnnotation).then_some(index)
+            matches!(
+                reference.kind(),
+                ReferenceKind::MetadataAnnotation | ReferenceKind::FilterMetadataTest
+            )
+            .then_some(index)
         })
         .collect();
     // `Subsetting` (`:>`) and `Redefinition` (`:>>`) targets are always features, never types, so
@@ -1627,7 +1637,8 @@ fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<D
         | ReferenceKind::TransitionTarget
         | ReferenceKind::TransitionTrigger
         | ReferenceKind::TransitionEffect
-        | ReferenceKind::MetadataAnnotation => None,
+        | ReferenceKind::MetadataAnnotation
+        | ReferenceKind::FilterMetadataTest => None,
     }
 }
 
@@ -1797,7 +1808,8 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::TransitionTarget
             | ReferenceKind::TransitionTrigger
             | ReferenceKind::TransitionEffect
-            | ReferenceKind::MetadataAnnotation => {}
+            | ReferenceKind::MetadataAnnotation
+            | ReferenceKind::FilterMetadataTest => {}
         }
     }
     Ok((
