@@ -221,6 +221,9 @@ fn unsupported_code(family: UnsupportedFamily) -> &'static str {
         UnsupportedFamily::StateDefinitionMember => "unsupported_state_definition_member",
         UnsupportedFamily::ConnectionDefinitionMember => "unsupported_connection_definition_member",
         UnsupportedFamily::OccurrenceDefinitionMember => "unsupported_occurrence_definition_member",
+        UnsupportedFamily::AnalysisCaseDefinitionMember => {
+            "unsupported_analysis_case_definition_member"
+        }
         UnsupportedFamily::ParserUnsupported => "unsupported_parser_construct",
     }
 }
@@ -715,6 +718,7 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::ConnectionUsage => "connection",
         DeclarationKind::OccurrenceDefinition => "occurrence-def",
         DeclarationKind::OccurrenceUsage => "occurrence",
+        DeclarationKind::AnalysisCaseDefinition => "analysis-def",
     }
 }
 

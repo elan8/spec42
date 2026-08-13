@@ -57,15 +57,39 @@ package AnalysisTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_analysis_case_definition_member")
         (source "semantic")
-        (range (start 12 1) (end 20 2))
+        (range (start 13 2) (end 13 16))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_analysis_case_definition_member")
         (source "semantic")
-        (range (start 22 1) (end 30 2))
+        (range (start 15 2) (end 17 3))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_analysis_case_definition_member")
+        (source "semantic")
+        (range (start 19 2) (end 19 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_analysis_case_definition_member")
+        (source "semantic")
+        (range (start 23 2) (end 23 16))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_analysis_case_definition_member")
+        (source "semantic")
+        (range (start 25 2) (end 27 3))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_analysis_case_definition_member")
+        (source "semantic")
+        (range (start 29 2) (end 29 55))
       )
       (diagnostic
         (severity warning)
@@ -83,7 +107,9 @@ package AnalysisTest {
   (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:941a96f01feb9393ead003706ede5fb4443b5801f84ff991ed3a28c779a840d6") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisCase"))) (kind analysis-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisObjective"))) (kind requirement-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisPlan"))) (kind analysis-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::V"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::analysisContext"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::vv"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "V"))))

@@ -15,22 +15,23 @@ use hashbrown::HashTable;
 use sysml_v2_parser_next::{
     ast::{
         ActionDef, ActionDefBody, ActionDefBodyElement, ActionUsage as ParserActionUsage,
-        ActionUsageBody, ActionUsageBodyElement, AliasDef, AttributeBody, AttributeBodyElement,
-        AttributeDef, AttributeUsage, ConnectStmt, ConnectionDef, ConnectionDefBody,
-        ConnectionDefBodyElement, ConnectionEnd, ConnectionUsageMember as ParserConnectionUsage,
-        DefinitionBody, DefinitionBodyElement, EndDecl, EndIdentity, EnumDef, EnumerationBody,
-        EnumerationUsage as ParserEnumerationUsage, Expression, Import, ImportShape, ItemDef,
-        ItemUsage as ParserItemUsage, LibraryPackage, Membership,
-        MembershipKind as ParserMembershipKind, MetadataDef, MetadataUsage as ParserMetadataUsage,
-        NamespaceDecl, Node, OccurrenceBodyElement, OccurrenceDef,
-        OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package, PackageBody,
-        PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage, PartUsageBody,
-        PartUsageBodyElement, PortBody, PortBodyElement, PortDef, PortDefBody, PortDefBodyElement,
-        PortUsage as ParserPortUsage, QualifiedIdentification, QualifiedReferenceId,
-        RequirementDef, RequirementDefBody, RequirementDefBodyElement,
+        ActionUsageBody, ActionUsageBodyElement, AliasDef, AnalysisCaseDef, AttributeBody,
+        AttributeBodyElement, AttributeDef, AttributeUsage, ConnectStmt, ConnectionDef,
+        ConnectionDefBody, ConnectionDefBodyElement, ConnectionEnd,
+        ConnectionUsageMember as ParserConnectionUsage, DefinitionBody, DefinitionBodyElement,
+        EndDecl, EndIdentity, EnumDef, EnumerationBody, EnumerationUsage as ParserEnumerationUsage,
+        Expression, Import, ImportShape, ItemDef, ItemUsage as ParserItemUsage, LibraryPackage,
+        Membership, MembershipKind as ParserMembershipKind, MetadataDef,
+        MetadataUsage as ParserMetadataUsage, NamespaceDecl, Node, OccurrenceBodyElement,
+        OccurrenceDef, OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package,
+        PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage,
+        PartUsageBody, PartUsageBodyElement, PortBody, PortBodyElement, PortDef, PortDefBody,
+        PortDefBodyElement, PortUsage as ParserPortUsage, QualifiedIdentification,
+        QualifiedReferenceId, RequirementDef, RequirementDefBody, RequirementDefBodyElement,
         RequirementUsage as ParserRequirementUsage, RootElement, Span, StateDef, StateDefBody,
         StateDefBodyElement, StateUsage as ParserStateUsage, SubsettingKind,
-        SubsettingRelationship, Visibility as ParserVisibility,
+        SubsettingRelationship, UseCaseDefBody, UseCaseDefBodyElement,
+        Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
 };
@@ -172,6 +173,14 @@ enum DeclarationKind {
     /// structured `TypingRelationship`, but does carry an independent conjugation flag
     /// (`type_is_conjugated`) analogous to PortUsage's conjugated typing target.
     OccurrenceUsage,
+    /// `analysis def` (BNF AnalysisCaseDefinition): a type whose owned members are attribute
+    /// usages and nested behavior/case structure, mirroring RequirementDefinition lowering.
+    /// Analysis-case-specific semantics (subject binding, objective, result parameter binding to
+    /// a calc/action) are out of scope here; only ownership, specialization, and owned-member
+    /// structure are lowered. `analysis` usage lowering is deferred (see
+    /// UPSTREAM_PARSER_GAPS.md #5: `AnalysisCaseUsage` silently drops parsed `:>`/`:>>` clauses,
+    /// unlike `AnalysisCaseDef`, which has full field parity).
+    AnalysisCaseDefinition,
     Import,
     Alias,
 }
@@ -269,6 +278,11 @@ enum UnsupportedFamily {
     /// `succession`/`satisfy`/`allocate`/connector-end body constructs -- are the out-of-scope
     /// surface for this slice.
     OccurrenceDefinitionMember,
+    /// `analysis def` body members not modeled by this slice (subject/actor/objective/first-
+    /// succession/return/nested case structure); shares `UseCaseDefBody`/`UseCaseDefBodyElement`
+    /// with `case`/`verification` case bodies in the typed AST, but this family name is scoped to
+    /// `analysis def` specifically since `analysis` usage lowering is deferred.
+    AnalysisCaseDefinitionMember,
     ParserUnsupported,
 }
 
@@ -886,11 +900,9 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::AnalysisCaseDef(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::AnalysisCaseDef(node) => {
+                self.lower_analysis_case_def(document, owner, node)?
+            }
             PackageBodyElement::AnalysisCaseUsage(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -1109,6 +1121,13 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::RequirementDef(requirement_def) => {
                         self.lower_requirement_def(document, Some(declaration), requirement_def)?;
                     }
+                    PartDefBodyElement::AnalysisCaseDef(analysis_case_def) => {
+                        self.lower_analysis_case_def(
+                            document,
+                            Some(declaration),
+                            analysis_case_def,
+                        )?;
+                    }
                     PartDefBodyElement::RequirementUsage(requirement_usage) => {
                         self.lower_requirement_usage(
                             document,
@@ -1193,7 +1212,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::CaseUsage(_)
                     | PartDefBodyElement::UseCaseDef(_)
                     | PartDefBodyElement::UseCaseUsage(_)
-                    | PartDefBodyElement::AnalysisCaseDef(_)
                     | PartDefBodyElement::AnalysisCaseUsage(_)
                     | PartDefBodyElement::VerificationCaseDef(_)
                     | PartDefBodyElement::VerificationCaseUsage(_)
@@ -1271,6 +1289,13 @@ impl SemanticModelBuilder {
                     PartUsageBodyElement::RequirementDef(requirement_def) => {
                         self.lower_requirement_def(document, Some(declaration), requirement_def)?;
                     }
+                    PartUsageBodyElement::AnalysisCaseDef(analysis_case_def) => {
+                        self.lower_analysis_case_def(
+                            document,
+                            Some(declaration),
+                            analysis_case_def,
+                        )?;
+                    }
                     PartUsageBodyElement::RequirementUsage(requirement_usage) => {
                         self.lower_requirement_usage(
                             document,
@@ -1338,7 +1363,6 @@ impl SemanticModelBuilder {
                     | PartUsageBodyElement::ConstraintDef(_)
                     | PartUsageBodyElement::ConstraintUsage(_)
                     | PartUsageBodyElement::CalcUsage(_)
-                    | PartUsageBodyElement::AnalysisCaseDef(_)
                     | PartUsageBodyElement::AnalysisCaseUsage(_)
                     | PartUsageBodyElement::AliasDef(_)
                     | PartUsageBodyElement::IncludeUseCase(_)
@@ -2269,7 +2293,113 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    /// Lowers a `port def` (BNF PortDefinition), mirroring `lower_part_def`: ownership,
+    /// Lowers an `analysis def` (BNF AnalysisCaseDefinition), mirroring `lower_requirement_def`:
+    /// ownership, membership, an optional `:>` specialization relationship, and owned
+    /// attribute/nested members via the shared `UseCaseDefBody`. Analysis-case-specific semantics
+    /// (subject binding, objective, result parameter binding) are explicitly out of scope;
+    /// unrecognized body elements (including nested `analysis` usages -- see
+    /// UPSTREAM_PARSER_GAPS.md #5) fall through to `unsupported_analysis_case_definition_member`.
+    /// `analysis` usage lowering itself is deferred entirely (same doc entry): `AnalysisCaseUsage`
+    /// silently drops parsed `:>`/`:>>` clauses, unlike `AnalysisCaseDef`.
+    fn lower_analysis_case_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<AnalysisCaseDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::AnalysisCaseDefinition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        self.lower_analysis_case_def_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers the `UseCaseDefBody` owned by an `analysis def`: recognized owned members are
+    /// attribute def/usage; everything else (subject/actor/objective/succession/nested
+    /// action/analysis/calc/requirement/part usages, etc.) falls through to
+    /// `unsupported_analysis_case_definition_member`.
+    fn lower_analysis_case_def_body(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        body: &UseCaseDefBody,
+    ) -> Result<(), ConstructionError> {
+        let UseCaseDefBody::Brace { elements } = body else {
+            return Ok(());
+        };
+        for element in elements {
+            match &element.value {
+                UseCaseDefBodyElement::Error(error) => {
+                    self.push_recovery(document, error.span.clone());
+                }
+                UseCaseDefBodyElement::AttributeDef(attribute) => {
+                    self.lower_attribute_def(document, Some(owner), attribute)?;
+                }
+                UseCaseDefBodyElement::AttributeUsage(attribute) => {
+                    self.lower_attribute_usage(document, Some(owner), attribute)?;
+                }
+                UseCaseDefBodyElement::Doc(_) => {}
+                UseCaseDefBodyElement::Other(_)
+                | UseCaseDefBodyElement::Annotation(_)
+                | UseCaseDefBodyElement::MetadataAnnotation(_)
+                | UseCaseDefBodyElement::MetadataKeywordUsage(_)
+                | UseCaseDefBodyElement::SubjectDecl(_)
+                | UseCaseDefBodyElement::SubjectRef(_)
+                | UseCaseDefBodyElement::ActorUsage(_)
+                | UseCaseDefBodyElement::ActorRedefinitionAssignment(_)
+                | UseCaseDefBodyElement::Objective(_)
+                | UseCaseDefBodyElement::FirstSuccession(_)
+                | UseCaseDefBodyElement::ThenIncludeUseCase(_)
+                | UseCaseDefBodyElement::ThenUseCaseUsage(_)
+                | UseCaseDefBodyElement::ThenDone(_)
+                | UseCaseDefBodyElement::IncludeUseCase(_)
+                | UseCaseDefBodyElement::RefRedefinition(_)
+                | UseCaseDefBodyElement::AssertConstraint(_)
+                | UseCaseDefBodyElement::ReturnRef(_)
+                | UseCaseDefBodyElement::CaseReturnDecl(_)
+                | UseCaseDefBodyElement::Assign(_)
+                | UseCaseDefBodyElement::ForLoop(_)
+                | UseCaseDefBodyElement::ThenAction(_)
+                | UseCaseDefBodyElement::ActionUsage(_)
+                | UseCaseDefBodyElement::AnalysisCaseUsage(_)
+                | UseCaseDefBodyElement::CalcUsage(_)
+                | UseCaseDefBodyElement::RequirementUsage(_)
+                | UseCaseDefBodyElement::PartUsage(_)
+                | UseCaseDefBodyElement::Expression(_)
+                | UseCaseDefBodyElement::FlowUsage(_) => self.push_unsupported(
+                    document,
+                    UnsupportedFamily::AnalysisCaseDefinitionMember,
+                    element.span.clone(),
+                ),
+            }
+        }
+        Ok(())
+    }
+
+    /// Lowers a `port def` (BNF PortDefinition), mirroring `lower_part_def`:
     /// membership, an optional `:>` specialization relationship (participates in the shared
     /// Subclassification/FeatureTyping lexical lookup fixed point, see `DeclarationDomain::Type`
     /// in resolver.rs), and owned attribute/enum/nested-port members. Port-specific semantics
@@ -3761,6 +3891,77 @@ mod tests {
         assert!(
             output.contains("unsupported_occurrence_definition_member"),
             "expected the succession usage to surface as an explicit unsupported diagnostic, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn analysis_case_def_lowers_to_a_declaration() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tanalysis def FuelEconomyAnalysis {\n\
+             \t\tattribute mass : Real;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::FuelEconomyAnalysis\"))) (kind analysis-def)"),
+            "expected an analysis-def declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(qualified-name \"Demo::FuelEconomyAnalysis::mass\"))) (kind attribute)"
+            ),
+            "expected an owned attribute declaration under the analysis def, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn analysis_case_def_specializing_another_analysis_case_def_resolves_its_specialization_reference(
+    ) {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tanalysis def Base;\n\
+             \tanalysis def Derived :> Base;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn analysis_case_definition_member_nested_analysis_usage_stays_explicitly_unsupported() {
+        // `analysis` usage lowering is deferred (UPSTREAM_PARSER_GAPS.md #5: `AnalysisCaseUsage`
+        // silently drops parsed `:>`/`:>>` clauses, unlike `AnalysisCaseDef`), so a nested
+        // `analysis` usage inside an `analysis def` body must surface as an explicit unsupported
+        // diagnostic rather than being silently dropped or misclassified.
+        let request = crate::BuildRequest::new(
+            vec![crate::SourceInput::new(
+                "memory://test/enum.sysml",
+                "package Demo {\n\
+                 \tanalysis def Outer {\n\
+                 \t\tanalysis inner : Outer;\n\
+                 \t}\n\
+                 }\n"
+                .to_string(),
+                crate::SourceKind::Workspace,
+            )],
+            crate::ConstructionSchedule::Sequential,
+            "test-contract-v1",
+        )
+        .unwrap();
+        let published = crate::build(request).unwrap();
+        let mut output = String::new();
+        published
+            .debug()
+            .write_diagnostics_sexpr(&mut output)
+            .unwrap();
+        assert!(
+            output.contains("unsupported_analysis_case_definition_member"),
+            "expected the nested analysis usage to surface as an explicit unsupported diagnostic, got:\n{output}"
         );
     }
 

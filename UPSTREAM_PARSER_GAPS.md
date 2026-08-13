@@ -112,6 +112,54 @@ entry should carry enough detail to file/update an upstream issue against
   unconditionally-absent subsetting/redefinition facts, silently under-reporting a relationship
   that real Systems Library content (`Constraints.sysml`, `Requirements.sysml`) depends on.
 
+### 5. `AnalysisCaseUsage` (and `CaseUsage`) drop the parsed `:>`/`:>>` specialization clauses
+
+- **Symptom:** `analysis a : A1 :> b { ... }` / `analysis a :>> b;` (and the same for bare
+  `case` usages) parse successfully (no `unsupported_grammar_form`, no parser-level error) but
+  any `:>` subsetting / `:>>` redefinition clause on the usage is silently discarded before it
+  ever reaches `sysml_resolution`. `ast::AnalysisCaseUsage` and `ast::CaseUsage` (crate
+  `sysml-v2-parser`, `src/ast/requirement.rs`) have only `name`, `type_name:
+  Option<QualifiedReferenceId>`, `is_abstract`, (`is_individual` for analysis), `body`, and
+  `membership` — no `subsets`/`redefines` fields, unlike the structurally analogous
+  `RequirementUsage` (which carries `subsets: Option<Node<SubsettingRelationship>>` and
+  `references: Option<Node<SubsettingRelationship>>`) or `PortUsage`/`StateUsage`. The shared
+  `usage_header` parser (`src/parser/usage.rs`) *does* parse `:>`/`:>>` clauses into
+  `UsageHeader::subsets`/`redefines` (see `usage_header_accepts_typing_then_specialization` /
+  `usage_header_accepts_specialization_then_typing` tests in that file) —
+  `parser::case::case_like_usage_body` (`src/parser/case.rs`, shared by both `CaseUsage` and
+  `AnalysisCaseUsage`) calls `usage_header` and only reads `header.type_reference` when
+  constructing the usage node, silently dropping any subsetting/redefinition the header parsed.
+  This is a genuine typed-AST gap, not a grammar/tokenizing gap — the parse succeeds and the
+  information exists transiently inside the parser but never reaches the AST. Note
+  `AnalysisCaseDef`/`CaseDef` (the `def` forms) are unaffected — both have a proper
+  `specializes: Option<Node<TypingRelationship>>` field parsed from `parse_definition_prefix`,
+  with full parity to `ActionDef`/`OccurrenceDef`/`ConnectionDef`.
+- **Representative input:** `analysis fuelEconomyAnalysis_1 : FuelEconomyAnalysis_1 :> baseAnalysis { ... }`
+  (pattern not currently exercised by fixtures, but reachable per the parser's own grammar —
+  discovered while verifying field parity ahead of lowering `analysis def`/`analysis` usage
+  declarations, see commit adding `DeclarationKind::AnalysisCaseDefinition`).
+- **Representative snapshots:** none yet (no fixture currently authors `:>`/`:>>` on an
+  `analysis`/`case` usage — this is a latent gap, not one presently manifesting as a wrong
+  snapshot), but any future fixture doing so would silently drop the relationship.
+- **Impact:** blocks lowering `analysis`/`case` usage declaration facts
+  (`DeclarationKind::AnalysisCaseUsage`) with full parity to the other `*Usage` kinds, since the
+  in-scope requirement includes `:>`/`:>>` specialization resolving through the existing
+  ancestor-closure fixed point (same shape as `occurrence`/`connection` usage, see commits
+  `798d7287`/`d0675e2c`) and the typed AST currently offers no field to lower that relationship
+  from for `analysis`/`case` usage specifically (`type_name`/`body`/`membership` are present and
+  fine; only `subsets`/`redefines` are missing). `AnalysisCaseDef`/`CaseDef` themselves (the
+  `def` forms) are not blocked by this gap, so this slice lands `analysis def` lowering only and
+  defers `analysis` usage lowering until this is fixed upstream.
+- **Status:** blocking (usage side only). Needs an upstream `sysml-v2-parser` change adding
+  `subsets: Option<Node<SubsettingRelationship>>` and `redefines: Option<Node<
+  SubsettingRelationship>>` fields to `ast::AnalysisCaseUsage`/`ast::CaseUsage` and wiring
+  `parser::case::case_like_usage_body` to populate them from the `UsageHeader` it already
+  computes (mirroring `RequirementUsage`/`PortUsage`/`StateUsage`). Not attempted here — out of
+  scope for `sysml_resolution`/`sysml_query`/`spec42-snapshot` to work around without either (a)
+  re-parsing the specialization clauses independently (duplicating parser logic, fragile) or (b)
+  shipping analysis/case usage declarations with unconditionally-absent subsetting/redefinition
+  facts.
+
 ## Resolved / not blocked (kept for history)
 
 - Alias declarations (`alias X for Y;`) — investigated as a possible parser gap, but the typed
