@@ -832,12 +832,6 @@ package EVSample {
         (severity warning)
         (code "unsupported_analysis_case_definition_member")
         (source "semantic")
-        (range (start 257 12) (end 257 20))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_analysis_case_definition_member")
-        (source "semantic")
         (range (start 259 12) (end 259 99))
       )
       (diagnostic
@@ -899,12 +893,6 @@ package EVSample {
         (code "unsupported_analysis_case_definition_member")
         (source "semantic")
         (range (start 303 12) (end 303 60))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_analysis_case_definition_member")
-        (source "semantic")
-        (range (start 312 12) (end 312 20))
       )
       (diagnostic
         (severity warning)

@@ -4071,18 +4071,6 @@ package SimpleVehicleModel{
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_requirement_definition_member")
-        (source "semantic")
-        (range (start 1550 16) (end 1550 24))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_requirement_definition_member")
-        (source "semantic")
-        (range (start 1551 16) (end 1551 46))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
         (range (start 1556 26) (end 1556 34))
@@ -4884,6 +4872,7 @@ package SimpleVehicleModel{
     (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::SafetyEngineer"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::SafetyViewpoint"))) (kind viewpoint-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::VehicleSafety"))) (kind concern-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::VehicleSafety::se"))) (kind stakeholder) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "SafetyEngineer"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
@@ -6569,6 +6558,9 @@ package SimpleVehicleModel{
     (reference (id (source (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::PartsTreeView"))) (kind filterMetadataTest) (ordinal 0))
       (authored-target "SysML::PartUsage")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::VehicleSafety::se"))) (kind featureTyping) (ordinal 0))
+      (authored-target "SafetyEngineer")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::SafetyEngineer")))))
   )
   (relationships
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::AmplifyTorque::engineTorque"))) (target (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::Torque"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::AmplifyTorque::engineTorque"))) (kind featureTyping) (ordinal 0)))
@@ -6863,6 +6855,7 @@ package SimpleVehicleModel{
     (relationship (kind typing) (source (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::VehicleViews::vehiclePartsTree_Safety"))) (target (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::PartsTreeView"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::VehicleViews::vehiclePartsTree_Safety"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::PartsInterconnection"))) (target (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::NestedView"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::PartsInterconnection"))) (kind specialization) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::PartsTreeView"))) (target (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::TreeView"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::PartsTreeView"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::VehicleSafety::se"))) (target (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::SafetyEngineer"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::VehicleSafety::se"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::cylinderDiameter"))) (value (kind quantity) (magnitude (value (kind integer) (integer 80))) (unit "mm")))
@@ -9192,6 +9185,10 @@ package SimpleVehicleModel{
   (query (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (range (start 1564 24) (end 1564 40)) (probe (position 1564 24))
     (reference (id (source (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::PartsTreeView"))) (kind filterMetadataTest) (ordinal 0) (authored-target "SysML::PartUsage")
       (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (range (start 1551 31) (end 1551 45)) (probe (position 1551 31))
+    (reference (id (source (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::VehicleSafety::se"))) (kind featureTyping) (ordinal 0) (authored-target "SafetyEngineer")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::SafetyEngineer")))))
   )
 )
 ~~~

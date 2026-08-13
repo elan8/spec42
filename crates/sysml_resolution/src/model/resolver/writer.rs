@@ -854,6 +854,10 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::Join => "join",
         DeclarationKind::ThenContinuation => "then-continuation",
         DeclarationKind::Flow => "flow",
+        DeclarationKind::StakeholderUsage => "stakeholder",
+        DeclarationKind::RequirementActor => "requirement-actor",
+        DeclarationKind::Frame => "frame",
+        DeclarationKind::VerifyRequirement => "verify-requirement",
     }
 }
 
@@ -924,6 +928,9 @@ fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::FlowSource => "flowSource",
         ReferenceKind::FlowTarget => "flowTarget",
         ReferenceKind::TypeCheckTarget => "typeCheckTarget",
+        ReferenceKind::StakeholderTarget => "stakeholderTarget",
+        ReferenceKind::PurposeTarget => "purposeTarget",
+        ReferenceKind::VerifyRequirementTarget => "verifyRequirementTarget",
     }
 }
 
@@ -973,6 +980,9 @@ fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::FlowSource => Some("flowSource"),
         ReferenceKind::FlowTarget => Some("flowTarget"),
         ReferenceKind::TypeCheckTarget => Some("typeCheckTarget"),
+        ReferenceKind::StakeholderTarget => Some("stakeholderTarget"),
+        ReferenceKind::PurposeTarget => Some("purposeTarget"),
+        ReferenceKind::VerifyRequirementTarget => Some("verifyRequirementTarget"),
         ReferenceKind::NamespaceImport
         | ReferenceKind::MembershipImport
         | ReferenceKind::FilterImport => None,

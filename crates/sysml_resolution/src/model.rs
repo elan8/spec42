@@ -26,27 +26,27 @@ use sysml_v2_parser_next::{
         ConstraintUsage as ParserConstraintUsage, DefinitionBody, DefinitionBodyElement,
         DefinitionPrefix, DoAction, EndDecl, EndIdentity, EntryAction, EnumDef, EnumerationBody,
         EnumerationUsage as ParserEnumerationUsage, ExitAction, Expression, FeatureValue,
-        FirstMergeBody, FirstMergeBodyElement, FirstStmt, FlowDef, FlowUsage, Import, ImportShape,
-        InOut, InOutDecl, IncludeUseCase, InterfaceDef, InterfaceDefBody, InterfaceDefBodyElement,
-        InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement, ItemDef,
-        ItemUsage as ParserItemUsage, LibraryPackage, Membership,
+        FirstMergeBody, FirstMergeBodyElement, FirstStmt, FlowDef, FlowUsage, FrameMember, Import,
+        ImportShape, InOut, InOutDecl, IncludeUseCase, InterfaceDef, InterfaceDefBody,
+        InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement,
+        ItemDef, ItemUsage as ParserItemUsage, LibraryPackage, Membership,
         MembershipKind as ParserMembershipKind, MetadataAnnotation, MetadataDef,
         MetadataUsage as ParserMetadataUsage, NamespaceDecl, Node, OccurrenceBodyElement,
         OccurrenceDef, OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package,
         PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage,
         PartUsageBody, PartUsageBodyElement, Perform as ParserPerform, PerformBody,
         PerformBodyElement, PortBody, PortBodyElement, PortDef, PortDefBody, PortDefBodyElement,
-        PortUsage as ParserPortUsage, QualifiedIdentification, QualifiedReferenceId, RefBody,
-        RefBodyElement, RefDecl, RelationshipBodyElement, RenderingDef, RenderingDefBody,
-        RenderingDefBodyElement, RequirementDef, RequirementDefBody, RequirementDefBodyElement,
-        RequirementUsage as ParserRequirementUsage, ReturnDecl, RootElement, Satisfy,
-        SatisfyViewMember, SendPayload, Span, StateDef, StateDefBody, StateDefBodyElement,
-        StateUsage as ParserStateUsage, SubjectDecl, SubsettingKind, SubsettingRelationship,
-        TerminateStmt, ThenAction, ThenStmt, ThenTarget, Transition, TransitionAccept,
-        TransitionEffect, UnaryOperator, UseCaseDef, UseCaseDefBody, UseCaseDefBodyElement,
-        VariantUsage, VerificationCaseDef, ViewBody, ViewBodyElement, ViewDef, ViewDefBody,
-        ViewDefBodyElement, ViewUsage as ParserViewUsage, ViewpointDef,
-        Visibility as ParserVisibility,
+        PortUsage as ParserPortUsage, PurposeMember, QualifiedIdentification, QualifiedReferenceId,
+        RefBody, RefBodyElement, RefDecl, RelationshipBodyElement, RenderingDef, RenderingDefBody,
+        RenderingDefBodyElement, RequirementActorDecl, RequirementDef, RequirementDefBody,
+        RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage, ReturnDecl,
+        RootElement, Satisfy, SatisfyViewMember, SendPayload, Span, StakeholderMember, StateDef,
+        StateDefBody, StateDefBodyElement, StateUsage as ParserStateUsage, SubjectDecl,
+        SubsettingKind, SubsettingRelationship, TerminateStmt, ThenAction, ThenStmt, ThenTarget,
+        Transition, TransitionAccept, TransitionEffect, UnaryOperator, UseCaseDef, UseCaseDefBody,
+        UseCaseDefBodyElement, VariantUsage, VerificationCaseDef, VerifyRequirementMember,
+        ViewBody, ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement,
+        ViewUsage as ParserViewUsage, ViewpointDef, Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
 };
@@ -554,6 +554,52 @@ enum DeclarationKind {
     /// out of scope (see UPSTREAM_PARSER_GAPS.md #28's `subsets`/`redefines`/typed-end gap) --
     /// only the bare two-operand statement form's `from`/`to` references are resolved here.
     Flow,
+    /// A `stakeholder` member found in a requirement/viewpoint def body (BNF `StakeholderMember`,
+    /// `ast::requirement::StakeholderMember`), e.g. `stakeholder driver : Driver;` inside
+    /// `requirement def SafetyRequirement`. The typed AST folds three distinct textual shapes into
+    /// one struct: a plain typed declaration (`declaration_name`/`type_name`, mirroring
+    /// `SubjectUsage`'s shape exactly -- ownership, membership, an optional `FeatureTyping`
+    /// reference, no direction fact), a bare concern reference (`stakeholder Concern;`, `target`
+    /// set, `declaration_name` empty), and a `:>>` redefinition (`stakeholder :>> name;`,
+    /// `is_redefinition` true, `target` set). `intern_declared_name` already folds an empty
+    /// `declaration_name` to an anonymous declaration, exactly like `SubjectUsage`'s own bare
+    /// `subject;` shorthand. The `target` reference (plain or redefinition) is lowered as an
+    /// authored `ReferenceKind::StakeholderTarget`/`ReferenceKind::Redefinition` reference sourced
+    /// at this same declaration.
+    StakeholderUsage,
+    /// A typed `actor` parameter declaration found in a requirement def body (BNF
+    /// `RequirementActorDecl`, `ast::requirement::RequirementActorDecl`), e.g. `actor pilot :
+    /// Operator;` inside `requirement def FlightRequirement`. Structurally identical to
+    /// `SubjectUsage` (a plain typed feature declaration: ownership, membership, a `FeatureTyping`
+    /// reference to the declared type, no direction fact) except `type_name` is unconditional here
+    /// (never optional), unlike `SubjectDecl::type_name`. Distinct from `UseCaseDefBodyElement::
+    /// ActorUsage` (`ast::requirement::ActorUsage`), a different AST shape found only in case-family
+    /// bodies, which is out of scope for this slice.
+    RequirementActor,
+    /// A named `frame` member found in a requirement def body (BNF `FrameMember`,
+    /// `ast::requirement::FrameMember`), e.g. `frame concernFraming { stakeholder ...; }` -- a
+    /// purely syntactic named grouping around further requirement-frame body content (subject/
+    /// actor/stakeholder/etc.), not a fact-bearing construct of its own. Lowered as an anonymous-
+    /// named owned feature (ownership, membership, no reference of its own) whose body is
+    /// dispatched back through the same shared `RequirementDefBody`/`RequirementDefBodyElement`
+    /// walker (`lower_requirement_shaped_body`) used by `requirement def`/`requirement` usage/
+    /// `viewpoint def` bodies, sharing the caller's `UnsupportedFamily` so an unrecognized member
+    /// nested inside a frame reports under the same diagnostic family as one outside it.
+    Frame,
+    /// An anonymous feature synthesized for a requirement/objective-body `verify <requirement>;`
+    /// shorthand body element (BNF `VerifyRequirementMember`, `ast::requirement::
+    /// VerifyRequirementMember`, `explicit_requirement_keyword == false`), e.g. `verify
+    /// speedRequirement;` inside a `verification def`'s `objective { ... }`. Owned by the enclosing
+    /// declaration, mirroring `Satisfy`'s nested-declaration shape, so the `VerifyRequirementTarget`
+    /// reference it carries is distinguishable per-statement. The shorthand `:>>` redefinition
+    /// (`VerifyRequirementMember::redefines`) is lowered as an authored `ReferenceKind::Redefinition`
+    /// reference sourced at the same declaration, mirroring `AttributeUsage::redefines`'s existing
+    /// bare-`QualifiedReferenceId` handling. The fuller `verify requirement <name> : <Type> { ... }`
+    /// form (`explicit_requirement_keyword == true`, which defines a new anonymous requirement usage
+    /// inline rather than referencing an existing one -- a meaningfully different construct, not
+    /// merely an unresolved reference, mirroring `Satisfy::inline_requirement`'s own scope boundary)
+    /// is out of scope and left as an explicit unsupported-member diagnostic.
+    VerifyRequirement,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -918,6 +964,32 @@ enum ReferenceKind {
     /// so `EvalNode::Invocation` (reused rather than adding a distinct variant, exactly like
     /// `Expression::Tuple`) always folds to `EvaluatedValue::NonConstant`.
     TypeCheckTarget,
+    /// The `target` concern reference of a `stakeholder` member found in a requirement/viewpoint
+    /// def body (`StakeholderMember.target`, BNF `StakeholderMember`'s bare `stakeholder Concern;`
+    /// reference form, `is_redefinition == false`), resolved through the same `DeclarationDomain::
+    /// Any` lexical lookup as `SatisfySource`/`Variant`: the referenced concern can be a `concern`
+    /// usage (a feature, not a Type) as easily as a `concern def`, so it is not restricted to the
+    /// Subclassification/FeatureTyping `Type` domain. Sourced at the `DeclarationKind::
+    /// StakeholderUsage` declaration itself (no anonymous nested-declaration scope shift, mirroring
+    /// `SatisfyViewpoint`/`Variant`'s single-operand shape), since a `stakeholder` member carries
+    /// only one operand. The `:>>` redefinition spelling (`is_redefinition == true`) reuses the
+    /// existing generic `ReferenceKind::Redefinition` instead of this kind.
+    StakeholderTarget,
+    /// The `target` concern reference of a viewpoint `purpose` member (`PurposeMember.target`, BNF
+    /// `PurposeMember`), same shape and scope as `StakeholderTarget`: a concern reference resolved
+    /// through `DeclarationDomain::Any`, sourced directly at the enclosing requirement/viewpoint
+    /// declaration (no anonymous nested-declaration scope shift -- a `purpose` member carries only
+    /// one operand and introduces no name of its own, mirroring `SatisfyViewpoint`).
+    PurposeTarget,
+    /// The shorthand `target` of a requirement/objective-body `verify <requirement>;` body element
+    /// (`VerifyRequirementMember.target`, BNF `VerifyRequirementMember`'s bare shorthand form,
+    /// `explicit_requirement_keyword == false`), resolved through the same `DeclarationDomain::Any`
+    /// lexical lookup as `SatisfySource`/`StakeholderTarget`: the verified requirement can be any
+    /// owned feature, not just a Type. Sourced at an anonymous `DeclarationKind::VerifyRequirement`
+    /// feature owned by the enclosing declaration, mirroring `Satisfy`'s nested-declaration shape.
+    /// The `:>>` redefinition spelling (`VerifyRequirementMember.redefines`) reuses the existing
+    /// generic `ReferenceKind::Redefinition` instead of this kind.
+    VerifyRequirementTarget,
 }
 
 /// The computed or explicit outcome of evaluating one supported constraint/calc expression
@@ -3953,6 +4025,255 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
+    /// Lowers a `stakeholder` member found in a requirement/viewpoint def body (BNF
+    /// `StakeholderMember`), mirroring `lower_subject_decl`'s typed-declaration shape (ownership,
+    /// membership, an optional `FeatureTyping` reference) plus the concern-reference/redefinition
+    /// operand: when `target` is present, it is lowered as an authored `ReferenceKind::
+    /// Redefinition` reference (for the `:>>` spelling, `is_redefinition == true`) or
+    /// `ReferenceKind::StakeholderTarget` reference (the bare `stakeholder Concern;` spelling)
+    /// sourced at the same declaration. `declaration_name` may be empty for either reference form
+    /// (`intern_declared_name` already folds that to an anonymous declaration, matching
+    /// `SubjectUsage`'s own bare-form handling).
+    fn lower_stakeholder_member(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<StakeholderMember>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.declaration_name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::StakeholderUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        if let Some(type_name) = node.value.type_name {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        if let Some(target) = node.value.target {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(target)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            let kind = if node.value.is_redefinition {
+                ReferenceKind::Redefinition
+            } else {
+                ReferenceKind::StakeholderTarget
+            };
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind,
+                document,
+                local: target,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        Ok(())
+    }
+
+    /// Lowers a viewpoint `purpose` member (BNF `PurposeMember`), an always-present concern
+    /// reference (`PurposeMember.target`, no plain-declaration/redefinition alternatives the way
+    /// `StakeholderMember` has), resolved as an authored `ReferenceKind::PurposeTarget` reference
+    /// sourced directly at the enclosing `owner` declaration, mirroring `SatisfyViewpoint`'s
+    /// single-operand, no-nested-declaration shape.
+    fn lower_purpose_member(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        node: &Node<PurposeMember>,
+    ) -> Result<(), ConstructionError> {
+        let span = self.documents[document.index()]
+            .parsed
+            .qualified_reference(node.value.target)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span
+            .clone();
+        self.push_reference(PendingReference {
+            source: owner,
+            kind: ReferenceKind::PurposeTarget,
+            document,
+            local: node.value.target,
+            flags: RelationshipFlags::default(),
+            span,
+            import: None,
+        })?;
+        Ok(())
+    }
+
+    /// Lowers a typed `actor` parameter declaration found in a requirement def body (BNF
+    /// `RequirementActorDecl`), mirroring `lower_subject_decl`'s shape (ownership, membership,
+    /// a `FeatureTyping` reference to the declared type), except `type_name` is unconditional here
+    /// (never optional, unlike `SubjectDecl::type_name`).
+    fn lower_requirement_actor_decl(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<RequirementActorDecl>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::RequirementActor,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        let type_name = node.value.type_name;
+        let span = self.documents[document.index()]
+            .parsed
+            .qualified_reference(type_name)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span
+            .clone();
+        self.push_reference(PendingReference {
+            source: declaration,
+            kind: ReferenceKind::FeatureTyping,
+            document,
+            local: type_name,
+            flags: RelationshipFlags::default(),
+            span,
+            import: None,
+        })?;
+        Ok(())
+    }
+
+    /// Lowers a named `frame` member found in a requirement def body (BNF `FrameMember`) as a
+    /// purely syntactic named grouping: ownership, membership, and its nested `RequirementDefBody`
+    /// content dispatched back through the same shared `lower_requirement_shaped_body` walker used
+    /// by `requirement def`/`requirement` usage/`viewpoint def` bodies, sharing the caller-supplied
+    /// `unsupported` family so a member unrecognized inside a frame reports under the same
+    /// diagnostic family as one outside it.
+    fn lower_frame_member(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        unsupported: UnsupportedFamily,
+        node: &Node<FrameMember>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::Frame,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        self.lower_requirement_shaped_body(document, declaration, &node.value.body, unsupported)
+    }
+
+    /// Lowers a requirement/objective-body `verify <requirement>;` shorthand body element (BNF
+    /// `VerifyRequirementMember`, `explicit_requirement_keyword == false`) as an anonymous feature
+    /// owned by the enclosing declaration, mirroring `Satisfy`'s nested-declaration shape: the
+    /// shorthand `target` is lowered as an authored `ReferenceKind::VerifyRequirementTarget`
+    /// reference, and an optional `:>>` `redefines` target is lowered as an authored
+    /// `ReferenceKind::Redefinition` reference, both sourced at this new declaration. The fuller
+    /// `verify requirement <name> : <Type> { ... }` form (`explicit_requirement_keyword == true`,
+    /// which defines a new anonymous requirement usage inline rather than referencing an existing
+    /// one) is out of scope and reported as an explicit `family` unsupported diagnostic.
+    fn lower_verify_requirement_member(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        node: &Node<VerifyRequirementMember>,
+    ) -> Result<(), ConstructionError> {
+        if node.value.explicit_requirement_keyword {
+            self.push_unsupported(document, family, node.span.clone());
+            return Ok(());
+        }
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::VerifyRequirement,
+            None,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        if let Some(target) = node.value.target {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(target)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::VerifyRequirementTarget,
+                document,
+                local: target,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        if let Some(redefines) = node.value.redefines {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(redefines)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::Redefinition,
+                document,
+                local: redefines,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        Ok(())
+    }
+
     /// Lowers an explicit `perform action <name> : <Type>;` performance usage (BNF `Perform`)
     /// found in a part def/usage or action def/usage body, mirroring `lower_action_usage`'s
     /// shape: ownership, membership, an optional `FeatureTyping`/`Subclassification` reference to
@@ -6448,17 +6769,32 @@ impl SemanticModelBuilder {
                 RequirementDefBodyElement::MetadataAnnotation(node) => {
                     self.lower_metadata_annotation(document, owner, node)?;
                 }
+                // `subject;` shorthand: an entirely empty AST node (`ast::requirement::SubjectRef`
+                // has no fields at all) referencing the case-family subject already established
+                // elsewhere -- nothing to lower, so it is recognized and silently ignored rather
+                // than reported as an unsupported member, mirroring `Doc`/`TextualRep`'s inert
+                // handling above.
+                RequirementDefBodyElement::SubjectRef(_) => {}
+                RequirementDefBodyElement::RequirementActorDecl(actor) => {
+                    self.lower_requirement_actor_decl(document, Some(owner), actor)?;
+                }
+                RequirementDefBodyElement::Stakeholder(stakeholder) => {
+                    self.lower_stakeholder_member(document, Some(owner), stakeholder)?;
+                }
+                RequirementDefBodyElement::Purpose(purpose) => {
+                    self.lower_purpose_member(document, owner, purpose)?;
+                }
+                RequirementDefBodyElement::VerifyRequirement(verify) => {
+                    self.lower_verify_requirement_member(document, owner, unsupported, verify)?;
+                }
+                RequirementDefBodyElement::Frame(frame) => {
+                    self.lower_frame_member(document, owner, unsupported, frame)?;
+                }
                 RequirementDefBodyElement::Other(_)
                 | RequirementDefBodyElement::Annotation(_)
                 | RequirementDefBodyElement::MetadataKeywordUsage(_)
-                | RequirementDefBodyElement::SubjectRef(_)
-                | RequirementDefBodyElement::RequirementActorDecl(_)
-                | RequirementDefBodyElement::Stakeholder(_)
-                | RequirementDefBodyElement::Purpose(_)
                 | RequirementDefBodyElement::VariantUsage(_)
-                | RequirementDefBodyElement::VerifyRequirement(_)
-                | RequirementDefBodyElement::RequireConstraint(_)
-                | RequirementDefBodyElement::Frame(_) => {
+                | RequirementDefBodyElement::RequireConstraint(_) => {
                     self.push_unsupported(document, unsupported, element.span.clone())
                 }
             }
@@ -6968,10 +7304,13 @@ impl SemanticModelBuilder {
                 UseCaseDefBodyElement::ThenIncludeUseCase(node) => {
                     self.lower_include_use_case(document, owner, &node.value.include)?;
                 }
+                // `subject;` shorthand: see the identical-shape `RequirementDefBodyElement::
+                // SubjectRef` handling in `lower_requirement_shaped_body` -- an entirely empty AST
+                // node with nothing to lower, recognized and silently ignored.
+                UseCaseDefBodyElement::SubjectRef(_) => {}
                 UseCaseDefBodyElement::Other(_)
                 | UseCaseDefBodyElement::Annotation(_)
                 | UseCaseDefBodyElement::MetadataKeywordUsage(_)
-                | UseCaseDefBodyElement::SubjectRef(_)
                 | UseCaseDefBodyElement::ActorUsage(_)
                 | UseCaseDefBodyElement::ActorRedefinitionAssignment(_)
                 | UseCaseDefBodyElement::Objective(_)
@@ -11765,6 +12104,195 @@ mod tests {
         assert!(
             output.contains("(qualified-name \"Demo::Inspect::vehicle\"))) (kind subject)"),
             "expected a subject declaration for vehicle, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn requirement_actor_declaration_lowers_and_resolves_its_typing() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def Operator;\n\
+             \trequirement def FlightRequirement {\n\
+             \t\tactor pilot : Operator;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(qualified-name \"Demo::FlightRequirement::pilot\"))) (kind requirement-actor)"
+            ),
+            "expected a requirement-actor declaration for pilot, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::FlightRequirement::pilot\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Operator\")))"
+            ),
+            "expected pilot's typing reference to Operator to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn stakeholder_typed_declaration_lowers_and_resolves_its_typing() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def Driver;\n\
+             \trequirement def SafetyRequirement {\n\
+             \t\tstakeholder driver : Driver;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(qualified-name \"Demo::SafetyRequirement::driver\"))) (kind stakeholder)"
+            ),
+            "expected a stakeholder declaration for driver, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::SafetyRequirement::driver\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Driver\")))"
+            ),
+            "expected driver's typing reference to Driver to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn stakeholder_concern_reference_resolves_through_the_any_domain_lookup() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tconcern modularity;\n\
+             \tviewpoint def SystemView {\n\
+             \t\tstakeholder modularity;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind stakeholderTarget)"),
+            "expected a stakeholderTarget reference, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::modularity\")))"
+            ),
+            "expected the stakeholder concern reference to resolve to modularity, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn stakeholder_redefinition_resolves_through_the_redefinition_reference_kind() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tconcern modularity;\n\
+             \tviewpoint def SystemView {\n\
+             \t\tstakeholder :>> modularity;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (anonymous (kind stakeholder) (ordinal 0))))"
+            ),
+            "expected a redefinition reference sourced at the anonymous stakeholder declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::modularity\")))"
+            ),
+            "expected the stakeholder redefinition to resolve to modularity, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn purpose_member_resolves_its_concern_target() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tconcern modularity;\n\
+             \tviewpoint def SystemView {\n\
+             \t\tpurpose modularity;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind purposeTarget)"),
+            "expected a purposeTarget reference, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::modularity\")))"
+            ),
+            "expected the purpose reference to resolve to modularity, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn frame_member_recurses_into_its_nested_body_content() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def Driver;\n\
+             \trequirement def SafetyRequirement {\n\
+             \t\tframe concernFraming {\n\
+             \t\t\tstakeholder driver : Driver;\n\
+             \t\t}\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(qualified-name \"Demo::SafetyRequirement::concernFraming\"))) (kind frame)"
+            ),
+            "expected a frame declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(qualified-name \"Demo::SafetyRequirement::concernFraming::driver\"))) (kind stakeholder)"
+            ),
+            "expected the nested stakeholder to lower under the frame, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::SafetyRequirement::concernFraming::driver\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Driver\")))"
+            ),
+            "expected the nested stakeholder's typing reference to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn verify_requirement_shorthand_resolves_its_target() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \trequirement speedRequirement;\n\
+             \trequirement def CheckSpeed {\n\
+             \t\tverify speedRequirement;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind verify-requirement)"),
+            "expected a verify-requirement declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains("(kind verifyRequirementTarget)"),
+            "expected a verifyRequirementTarget reference, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::speedRequirement\")))"
+            ),
+            "expected the verify target to resolve to speedRequirement, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn subject_ref_shorthand_is_recognized_and_ignored() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tviewpoint def SystemView {\n\
+             \t\tsubject;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            !output.contains("unsupported_requirement_definition_member"),
+            "expected the bare `subject;` shorthand not to be reported as unsupported, got:\n{output}"
         );
     }
 

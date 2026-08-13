@@ -809,6 +809,9 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::TerminateTarget
                     | ReferenceKind::FlowSource
                     | ReferenceKind::FlowTarget
+                    | ReferenceKind::StakeholderTarget
+                    | ReferenceKind::PurposeTarget
+                    | ReferenceKind::VerifyRequirementTarget
             )
             .then_some(index)
         })
@@ -1740,7 +1743,10 @@ fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<D
         | ReferenceKind::TerminateTarget
         | ReferenceKind::FlowSource
         | ReferenceKind::FlowTarget
-        | ReferenceKind::TypeCheckTarget => None,
+        | ReferenceKind::TypeCheckTarget
+        | ReferenceKind::StakeholderTarget
+        | ReferenceKind::PurposeTarget
+        | ReferenceKind::VerifyRequirementTarget => None,
     }
 }
 
@@ -1934,7 +1940,10 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::TerminateTarget
             | ReferenceKind::FlowSource
             | ReferenceKind::FlowTarget
-            | ReferenceKind::TypeCheckTarget => {}
+            | ReferenceKind::TypeCheckTarget
+            | ReferenceKind::StakeholderTarget
+            | ReferenceKind::PurposeTarget
+            | ReferenceKind::VerifyRequirementTarget => {}
         }
     }
     Ok((
