@@ -679,6 +679,9 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::AttributeUsage => "attribute",
         DeclarationKind::Import => "import",
         DeclarationKind::Alias => "alias",
+        DeclarationKind::EnumerationDefinition => "enum-def",
+        DeclarationKind::EnumerationUsage => "enum",
+        DeclarationKind::EnumerationLiteral => "enum-literal",
     }
 }
 

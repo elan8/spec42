@@ -1170,6 +1170,7 @@ impl DeclarationDomain {
                 kind,
                 DeclarationKind::PartDefinition
                     | DeclarationKind::AttributeDefinition
+                    | DeclarationKind::EnumerationDefinition
                     | DeclarationKind::Alias
             ),
         }
@@ -2128,6 +2129,105 @@ mod tests {
         fixture.memberships = memberships.into_boxed_slice();
         let (_, _, resolution) = resolve_fixture(&fixture);
         assert!(resolution.implied_relationships.is_empty());
+    }
+
+    #[test]
+    fn qualified_reference_resolves_to_an_enum_defs_owned_literal_member() {
+        // `enum def StatusKind { enum approved; }` -- StatusKind::approved is looked up through
+        // exactly the same generic multi-segment lexical lookup as any other owned member; no
+        // enum-specific resolver code is needed once EnumerationDefinition/EnumerationLiteral are
+        // lowered as ordinary owned declarations.
+        let mut symbols = SymbolTableBuilder::default();
+        let demo_name = symbols.intern("Demo").unwrap();
+        let status_kind_name = symbols.intern("StatusKind").unwrap();
+        let approved_name = symbols.intern("approved").unwrap();
+        let alias_name = symbols.intern("aliasToApproved").unwrap();
+        let mut paths = SymbolPathArenaBuilder::default();
+        let qualified_path = paths
+            .push(&[status_kind_name, approved_name], false)
+            .unwrap();
+
+        let demo = DeclarationId(0);
+        let status_kind = DeclarationId(1);
+        let approved = DeclarationId(2);
+        let alias = DeclarationId(3);
+        let declarations = vec![
+            declaration(
+                DocumentId(0),
+                None,
+                Some(demo_name),
+                DeclarationKind::Package,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(demo),
+                Some(status_kind_name),
+                DeclarationKind::EnumerationDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(status_kind),
+                Some(approved_name),
+                DeclarationKind::EnumerationLiteral,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(demo),
+                Some(alias_name),
+                DeclarationKind::Alias,
+            ),
+        ];
+        let memberships = declarations
+            .iter()
+            .enumerate()
+            .map(|(index, declaration)| {
+                let member = DeclarationId::from_index(index).unwrap();
+                let kind = match declaration.kind {
+                    DeclarationKind::EnumerationLiteral => MembershipKind::Feature,
+                    DeclarationKind::Alias => MembershipKind::Alias,
+                    _ => MembershipKind::Owning,
+                };
+                // Interior/final segments of a multi-segment qualified name are looked up through
+                // the exported-names index (`build_effective_import_indexes`'s sibling,
+                // `build_direct_name_index(.., Some(&memberships))`), which only admits publicly
+                // visible members -- the same rule every other owned-member kind is subject to, not
+                // an enum-specific one. Publicize the literal explicitly here to exercise that
+                // generic path rather than asserting anything enum-specific about visibility
+                // defaults.
+                let visibility = if declaration.kind == DeclarationKind::EnumerationLiteral {
+                    Visibility::Public
+                } else {
+                    Visibility::Default
+                };
+                MembershipRecord {
+                    member,
+                    kind,
+                    visibility,
+                    span: Span::dummy(),
+                }
+            })
+            .collect::<Vec<_>>()
+            .into_boxed_slice();
+        let references = vec![reference(
+            alias,
+            ReferenceKind::AliasBinding,
+            qualified_path,
+            false,
+        )];
+        let _symbols = symbols.freeze();
+        let fixture = ResolverFixture {
+            declarations: declarations.into_boxed_slice(),
+            memberships,
+            paths: paths.freeze(),
+            references: references.into_boxed_slice(),
+        };
+
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(0)),
+            Some(ResolutionStatus::Resolved(approved))
+        );
     }
 
     #[test]

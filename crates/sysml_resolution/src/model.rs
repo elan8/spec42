@@ -14,12 +14,13 @@ use std::{
 use hashbrown::HashTable;
 use sysml_v2_parser_next::{
     ast::{
-        AliasDef, AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, Import,
-        ImportShape, LibraryPackage, Membership, MembershipKind as ParserMembershipKind,
-        NamespaceDecl, Node, Package, PackageBody, PackageBodyElement, PartDef, PartDefBody,
-        PartDefBodyElement, PartUsage, PartUsageBody, PartUsageBodyElement,
-        QualifiedIdentification, QualifiedReferenceId, RootElement, Span, SubsettingKind,
-        SubsettingRelationship, Visibility as ParserVisibility,
+        AliasDef, AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, EnumDef,
+        EnumerationBody, EnumerationUsage as ParserEnumerationUsage, Import, ImportShape,
+        LibraryPackage, Membership, MembershipKind as ParserMembershipKind, NamespaceDecl, Node,
+        Package, PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement,
+        PartUsage, PartUsageBody, PartUsageBodyElement, QualifiedIdentification,
+        QualifiedReferenceId, RootElement, Span, SubsettingKind, SubsettingRelationship,
+        Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
 };
@@ -68,6 +69,17 @@ enum DeclarationKind {
     PartUsage,
     AttributeDefinition,
     AttributeUsage,
+    /// `enum def` (BNF EnumerationDefinition): a type whose owned members are enumeration
+    /// literals. Mirrors PartDefinition/AttributeDefinition lowering.
+    EnumerationDefinition,
+    /// A package/definition/usage-level `enum` feature member (BNF EnumerationUsage), e.g.
+    /// `enum color : ColorKind;`. Distinct from `EnumerationLiteral`, which is a value owned
+    /// directly by an `enum def` body.
+    EnumerationUsage,
+    /// One `enum <name>;` (or bare `<name>;`) value owned by an `enum def` body (BNF
+    /// EnumeratedValue). Each literal gets its own declaration/qualified name, analogous to how
+    /// attribute/part usages become owned members.
+    EnumerationLiteral,
     Import,
     Alias,
 }
@@ -625,6 +637,10 @@ impl SemanticModelBuilder {
             PackageBodyElement::AttributeDef(node) => {
                 self.lower_attribute_def(document, owner, node)?
             }
+            PackageBodyElement::EnumDef(node) => self.lower_enum_def(document, owner, node)?,
+            PackageBodyElement::EnumerationUsage(node) => {
+                self.lower_enum_usage(document, owner, node)?
+            }
             PackageBodyElement::ActionDef(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -736,11 +752,6 @@ impl SemanticModelBuilder {
                 node.span.clone(),
             ),
             PackageBodyElement::MetadataUsage(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
-            PackageBodyElement::EnumDef(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
@@ -866,11 +877,6 @@ impl SemanticModelBuilder {
                 node.span.clone(),
             ),
             PackageBodyElement::Ref(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
-            PackageBodyElement::EnumerationUsage(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
@@ -1021,6 +1027,12 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::Import(import) => {
                         self.lower_import(document, Some(declaration), import)?;
                     }
+                    PartDefBodyElement::EnumDef(enum_def) => {
+                        self.lower_enum_def(document, Some(declaration), enum_def)?;
+                    }
+                    PartDefBodyElement::EnumerationUsage(enum_usage) => {
+                        self.lower_enum_usage(document, Some(declaration), enum_usage)?;
+                    }
                     PartDefBodyElement::Doc(_) | PartDefBodyElement::Comment(_) => {}
                     PartDefBodyElement::Annotation(_)
                     | PartDefBodyElement::MetadataAnnotation(_)
@@ -1048,7 +1060,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::ActionUsage(_)
                     | PartDefBodyElement::ActionDef(_)
                     | PartDefBodyElement::StateUsage(_)
-                    | PartDefBodyElement::EnumerationUsage(_)
                     | PartDefBodyElement::AssertConstraint(_)
                     | PartDefBodyElement::Satisfy(_)
                     | PartDefBodyElement::VariantUsage(_)
@@ -1061,7 +1072,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::ConnectionDef(_)
                     | PartDefBodyElement::PortDef(_)
                     | PartDefBodyElement::CalcDef(_)
-                    | PartDefBodyElement::EnumDef(_)
                     | PartDefBodyElement::AllocationDef(_)
                     | PartDefBodyElement::AllocationUsage(_)
                     | PartDefBodyElement::ViewDef(_)
@@ -1143,10 +1153,15 @@ impl SemanticModelBuilder {
                     PartUsageBodyElement::Import(import) => {
                         self.lower_import(document, Some(declaration), import)?;
                     }
+                    PartUsageBodyElement::EnumDef(enum_def) => {
+                        self.lower_enum_def(document, Some(declaration), enum_def)?;
+                    }
+                    PartUsageBodyElement::EnumerationUsage(enum_usage) => {
+                        self.lower_enum_usage(document, Some(declaration), enum_usage)?;
+                    }
                     PartUsageBodyElement::Doc(_) => {}
                     PartUsageBodyElement::Annotation(_)
                     | PartUsageBodyElement::DefaultReferenceUsage(_)
-                    | PartUsageBodyElement::EnumerationUsage(_)
                     | PartUsageBodyElement::OccurrenceUsage(_)
                     | PartUsageBodyElement::PortUsage(_)
                     | PartUsageBodyElement::Bind(_)
@@ -1171,7 +1186,6 @@ impl SemanticModelBuilder {
                     | PartUsageBodyElement::PortDef(_)
                     | PartUsageBodyElement::CalcDef(_)
                     | PartUsageBodyElement::ConnectionDef(_)
-                    | PartUsageBodyElement::EnumDef(_)
                     | PartUsageBodyElement::Connection(_)
                     | PartUsageBodyElement::AssertConstraint(_)
                     | PartUsageBodyElement::ConstraintDef(_)
@@ -1306,6 +1320,124 @@ impl SemanticModelBuilder {
                     element.span.clone(),
                 ),
             }
+        }
+        Ok(())
+    }
+
+    /// Lowers an `enum def` (BNF EnumerationDefinition), mirroring `lower_part_def`: ownership,
+    /// membership, an optional `:>`/`:` specialization relationship (an enum def may specialize
+    /// another enum def or an attribute def), and each owned enumeration literal as its own typed
+    /// declaration.
+    fn lower_enum_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<EnumDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::EnumerationDefinition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        if let EnumerationBody::Brace { values } = &node.value.body {
+            for value in values {
+                self.lower_enumerated_value(document, declaration, value)?;
+            }
+        }
+        Ok(())
+    }
+
+    /// Lowers one `enum <name>;` value owned by an `enum def` body (BNF EnumeratedValue) into its
+    /// own declaration. Any inline body / `= expr` initializer is discarded by the parser itself
+    /// (only the name and its span survive), so there is no nested body to lower here.
+    fn lower_enumerated_value(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        node: &Node<sysml_v2_parser_next::ast::EnumeratedValue>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::EnumerationLiteral,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )
+    }
+
+    /// Lowers a package/definition/usage-level `enum` feature member (BNF EnumerationUsage), e.g.
+    /// `enum color : ColorKind;`, mirroring `lower_attribute_usage`. `type_name` is a bare
+    /// `QualifiedReferenceId` (not a `TypingRelationship` node), so its `FeatureTyping` reference
+    /// is pushed directly rather than through `lower_typing_relationship`.
+    fn lower_enum_usage(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ParserEnumerationUsage>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::EnumerationUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(type_name) = node.value.type_name {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
         }
         Ok(())
     }
@@ -1857,6 +1989,82 @@ mod tests {
         assert_eq!(
             builder.declarations[second.index()].anonymous_ordinal,
             Some(1)
+        );
+    }
+
+    fn build_semantic_sexpr(source: &str) -> String {
+        let request = crate::BuildRequest::new(
+            vec![crate::SourceInput::new(
+                "memory://test/enum.sysml",
+                source.to_string(),
+                crate::SourceKind::Workspace,
+            )],
+            crate::ConstructionSchedule::Sequential,
+            "test-contract-v1",
+        )
+        .unwrap();
+        let published = crate::build(request).unwrap();
+        let mut output = String::new();
+        published.debug().write_semantic_sexpr(&mut output).unwrap();
+        output
+    }
+
+    #[test]
+    fn enum_def_lowers_to_a_declaration_with_its_literal_as_an_owned_member() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tenum def StatusKind {\n\
+             \t\tenum approved;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::StatusKind\"))) (kind enum-def)"),
+            "expected an enum-def declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(qualified-name \"Demo::StatusKind::approved\"))) (kind enum-literal)"
+            ),
+            "expected an owned enum-literal declaration with its own qualified name, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn attribute_typed_by_an_enum_def_resolves_its_feature_typing_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tenum def StatusKind {\n\
+             \t\tenum approved;\n\
+             \t}\n\
+             \tattribute def Holder {\n\
+             \t\tattribute status : StatusKind;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind featureTyping) (ordinal 0))\n      (authored-target \"StatusKind\")\n      (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::StatusKind\"))))"
+            ),
+            "expected the attribute's featureTyping reference to StatusKind to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn enum_def_specializing_another_enum_def_resolves_its_subclassification_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tenum def Base {\n\
+             \t\tenum on;\n\
+             \t}\n\
+             \tenum def Derived :> Base;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected Derived's specialization of Base to resolve, got:\n{output}"
         );
     }
 

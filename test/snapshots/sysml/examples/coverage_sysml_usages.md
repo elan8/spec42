@@ -51,12 +51,6 @@ part def Vehicle {
   (document "memory://snapshot/coverage_sysml_usages.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 5 0) (end 5 73))
-      )
-      (diagnostic
         (severity error)
         (code "unexpected_keyword_in_scope")
         (source "parser")
@@ -73,12 +67,6 @@ part def Vehicle {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 13 27) (end 13 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_definition_member")
-        (source "semantic")
-        (range (start 15 4) (end 15 23))
       )
       (diagnostic
         (severity warning)
@@ -176,8 +164,10 @@ part def Vehicle {
     (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Color"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "DataPort"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Engine"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Priority"))) (kind enum-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Sensor"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::color"))) (kind enum) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Color"))))
     (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Integer"))))
     (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::refAttr"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Integer"))))
     (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::refPart"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Engine"))))
@@ -185,6 +175,9 @@ part def Vehicle {
     (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Widget"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::color"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Color")
+      (outcome (status resolved) (target (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Color")))))
     (reference (id (source (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::mass"))) (kind featureTyping) (ordinal 0))
       (authored-target "Integer")
       (outcome (status unresolved)))
@@ -199,6 +192,7 @@ part def Vehicle {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::color"))) (target (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Color"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::color"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::refPart"))) (target (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::refPart"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
@@ -208,6 +202,10 @@ part def Vehicle {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/coverage_sysml_usages.md") (range (start 15 17) (end 15 22)) (probe (position 15 17))
+    (reference (id (source (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::color"))) (kind featureTyping) (ordinal 0) (authored-target "Color")
+      (outcome (status resolved) (target (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Color")))))
+  )
   (query (document "memory://snapshot/coverage_sysml_usages.md") (range (start 12 21) (end 12 28)) (probe (position 12 21))
     (reference (id (source (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::mass"))) (kind featureTyping) (ordinal 0) (authored-target "Integer")
       (outcome (status unresolved)))

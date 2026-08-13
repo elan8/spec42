@@ -61,9 +61,9 @@ package MetadataTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_specializes_reference")
         (source "semantic")
-        (range (start 5 12) (end 9 3))
+        (range (start 5 44) (end 5 65))
       )
       (diagnostic
         (severity warning)
@@ -119,11 +119,15 @@ package MetadataTest {
     (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/metadata_test.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "User Defined Extensions") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions"))) (kind library-package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel"))) (kind enum-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "ScalarValues::Natural"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/metadata_test.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
       (authored-target "User Defined Extensions")
       (outcome (status resolved) (target (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions")))))
+    (reference (id (source (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel"))) (kind specialization) (ordinal 0))
+      (authored-target "ScalarValues::Natural")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -137,6 +141,10 @@ package MetadataTest {
   (query (document "memory://snapshot/metadata_test.md") (range (start 1 16) (end 1 44)) (probe (position 1 16))
     (reference (id (source (node (document "memory://snapshot/metadata_test.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "User Defined Extensions")
       (outcome (status resolved) (target (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions")))))
+  )
+  (query (document "memory://snapshot/metadata_test.md") (range (start 5 44) (end 5 65)) (probe (position 5 44))
+    (reference (id (source (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel"))) (kind specialization) (ordinal 0) (authored-target "ScalarValues::Natural")
+      (outcome (status unresolved)))
   )
 )
 ~~~

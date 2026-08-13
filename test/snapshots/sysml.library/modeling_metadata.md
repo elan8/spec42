@@ -176,12 +176,6 @@ standard library package ModelingMetadata {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 10 1) (end 57 2))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
         (range (start 59 1) (end 92 2))
       )
       (diagnostic
@@ -215,6 +209,13 @@ standard library package ModelingMetadata {
     (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::Anything") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::String") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "RiskMetadata::Risk") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::StatusKind"))) (kind enum-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::StatusKind::closed"))) (kind enum-literal) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::StatusKind::done"))) (kind enum-literal) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::StatusKind::open"))) (kind enum-literal) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::StatusKind::tbc"))) (kind enum-literal) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::StatusKind::tbd"))) (kind enum-literal) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::StatusKind::tbr"))) (kind enum-literal) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/modeling_metadata.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))

@@ -45,12 +45,6 @@ part def Outer {
         (severity warning)
         (code "unsupported_part_definition_member")
         (source "semantic")
-        (range (start 2 4) (end 2 54))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_definition_member")
-        (source "semantic")
         (range (start 3 4) (end 3 35))
       )
       (diagnostic
@@ -76,12 +70,6 @@ part def Outer {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 9 18) (end 9 25))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_definition_member")
-        (source "semantic")
-        (range (start 10 4) (end 10 23))
       )
       (diagnostic
         (severity warning)
@@ -148,11 +136,16 @@ part def Outer {
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::InnerAttr"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::InnerEnum"))) (kind enum-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::InnerPart"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::e"))) (kind enum) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "InnerEnum"))))
     (declaration (id (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::p1"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "InnerPart"))))
     (declaration (id (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::x"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Integer"))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::e"))) (kind featureTyping) (ordinal 0))
+      (authored-target "InnerEnum")
+      (outcome (status resolved) (target (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::InnerEnum")))))
     (reference (id (source (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::p1"))) (kind featureTyping) (ordinal 0))
       (authored-target "InnerPart")
       (outcome (status resolved) (target (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::InnerPart")))))
@@ -161,6 +154,7 @@ part def Outer {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::e"))) (target (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::InnerEnum"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::e"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::p1"))) (target (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::InnerPart"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::p1"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
@@ -170,6 +164,10 @@ part def Outer {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/coverage_sysml_body_members.md") (range (start 10 13) (end 10 22)) (probe (position 10 13))
+    (reference (id (source (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::e"))) (kind featureTyping) (ordinal 0) (authored-target "InnerEnum")
+      (outcome (status resolved) (target (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::InnerEnum")))))
+  )
   (query (document "memory://snapshot/coverage_sysml_body_members.md") (range (start 14 14) (end 14 23)) (probe (position 14 14))
     (reference (id (source (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::p1"))) (kind featureTyping) (ordinal 0) (authored-target "InnerPart")
       (outcome (status resolved) (target (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::InnerPart")))))
