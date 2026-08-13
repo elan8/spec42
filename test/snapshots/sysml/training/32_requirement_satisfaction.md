@@ -76,9 +76,9 @@ package 'Requirement Satisfaction' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
+        (code "unsupported_reference")
         (source "semantic")
-        (range (start 12 3) (end 12 23))
+        (range (start 12 12) (end 12 22))
       )
       (diagnostic
         (severity warning)
@@ -119,6 +119,7 @@ package 'Requirement Satisfaction' {
     (declaration (id (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::vehicle_c1"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
     (declaration (id (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Engine"))))
+    (declaration (id (node (document "memory://snapshot/32_requirement_satisfaction.md") (anonymous (kind port) (ordinal 0))))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "clutchPort"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/32_requirement_satisfaction.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
@@ -133,6 +134,9 @@ package 'Requirement Satisfaction' {
     (reference (id (source (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1"))) (kind featureTyping) (ordinal 0))
       (authored-target "Engine")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/32_requirement_satisfaction.md") (anonymous (kind port) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "clutchPort")
+      (outcome (status unsupported)))
   )
   (relationships
   )
@@ -158,6 +162,10 @@ package 'Requirement Satisfaction' {
   (query (document "memory://snapshot/32_requirement_satisfaction.md") (range (start 11 18) (end 11 24)) (probe (position 11 18))
     (reference (id (source (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1"))) (kind featureTyping) (ordinal 0) (authored-target "Engine")
       (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/32_requirement_satisfaction.md") (range (start 12 12) (end 12 22)) (probe (position 12 12))
+    (reference (id (source (node (document "memory://snapshot/32_requirement_satisfaction.md") (anonymous (kind port) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "clutchPort")
+      (outcome (status unsupported)))
   )
 )
 ~~~

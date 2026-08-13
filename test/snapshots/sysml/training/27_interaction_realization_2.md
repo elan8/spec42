@@ -107,9 +107,9 @@ package 'Interaction Realization-2' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
+        (code "unsupported_port_usage_member")
         (source "semantic")
-        (range (start 4 2) (end 6 3))
+        (range (start 5 3) (end 5 27))
       )
       (diagnostic
         (severity warning)
@@ -131,9 +131,9 @@ package 'Interaction Realization-2' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
+        (code "unsupported_port_usage_member")
         (source "semantic")
-        (range (start 15 2) (end 17 3))
+        (range (start 16 3) (end 16 26))
       )
       (diagnostic
         (severity warning)
@@ -149,21 +149,21 @@ package 'Interaction Realization-2' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
+        (code "unsupported_port_usage_member")
         (source "semantic")
-        (range (start 22 3) (end 24 4))
+        (range (start 23 4) (end 23 27))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
+        (code "unsupported_port_usage_member")
         (source "semantic")
-        (range (start 25 3) (end 27 4))
+        (range (start 26 4) (end 26 33))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
+        (code "unsupported_port_usage_member")
         (source "semantic")
-        (range (start 28 3) (end 30 4))
+        (range (start 29 4) (end 29 34))
       )
       (diagnostic
         (severity warning)
@@ -179,9 +179,9 @@ package 'Interaction Realization-2' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
+        (code "unsupported_port_usage_member")
         (source "semantic")
-        (range (start 37 3) (end 39 4))
+        (range (start 38 4) (end 38 34))
       )
       (diagnostic
         (severity warning)
@@ -197,9 +197,9 @@ package 'Interaction Realization-2' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
+        (code "unsupported_port_usage_member")
         (source "semantic")
-        (range (start 46 3) (end 48 4))
+        (range (start 47 4) (end 47 33))
       )
       (diagnostic
         (severity warning)
@@ -255,10 +255,17 @@ package 'Interaction Realization-2' {
     (declaration (id (node (document "memory://snapshot/27_interaction_realization_2.md") (qualified-name "Interaction Realization-2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_interaction_realization_2.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Interaction Example-1") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/27_interaction_realization_2.md") (qualified-name "Interaction Realization-2::driver_b"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Driver"))))
+    (declaration (id (node (document "memory://snapshot/27_interaction_realization_2.md") (qualified-name "Interaction Realization-2::driver_b::setSpeedPort"))) (kind port) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_interaction_realization_2.md") (qualified-name "Interaction Realization-2::vehicle_b"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
     (declaration (id (node (document "memory://snapshot/27_interaction_realization_2.md") (qualified-name "Interaction Realization-2::vehicle_b::cruiseController_b"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "CruiseController"))))
+    (declaration (id (node (document "memory://snapshot/27_interaction_realization_2.md") (qualified-name "Interaction Realization-2::vehicle_b::cruiseController_b::fuelCommandPort"))) (kind port) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/27_interaction_realization_2.md") (qualified-name "Interaction Realization-2::vehicle_b::cruiseController_b::sensedSpeedPort"))) (kind port) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/27_interaction_realization_2.md") (qualified-name "Interaction Realization-2::vehicle_b::cruiseController_b::setSpeedPort"))) (kind port) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_interaction_realization_2.md") (qualified-name "Interaction Realization-2::vehicle_b::engine_b"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Engine"))))
+    (declaration (id (node (document "memory://snapshot/27_interaction_realization_2.md") (qualified-name "Interaction Realization-2::vehicle_b::engine_b::fuelCommandPort"))) (kind port) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/27_interaction_realization_2.md") (qualified-name "Interaction Realization-2::vehicle_b::setSpeedPort"))) (kind port) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_interaction_realization_2.md") (qualified-name "Interaction Realization-2::vehicle_b::speedometer_b"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Speedometer"))))
+    (declaration (id (node (document "memory://snapshot/27_interaction_realization_2.md") (qualified-name "Interaction Realization-2::vehicle_b::speedometer_b::sensedSpeedPort"))) (kind port) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/27_interaction_realization_2.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))

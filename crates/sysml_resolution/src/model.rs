@@ -18,7 +18,8 @@ use sysml_v2_parser_next::{
         EnumerationBody, EnumerationUsage as ParserEnumerationUsage, Import, ImportShape,
         LibraryPackage, Membership, MembershipKind as ParserMembershipKind, NamespaceDecl, Node,
         Package, PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement,
-        PartUsage, PartUsageBody, PartUsageBodyElement, QualifiedIdentification,
+        PartUsage, PartUsageBody, PartUsageBodyElement, PortBody, PortBodyElement, PortDef,
+        PortDefBody, PortDefBodyElement, PortUsage as ParserPortUsage, QualifiedIdentification,
         QualifiedReferenceId, RequirementDef, RequirementDefBody, RequirementDefBodyElement,
         RequirementUsage as ParserRequirementUsage, RootElement, Span, SubsettingKind,
         SubsettingRelationship, Visibility as ParserVisibility,
@@ -89,6 +90,17 @@ enum DeclarationKind {
     /// A package/definition/usage-level `requirement` feature member (BNF RequirementUsage), e.g.
     /// `requirement r : SomeReq;`. Mirrors PartUsage lowering.
     RequirementUsage,
+    /// `port def` (BNF PortDefinition): a type whose owned members are attribute/enum/nested-port
+    /// usages, mirroring PartDefinition lowering. Port-specific semantics (interface/flow
+    /// binding, conformance, connector-end validation) are out of scope here; only ownership,
+    /// specialization, and owned-member structure are lowered.
+    PortDefinition,
+    /// A package/definition/usage-level `port` feature member (BNF PortUsage), e.g.
+    /// `port source : ~InputPort;`. Mirrors PartUsage lowering. Its `:`/`:>` typing target may be
+    /// conjugated (a leading `~`, e.g. `~InputPort`); the conjugation polarity is carried as an
+    /// explicit `RelationshipFlags::conjugated` fact on the FeatureTyping/Subclassification
+    /// reference rather than folded into the reference target itself.
+    PortUsage,
     Import,
     Alias,
 }
@@ -162,6 +174,8 @@ enum UnsupportedFamily {
     PartUsageMember,
     AttributeMember,
     RequirementDefinitionMember,
+    PortDefinitionMember,
+    PortUsageMember,
     ParserUnsupported,
 }
 
@@ -633,11 +647,7 @@ impl SemanticModelBuilder {
             PackageBodyElement::AttributeUsage(node) => {
                 self.lower_attribute_usage(document, owner, node)?
             }
-            PackageBodyElement::PortDef(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::PortDef(node) => self.lower_port_def(document, owner, node)?,
             PackageBodyElement::InterfaceDef(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -867,11 +877,7 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::PortUsage(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::PortUsage(node) => self.lower_port_usage(document, owner, node)?,
             PackageBodyElement::ConnectionUsage(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -1049,6 +1055,12 @@ impl SemanticModelBuilder {
                             requirement_usage,
                         )?;
                     }
+                    PartDefBodyElement::PortDef(port_def) => {
+                        self.lower_port_def(document, Some(declaration), port_def)?;
+                    }
+                    PartDefBodyElement::PortUsage(port_usage) => {
+                        self.lower_port_usage(document, Some(declaration), port_usage)?;
+                    }
                     PartDefBodyElement::Doc(_) | PartDefBodyElement::Comment(_) => {}
                     PartDefBodyElement::Annotation(_)
                     | PartDefBodyElement::MetadataAnnotation(_)
@@ -1059,7 +1071,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::ItemDef(_)
                     | PartDefBodyElement::ItemUsage(_)
                     | PartDefBodyElement::Ref(_)
-                    | PartDefBodyElement::PortUsage(_)
                     | PartDefBodyElement::OccurrenceUsage(_)
                     | PartDefBodyElement::InterfaceDef(_)
                     | PartDefBodyElement::InterfaceUsage(_)
@@ -1084,7 +1095,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::FlowDef(_)
                     | PartDefBodyElement::OccurrenceDef(_)
                     | PartDefBodyElement::ConnectionDef(_)
-                    | PartDefBodyElement::PortDef(_)
                     | PartDefBodyElement::CalcDef(_)
                     | PartDefBodyElement::AllocationDef(_)
                     | PartDefBodyElement::AllocationUsage(_)
@@ -1183,11 +1193,16 @@ impl SemanticModelBuilder {
                             requirement_usage,
                         )?;
                     }
+                    PartUsageBodyElement::PortDef(port_def) => {
+                        self.lower_port_def(document, Some(declaration), port_def)?;
+                    }
+                    PartUsageBodyElement::PortUsage(port_usage) => {
+                        self.lower_port_usage(document, Some(declaration), port_usage)?;
+                    }
                     PartUsageBodyElement::Doc(_) => {}
                     PartUsageBodyElement::Annotation(_)
                     | PartUsageBodyElement::DefaultReferenceUsage(_)
                     | PartUsageBodyElement::OccurrenceUsage(_)
-                    | PartUsageBodyElement::PortUsage(_)
                     | PartUsageBodyElement::Bind(_)
                     | PartUsageBodyElement::Ref(_)
                     | PartUsageBodyElement::InterfaceUsage(_)
@@ -1206,7 +1221,6 @@ impl SemanticModelBuilder {
                     | PartUsageBodyElement::MetadataDef(_)
                     | PartUsageBodyElement::FlowDef(_)
                     | PartUsageBodyElement::OccurrenceDef(_)
-                    | PartUsageBodyElement::PortDef(_)
                     | PartUsageBodyElement::CalcDef(_)
                     | PartUsageBodyElement::ConnectionDef(_)
                     | PartUsageBodyElement::Connection(_)
@@ -1609,6 +1623,151 @@ impl SemanticModelBuilder {
                     UnsupportedFamily::RequirementDefinitionMember,
                     element.span.clone(),
                 ),
+            }
+        }
+        Ok(())
+    }
+
+    /// Lowers a `port def` (BNF PortDefinition), mirroring `lower_part_def`: ownership,
+    /// membership, an optional `:>` specialization relationship (participates in the shared
+    /// Subclassification/FeatureTyping lexical lookup fixed point, see `DeclarationDomain::Type`
+    /// in resolver.rs), and owned attribute/enum/nested-port members. Port-specific semantics
+    /// (interface/flow binding, port conformance, connector-end validation) are explicitly out of
+    /// scope; unrecognized body elements fall through to `unsupported_port_definition_member`.
+    fn lower_port_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<PortDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::PortDefinition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        if let PortDefBody::Brace { elements } = &node.value.body {
+            for element in elements {
+                match &element.value {
+                    PortDefBodyElement::Error(error) => {
+                        self.push_recovery(document, error.span.clone());
+                    }
+                    PortDefBodyElement::AttributeDef(attribute) => {
+                        self.lower_attribute_def(document, Some(declaration), attribute)?;
+                    }
+                    PortDefBodyElement::AttributeUsage(attribute) => {
+                        self.lower_attribute_usage(document, Some(declaration), attribute)?;
+                    }
+                    PortDefBodyElement::EnumerationUsage(enum_usage) => {
+                        self.lower_enum_usage(document, Some(declaration), enum_usage)?;
+                    }
+                    PortDefBodyElement::PortUsage(port_usage) => {
+                        self.lower_port_usage(document, Some(declaration), port_usage)?;
+                    }
+                    PortDefBodyElement::Doc(_) => {}
+                    PortDefBodyElement::InOutDecl(_)
+                    | PortDefBodyElement::ItemDef(_)
+                    | PortDefBodyElement::ItemUsage(_)
+                    | PortDefBodyElement::Other(_) => self.push_unsupported(
+                        document,
+                        UnsupportedFamily::PortDefinitionMember,
+                        element.span.clone(),
+                    ),
+                }
+            }
+        }
+        Ok(())
+    }
+
+    /// Lowers a package/definition/usage-level `port` feature member (BNF PortUsage), mirroring
+    /// `lower_part_usage`: ownership, membership, an optional `:`/`:>` typing/subclassification
+    /// relationship (whose target may be conjugated, e.g. `port source : ~InputPort;` -- the
+    /// polarity is carried as an explicit `RelationshipFlags::conjugated` fact via
+    /// `lower_typing_relationship`, never folded into the reference target), `subsets`/
+    /// `redefines`/`references`/`crosses`/`intersects` subsetting relationships, and owned
+    /// attribute/nested-port members.
+    fn lower_port_usage(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ParserPortUsage>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::PortUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.typing {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        if let Some((relationship, _)) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.references {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.crosses {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.intersects {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let PortBody::Brace { elements } = &node.value.body {
+            for element in elements {
+                match &element.value {
+                    PortBodyElement::Error(error) => {
+                        self.push_recovery(document, error.span.clone());
+                    }
+                    PortBodyElement::AttributeUsage(attribute) => {
+                        self.lower_attribute_usage(document, Some(declaration), attribute)?;
+                    }
+                    PortBodyElement::PortUsage(port_usage) => {
+                        self.lower_port_usage(document, Some(declaration), port_usage)?;
+                    }
+                    PortBodyElement::Doc(_) => {}
+                    PortBodyElement::InOutDecl(_) | PortBodyElement::ItemUsage(_) => self
+                        .push_unsupported(
+                            document,
+                            UnsupportedFamily::PortUsageMember,
+                            element.span.clone(),
+                        ),
+                }
             }
         }
         Ok(())
@@ -2291,6 +2450,89 @@ mod tests {
                 "(kind featureTyping) (ordinal 0))\n      (authored-target \"MassRequirement\")\n      (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::MassRequirement\"))))"
             ),
             "expected the requirement usage's featureTyping reference to MassRequirement to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn port_def_lowers_to_a_declaration() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tport def InputPort {\n\
+             \t\tattribute level : Real;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::InputPort\"))) (kind port-def)"),
+            "expected a port-def declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::InputPort::level\"))) (kind attribute)"),
+            "expected an owned attribute declaration under the port def, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn port_def_specializing_another_port_def_resolves_its_specialization_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tport def Base;\n\
+             \tport def Derived :> Base;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn conjugated_port_usage_typing_reference_resolves_and_carries_the_conjugated_flag() {
+        // `port p : ~Base;` nested inside a `part def` body dispatches through the real
+        // `PortUsage` grammar production (package-level bare `port name : Type;` instead folds
+        // into `PortDef`, see `lower_port_def`'s doc comment) -- the `~` conjugation polarity
+        // must survive as an explicit fact distinct from the (unconjugated) target declaration.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tport def Base;\n\
+             \tpart def Holder {\n\
+             \t\tport p : ~Base;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Holder::p\"))) (kind port)"),
+            "expected a port usage declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (conjugated true) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Holder::p\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected p's conjugated typing reference to Base to resolve with the conjugated flag, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn non_conjugated_port_usage_typing_reference_does_not_carry_the_conjugated_flag() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tport def Base;\n\
+             \tpart def Holder {\n\
+             \t\tport p : Base;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Holder::p\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected p's unconjugated typing reference to Base to resolve without a conjugated flag, got:\n{output}"
+        );
+        assert!(
+            !output.contains("(kind typing) (conjugated true)"),
+            "did not expect the conjugated flag on an unconjugated port typing reference, got:\n{output}"
         );
     }
 

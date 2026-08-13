@@ -214,6 +214,8 @@ fn unsupported_code(family: UnsupportedFamily) -> &'static str {
         UnsupportedFamily::RequirementDefinitionMember => {
             "unsupported_requirement_definition_member"
         }
+        UnsupportedFamily::PortDefinitionMember => "unsupported_port_definition_member",
+        UnsupportedFamily::PortUsageMember => "unsupported_port_usage_member",
         UnsupportedFamily::ParserUnsupported => "unsupported_parser_construct",
     }
 }
@@ -343,7 +345,11 @@ fn write_relationships(model: &ResolvedSemanticModel, output: &mut dyn fmt::Writ
         let Some(kind) = relationship_kind(reference.kind) else {
             continue;
         };
-        write!(output, "    (relationship (kind {kind}) (source ")?;
+        write!(output, "    (relationship (kind {kind})")?;
+        if reference.flags.conjugated {
+            write!(output, " (conjugated true)")?;
+        }
+        write!(output, " (source ")?;
         write_node_identity(model, reference.source, output)?;
         write!(output, ") (target ")?;
         write_node_identity(model, target, output)?;
@@ -474,6 +480,9 @@ fn write_authored(
         write!(output, " ({} (reference ", reference_kind(reference.kind))?;
         write_reference_path(model, reference.path, output)?;
         write!(output, ")")?;
+        if reference.flags.conjugated {
+            write!(output, " (conjugated true)")?;
+        }
         if let Some(import) = reference.import {
             write_import(import, output)?;
         }
@@ -687,6 +696,8 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::EnumerationLiteral => "enum-literal",
         DeclarationKind::RequirementDefinition => "requirement-def",
         DeclarationKind::RequirementUsage => "requirement",
+        DeclarationKind::PortDefinition => "port-def",
+        DeclarationKind::PortUsage => "port",
     }
 }
 

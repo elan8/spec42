@@ -1172,6 +1172,7 @@ impl DeclarationDomain {
                     | DeclarationKind::AttributeDefinition
                     | DeclarationKind::EnumerationDefinition
                     | DeclarationKind::RequirementDefinition
+                    | DeclarationKind::PortDefinition
                     | DeclarationKind::Alias
             ),
         }
@@ -2229,6 +2230,93 @@ mod tests {
             resolution.outcome(AuthoredReferenceId(0)),
             Some(ResolutionStatus::Resolved(approved))
         );
+    }
+
+    /// Builds a `Demo { port def Base; port def Derived :> Base; }`-shaped fixture: `Derived`'s
+    /// `:>` specialization reference is authored with `conjugated` set per `typing_conjugated`,
+    /// exercising `port def`'s participation in the shared Subclassification/FeatureTyping
+    /// lexical lookup fixed point (`DeclarationDomain::Type`) exactly like `part def`.
+    fn port_def_specialization_fixture(typing_conjugated: bool) -> ResolverFixture {
+        let mut symbols = SymbolTableBuilder::default();
+        let demo_name = symbols.intern("Demo").unwrap();
+        let base_name = symbols.intern("Base").unwrap();
+        let derived_name = symbols.intern("Derived").unwrap();
+        let mut paths = SymbolPathArenaBuilder::default();
+        let base_path = paths.push(&[base_name], false).unwrap();
+
+        let demo = DeclarationId(0);
+        let derived = DeclarationId(2);
+        let declarations = vec![
+            declaration(
+                DocumentId(0),
+                None,
+                Some(demo_name),
+                DeclarationKind::Package,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(demo),
+                Some(base_name),
+                DeclarationKind::PortDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(demo),
+                Some(derived_name),
+                DeclarationKind::PortDefinition,
+            ),
+        ];
+        let memberships = memberships_for(&declarations, &[]);
+        let references = vec![TestReference {
+            source: derived,
+            kind: ReferenceKind::Subclassification,
+            path: base_path,
+            flags: RelationshipFlags {
+                conjugated: typing_conjugated,
+                ..RelationshipFlags::default()
+            },
+        }];
+        let _symbols = symbols.freeze();
+        ResolverFixture {
+            declarations: declarations.into_boxed_slice(),
+            memberships,
+            paths: paths.freeze(),
+            references: references.into_boxed_slice(),
+        }
+    }
+
+    #[test]
+    fn port_def_specialization_resolves_through_the_ancestor_fixed_point() {
+        let fixture = port_def_specialization_fixture(false);
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(0)),
+            Some(ResolutionStatus::Resolved(DeclarationId(1)))
+        );
+    }
+
+    #[test]
+    fn conjugated_port_typing_reference_resolves_to_the_correct_target_and_carries_the_flag() {
+        // `port source : ~InputPort;` -- the conjugated `~` polarity must be visible as an
+        // explicit fact on the authored reference, distinct from the (unconjugated) target
+        // declaration itself, which the resolved outcome still names correctly.
+        let fixture = port_def_specialization_fixture(true);
+        assert!(fixture.references[0].flags.conjugated);
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(0)),
+            Some(ResolutionStatus::Resolved(DeclarationId(1)))
+        );
+    }
+
+    #[test]
+    fn non_conjugated_port_typing_reference_does_not_carry_the_conjugated_flag() {
+        // Regression guard: an ordinary (non-`~`) port typing/specialization reference must not
+        // spuriously pick up the conjugated flag.
+        let fixture = port_def_specialization_fixture(false);
+        assert!(!fixture.references[0].flags.conjugated);
     }
 
     #[test]

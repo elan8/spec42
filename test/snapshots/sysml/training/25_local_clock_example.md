@@ -77,12 +77,6 @@ package 'Local Clock Example' {
         (severity warning)
         (code "unsupported_part_definition_member")
         (source "semantic")
-        (range (start 11 2) (end 11 19))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_definition_member")
-        (source "semantic")
         (range (start 13 2) (end 29 3))
       )
     )
@@ -98,6 +92,7 @@ package 'Local Clock Example' {
     (declaration (id (node (document "memory://snapshot/25_local_clock_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::String") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/25_local_clock_example.md") (qualified-name "Local Clock Example::Server"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/25_local_clock_example.md") (anonymous (kind part) (ordinal 0))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "localClock"))))
+    (declaration (id (node (document "memory://snapshot/25_local_clock_example.md") (qualified-name "Local Clock Example::Server::requestPort"))) (kind port) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/25_local_clock_example.md") (qualified-name "Local Clock Example::Server::today"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "String"))))
   )
   (references

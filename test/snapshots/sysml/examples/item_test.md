@@ -60,9 +60,15 @@ package ItemTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_port_definition_member")
         (source "semantic")
-        (range (start 17 1) (end 20 2))
+        (range (start 18 2) (end 18 16))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_port_definition_member")
+        (source "semantic")
+        (range (start 19 2) (end 19 17))
       )
     )
   )
@@ -75,6 +81,7 @@ package ItemTest {
   (declarations
     (declaration (id (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::C"))) (kind part-def) (membership (kind owning) (visibility private)))
+    (declaration (id (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::P"))) (kind port-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

@@ -33,21 +33,15 @@ package 'Port Conjugation Example' {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_port_definition_member")
         (source "semantic")
-        (range (start 6 1) (end 10 2))
+        (range (start 8 2) (end 8 29))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_definition_member")
+        (code "unsupported_port_definition_member")
         (source "semantic")
-        (range (start 13 2) (end 13 31))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_definition_member")
-        (source "semantic")
-        (range (start 17 2) (end 17 34))
+        (range (start 9 2) (end 9 28))
       )
     )
   )
@@ -60,13 +54,29 @@ package 'Port Conjugation Example' {
   (declarations
     (declaration (id (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::Engine"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::Engine::engineFuelPort"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "FuelPort") (conjugated true))))
     (declaration (id (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::Fuel"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::FuelPort"))) (kind port-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::FuelPort::temperature"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Temp"))))
     (declaration (id (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::FuelTank"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::FuelTank::fuelTankPort"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "FuelPort"))))
     (declaration (id (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::Temp"))) (kind attribute-def) (membership (kind owning) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::Engine::engineFuelPort"))) (kind featureTyping) (ordinal 0))
+      (authored-target "FuelPort")
+      (outcome (status resolved) (target (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::FuelPort")))))
+    (reference (id (source (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::FuelPort::temperature"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Temp")
+      (outcome (status resolved) (target (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::Temp")))))
+    (reference (id (source (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::FuelTank::fuelTankPort"))) (kind featureTyping) (ordinal 0))
+      (authored-target "FuelPort")
+      (outcome (status resolved) (target (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::FuelPort")))))
   )
   (relationships
+    (relationship (kind typing) (conjugated true) (source (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::Engine::engineFuelPort"))) (target (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::FuelPort"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::Engine::engineFuelPort"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::FuelPort::temperature"))) (target (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::Temp"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::FuelPort::temperature"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::FuelTank::fuelTankPort"))) (target (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::FuelPort"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::FuelTank::fuelTankPort"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -75,5 +85,17 @@ package 'Port Conjugation Example' {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/10_port_conjugation_example.md") (range (start 17 25) (end 17 33)) (probe (position 17 25))
+    (reference (id (source (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::Engine::engineFuelPort"))) (kind featureTyping) (ordinal 0) (authored-target "FuelPort")
+      (outcome (status resolved) (target (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::FuelPort")))))
+  )
+  (query (document "memory://snapshot/10_port_conjugation_example.md") (range (start 7 26) (end 7 30)) (probe (position 7 26))
+    (reference (id (source (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::FuelPort::temperature"))) (kind featureTyping) (ordinal 0) (authored-target "Temp")
+      (outcome (status resolved) (target (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::Temp")))))
+  )
+  (query (document "memory://snapshot/10_port_conjugation_example.md") (range (start 13 22) (end 13 30)) (probe (position 13 22))
+    (reference (id (source (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::FuelTank::fuelTankPort"))) (kind featureTyping) (ordinal 0) (authored-target "FuelPort")
+      (outcome (status resolved) (target (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::FuelPort")))))
+  )
 )
 ~~~
