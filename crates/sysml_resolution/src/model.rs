@@ -1128,6 +1128,25 @@ fn fold_arithmetic(
         (EvaluatedValue::Boolean(_), _) | (_, EvaluatedValue::Boolean(_)) => {
             EvaluatedValue::TypeMismatch
         }
+        (EvaluatedValue::Integer(left), EvaluatedValue::Integer(right))
+            if matches!(op, BinaryOperator::Pow | BinaryOperator::Exp) =>
+        {
+            // A negative integer exponent produces a fractional result, so promote to `Real`
+            // via `powf` (e.g. `2 ^ -1` folds to `Real(0.5)`) rather than folding to `NonConstant`.
+            // A non-negative exponent that does not fit `u32` (checked_pow's exponent type) cannot
+            // be computed as an exact integer either way, so it conservatively falls to
+            // `NonConstant` rather than silently promoting to a lossy `Real`.
+            if right < 0 {
+                EvaluatedValue::Real((left as f64).powf(right as f64))
+            } else {
+                match u32::try_from(right) {
+                    Ok(exponent) => left
+                        .checked_pow(exponent)
+                        .map_or(EvaluatedValue::NonConstant, EvaluatedValue::Integer),
+                    Err(_) => EvaluatedValue::NonConstant,
+                }
+            }
+        }
         (EvaluatedValue::Integer(left), EvaluatedValue::Integer(right)) => {
             let result = match op {
                 BinaryOperator::Add => left.checked_add(right),
@@ -1178,6 +1197,7 @@ fn fold_arithmetic(
                         EvaluatedValue::Real(left % right)
                     }
                 }
+                BinaryOperator::Pow | BinaryOperator::Exp => EvaluatedValue::Real(left.powf(right)),
                 _ => EvaluatedValue::NonConstant,
             }
         }
@@ -1562,19 +1582,15 @@ fn is_unary_operator(op: &UnaryOperator) -> bool {
     matches!(op, UnaryOperator::Minus | UnaryOperator::Not)
 }
 
-/// Whether a `BinaryOperator` is one of the five basic arithmetic operators
-/// (`lower_calc_expression`'s slice-4 supported `BinaryOp` shape): `+`, `-`, `*`, `/`, `%`.
-/// `Exp`/`Pow` (KerML's two distinct exponentiation-like variants) are deliberately excluded from
-/// this slice: real-corpus `**` usage (the only exponentiation spelling found in the corpus, e.g.
-/// `turbojet_stage_analysis.md`'s `(p_2 / p_1)**((gamma - 1) / gamma)`,
-/// `sys_ml_v2_spec_annex_a_simple_vehicle_model.md`'s `tpd_avg **(-3)`) is consistently mixed with
-/// unary negation, nested division, and fractional/negative real exponents in the same expression
-/// -- shapes well outside this slice's scope regardless of whether `Exp`/`Pow` themselves were
-/// supported, so including just the operator would not make any additional real-corpus expression
-/// foldable. `is_arithmetic_operator` excludes them; `classify_calc_node`/`lower_calc_expression`
-/// therefore fall through to the existing `Unsupported`/`unsupported_calc_definition_member` path
-/// for any `BinaryOp` using `Exp`/`Pow`, exactly like every other still-unsupported shape -- never
-/// a panic.
+/// Whether a `BinaryOperator` is one of the arithmetic operators
+/// (`lower_calc_expression`'s supported `BinaryOp` shape): `+`, `-`, `*`, `/`, `%`, and the two
+/// exponentiation spellings `^`/`Pow` and `**`/`Exp`. Slice 4 (`bd50fccd`) originally excluded
+/// `Exp`/`Pow`, reasoning every real-corpus `**` occurrence combined it with unary negation or
+/// fractional/negative exponents -- shapes outside that slice's scope regardless. Unary negation
+/// landed separately (`438b8572`), and fractional/negative exponents on a `Real` base are just
+/// `f64::powf`, already covered by this function's own `Real`-promotion path (see
+/// `fold_arithmetic`), so neither reason still blocks folding the operator itself: e.g.
+/// `10c_fuel_economy_analysis.md`'s `231.0 * 'in'^3` now folds one level further into the `Pow`.
 fn is_arithmetic_operator(op: &BinaryOperator) -> bool {
     matches!(
         op,
@@ -1583,6 +1599,8 @@ fn is_arithmetic_operator(op: &BinaryOperator) -> bool {
             | BinaryOperator::Mul
             | BinaryOperator::Div
             | BinaryOperator::Mod
+            | BinaryOperator::Pow
+            | BinaryOperator::Exp
     )
 }
 
@@ -10179,18 +10197,71 @@ mod tests {
     }
 
     #[test]
-    fn calc_exponent_operator_stays_unsupported_not_a_panic() {
-        // `**` (BinaryOperator::Pow) is deliberately excluded from slice 4's arithmetic scope
-        // (see `is_arithmetic_operator`'s doc comment); it must fall through to the existing
-        // unsupported-shape path, publishing no evaluation fact, not panic.
+    fn calc_exponent_operator_integer_base_folds_to_integer() {
+        // `**` (BinaryOperator::Exp) with a non-negative integer exponent stays `Integer` via
+        // `checked_pow`, mirroring `fold_arithmetic`'s other checked-integer arms.
         let output = build_semantic_sexpr(
             "package Demo {\n\
              \tcalc def Calc { 2 ** 3 }\n\
              }\n",
         );
         assert!(
-            !output.contains("(evaluated (declaration"),
-            "expected `2 ** 3` (Exp/Pow, out of slice-4 scope) to publish no evaluation fact, \
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::Calc\"))) (value (kind integer) (integer 8)))"
+            ),
+            "expected `2 ** 3` to fold to Integer(8), got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_exponent_operator_real_base_folds_to_real() {
+        // `^` (BinaryOperator::Pow) with a `Real` base promotes to `Real` via `f64::powf`, the
+        // same `Real`-involving promotion rule `fold_arithmetic` already uses for +/-/*//  /%.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcalc def Calc { 2.0 ^ 3 }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::Calc\"))) (value (kind real) (real 8"
+            ),
+            "expected `2.0 ^ 3` to fold to a promoted Real(8.0), got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_exponent_operator_negative_integer_exponent_promotes_to_real() {
+        // A negative integer exponent (`2 ^ -1`) cannot stay `Integer` (fractional result), so it
+        // promotes to `Real` via `powf`, exactly like a `Real`-involving pairing.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcalc def Calc { 2 ^ -1 }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::Calc\"))) (value (kind real) (real 0.5)))"
+            ),
+            "expected `2 ^ -1` to fold to Real(0.5) via the Real-promotion path, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_exponent_operator_integer_overflow_folds_to_non_constant() {
+        // A huge integer base/exponent pairing that overflows `checked_pow` conservatively folds
+        // to `NonConstant`, never a panic, mirroring `fold_arithmetic`'s other checked-integer arms.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcalc def Calc { 99999999999 ** 99999999999 }\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(value (kind non-constant))"),
+            "expected an overflowing `**` to publish a NonConstant evaluation fact, \
              got:\n{output}"
         );
     }

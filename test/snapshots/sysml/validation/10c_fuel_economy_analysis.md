@@ -235,9 +235,9 @@ package '10c-Fuel Economy Analysis' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 8 38) (end 8 52))
+        (range (start 8 46) (end 8 50))
       )
       (diagnostic
         (severity warning)
@@ -428,7 +428,7 @@ package '10c-Fuel Economy Analysis' {
     (declaration (id (node (document "memory://snapshot/10c_fuel_economy_analysis.md") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::vehicle1_c1::transmission::transmissionState::3rdGear"))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/10c_fuel_economy_analysis.md") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::vehicle1_c1::transmission::transmissionState::4thGear"))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/10c_fuel_economy_analysis.md") (qualified-name "10c-Fuel Economy Analysis::distancePerVolume"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "ScalarQuantityValue")) (expressionOperand (reference "length")) (expressionOperand (reference "volume"))))
-    (declaration (id (node (document "memory://snapshot/10c_fuel_economy_analysis.md") (qualified-name "10c-Fuel Economy Analysis::gallon"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "MeasurementUnit"))))
+    (declaration (id (node (document "memory://snapshot/10c_fuel_economy_analysis.md") (qualified-name "10c-Fuel Economy Analysis::gallon"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "MeasurementUnit")) (expressionOperand (reference "in"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/10c_fuel_economy_analysis.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
@@ -593,6 +593,9 @@ package '10c-Fuel Economy Analysis' {
     (reference (id (source (node (document "memory://snapshot/10c_fuel_economy_analysis.md") (qualified-name "10c-Fuel Economy Analysis::gallon"))) (kind featureTyping) (ordinal 0))
       (authored-target "MeasurementUnit")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/10c_fuel_economy_analysis.md") (qualified-name "10c-Fuel Economy Analysis::gallon"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "in")
+      (outcome (status unresolved)))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/10c_fuel_economy_analysis.md") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelEconomyRequirement"))) (target (node (document "memory://snapshot/10c_fuel_economy_analysis.md") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::FuelEconomyRequirement"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/10c_fuel_economy_analysis.md") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelEconomyRequirement"))) (kind featureTyping) (ordinal 0)))
@@ -631,6 +634,7 @@ package '10c-Fuel Economy Analysis' {
     (evaluated (declaration (node (document "memory://snapshot/10c_fuel_economy_analysis.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 25))) (unit "mi/gallon")))
     (evaluated (declaration (node (document "memory://snapshot/10c_fuel_economy_analysis.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 30))) (unit "mi/gallon")))
     (evaluated (declaration (node (document "memory://snapshot/10c_fuel_economy_analysis.md") (qualified-name "10c-Fuel Economy Analysis::distancePerVolume"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/10c_fuel_economy_analysis.md") (qualified-name "10c-Fuel Economy Analysis::gallon"))) (value (kind unresolved-operand)))
   )
 )
 ~~~
@@ -851,6 +855,10 @@ package '10c-Fuel Economy Analysis' {
   )
   (query (document "memory://snapshot/10c_fuel_economy_analysis.md") (range (start 8 20) (end 8 35)) (probe (position 8 20))
     (reference (id (source (node (document "memory://snapshot/10c_fuel_economy_analysis.md") (qualified-name "10c-Fuel Economy Analysis::gallon"))) (kind featureTyping) (ordinal 0) (authored-target "MeasurementUnit")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/10c_fuel_economy_analysis.md") (range (start 8 46) (end 8 50)) (probe (position 8 46))
+    (reference (id (source (node (document "memory://snapshot/10c_fuel_economy_analysis.md") (qualified-name "10c-Fuel Economy Analysis::gallon"))) (kind expressionOperand) (ordinal 0) (authored-target "in")
       (outcome (status unresolved)))
   )
 )

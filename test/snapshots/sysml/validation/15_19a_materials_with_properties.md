@@ -226,9 +226,15 @@ package '15_19a-Materials with Properties' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 22 80) (end 22 88))
+        (range (start 22 80) (end 22 81))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 22 84) (end 22 86))
       )
       (diagnostic
         (severity warning)
@@ -243,7 +249,7 @@ package '15_19a-Materials with Properties' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:b7e62dc0664af6a55443940e56388e72ecaea375fef0ebb18232a8b4807a3b25") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b7e62dc0664af6a55443940e56388e72ecaea375fef0ebb18232a8b4807a3b25") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_19a_materials_with_properties.md") (qualified-name "15_19a-Materials with Properties"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_19a_materials_with_properties.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
@@ -294,7 +300,7 @@ package '15_19a-Materials with Properties' {
     (declaration (id (node (document "memory://snapshot/15_19a_materials_with_properties.md") (qualified-name "15_19a-Materials with Properties::TensileStrengthValue"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "ScalarQuantityValue"))))
     (declaration (id (node (document "memory://snapshot/15_19a_materials_with_properties.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real")) (redefinition (reference "num"))))
     (declaration (id (node (document "memory://snapshot/15_19a_materials_with_properties.md") (anonymous (kind attribute) (ordinal 1))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TensileStrengthUnit")) (redefinition (reference "mRef"))))
-    (declaration (id (node (document "memory://snapshot/15_19a_materials_with_properties.md") (qualified-name "15_19a-Materials with Properties::newton per square millimetre"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "TensileStrengthUnit"))))
+    (declaration (id (node (document "memory://snapshot/15_19a_materials_with_properties.md") (qualified-name "15_19a-Materials with Properties::newton per square millimetre"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "TensileStrengthUnit")) (expressionOperand (reference "N")) (expressionOperand (reference "mm"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/15_19a_materials_with_properties.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
@@ -480,6 +486,12 @@ package '15_19a-Materials with Properties' {
     (reference (id (source (node (document "memory://snapshot/15_19a_materials_with_properties.md") (qualified-name "15_19a-Materials with Properties::newton per square millimetre"))) (kind featureTyping) (ordinal 0))
       (authored-target "TensileStrengthUnit")
       (outcome (status resolved) (target (node (document "memory://snapshot/15_19a_materials_with_properties.md") (qualified-name "15_19a-Materials with Properties::TensileStrengthUnit")))))
+    (reference (id (source (node (document "memory://snapshot/15_19a_materials_with_properties.md") (qualified-name "15_19a-Materials with Properties::newton per square millimetre"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "N")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/15_19a_materials_with_properties.md") (qualified-name "15_19a-Materials with Properties::newton per square millimetre"))) (kind expressionOperand) (ordinal 1))
+      (authored-target "mm")
+      (outcome (status unresolved)))
   )
   (relationships
     (relationship (kind specialization) (source (node (document "memory://snapshot/15_19a_materials_with_properties.md") (qualified-name "15_19a-Materials with Properties::Alloy"))) (target (node (document "memory://snapshot/15_19a_materials_with_properties.md") (qualified-name "15_19a-Materials with Properties::Material"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_19a_materials_with_properties.md") (qualified-name "15_19a-Materials with Properties::Alloy"))) (kind specialization) (ordinal 0)))
@@ -535,6 +547,7 @@ package '15_19a-Materials with Properties' {
     (evaluated (declaration (node (document "memory://snapshot/15_19a_materials_with_properties.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer -2)))
     (evaluated (declaration (node (document "memory://snapshot/15_19a_materials_with_properties.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer -1)))
     (evaluated (declaration (node (document "memory://snapshot/15_19a_materials_with_properties.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/15_19a_materials_with_properties.md") (qualified-name "15_19a-Materials with Properties::newton per square millimetre"))) (value (kind unresolved-operand)))
   )
 )
 ~~~
@@ -784,6 +797,14 @@ package '15_19a-Materials with Properties' {
   (query (document "memory://snapshot/15_19a_materials_with_properties.md") (range (start 22 58) (end 22 77)) (probe (position 22 58))
     (reference (id (source (node (document "memory://snapshot/15_19a_materials_with_properties.md") (qualified-name "15_19a-Materials with Properties::newton per square millimetre"))) (kind featureTyping) (ordinal 0) (authored-target "TensileStrengthUnit")
       (outcome (status resolved) (target (node (document "memory://snapshot/15_19a_materials_with_properties.md") (qualified-name "15_19a-Materials with Properties::TensileStrengthUnit")))))
+  )
+  (query (document "memory://snapshot/15_19a_materials_with_properties.md") (range (start 22 80) (end 22 81)) (probe (position 22 80))
+    (reference (id (source (node (document "memory://snapshot/15_19a_materials_with_properties.md") (qualified-name "15_19a-Materials with Properties::newton per square millimetre"))) (kind expressionOperand) (ordinal 0) (authored-target "N")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/15_19a_materials_with_properties.md") (range (start 22 84) (end 22 86)) (probe (position 22 84))
+    (reference (id (source (node (document "memory://snapshot/15_19a_materials_with_properties.md") (qualified-name "15_19a-Materials with Properties::newton per square millimetre"))) (kind expressionOperand) (ordinal 1) (authored-target "mm")
+      (outcome (status unresolved)))
   )
 )
 ~~~
