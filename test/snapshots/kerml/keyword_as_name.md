@@ -69,12 +69,6 @@ package KeywordAsName {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 15 1) (end 15 25))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 15 1) (end 15 25))

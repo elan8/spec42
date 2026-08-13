@@ -18,15 +18,15 @@ package P {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 1 4) (end 3 5))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 1 4) (end 3 5))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_attribute_body_element")
+        (source "parser")
+        (range (start 2 8) (end 3 4))
       )
     )
   )

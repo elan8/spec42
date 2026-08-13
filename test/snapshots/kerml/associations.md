@@ -40,21 +40,9 @@ package Associations {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 1 4) (end 1 15))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 1 4) (end 1 15))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 2 4) (end 2 12))
       )
       (diagnostic
         (severity warning)
@@ -97,12 +85,6 @@ package Associations {
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 14 1) (end 17 2))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 19 1) (end 19 13))
       )
       (diagnostic
         (severity warning)

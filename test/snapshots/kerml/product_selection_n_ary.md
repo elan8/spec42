@@ -140,33 +140,15 @@ package ProductSelection_N_ary {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 2 1) (end 2 20))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 2 1) (end 2 20))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 3 1) (end 3 15))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 3 1) (end 3 15))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 4 1) (end 4 15))
       )
       (diagnostic
         (severity warning)
@@ -272,15 +254,39 @@ package ProductSelection_N_ary {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 116 1) (end 124 2))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 116 1) (end 124 2))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 117 2) (end 118 2))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 118 2) (end 119 2))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 119 2) (end 121 2))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 121 2) (end 123 2))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 123 2) (end 124 1))
       )
     )
   )

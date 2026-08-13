@@ -22,21 +22,9 @@ package FeatureDeclCoverage {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 1 1) (end 1 17))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 1 1) (end 1 17))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 2 1) (end 2 11))
       )
       (diagnostic
         (severity warning)

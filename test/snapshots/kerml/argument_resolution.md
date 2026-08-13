@@ -30,15 +30,15 @@ package ArgumentResolutionBug {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 1 1) (end 3 2))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 1 1) (end 3 2))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 2 2) (end 3 1))
       )
       (diagnostic
         (severity warning)
@@ -54,15 +54,27 @@ package ArgumentResolutionBug {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 10 1) (end 15 2))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 10 1) (end 15 2))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 11 2) (end 12 2))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 12 2) (end 14 2))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 14 2) (end 15 1))
       )
     )
   )

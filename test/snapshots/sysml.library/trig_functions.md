@@ -53,12 +53,6 @@ standard library package TrigFunctions {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 7 4) (end 7 22))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 7 4) (end 7 22))

@@ -41,21 +41,9 @@ package 'Packet Usage' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 4 1) (end 4 40))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 4 1) (end 4 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 5 1) (end 5 40))
       )
       (diagnostic
         (severity warning)

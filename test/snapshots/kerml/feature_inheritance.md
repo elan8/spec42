@@ -32,12 +32,6 @@ package FeatureInheritance {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 5 1) (end 5 21))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 5 1) (end 5 21))

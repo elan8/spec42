@@ -277,6 +277,25 @@ mod tests {
         );
     }
 
+    /// A nested `item` usage inside an `attribute def` body (BNF
+    /// `AttributeBodyElement::ItemUsage`, resolved upstream in `0757de13` --
+    /// UPSTREAM_PARSER_GAPS.md #11) must lower as its own `item` declaration via the
+    /// already-existing `lower_item_usage`, not fall through to `unsupported_attribute_member`.
+    #[test]
+    fn nested_item_usage_inside_attribute_def_body_lowers_as_item() {
+        let sexpr = semantic_sexpr_for(
+            "package P { attribute def Show { item picture : Picture; attribute def Picture; } }",
+        );
+        assert!(
+            sexpr.contains("P::Show::picture"),
+            "expected nested item declaration, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_attribute_member"),
+            "did not expect unsupported_attribute_member, got: {sexpr}"
+        );
+    }
+
     /// A nested `occurrence` usage inside an `attribute def` body (BNF
     /// `AttributeBodyElement::OccurrenceUsage`, e.g. the FMEA library's `#prevention occurs;`-style
     /// members) must lower as its own `occurrence` declaration via the already-existing

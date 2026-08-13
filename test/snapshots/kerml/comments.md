@@ -59,21 +59,21 @@ package Comments {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 34 1) (end 39 2))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 34 1) (end 39 2))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
+        (severity error)
+        (code "recovered_attribute_body_element")
         (source "parser")
-        (range (start 41 1) (end 44 2))
+        (range (start 36 2) (end 39 1))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "parser")
+        (range (start 36 2) (end 39 1))
       )
       (diagnostic
         (severity warning)

@@ -21,27 +21,27 @@ package ion {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 1 2) (end 3 3))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 1 2) (end 3 3))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
+        (severity error)
+        (code "unexpected_keyword_in_scope")
         (source "parser")
-        (range (start 5 2) (end 6 3))
+        (range (start 2 4) (end 3 2))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 5 2) (end 6 3))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
+        (range (start 5 12) (end 6 2))
       )
     )
   )

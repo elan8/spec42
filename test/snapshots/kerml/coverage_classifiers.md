@@ -32,21 +32,9 @@ package ClassifierCoverage {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 1 4) (end 1 20))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 1 4) (end 1 20))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 2 4) (end 2 17))
       )
       (diagnostic
         (severity warning)
@@ -68,12 +56,6 @@ package ClassifierCoverage {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 4 4) (end 4 23))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 4 4) (end 4 23))
@@ -92,12 +74,6 @@ package ClassifierCoverage {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 6 4) (end 6 25))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 6 4) (end 6 25))
@@ -113,12 +89,6 @@ package ClassifierCoverage {
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 8 4) (end 8 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 9 4) (end 9 22))
       )
       (diagnostic
         (severity warning)

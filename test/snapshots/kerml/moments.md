@@ -64,12 +64,6 @@ package Moments {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 4 4) (end 10 5))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 4 4) (end 10 5))
@@ -100,12 +94,6 @@ package Moments {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 19 4) (end 22 5))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 19 4) (end 22 5))
@@ -121,12 +109,6 @@ package Moments {
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 24 4) (end 27 5))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 29 4) (end 31 53))
       )
       (diagnostic
         (severity warning)

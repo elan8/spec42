@@ -90,12 +90,6 @@ package OneToUnrestrictedConnectorsExecution {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 13 1) (end 13 23))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 13 1) (end 13 23))

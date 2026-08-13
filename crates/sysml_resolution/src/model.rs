@@ -1099,6 +1099,51 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
+            PackageBodyElement::KermlBareDeclaration(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::MetadataAnnotation(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::PerformUsage(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::BindingConnectorUsage(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::ClassDef(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::Succession(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::ExhibitState(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::IncludeUseCase(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
+            PackageBodyElement::ExtendedDefinition(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PackageMember,
+                node.span.clone(),
+            ),
         }
         Ok(())
     }
@@ -1615,6 +1660,9 @@ impl SemanticModelBuilder {
                 }
                 AttributeBodyElement::OccurrenceUsage(occurrence_usage) => {
                     self.lower_occurrence_usage(document, Some(owner), occurrence_usage)?;
+                }
+                AttributeBodyElement::ItemUsage(item_usage) => {
+                    self.lower_item_usage(document, Some(owner), item_usage)?;
                 }
                 AttributeBodyElement::Connect(_)
                 | AttributeBodyElement::MetadataKeywordUsage(_)
@@ -2829,6 +2877,7 @@ impl SemanticModelBuilder {
                     PortDefBodyElement::InOutDecl(_)
                     | PortDefBodyElement::ItemDef(_)
                     | PortDefBodyElement::ItemUsage(_)
+                    | PortDefBodyElement::MetadataKeywordUsage(_)
                     | PortDefBodyElement::Other(_) => self.push_unsupported(
                         document,
                         UnsupportedFamily::PortDefinitionMember,

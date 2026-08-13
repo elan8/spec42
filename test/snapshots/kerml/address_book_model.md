@@ -32,21 +32,9 @@ package AddressBookModel {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 3 1) (end 6 2))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 3 1) (end 6 2))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 8 1) (end 10 2))
       )
       (diagnostic
         (severity warning)
@@ -61,7 +49,7 @@ package AddressBookModel {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:297623dea97756fce5b300d3ecd783d69afb6e05da22e957fa27559f2600c782") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:297623dea97756fce5b300d3ecd783d69afb6e05da22e957fa27559f2600c782") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/address_book_model.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/address_book_model.md") (qualified-name "AddressBookModel"))) (kind package) (membership (kind owning) (visibility default)))

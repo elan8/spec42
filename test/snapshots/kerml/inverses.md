@@ -28,21 +28,21 @@ package Inverses {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 1 1) (end 4 2))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 1 1) (end 4 2))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
         (source "parser")
-        (range (start 6 1) (end 8 2))
+        (range (start 2 2) (end 3 2))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 3 2) (end 4 1))
       )
       (diagnostic
         (severity warning)
@@ -54,7 +54,25 @@ package Inverses {
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
-        (range (start 10 1) (end 14 0))
+        (range (start 7 2) (end 8 1))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 10 1) (end 13 1))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 13 1) (end 13 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 13 1) (end 13 46))
       )
     )
   )

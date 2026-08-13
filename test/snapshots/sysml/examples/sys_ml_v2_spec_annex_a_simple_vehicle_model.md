@@ -3219,9 +3219,27 @@ package SimpleVehicleModel{
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_annotation_syntax")
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1120 12) (end 1123 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1127 12) (end 1132 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1133 12) (end 1138 13))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
         (source "parser")
-        (range (start 1120 12) (end 1141 12))
+        (range (start 1134 16) (end 1138 12))
       )
       (diagnostic
         (severity warning)
@@ -4421,7 +4439,7 @@ package SimpleVehicleModel{
     (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "massRequired"))))
     (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (anonymous (kind attribute) (ordinal 1))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "massActual"))))
     (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification::torqueGenerationRequirement"))) (kind requirement) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TorqueGenerationRequirement"))))
-    (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::marketSurvey"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::marketSurvey"))) (kind item) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification"))) (kind requirement) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleFuelEconomyRequirements"))) (kind requirement) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleFuelEconomyRequirements::assumedCargoMass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "ISQ::mass"))))

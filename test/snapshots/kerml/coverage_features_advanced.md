@@ -45,7 +45,19 @@ package FeatureAdvancedCoverage {
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
-        (range (start 1 4) (end 4 4))
+        (range (start 1 4) (end 3 4))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 3 4) (end 3 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 3 4) (end 3 30))
       )
       (diagnostic
         (severity warning)
@@ -85,21 +97,9 @@ package FeatureAdvancedCoverage {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 12 4) (end 12 32))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 12 4) (end 12 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 13 4) (end 13 35))
       )
       (diagnostic
         (severity warning)
@@ -109,21 +109,9 @@ package FeatureAdvancedCoverage {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 14 4) (end 14 28))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 14 4) (end 14 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 15 4) (end 15 34))
       )
       (diagnostic
         (severity warning)
@@ -139,27 +127,33 @@ package FeatureAdvancedCoverage {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 17 12) (end 17 27))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 17 12) (end 17 27))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 19 4) (end 23 5))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 19 4) (end 23 5))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
+        (range (start 20 8) (end 21 8))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
+        (range (start 21 8) (end 22 8))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 22 8) (end 23 4))
       )
       (diagnostic
         (severity error)

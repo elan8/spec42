@@ -59,21 +59,9 @@ package Imports {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 3 2) (end 3 10))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 3 2) (end 3 10))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 4 2) (end 4 10))
       )
       (diagnostic
         (severity warning)
@@ -83,21 +71,9 @@ package Imports {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 5 2) (end 5 10))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 5 2) (end 5 10))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 9 2) (end 9 10))
       )
       (diagnostic
         (severity warning)
@@ -107,33 +83,21 @@ package Imports {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 10 2) (end 12 3))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 10 2) (end 12 3))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
         (source "parser")
-        (range (start 14 3) (end 14 11))
+        (range (start 11 3) (end 12 2))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 14 3) (end 14 11))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 15 3) (end 15 11))
       )
       (diagnostic
         (severity warning)
@@ -149,12 +113,6 @@ package Imports {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 21 3) (end 21 11))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 21 3) (end 21 11))
@@ -167,21 +125,9 @@ package Imports {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 34 2) (end 34 15))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 34 2) (end 34 15))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 35 2) (end 35 15))
       )
       (diagnostic
         (severity warning)
@@ -191,21 +137,9 @@ package Imports {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 36 2) (end 36 15))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 36 2) (end 36 15))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 43 2) (end 43 15))
       )
       (diagnostic
         (severity warning)

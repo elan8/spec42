@@ -53,21 +53,15 @@ package Scoping {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 2 8) (end 4 9))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 2 8) (end 4 9))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
         (source "parser")
-        (range (start 6 12) (end 8 13))
+        (range (start 3 12) (end 4 8))
       )
       (diagnostic
         (severity warning)
@@ -76,10 +70,10 @@ package Scoping {
         (range (start 6 12) (end 8 13))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
         (source "parser")
-        (range (start 10 16) (end 12 17))
+        (range (start 7 16) (end 8 12))
       )
       (diagnostic
         (severity warning)
@@ -88,10 +82,10 @@ package Scoping {
         (range (start 10 16) (end 12 17))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
         (source "parser")
-        (range (start 16 12) (end 18 13))
+        (range (start 11 20) (end 12 16))
       )
       (diagnostic
         (severity warning)
@@ -100,10 +94,10 @@ package Scoping {
         (range (start 16 12) (end 18 13))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
         (source "parser")
-        (range (start 21 12) (end 25 13))
+        (range (start 17 16) (end 18 12))
       )
       (diagnostic
         (severity warning)
@@ -112,10 +106,10 @@ package Scoping {
         (range (start 21 12) (end 25 13))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
         (source "parser")
-        (range (start 28 12) (end 30 13))
+        (range (start 22 16) (end 25 12))
       )
       (diagnostic
         (severity warning)
@@ -124,10 +118,10 @@ package Scoping {
         (range (start 28 12) (end 30 13))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
         (source "parser")
-        (range (start 31 12) (end 33 13))
+        (range (start 29 16) (end 30 12))
       )
       (diagnostic
         (severity warning)
@@ -136,16 +130,22 @@ package Scoping {
         (range (start 31 12) (end 33 13))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
         (source "parser")
-        (range (start 34 12) (end 36 13))
+        (range (start 32 16) (end 33 12))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 34 12) (end 36 13))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 35 16) (end 36 12))
       )
     )
   )

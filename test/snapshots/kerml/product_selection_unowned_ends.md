@@ -60,21 +60,9 @@ package ProductSelection_UnownedEnds {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 2 1) (end 2 21))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 2 1) (end 2 21))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 3 1) (end 5 2))
       )
       (diagnostic
         (severity warning)
@@ -83,16 +71,22 @@ package ProductSelection_UnownedEnds {
         (range (start 3 1) (end 5 2))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
         (source "parser")
-        (range (start 6 1) (end 8 2))
+        (range (start 4 2) (end 5 1))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 6 1) (end 8 2))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 7 2) (end 8 1))
       )
       (diagnostic
         (severity warning)
@@ -132,15 +126,39 @@ package ProductSelection_UnownedEnds {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 32 1) (end 44 2))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 32 1) (end 44 2))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 33 2) (end 34 2))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 34 2) (end 35 2))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 35 2) (end 37 2))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 37 2) (end 41 2))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 41 2) (end 44 1))
       )
     )
   )

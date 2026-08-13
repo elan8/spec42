@@ -181,21 +181,9 @@ package DecisionsAndMergesExecution {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 42 1) (end 42 16))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 42 1) (end 42 16))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 43 1) (end 43 18))
       )
       (diagnostic
         (severity warning)
@@ -205,21 +193,9 @@ package DecisionsAndMergesExecution {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 44 1) (end 44 27))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 44 1) (end 44 27))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 45 1) (end 45 15))
       )
       (diagnostic
         (severity warning)

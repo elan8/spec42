@@ -23,21 +23,9 @@ package Expansion {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 2 1) (end 2 46))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 2 1) (end 2 46))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_package_body_element")
-        (source "parser")
-        (range (start 2 46) (end 3 0))
+        (range (start 2 1) (end 2 47))
       )
     )
   )
@@ -46,7 +34,7 @@ package Expansion {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:dd4a691d1574584940080c79df61d3840e0ad0de94c68b9950ca3720f8d52ba1") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:dd4a691d1574584940080c79df61d3840e0ad0de94c68b9950ca3720f8d52ba1") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/expansion.md") (qualified-name "Expansion"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/expansion.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ControlFunctions::select") (import (shape membership) (recursive false)))))

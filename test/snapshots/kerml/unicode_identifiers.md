@@ -19,12 +19,6 @@ package 'αβ' {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 1 4) (end 1 19))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 1 4) (end 1 19))
@@ -33,7 +27,19 @@ package 'αβ' {
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
-        (range (start 2 4) (end 5 0))
+        (range (start 2 4) (end 3 4))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 3 4) (end 3 16))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 4 4) (end 4 28))
       )
     )
   )

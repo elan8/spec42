@@ -45,21 +45,9 @@ package SuccessionStructured {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 3 4) (end 3 30))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 3 4) (end 3 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 4 4) (end 4 32))
       )
       (diagnostic
         (severity warning)
@@ -78,12 +66,6 @@ package SuccessionStructured {
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 5 4) (end 5 48))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 6 4) (end 6 17))
       )
       (diagnostic
         (severity warning)

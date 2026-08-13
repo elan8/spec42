@@ -1992,7 +1992,7 @@ dependencies = [
 [[package]]
 name = "sysml-v2-parser"
 version = "0.54.0"
-source = "git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=c40b544#c40b544c57259da19dda9f3f382474fff56dca6f"
+source = "git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=0757de13e2e5fe9fc2df8b8343fc864ebf17f18f#0757de13e2e5fe9fc2df8b8343fc864ebf17f18f"
 dependencies = [
  "log",
  "nom",
@@ -2048,7 +2048,7 @@ dependencies = [
  "hashbrown 0.17.1",
  "rayon",
  "source_identity",
- "sysml-v2-parser 0.54.0 (git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=c40b544)",
+ "sysml-v2-parser 0.54.0 (git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=0757de13e2e5fe9fc2df8b8343fc864ebf17f18f)",
 ]
 
 [[package]]

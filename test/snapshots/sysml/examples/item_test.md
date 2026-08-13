@@ -36,12 +36,6 @@ package ItemTest {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 5 2) (end 5 12))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_part_definition_member")
         (source "semantic")
         (range (start 14 2) (end 14 25))
@@ -69,14 +63,18 @@ package ItemTest {
   (declarations
     (declaration (id (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::A"))) (kind item-def) (membership (kind owning) (visibility public)))
+    (declaration (id (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::A::b"))) (kind item) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "B"))))
     (declaration (id (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::A::c"))) (kind part) (membership (kind feature) (visibility protected)) (authored (membership (kind feature) (visibility protected)) (relationships (featureTyping (reference "C"))))
     (declaration (id (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::B"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::B::a"))) (kind part) (membership (kind feature) (visibility public)) (authored (membership (kind feature) (visibility public)) (relationships (featureTyping (reference "A"))))
     (declaration (id (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::C"))) (kind part-def) (membership (kind owning) (visibility private)))
     (declaration (id (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::P"))) (kind port-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::f"))) (kind item-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "A"))))
+    (declaration (id (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::f"))) (kind item) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "A"))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::A::b"))) (kind featureTyping) (ordinal 0))
+      (authored-target "B")
+      (outcome (status resolved) (target (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::B")))))
     (reference (id (source (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::A::c"))) (kind featureTyping) (ordinal 0))
       (authored-target "C")
       (outcome (status resolved) (target (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::C")))))
@@ -88,6 +86,7 @@ package ItemTest {
       (outcome (status resolved) (target (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::A")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::A::b"))) (target (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::B"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::A::b"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::A::c"))) (target (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::C"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::A::c"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::B::a"))) (target (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::A"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::B::a"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::f"))) (target (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::A"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::f"))) (kind featureTyping) (ordinal 0)))
@@ -99,6 +98,10 @@ package ItemTest {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/item_test.md") (range (start 5 10) (end 5 11)) (probe (position 5 10))
+    (reference (id (source (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::A::b"))) (kind featureTyping) (ordinal 0) (authored-target "B")
+      (outcome (status resolved) (target (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::B")))))
+  )
   (query (document "memory://snapshot/item_test.md") (range (start 6 24) (end 6 25)) (probe (position 6 24))
     (reference (id (source (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::A::c"))) (kind featureTyping) (ordinal 0) (authored-target "C")
       (outcome (status resolved) (target (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::C")))))

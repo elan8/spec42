@@ -52,21 +52,9 @@ package FeatureSubDeclCoverage {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 3 4) (end 3 19))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 3 4) (end 3 19))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 4 4) (end 4 20))
       )
       (diagnostic
         (severity warning)
@@ -76,21 +64,9 @@ package FeatureSubDeclCoverage {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 5 4) (end 5 26))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 5 4) (end 5 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 6 4) (end 6 27))
       )
       (diagnostic
         (severity warning)

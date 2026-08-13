@@ -57,21 +57,9 @@ package VehicleDefinitions {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 9 1) (end 9 15))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 9 1) (end 9 15))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 10 1) (end 10 20))
       )
       (diagnostic
         (severity warning)
@@ -81,21 +69,9 @@ package VehicleDefinitions {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 11 1) (end 11 20))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 11 1) (end 11 20))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 12 1) (end 12 12))
       )
       (diagnostic
         (severity warning)
@@ -105,21 +81,9 @@ package VehicleDefinitions {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 13 1) (end 13 13))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 13 1) (end 13 13))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 14 1) (end 16 2))
       )
       (diagnostic
         (severity warning)
@@ -128,10 +92,10 @@ package VehicleDefinitions {
         (range (start 14 1) (end 16 2))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
         (source "parser")
-        (range (start 20 1) (end 22 2))
+        (range (start 15 2) (end 16 1))
       )
       (diagnostic
         (severity warning)
@@ -140,10 +104,10 @@ package VehicleDefinitions {
         (range (start 20 1) (end 22 2))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
+        (severity error)
+        (code "unexpected_keyword_in_scope")
         (source "parser")
-        (range (start 24 1) (end 26 2))
+        (range (start 21 2) (end 22 1))
       )
       (diagnostic
         (severity warning)
@@ -152,16 +116,22 @@ package VehicleDefinitions {
         (range (start 24 1) (end 26 2))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
+        (severity error)
+        (code "unexpected_keyword_in_scope")
         (source "parser")
-        (range (start 28 1) (end 30 2))
+        (range (start 25 2) (end 26 1))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 28 1) (end 30 2))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
+        (range (start 29 2) (end 30 1))
       )
       (diagnostic
         (severity warning)

@@ -37,21 +37,9 @@ package ExpressionCoverage {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 1 4) (end 1 23))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 1 4) (end 1 23))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 2 4) (end 2 20))
       )
       (diagnostic
         (severity warning)
@@ -61,21 +49,9 @@ package ExpressionCoverage {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 4 4) (end 4 24))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 4 4) (end 4 24))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 5 4) (end 5 21))
       )
       (diagnostic
         (severity warning)
@@ -94,12 +70,6 @@ package ExpressionCoverage {
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 6 4) (end 6 20))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 7 4) (end 7 21))
       )
       (diagnostic
         (severity warning)
@@ -145,21 +115,9 @@ package ExpressionCoverage {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 12 4) (end 12 26))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 12 4) (end 12 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 13 4) (end 13 32))
       )
       (diagnostic
         (severity warning)
@@ -183,7 +141,43 @@ package ExpressionCoverage {
         (severity error)
         (code "recovered_package_body_element")
         (source "parser")
-        (range (start 15 34) (end 23 0))
+        (range (start 15 34) (end 16 4))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 16 4) (end 16 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 16 4) (end 16 42))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_package_body_element")
+        (source "parser")
+        (range (start 16 42) (end 18 4))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 18 4) (end 18 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 20 4) (end 20 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 22 4) (end 22 43))
       )
     )
   )

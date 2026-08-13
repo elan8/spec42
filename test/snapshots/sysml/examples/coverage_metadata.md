@@ -28,9 +28,9 @@ package Annotated {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_annotation_syntax")
-        (source "parser")
-        (range (start 4 4) (end 6 4))
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 4 4) (end 4 33))
       )
       (diagnostic
         (severity warning)
@@ -40,9 +40,15 @@ package Annotated {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_annotation_syntax")
-        (source "parser")
-        (range (start 13 4) (end 14 0))
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 13 4) (end 13 14))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 13 14) (end 13 26))
       )
     )
   )
@@ -51,11 +57,12 @@ package Annotated {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b6dea6c5b4a157636cd1481ba69322e85512b6e1cdab2e60932d7965b6c5b6c0") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:b6dea6c5b4a157636cd1481ba69322e85512b6e1cdab2e60932d7965b6c5b6c0") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Annotated"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Annotated::AnnotatedPart"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Annotated::Engine"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Annotated::MultiAnnotated"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Annotated::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Annotated::m"))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Classified"))))
     (declaration (id (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Approval"))) (kind metadata-def) (membership (kind owning) (visibility default)))

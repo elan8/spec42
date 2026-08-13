@@ -35,21 +35,15 @@ package Inheritance {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 1 1) (end 3 2))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 1 1) (end 3 2))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
         (source "parser")
-        (range (start 5 1) (end 7 2))
+        (range (start 2 2) (end 3 1))
       )
       (diagnostic
         (severity warning)
@@ -77,12 +71,6 @@ package Inheritance {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 16 1) (end 16 21))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 16 1) (end 16 21))
@@ -92,12 +80,6 @@ package Inheritance {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 18 14) (end 18 18))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 20 1) (end 20 15))
       )
       (diagnostic
         (severity warning)

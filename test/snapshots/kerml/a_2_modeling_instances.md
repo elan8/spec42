@@ -51,12 +51,6 @@ package ModelingInstancesWithAtoms {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 5 1) (end 5 20))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 5 1) (end 5 20))
@@ -102,12 +96,6 @@ package ModelingInstancesWithAtoms {
         (code "unresolved_import_target")
         (source "semantic")
         (range (start 16 16) (end 16 27))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 18 1) (end 18 20))
       )
       (diagnostic
         (severity warning)

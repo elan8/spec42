@@ -123,21 +123,9 @@ package VehicleUsages {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 10 1) (end 10 19))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 10 1) (end 10 19))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 11 1) (end 11 19))
       )
       (diagnostic
         (severity warning)

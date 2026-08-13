@@ -28,21 +28,9 @@ feature f2 subsets do, step;
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 1 0) (end 1 26))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 1 0) (end 1 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 2 0) (end 2 28))
       )
       (diagnostic
         (severity warning)
