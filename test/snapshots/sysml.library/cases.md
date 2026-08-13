@@ -196,12 +196,6 @@ standard library package Cases {
         (source "semantic")
         (range (start 55 25) (end 60 3))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 64 1) (end 69 2))
-      )
     )
   )
 )
@@ -219,6 +213,7 @@ standard library package Cases {
     (declaration (id (node (document "memory://snapshot/cases.md") (anonymous (kind import) (ordinal 4))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Parts::Part") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/cases.md") (anonymous (kind import) (ordinal 5))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Parts::parts") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case"))) (kind case-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Calculation"))))
+    (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases::cases"))) (kind case) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Case"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/cases.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
@@ -242,8 +237,12 @@ standard library package Cases {
     (reference (id (source (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case"))) (kind specialization) (ordinal 0))
       (authored-target "Calculation")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/cases.md") (qualified-name "Cases::cases"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Case")
+      (outcome (status resolved) (target (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/cases.md") (qualified-name "Cases::cases"))) (target (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/cases.md") (qualified-name "Cases::cases"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -279,6 +278,10 @@ standard library package Cases {
   (query (document "memory://snapshot/cases.md") (range (start 14 27) (end 14 38)) (probe (position 14 27))
     (reference (id (source (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case"))) (kind specialization) (ordinal 0) (authored-target "Calculation")
       (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/cases.md") (range (start 64 23) (end 64 27)) (probe (position 64 23))
+    (reference (id (source (node (document "memory://snapshot/cases.md") (qualified-name "Cases::cases"))) (kind featureTyping) (ordinal 0) (authored-target "Case")
+      (outcome (status resolved) (target (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case")))))
   )
 )
 ~~~

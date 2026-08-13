@@ -16,7 +16,8 @@ use sysml_v2_parser_next::{
     ast::{
         ActionDef, ActionDefBody, ActionDefBodyElement, ActionUsage as ParserActionUsage,
         ActionUsageBody, ActionUsageBodyElement, AliasDef, AllocationDef, AnalysisCaseDef,
-        AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, CaseDef, ConnectStmt,
+        AnalysisCaseUsage as ParserAnalysisCaseUsage, AttributeBody, AttributeBodyElement,
+        AttributeDef, AttributeUsage, CaseDef, CaseUsage as ParserCaseUsage, ConnectStmt,
         ConnectionDef, ConnectionDefBody, ConnectionDefBodyElement, ConnectionEnd,
         ConnectionUsageMember as ParserConnectionUsage, DefinitionBody, DefinitionBodyElement,
         EndDecl, EndIdentity, EnumDef, EnumerationBody, EnumerationUsage as ParserEnumerationUsage,
@@ -179,10 +180,19 @@ enum DeclarationKind {
     /// usages and nested behavior/case structure, mirroring RequirementDefinition lowering.
     /// Analysis-case-specific semantics (subject binding, objective, result parameter binding to
     /// a calc/action) are out of scope here; only ownership, specialization, and owned-member
-    /// structure are lowered. `analysis` usage lowering is deferred (see
-    /// UPSTREAM_PARSER_GAPS.md #5: `AnalysisCaseUsage` silently drops parsed `:>`/`:>>` clauses,
-    /// unlike `AnalysisCaseDef`, which has full field parity).
+    /// structure are lowered. `analysis` usage lowering follows below, in
+    /// `DeclarationKind::AnalysisCaseUsage` (UPSTREAM_PARSER_GAPS.md #5 was resolved upstream in
+    /// `0757de13`: `AnalysisCaseUsage` now carries `subsets`/`redefines` fields with full parity
+    /// to `RequirementUsage`).
     AnalysisCaseDefinition,
+    /// A package/definition/usage-level `analysis` feature member (BNF AnalysisCaseUsage), e.g.
+    /// `analysis fuelEconomyAnalysis_1 : FuelEconomyAnalysis_1 { ... }`. Mirrors
+    /// `RequirementUsage` lowering: ownership, membership, a `:` typing target (bare
+    /// `QualifiedReferenceId`), and `subsets`/`redefines` subsetting relationships resolving
+    /// through the same ancestor-closure fixed point. Analysis-case-specific semantics (subject
+    /// binding, objective, result parameter binding) are out of scope here, sharing
+    /// `UnsupportedFamily::AnalysisCaseDefinitionMember` with the `def` form's body walker.
+    AnalysisCaseUsage,
     /// `interface def` (BNF InterfaceDefinition): a type whose owned members are attribute/item/
     /// port/flow usages, nested `end`/`connect` connector structure, mirroring ConnectionDefinition
     /// lowering (`InterfaceDefBody`/`InterfaceDefBodyElement` share the same `end`/`connect`
@@ -217,10 +227,17 @@ enum DeclarationKind {
     /// nested case structure, mirroring `AnalysisCaseDefinition` lowering (shares the same
     /// `UseCaseDefBody`/`UseCaseDefBodyElement` shape). Case-specific semantics (subject binding,
     /// objective, first-succession/return structure) are out of scope here; only ownership,
-    /// specialization, and owned-member structure are lowered. `case` usage lowering is deferred
-    /// (see UPSTREAM_PARSER_GAPS.md #5: `CaseUsage` silently drops parsed `:>`/`:>>` clauses,
-    /// unlike `CaseDef`, which has full field parity).
+    /// specialization, and owned-member structure are lowered. `case` usage lowering follows
+    /// below, in `DeclarationKind::CaseUsage` (UPSTREAM_PARSER_GAPS.md #5 was resolved upstream
+    /// in `0757de13`: `CaseUsage` now carries `subsets`/`redefines` fields with full parity to
+    /// `RequirementUsage`).
     CaseDefinition,
+    /// A package/definition/usage-level `case` feature member (BNF CaseUsage), mirroring
+    /// `AnalysisCaseUsage` lowering (shares the same field shape: `type_name`/`subsets`/
+    /// `redefines`/body). Case-specific semantics (subject binding, objective, first-succession/
+    /// return structure) are out of scope here, sharing `UnsupportedFamily::CaseDefinitionMember`
+    /// with the `def` form's body walker.
+    CaseUsage,
     /// `verification def` (BNF VerificationCaseDefinition): a type whose owned members are
     /// attribute usages and nested case structure, mirroring `CaseDefinition`/
     /// `AnalysisCaseDefinition` lowering. Verification-specific semantics are out of scope here;
@@ -1010,19 +1027,13 @@ impl SemanticModelBuilder {
                 node.span.clone(),
             ),
             PackageBodyElement::CaseDef(node) => self.lower_case_def(document, owner, node)?,
-            PackageBodyElement::CaseUsage(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::CaseUsage(node) => self.lower_case_usage(document, owner, node)?,
             PackageBodyElement::AnalysisCaseDef(node) => {
                 self.lower_analysis_case_def(document, owner, node)?
             }
-            PackageBodyElement::AnalysisCaseUsage(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::AnalysisCaseUsage(node) => {
+                self.lower_analysis_case_usage(document, owner, node)?
+            }
             PackageBodyElement::VerificationCaseDef(node) => {
                 self.lower_verification_case_def(document, owner, node)?
             }
@@ -1289,6 +1300,16 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::CaseDef(case_def) => {
                         self.lower_case_def(document, Some(declaration), case_def)?;
                     }
+                    PartDefBodyElement::CaseUsage(case_usage) => {
+                        self.lower_case_usage(document, Some(declaration), case_usage)?;
+                    }
+                    PartDefBodyElement::AnalysisCaseUsage(analysis_case_usage) => {
+                        self.lower_analysis_case_usage(
+                            document,
+                            Some(declaration),
+                            analysis_case_usage,
+                        )?;
+                    }
                     PartDefBodyElement::VerificationCaseDef(verification_case_def) => {
                         self.lower_verification_case_def(
                             document,
@@ -1391,9 +1412,7 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::ViewUsage(_)
                     | PartDefBodyElement::ViewpointUsage(_)
                     | PartDefBodyElement::RenderingUsage(_)
-                    | PartDefBodyElement::CaseUsage(_)
                     | PartDefBodyElement::UseCaseUsage(_)
-                    | PartDefBodyElement::AnalysisCaseUsage(_)
                     | PartDefBodyElement::VerificationCaseUsage(_)
                     | PartDefBodyElement::FirstStmt(_)
                     | PartDefBodyElement::Bind(_)
@@ -1476,6 +1495,13 @@ impl SemanticModelBuilder {
                             analysis_case_def,
                         )?;
                     }
+                    PartUsageBodyElement::AnalysisCaseUsage(analysis_case_usage) => {
+                        self.lower_analysis_case_usage(
+                            document,
+                            Some(declaration),
+                            analysis_case_usage,
+                        )?;
+                    }
                     PartUsageBodyElement::RequirementUsage(requirement_usage) => {
                         self.lower_requirement_usage(
                             document,
@@ -1545,7 +1571,6 @@ impl SemanticModelBuilder {
                     | PartUsageBodyElement::ConstraintDef(_)
                     | PartUsageBodyElement::ConstraintUsage(_)
                     | PartUsageBodyElement::CalcUsage(_)
-                    | PartUsageBodyElement::AnalysisCaseUsage(_)
                     | PartUsageBodyElement::AliasDef(_)
                     | PartUsageBodyElement::IncludeUseCase(_)
                     | PartUsageBodyElement::UseCaseUsage(_)
@@ -2661,6 +2686,126 @@ impl SemanticModelBuilder {
         )
     }
 
+    /// Lowers a package/definition/usage-level `analysis` feature member (BNF
+    /// AnalysisCaseUsage), mirroring `lower_requirement_usage`: ownership, membership, a `:`
+    /// typing target (bare `QualifiedReferenceId`, pushed as a `FeatureTyping` reference), and
+    /// `subsets`/`redefines` subsetting relationships. Resolved upstream in `0757de13`
+    /// (UPSTREAM_PARSER_GAPS.md #5): `AnalysisCaseUsage` previously had no typed field to lower
+    /// these relationships from.
+    fn lower_analysis_case_usage(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ParserAnalysisCaseUsage>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::AnalysisCaseUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(type_name) = node.value.type_name {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        self.lower_case_family_def_body(
+            document,
+            declaration,
+            &node.value.body,
+            UnsupportedFamily::AnalysisCaseDefinitionMember,
+        )
+    }
+
+    /// Lowers a package/definition/usage-level `case` feature member (BNF CaseUsage), mirroring
+    /// `lower_analysis_case_usage` (shares the same field shape). Resolved upstream in `0757de13`
+    /// (UPSTREAM_PARSER_GAPS.md #5): `CaseUsage` previously had no typed field to lower
+    /// `subsets`/`redefines` from.
+    fn lower_case_usage(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ParserCaseUsage>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::CaseUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(type_name) = node.value.type_name {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        self.lower_case_family_def_body(
+            document,
+            declaration,
+            &node.value.body,
+            UnsupportedFamily::CaseDefinitionMember,
+        )
+    }
+
     /// Lowers a `verification def` (BNF VerificationCaseDefinition), mirroring `lower_case_def`.
     /// Verification-specific semantics are explicitly out of scope; unrecognized body elements
     /// fall through to `unsupported_verification_case_definition_member`. `verification` usage
@@ -2780,6 +2925,9 @@ impl SemanticModelBuilder {
                 UseCaseDefBodyElement::AttributeUsage(attribute) => {
                     self.lower_attribute_usage(document, Some(owner), attribute)?;
                 }
+                UseCaseDefBodyElement::AnalysisCaseUsage(analysis_case_usage) => {
+                    self.lower_analysis_case_usage(document, Some(owner), analysis_case_usage)?;
+                }
                 UseCaseDefBodyElement::Doc(_) => {}
                 UseCaseDefBodyElement::Other(_)
                 | UseCaseDefBodyElement::Annotation(_)
@@ -2803,7 +2951,6 @@ impl SemanticModelBuilder {
                 | UseCaseDefBodyElement::ForLoop(_)
                 | UseCaseDefBodyElement::ThenAction(_)
                 | UseCaseDefBodyElement::ActionUsage(_)
-                | UseCaseDefBodyElement::AnalysisCaseUsage(_)
                 | UseCaseDefBodyElement::CalcUsage(_)
                 | UseCaseDefBodyElement::RequirementUsage(_)
                 | UseCaseDefBodyElement::PartUsage(_)
@@ -4821,35 +4968,30 @@ mod tests {
     }
 
     #[test]
-    fn analysis_case_definition_member_nested_analysis_usage_stays_explicitly_unsupported() {
-        // `analysis` usage lowering is deferred (UPSTREAM_PARSER_GAPS.md #5: `AnalysisCaseUsage`
-        // silently drops parsed `:>`/`:>>` clauses, unlike `AnalysisCaseDef`), so a nested
-        // `analysis` usage inside an `analysis def` body must surface as an explicit unsupported
-        // diagnostic rather than being silently dropped or misclassified.
-        let request = crate::BuildRequest::new(
-            vec![crate::SourceInput::new(
-                "memory://test/enum.sysml",
-                "package Demo {\n\
-                 \tanalysis def Outer {\n\
-                 \t\tanalysis inner : Outer;\n\
-                 \t}\n\
-                 }\n"
-                .to_string(),
-                crate::SourceKind::Workspace,
-            )],
-            crate::ConstructionSchedule::Sequential,
-            "test-contract-v1",
-        )
-        .unwrap();
-        let published = crate::build(request).unwrap();
-        let mut output = String::new();
-        published
-            .debug()
-            .write_diagnostics_sexpr(&mut output)
-            .unwrap();
+    fn analysis_case_usage_nested_in_an_analysis_def_body_lowers_to_a_declaration() {
+        // UPSTREAM_PARSER_GAPS.md #5 was resolved upstream in `0757de13`: `AnalysisCaseUsage` now
+        // carries `subsets`/`redefines` fields with full parity to `RequirementUsage`, so a nested
+        // `analysis` usage inside an `analysis def` body must lower as its own `analysis`
+        // declaration with its `:` typing target resolved, not fall through to
+        // `unsupported_analysis_case_definition_member`.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tanalysis def Outer {\n\
+             \t\tanalysis inner : Outer;\n\
+             \t}\n\
+             }\n",
+        );
         assert!(
-            output.contains("unsupported_analysis_case_definition_member"),
-            "expected the nested analysis usage to surface as an explicit unsupported diagnostic, got:\n{output}"
+            output.contains("Demo::Outer::inner"),
+            "expected nested analysis usage declaration, got:\n{output}"
+        );
+        assert!(
+            !output.contains("unsupported_analysis_case_definition_member"),
+            "did not expect unsupported_analysis_case_definition_member, got:\n{output}"
+        );
+        assert!(
+            output.contains("(kind analysis)"),
+            "expected inner to lower with kind analysis, got:\n{output}"
         );
     }
 
@@ -4889,10 +5031,31 @@ mod tests {
     }
 
     #[test]
+    fn case_usage_lowers_to_a_declaration_with_its_subsetting_resolved() {
+        // UPSTREAM_PARSER_GAPS.md #5 was resolved upstream in `0757de13`: `CaseUsage` now carries
+        // `subsets`/`redefines` fields with full parity to `RequirementUsage`.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcase baseCase;\n\
+             \tcase derivedCase :> baseCase;\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::derivedCase\"))) (kind case)"),
+            "expected a case usage declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind subsetting) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::derivedCase\")))"
+            ),
+            "expected derivedCase's subsetting of baseCase to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
     fn case_definition_member_nested_action_usage_stays_explicitly_unsupported() {
-        // `case` usage lowering is deferred (UPSTREAM_PARSER_GAPS.md #5: `CaseUsage` silently
-        // drops parsed `:>`/`:>>` clauses, unlike `CaseDef`), so a nested body construct out of
-        // scope for this slice must surface as an explicit unsupported diagnostic.
+        // Nested body constructs out of scope for this slice (e.g. `action` usages inside a
+        // `case def` body) must surface as an explicit unsupported diagnostic.
         let request = crate::BuildRequest::new(
             vec![crate::SourceInput::new(
                 "memory://test/enum.sysml",
