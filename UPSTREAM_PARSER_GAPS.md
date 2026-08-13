@@ -453,6 +453,116 @@ usage body is captured opaquely, not as a structured `ItemUsage` node
   already get a dedicated variant in the same shared body). Not attempted here -- out of scope for
   `sysml_resolution`/`sysml_query`/`spec42-snapshot` to work around.
 
+### 12. `#<keyword> def <Name> ...` "ExtendedDefinition" short form (SysML §8.2.2.27) has no
+grammar production at all -- not even a raw-text fallback node
+
+- **Symptom:** `#situation def Failure;` at package scope produces an `error`-severity
+  `unexpected_keyword_in_scope` diagnostic (source `parser`), not merely a semantic
+  `unsupported_package_member` warning. Zero declarations are published for the prefixed
+  definition -- there is no `Failure` (or `AbstractFailure`, `Vulnerability`, `V`, `x`,
+  `batteryLow`, ...) `DeclarationId` anywhere in the resolved model.
+- **Root cause:** SysML §8.2.2.27 defines `ExtendedDefinition` as `DefinitionExtensionKeyword+
+  'def' DefinitionDeclaration DefinitionBody` -- one or more bare `#<name>` metadata-keyword
+  tags standing *in place of* the usual classifier keyword (`part`/`attribute`/`action`/...)
+  that would otherwise introduce a `Definition`. `sysml-v2-parser` (rev `c40b544`) has no
+  concept of this production whatsoever: `crate::ast::structure` has no `ExtendedDefinition`
+  node, and `grep`ing the entire crate turns up zero hits for `ExtendedDefinition`,
+  `extended_def`, or `DefinitionExtensionKeyword`. What the parser *does* have is
+  `MetadataKeywordUsage` (`src/parser/metadata_annotation.rs`), which covers two different,
+  narrower `#`-forms: `metadata_keyword_usage` (`#keyword (: Type)? (about ...)? body` as a
+  complete, standalone member) and `metadata_keyword_prefix` (a bare `#keyword` tag that
+  prefixes the *next sibling body element*, e.g. `#fmeaspec requirement req1 { ... }`, per
+  `PrefixMetadataMember`). Both are wired into `try_package_body_...` dispatch in
+  `src/parser/package.rs` (~line 1469) and are tried before the raw-text/KerML-opaque
+  fallbacks. For `#situation def Failure;`, `metadata_keyword_prefix` *does* match: it consumes
+  `#situation` (the char after the keyword and whitespace is `d`, alphabetic, satisfying its
+  "looks like the start of another declaration" guard at `src/parser/metadata_annotation.rs`
+  line ~178) and returns a lone `MetadataKeywordUsage` node, deliberately leaving `def
+  Failure;` unconsumed for the next body-element iteration (see that function's doc comment:
+  "the prefixed declaration is left unconsumed ... to parse as its own element"). That design
+  is correct for `PrefixMetadataMember`-style prefixing of an *ordinary* declaration (`#fmeaspec
+  requirement req1 { ... }`, where `requirement req1 { ... }` is independently valid), but wrong
+  for `ExtendedDefinition`: `def Failure;` on its own is not a valid SysML production -- bare
+  `def` with no preceding classifier keyword only has meaning as the tail half of
+  `ExtendedDefinition`, which the parser doesn't implement. So the next iteration's attempt to
+  parse `def Failure;` as a package-body element matches nothing in `PACKAGE_BODY_STARTERS`,
+  falls through every dispatcher, and hits the raw recovery path, producing the `error`-severity
+  `unexpected_keyword_in_scope` diagnostic seen in the snapshot. The `#situation` tag itself
+  *is* lowered as a `PackageBodyElement::MetadataKeywordUsage` node -- `sysml_resolution` has no
+  typed lowering for that variant yet either, hence the paired `unsupported_package_member`
+  warning immediately before each `unexpected_keyword_in_scope` error -- but that is a
+  secondary, cosmetic gap; even if `sysml_resolution` lowered `MetadataKeywordUsage`, the
+  `Failure`/`AbstractFailure`/`Vulnerability`/... definitions themselves would still never
+  exist, because the parser never builds a node for them. This is a genuine, total grammar gap
+  (no production exists to fall back to), not a typed-AST-drops-a-field gap like gaps #3-#9 or
+  a raw-catch-all-fallback gap like gaps #1/#2/#10 -- there is no AST node of any shape for
+  `sysml_resolution` to lower.
+- **Affected AST constructs/fields:** none exist -- `crate::ast::structure`/`crate::ast::package`
+  need a new `ExtendedDefinition` node (or equivalent) carrying: the list of prefix metadata
+  keywords (`Vec<Node<MetadataKeywordUsage>>` or similar, since `#SecurityRelated #situation def
+  Vulnerability;` chains more than one), the underlying `Identification`/name, an optional `:>`
+  specialization clause, and a `DefinitionBody`, wired into package/part/attribute/etc. body
+  dispatch *before* `metadata_keyword_prefix` gets first refusal on a `#<name>` sequence
+  immediately followed by `def`.
+- **Typed representation required:** a `PackageBodyElement`/`PartDefBodyElement`/etc. variant
+  wrapping the new `ExtendedDefinition` node, analogous to how every other definition kind
+  (`PartDef`, `ActionDef`, `ItemDef`, ...) already gets a dedicated variant with a real `name`
+  field for `sysml_resolution` to publish a `DeclarationId` from.
+- **Representative input:** `#situation def Failure;` (package scope). Related forms exercised
+  in the same fixture: `#situation def Failure :> Base;` (with specialization),
+  `abstract #situation def AbstractFailure;` (with `abstract`), `#SecurityRelated #situation def
+  Vulnerability;` (chained prefix keywords), `#situation def Failure { part p; }` (with a body),
+  `variation #situation def V;` (with `variation`). Note `#situation batteryLow;` and
+  `#situation x : T;` (bare/typed *usage* short forms, no `def`) are a distinct, narrower
+  sibling form (`ExtendedUsage`/`PrefixMetadataMember`-applied-to-a-usage) that also has no
+  parser support, but is closer to the already-implemented `metadata_keyword_prefix` shape and
+  may be a smaller upstream lift than full `ExtendedDefinition`.
+- **Why downstream reconstruction would be wrong:** there is no `DeclarationId` for `Failure`/
+  `AbstractFailure`/`Vulnerability`/`V`/etc. at all -- any tool consuming the resolved model
+  (queries, LSP hover/go-to-definition, snapshot regeneration) would need to either silently
+  drop these definitions or fabricate identity for them from the raw diagnostic text, which
+  `sysml_resolution` correctly refuses to do (matching gaps #1/#2/#10's "no typed field, don't
+  guess" precedent).
+- **Representative snapshots:** `test/snapshots/sysml/coverage_extended.md` (primary,
+  exercises every `ExtendedDefinition` variant above). The identical `#<keyword> def <Name>`
+  shape also appears in `test/snapshots/sysml/training/41_user_keyword_example.md` (`#scenario
+  def DeviceFailure { ... }`), `test/snapshots/sysml/examples/cause_and_effect_example.md`, and
+  `test/snapshots/sysml/examples/ahfnorway_topics.md`.
+- **Scale note on `unexpected_keyword_in_scope`/`recovery_cascade_suppressed` generally:** these
+  two codes are generic parser-recovery diagnostics, not specific to this construct -- they fire
+  whenever the recovery machinery in `src/parser/recovery.rs` kicks in after *any* unparseable
+  input, regardless of root cause. Across the full snapshot corpus (`grep -rl` counts as of this
+  writing: 27 files with `unexpected_keyword_in_scope`, 35 with `recovery_cascade_suppressed`),
+  the occurrences trace to at least three independent causes: (a) this `#`-prefix
+  `ExtendedDefinition` gap (`coverage_extended.md` plus ~7 other files containing `#<name> def`/
+  `#<name> <usage>` source text, e.g. `41_user_keyword_example.md`,
+  `cause_and_effect_example.md`, `ahfnorway_topics.md`, `requirement_metadata_example.md`,
+  `kerml/metadata_test.md`, `sysml/examples/metadata_test.md`,
+  `sys_ml_v2_spec_annex_a_simple_vehicle_model.md`); (b) the already-documented `individual`-
+  prefix parser gaps, gap #7 (`coverage_individual.md`, `individual_test.md`,
+  `john_individual_example.md`, `occurrence_test.md`, `coverage_sysml_body_members.md`,
+  `coverage_sysml_usages.md`, `training/28_individuals_and_snapshots_example.md`,
+  `training/34_verification_case_usage_example.md`, and again
+  `sys_ml_v2_spec_annex_a_simple_vehicle_model.md`, which mixes both (a) and (b)); and (c) a
+  long tail of unrelated, mutually-distinct parser-recovery events spread across the remaining
+  ~38 files with neither `#`-prefix nor `individual`-prefix source text -- sampled examples
+  include a `then action <name> \n while ...` labeled-loop-with-succession form
+  (`structured_control_test.md`, `17_control_structures_example.md`), missing-semicolon
+  recovery (`09_connections_example.md`), and various `recovered_<context>_body_element`
+  cascades inside part/action/occurrence bodies (`wheel_package.md`, `vehicle_decomposition.md`,
+  `evsample.md`, `time_varying_attribute.md`, `27_time_slice_and_snapshot_example.md`, the
+  `server_sequence_*` family). None of (c) was found to share a common fixable cause with (a) or
+  this task's target construct, and every sampled instance is itself an `error`-severity
+  parser-source diagnostic (the parser produced no node to lower), so none of them are
+  `sysml_resolution` dispatch gaps -- each would need its own separate parser-side
+  investigation, out of scope here.
+- **Status:** blocking, needs an upstream `sysml-v2-parser` change adding the `ExtendedDefinition`
+  grammar production (SysML §8.2.2.27) as a real typed AST node, analogous to how the Zig
+  `sysml-compiler` reference implementation already models it (`Node.zig`: `extended_def`,
+  `DefinitionExtensionKeyword+ 'def' Definition`). Not attempted here -- out of scope for
+  `sysml_resolution`/`sysml_query`/`spec42-snapshot`, since the parser produces no node (not
+  even a raw-text fallback) for `sysml_resolution` to lower against.
+
 ### Cases traced back to gap #1, not new gaps
 
 - `test/snapshots/kerml/inheritance.md`'s `alias z for y::g;` (same-file qualified lookup to a
