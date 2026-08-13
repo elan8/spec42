@@ -342,6 +342,52 @@ entry should carry enough detail to file/update an upstream issue against
   usage declarations with unconditionally-absent subsetting facts, silently under-reporting a
   relationship real content (`11b-Safety and Security Feature Views.sysml`) depends on.
 
+### 9. `ConcernUsage` has no `specializes`/`subsets`/`redefines` field at all -- affects the `concern def` form itself, not just usage
+
+- **Symptom:** `concern def ConcernCheck :> RequirementCheck { ... }` (real fixture content, see
+  below) parses successfully (no `unsupported_grammar_form`, no parser-level error) but the `:>`
+  relationship is silently discarded before it ever reaches `sysml_resolution`. Unlike every other
+  `*def` kind covered so far, `concern def` is **not** modeled as its own struct at all:
+  `ast::ConcernUsage` (crate `sysml-v2-parser`, `src/ast/requirement.rs`) is the single struct
+  backing both the bare `concern ...` usage form and the `concern def ...` definition form, with
+  `is_definition: bool` as "the sole discriminator between the two" (per the struct's own doc
+  comment). It carries only `name: String`, `type_name: Option<QualifiedReferenceId>` (a bare
+  reference, not a structured `TypingRelationship`), `body: RequirementDefBody`, `is_definition`,
+  and `membership` -- no `specializes`/`subsets`/`redefines` field of any kind.
+  `parser::requirement::concern_usage` (`src/parser/requirement.rs`, lines 976-995) parses the
+  header via `feature_usage_header` (which does parse `:>`/`:>>` into `UsageHeader::subsets`/
+  `redefines`) but only reads `header.type_reference` when constructing the node, dropping
+  whatever `:>`/`:>>` clause was parsed -- for *both* the `concern` and `concern def` textual
+  forms alike, since they share the exact same parser function and AST struct.
+- **Representative input:** `concern def ConcernCheck :> RequirementCheck { ... }` (Systems
+  Library `Requirements.sysml`, `test/snapshots/sysml.library/requirements.md:162`).
+- **Representative snapshots:** `test/snapshots/sysml.library/requirements.md`,
+  `test/snapshots/sysml/coverage_individual.md` (`individual concern def D11;`),
+  `test/snapshots/sysml/examples/view_test.md` (`concern def C { ... }`, no `:>`),
+  `test/snapshots/sysml/examples/sys_ml_v2_spec_annex_a_simple_vehicle_model.md`
+  (`concern def VehicleSafety { ... }`, no `:>`).
+- **Impact:** blocks lowering `concern def` (`DeclarationKind::ConcernDefinition`) with parity to
+  every other `*Definition` kind landed so far, since the in-scope requirement includes an
+  optional `:>` specialization relationship resolving through the existing ancestor-closure fixed
+  point (same shape as `requirement def`/`viewpoint def`) and the typed AST currently offers no
+  field to lower that relationship from -- for the def form specifically, not merely for a
+  separate usage form the way every prior "def-only lands, usage deferred" precedent (#5, #6, #8)
+  worked. This is a **both def and usage affected** gap per the task's stop condition, not a
+  def-only-lands slice: shipping `concern def` lowering here would either silently drop a real
+  `:>` relationship real Systems Library content depends on (`ConcernCheck :> RequirementCheck`)
+  or require re-parsing the clause independently (duplicating parser logic, fragile, out of
+  scope). Not attempted here; all four fixtures above stay on the `unsupported_package_member`
+  fallback for their `concern`/`concern def` members.
+- **Status:** blocking (both def and usage). Needs an upstream `sysml-v2-parser` change either
+  splitting `concern def` into its own `ConcernDef` struct carrying a proper
+  `specializes: Option<Node<TypingRelationship>>` field (mirroring `RequirementDef`/`ViewpointDef`,
+  the cleanest fix given `concern def`'s own BNF `ConcernDefinition` production already exists
+  separately from `ConcernUsage` per the spec) or adding `subsets`/`redefines: Option<Node<
+  SubsettingRelationship>>` fields to the shared `ConcernUsage` struct and wiring
+  `parser::requirement::concern_usage` to populate them from the `UsageHeader` it already
+  computes. Not attempted here -- out of scope for `sysml_resolution`/`sysml_query`/
+  `spec42-snapshot` to work around.
+
 ## Resolved / not blocked (kept for history)
 
 - Alias declarations (`alias X for Y;`) — investigated as a possible parser gap, but the typed
