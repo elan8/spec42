@@ -902,6 +902,22 @@ enum ReferenceKind {
     /// The authored `target` operand (`to`) of a standalone `flow <source> to <target>;`
     /// statement (`FlowUsage.to`), same shape and scope as `FlowSource`.
     FlowTarget,
+    /// The `type_name` of an `Expression::TypeCheck` (`expr istype Type`/`expr hastype Type`/
+    /// `expr as Type`, e.g. `x istype ScalarValues::Integer`), which names a type exactly like
+    /// `AcceptPayloadType`/`FilterMetadataTest`, so it joins the same Subclassification/
+    /// FeatureTyping `DeclarationDomain::Type` lexical lookup fixed point rather than a separate
+    /// one, kept as a distinct `ReferenceKind` purely so a type-check test stays distinct from
+    /// ordinary typing/annotation relationships in query output. The operand (`x`, optional in the
+    /// parser's `TypeCheck` shape though never actually absent for `istype`/`hastype`/`as`) recurses
+    /// back into the same operand-resolution dispatch (`lower_constraint_expression`/
+    /// `lower_calc_expression`/`lower_filter_expression`) the type-check itself was reached
+    /// through, pushing whatever `ReferenceKind` its own shape resolves to (typically
+    /// `ExpressionOperand`/`MemberAccessOperand`). Evaluating the test itself (computing a concrete
+    /// boolean from runtime classification) is out of scope: `istype`/`hastype` genuinely cannot be
+    /// evaluated to a constant without runtime type information this static resolver does not have,
+    /// so `EvalNode::Invocation` (reused rather than adding a distinct variant, exactly like
+    /// `Expression::Tuple`) always folds to `EvaluatedValue::NonConstant`.
+    TypeCheckTarget,
 }
 
 /// The computed or explicit outcome of evaluating one supported constraint/calc expression
@@ -1373,6 +1389,13 @@ fn classify_constraint_node(node: &Expression, ordinal: &mut u32) -> Option<Eval
             let operand = classify_constraint_node(&operand.value, ordinal)?;
             Some(EvalNode::Unary(op.clone(), Box::new(operand)))
         }
+        Expression::TypeCheck { operand, .. } => {
+            let mut children = Vec::with_capacity(1);
+            if let Some(operand) = operand {
+                children.push(classify_constraint_node(&operand.value, ordinal)?);
+            }
+            Some(EvalNode::Invocation(children))
+        }
         _ => None,
     }
 }
@@ -1429,6 +1452,13 @@ fn classify_calc_node(node: &Expression, ordinal: &mut u32) -> Option<EvalNode> 
         Expression::UnaryOp { op, operand } if is_unary_operator(op) => {
             let operand = classify_calc_node(&operand.value, ordinal)?;
             Some(EvalNode::Unary(op.clone(), Box::new(operand)))
+        }
+        Expression::TypeCheck { operand, .. } => {
+            let mut children = Vec::with_capacity(1);
+            if let Some(operand) = operand {
+                children.push(classify_calc_node(&operand.value, ordinal)?);
+            }
+            Some(EvalNode::Invocation(children))
         }
         _ => None,
     }
@@ -2176,6 +2206,35 @@ impl SemanticModelBuilder {
         self.push_reference(PendingReference {
             source: declaration,
             kind: ReferenceKind::InvocationCallee,
+            document,
+            local: target,
+            flags: RelationshipFlags::default(),
+            span,
+            import: None,
+        })?;
+        Ok(())
+    }
+
+    /// Pushes one `ReferenceKind::TypeCheckTarget` reference for an `Expression::TypeCheck`'s
+    /// `type_name` (e.g. `Type` in `x istype Type`), mirroring `push_invocation_callee_reference`'s
+    /// shape but its own `ReferenceKind` since a type-check target joins the `DeclarationDomain::
+    /// Type` fixed point rather than `InvocationCallee`'s `Any` domain.
+    fn push_type_check_target_reference(
+        &mut self,
+        document: DocumentId,
+        declaration: DeclarationId,
+        target: QualifiedReferenceId,
+    ) -> Result<(), ConstructionError> {
+        let span = self.documents[document.index()]
+            .parsed
+            .qualified_reference(target)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span
+            .clone();
+        self.push_reference(PendingReference {
+            source: declaration,
+            kind: ReferenceKind::TypeCheckTarget,
             document,
             local: target,
             flags: RelationshipFlags::default(),
@@ -5121,6 +5180,14 @@ impl SemanticModelBuilder {
             Expression::UnaryOp { op, operand } if is_unary_operator(op) => {
                 self.lower_constraint_expression(document, declaration, family, operand)
             }
+            Expression::TypeCheck {
+                operand, type_name, ..
+            } => {
+                if let Some(operand) = operand {
+                    self.lower_constraint_expression(document, declaration, family, operand)?;
+                }
+                self.push_type_check_target_reference(document, declaration, *type_name)
+            }
             _ => {
                 self.push_unsupported(document, family, node.span.clone());
                 Ok(())
@@ -5218,6 +5285,14 @@ impl SemanticModelBuilder {
             }
             Expression::UnaryOp { op, operand } if is_unary_operator(op) => {
                 self.lower_calc_expression(document, declaration, family, operand)
+            }
+            Expression::TypeCheck {
+                operand, type_name, ..
+            } => {
+                if let Some(operand) = operand {
+                    self.lower_calc_expression(document, declaration, family, operand)?;
+                }
+                self.push_type_check_target_reference(document, declaration, *type_name)
             }
             _ => {
                 self.push_unsupported(document, family, node.span.clone());
@@ -5346,6 +5421,14 @@ impl SemanticModelBuilder {
                     self.lower_filter_expression(document, declaration, item)?;
                 }
                 Ok(())
+            }
+            Expression::TypeCheck {
+                operand, type_name, ..
+            } => {
+                if let Some(operand) = operand {
+                    self.lower_filter_expression(document, declaration, operand)?;
+                }
+                self.push_type_check_target_reference(document, declaration, *type_name)
             }
             _ => {
                 self.push_unsupported(
@@ -12847,6 +12930,104 @@ mod tests {
             ),
             "expected an all-literal tuple to publish NonConstant rather than a fabricated \
              composite value, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn value_assignment_istype_resolves_operand_and_type_target() {
+        // `Expression::TypeCheck` (`x istype T`) resolves the operand through the ordinary
+        // ExpressionOperand recursion and the `T` target through the new TypeCheckTarget
+        // reference, mirroring `AcceptPayloadType`/`FilterMetadataTest`'s Type-domain lookup.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute a : ScalarValues::Integer;\n\
+             \tclass T;\n\
+             \tattribute check = a istype T;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind expressionOperand) (ordinal 0))\n      (authored-target \"a\")\n      \
+                 (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::a\")))))"
+            ),
+            "expected `a` to resolve as an expressionOperand reference, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typeCheckTarget) (ordinal 0))\n      (authored-target \"T\")\n      \
+                 (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::T\")))))"
+            ),
+            "expected `T` to resolve as a typeCheckTarget reference, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::check\"))) (value (kind non-constant)))"
+            ),
+            "expected `a istype T` to publish NonConstant (no runtime type info available), \
+             got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn value_assignment_hastype_resolves_operand_and_type_target() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute a : ScalarValues::Integer;\n\
+             \tclass T;\n\
+             \tattribute check = a hastype T;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind expressionOperand) (ordinal 0))\n      (authored-target \"a\")\n      \
+                 (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::a\")))))"
+            ),
+            "expected `a` to resolve as an expressionOperand reference, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typeCheckTarget) (ordinal 0))\n      (authored-target \"T\")\n      \
+                 (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::T\")))))"
+            ),
+            "expected `T` to resolve as a typeCheckTarget reference, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::check\"))) (value (kind non-constant)))"
+            ),
+            "expected `a hastype T` to publish NonConstant (no runtime type info available), \
+             got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn value_assignment_istype_with_unresolvable_operand_and_type_stays_unresolved() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute check = missingOperand istype MissingType;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind expressionOperand) (ordinal 0))\n      (authored-target \
+                 \"missingOperand\")\n      (outcome (status unresolved))"
+            ),
+            "expected undeclared operand `missingOperand` to stay explicitly unresolved, \
+             got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typeCheckTarget) (ordinal 0))\n      (authored-target \"MissingType\")\n      \
+                 (outcome (status unresolved))"
+            ),
+            "expected undeclared type target `MissingType` to stay explicitly unresolved, \
+             got:\n{output}"
         );
     }
 

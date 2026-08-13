@@ -704,6 +704,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::FilterMetadataTest
                     | ReferenceKind::SatisfyViewpoint
                     | ReferenceKind::AcceptPayloadType
+                    | ReferenceKind::TypeCheckTarget
             )
             .then_some(index)
         })
@@ -1738,7 +1739,8 @@ fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<D
         | ReferenceKind::AcceptPayloadType
         | ReferenceKind::TerminateTarget
         | ReferenceKind::FlowSource
-        | ReferenceKind::FlowTarget => None,
+        | ReferenceKind::FlowTarget
+        | ReferenceKind::TypeCheckTarget => None,
     }
 }
 
@@ -1931,7 +1933,8 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::AcceptPayloadType
             | ReferenceKind::TerminateTarget
             | ReferenceKind::FlowSource
-            | ReferenceKind::FlowTarget => {}
+            | ReferenceKind::FlowTarget
+            | ReferenceKind::TypeCheckTarget => {}
         }
     }
     Ok((

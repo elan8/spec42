@@ -923,6 +923,7 @@ fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::TerminateTarget => "terminateTarget",
         ReferenceKind::FlowSource => "flowSource",
         ReferenceKind::FlowTarget => "flowTarget",
+        ReferenceKind::TypeCheckTarget => "typeCheckTarget",
     }
 }
 
@@ -971,6 +972,7 @@ fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::TerminateTarget => Some("terminateTarget"),
         ReferenceKind::FlowSource => Some("flowSource"),
         ReferenceKind::FlowTarget => Some("flowTarget"),
+        ReferenceKind::TypeCheckTarget => Some("typeCheckTarget"),
         ReferenceKind::NamespaceImport
         | ReferenceKind::MembershipImport
         | ReferenceKind::FilterImport => None,
