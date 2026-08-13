@@ -67,6 +67,51 @@ entry should carry enough detail to file/update an upstream issue against
   shipping calc def declarations with unconditionally-absent specialization facts, silently
   under-reporting a relationship that real Systems Library content depends on.
 
+### 4. `ConstraintUsage` drops the parsed `:>`/`:>>` specialization clauses
+
+- **Symptom:** `constraint name :> a, b { ... }` and `constraint name :>> Qualified::target;`
+  parse successfully (no `unsupported_grammar_form`, no parser-level error) but the `:>`
+  subsetting / `:>>` redefinition relationship is silently discarded before it ever reaches
+  `sysml_resolution`. `ast::view::ConstraintUsage` (crate `sysml-v2-parser`,
+  `src/ast/view.rs`) has only `name`, `type_name: Option<QualifiedReferenceId>`, `body`, and
+  `membership` fields — no `subsets`/`redefines` fields, unlike the structurally analogous
+  `StateUsage`/`PortUsage` (which carry `subsets: Option<Node<SubsettingRelationship>>` and
+  `redefines: Option<Node<SubsettingRelationship>>`, or a structured `typing:
+  Option<Node<TypingRelationship>>`). The shared `feature_usage_header` parser
+  (`src/parser/usage.rs`) *does* parse `:>`/`:>>` clauses (via `specialization_clauses`) into
+  `UsageHeader` — `parser::constraint::constraint_usage` (`src/parser/constraint.rs`, lines
+  75-98) calls `feature_usage_header` and only reads `header.type_reference` when constructing
+  the `ConstraintUsage` node, silently dropping any subsetting/redefinition the header parsed.
+  This is a genuine typed-AST gap, not a grammar/tokenizing gap: the parse succeeds and the
+  information exists transiently inside the parser but never reaches the AST. Note `ConstraintDef`
+  (the `constraint def` form) is unaffected — it has a proper `specializes: Option<Node<
+  TypingRelationship>>` field parsed from `parse_definition_prefix`, with full parity to
+  `ActionDef`/`StateDef`/`ConnectionDef`.
+- **Representative input:** `Systems Library/Constraints.sysml`'s `abstract constraint
+  constraintChecks: ConstraintCheck[0..*] nonunique :> booleanEvaluations { ... }` and
+  `Systems Library/Requirements.sysml`'s `constraint assumptions :>>
+  RequirementConstraintCheck::assumptions;` (both already covered by the parser's own
+  `constraint_usage_tests` regression tests in `src/parser/constraint.rs`, which assert the
+  parse succeeds but do not assert on subsetting/redefinition since there is no field to hold
+  it).
+- **Impact:** blocks lowering `constraint` usage declaration facts
+  (`DeclarationKind::ConstraintUsage`) with full parity to the other `*Usage` kinds, since the
+  in-scope requirement includes `:>`/`:>>` specialization resolving through the existing
+  ancestor-closure fixed point (same shape as `state`/`connection` usage, see commits
+  `36387ec3`/`d0675e2c`) and the typed AST currently offers no field to lower that relationship
+  from for `constraint` usage specifically (`ConstraintUsage.type_name`/`body`/`membership` are
+  present and fine; only `subsets`/`redefines` are missing). `ConstraintDef` itself (the `def`
+  form) is not blocked by this gap.
+- **Status:** blocking. Needs an upstream `sysml-v2-parser` change adding `subsets:
+  Option<Node<SubsettingRelationship>>` and `redefines: Option<Node<SubsettingRelationship>>`
+  fields to `ast::view::ConstraintUsage` and wiring `parser::constraint::constraint_usage` to
+  populate them from the `UsageHeader` it already computes (mirroring `StateUsage`/`PortUsage`).
+  Not attempted here — out of scope for `sysml_resolution`/`sysml_query`/`spec42-snapshot` to
+  work around without either (a) re-parsing the specialization clauses independently
+  (duplicating parser logic, fragile) or (b) shipping constraint usage declarations with
+  unconditionally-absent subsetting/redefinition facts, silently under-reporting a relationship
+  that real Systems Library content (`Constraints.sysml`, `Requirements.sysml`) depends on.
+
 ## Resolved / not blocked (kept for history)
 
 - Alias declarations (`alias X for Y;`) — investigated as a possible parser gap, but the typed
