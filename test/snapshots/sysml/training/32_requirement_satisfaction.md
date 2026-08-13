@@ -75,22 +75,10 @@ package 'Requirement Satisfaction' {
         (range (start 13 49) (end 13 63))
       )
       (diagnostic
-        (severity error)
-        (code "recovered_part_usage_body_element")
-        (source "parser")
-        (range (start 19 2) (end 21 2))
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 21 10) (end 21 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 21 34) (end 21 48))
       )
       (diagnostic
         (severity warning)
@@ -111,7 +99,7 @@ package 'Requirement Satisfaction' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:1e8a2b7305e34b8aaaf63fa42a5a05e72b9be46cd4df689a44c6ae6762ecf101") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1e8a2b7305e34b8aaaf63fa42a5a05e72b9be46cd4df689a44c6ae6762ecf101") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/32_requirement_satisfaction.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Requirement Definitions") (import (shape namespace) (recursive false)))))
@@ -119,6 +107,7 @@ package 'Requirement Satisfaction' {
     (declaration (id (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/32_requirement_satisfaction.md") (anonymous (kind satisfy) (ordinal 0))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (satisfySource (reference "vehicleSpecification")) (satisfyTarget (reference "vehicle_design"))))
     (declaration (id (node (document "memory://snapshot/32_requirement_satisfaction.md") (anonymous (kind satisfy) (ordinal 1))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (satisfySource (reference "engineSpecification")) (memberAccessOperand (reference "vehicle_design::engine_v1"))))
+    (declaration (id (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context::vehicle_design"))) (kind ref) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "vehicle_c1"))))
     (declaration (id (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::provide power"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::provide power::generate torque"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::vehicle_c1"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
@@ -142,10 +131,13 @@ package 'Requirement Satisfaction' {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/32_requirement_satisfaction.md") (anonymous (kind satisfy) (ordinal 0))))) (kind satisfyTarget) (ordinal 0))
       (authored-target "vehicle_design")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context::vehicle_design")))))
     (reference (id (source (node (document "memory://snapshot/32_requirement_satisfaction.md") (anonymous (kind satisfy) (ordinal 1))))) (kind memberAccessOperand) (ordinal 0))
       (authored-target "vehicle_design::engine_v1")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context::vehicle_design"))) (kind subsetting) (ordinal 0))
+      (authored-target "vehicle_c1")
+      (outcome (status resolved) (target (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::vehicle_c1")))))
     (reference (id (source (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::vehicle_c1"))) (kind featureTyping) (ordinal 0))
       (authored-target "Vehicle")
       (outcome (status unresolved)))
@@ -160,6 +152,8 @@ package 'Requirement Satisfaction' {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind satisfyTarget) (source (node (document "memory://snapshot/32_requirement_satisfaction.md") (anonymous (kind satisfy) (ordinal 0))))) (target (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context::vehicle_design"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/32_requirement_satisfaction.md") (anonymous (kind satisfy) (ordinal 0))))) (kind satisfyTarget) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context::vehicle_design"))) (target (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::vehicle_c1"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context::vehicle_design"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
   )
@@ -186,11 +180,15 @@ package 'Requirement Satisfaction' {
   )
   (query (document "memory://snapshot/32_requirement_satisfaction.md") (range (start 21 34) (end 21 48)) (probe (position 21 34))
     (reference (id (source (node (document "memory://snapshot/32_requirement_satisfaction.md") (anonymous (kind satisfy) (ordinal 0))))) (kind satisfyTarget) (ordinal 0) (authored-target "vehicle_design")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context::vehicle_design")))))
   )
   (query (document "memory://snapshot/32_requirement_satisfaction.md") (range (start 22 33) (end 22 57)) (probe (position 22 33))
     (reference (id (source (node (document "memory://snapshot/32_requirement_satisfaction.md") (anonymous (kind satisfy) (ordinal 1))))) (kind memberAccessOperand) (ordinal 0) (authored-target "vehicle_design::engine_v1")
       (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/32_requirement_satisfaction.md") (range (start 19 24) (end 19 34)) (probe (position 19 24))
+    (reference (id (source (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context::vehicle_design"))) (kind subsetting) (ordinal 0) (authored-target "vehicle_c1")
+      (outcome (status resolved) (target (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::vehicle_c1")))))
   )
   (query (document "memory://snapshot/32_requirement_satisfaction.md") (range (start 8 19) (end 8 26)) (probe (position 8 19))
     (reference (id (source (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::vehicle_c1"))) (kind featureTyping) (ordinal 0) (authored-target "Vehicle")

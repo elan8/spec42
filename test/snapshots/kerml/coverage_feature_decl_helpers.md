@@ -34,39 +34,21 @@ package FeatureDeclCoverage {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 3 1) (end 3 13))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 3 1) (end 3 13))
+        (range (start 3 11) (end 3 12))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 4 1) (end 4 13))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 4 1) (end 4 13))
+        (range (start 4 11) (end 4 12))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 5 1) (end 5 13))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 5 1) (end 5 13))
+        (range (start 5 11) (end 5 12))
       )
       (diagnostic
         (severity warning)
@@ -79,18 +61,6 @@ package FeatureDeclCoverage {
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 6 1) (end 6 12))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 7 1) (end 7 21))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 7 1) (end 7 21))
       )
     )
   )
@@ -99,20 +69,46 @@ package FeatureDeclCoverage {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:4383bf7d587d38cb89fbaf501cd8a6723613fd23d4aa52c1e3dc99ebd16c8517") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:4383bf7d587d38cb89fbaf501cd8a6723613fd23d4aa52c1e3dc99ebd16c8517") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::b"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "f"))))
+    (declaration (id (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::e"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "f"))))
+    (declaration (id (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::s"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "f"))))
+    (declaration (id (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::s2"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::b"))) (kind subsetting) (ordinal 0))
+      (authored-target "f")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::e"))) (kind subsetting) (ordinal 0))
+      (authored-target "f")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::s"))) (kind subsetting) (ordinal 0))
+      (authored-target "f")
+      (outcome (status unresolved)))
   )
   (relationships
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::s2"))) (value (kind integer) (integer 42)))
   )
 )
 ~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/coverage_feature_decl_helpers.md") (range (start 5 11) (end 5 12)) (probe (position 5 11))
+    (reference (id (source (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::b"))) (kind subsetting) (ordinal 0) (authored-target "f")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/coverage_feature_decl_helpers.md") (range (start 4 11) (end 4 12)) (probe (position 4 11))
+    (reference (id (source (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::e"))) (kind subsetting) (ordinal 0) (authored-target "f")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/coverage_feature_decl_helpers.md") (range (start 3 11) (end 3 12)) (probe (position 3 11))
+    (reference (id (source (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::s"))) (kind subsetting) (ordinal 0) (authored-target "f")
+      (outcome (status unresolved)))
+  )
 )
 ~~~

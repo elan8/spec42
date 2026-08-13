@@ -313,12 +313,6 @@ standard library package Views {
         (source "semantic")
         (range (start 145 1) (end 162 2))
       )
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "parser")
-        (range (start 161 2) (end 162 1))
-      )
     )
   )
 )
@@ -326,7 +320,7 @@ standard library package Views {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:875f58bcb2871341548a54cda318901e08fdac5047d5a8268b51b3aa8a677ab9") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:875f58bcb2871341548a54cda318901e08fdac5047d5a8268b51b3aa8a677ab9") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/views.md") (qualified-name "Views"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/views.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Parts::Part") (import (shape membership) (recursive false)))))

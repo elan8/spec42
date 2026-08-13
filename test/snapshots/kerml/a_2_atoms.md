@@ -39,15 +39,15 @@ package Atoms {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 10 1) (end 12 2))
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 10 43) (end 10 53))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_calc_definition_member")
         (source "semantic")
-        (range (start 10 1) (end 12 2))
+        (range (start 11 2) (end 11 41))
       )
     )
   )
@@ -56,14 +56,18 @@ package Atoms {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:ce6425b889fc153c98df08a93122a3aedca50b5c85670b6ddf82ad7ecd939f6c") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:ce6425b889fc153c98df08a93122a3aedca50b5c85670b6ddf82ad7ecd939f6c") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/a_2_atoms.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Metaobjects::Metaobject") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Metaobject"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/a_2_atoms.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
       (authored-target "Metaobjects::Metaobject")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata"))) (kind specialization) (ordinal 0))
+      (authored-target "Metaobject")
       (outcome (status unresolved)))
   )
   (relationships
@@ -77,6 +81,10 @@ package Atoms {
 (navigation
   (query (document "memory://snapshot/a_2_atoms.md") (range (start 7 16) (end 7 39)) (probe (position 7 16))
     (reference (id (source (node (document "memory://snapshot/a_2_atoms.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "Metaobjects::Metaobject")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/a_2_atoms.md") (range (start 10 43) (end 10 53)) (probe (position 10 43))
+    (reference (id (source (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata"))) (kind specialization) (ordinal 0) (authored-target "Metaobject")
       (outcome (status unresolved)))
   )
 )

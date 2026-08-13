@@ -1078,12 +1078,6 @@ standard library package MeasurementReferences {
         (range (start 512 33) (end 512 51))
       )
       (diagnostic
-        (severity error)
-        (code "recovered_constraint_body_element")
-        (source "parser")
-        (range (start 522 5) (end 523 5))
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
@@ -1096,7 +1090,7 @@ standard library package MeasurementReferences {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:fd07608c0b2dfc845a311b1c8f5f9f3ce023cba4971fd3cd830a24354253714a") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:fd07608c0b2dfc845a311b1c8f5f9f3ce023cba4971fd3cd830a24354253714a") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/measurement_references.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Collections::Array") (import (shape membership) (recursive false)))))
@@ -1223,6 +1217,7 @@ standard library package MeasurementReferences {
     (declaration (id (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::VectorMeasurementReference::isOrthogonal"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Boolean"))))
     (declaration (id (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::VerifyUnitPowerFactors"))) (kind constraint-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::VerifyUnitPowerFactors::quantityDimension"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "QuantityDimension") (direction in))))
+    (declaration (id (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::VerifyUnitPowerFactors::unitPowerFactors"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "UnitPowerFactor") (direction in))))
     (declaration (id (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::countQuantities"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "CountValue"))))
     (declaration (id (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::dimensionOneQuantities"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "DimensionOneValue"))))
     (declaration (id (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::nullTransformation"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "NullTransformation"))))
@@ -1637,6 +1632,9 @@ standard library package MeasurementReferences {
     (reference (id (source (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::VerifyUnitPowerFactors::quantityDimension"))) (kind featureTyping) (ordinal 0))
       (authored-target "QuantityDimension")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::VerifyUnitPowerFactors::unitPowerFactors"))) (kind featureTyping) (ordinal 0))
+      (authored-target "UnitPowerFactor")
+      (outcome (status resolved) (target (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::UnitPowerFactor")))))
     (reference (id (source (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::countQuantities"))) (kind featureTyping) (ordinal 0))
       (authored-target "CountValue")
       (outcome (status resolved) (target (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::CountValue")))))
@@ -1715,6 +1713,7 @@ standard library package MeasurementReferences {
     (relationship (kind typing) (source (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::UnitConversion::referenceUnit"))) (target (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::MeasurementUnit"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::UnitConversion::referenceUnit"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::UnitPowerFactor::unit"))) (target (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::MeasurementUnit"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::UnitPowerFactor::unit"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::VectorMeasurementReference"))) (target (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::TensorMeasurementReference"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::VectorMeasurementReference"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::VerifyUnitPowerFactors::unitPowerFactors"))) (target (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::UnitPowerFactor"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::VerifyUnitPowerFactors::unitPowerFactors"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::countQuantities"))) (target (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::CountValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::countQuantities"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::dimensionOneQuantities"))) (target (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::DimensionOneValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::dimensionOneQuantities"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::nullTransformation"))) (target (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::NullTransformation"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::nullTransformation"))) (kind featureTyping) (ordinal 0)))
@@ -2291,6 +2290,10 @@ standard library package MeasurementReferences {
   (query (document "memory://snapshot/measurement_references.md") (range (start 523 27) (end 523 44)) (probe (position 523 27))
     (reference (id (source (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::VerifyUnitPowerFactors::quantityDimension"))) (kind featureTyping) (ordinal 0) (authored-target "QuantityDimension")
       (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/measurement_references.md") (range (start 522 26) (end 522 41)) (probe (position 522 26))
+    (reference (id (source (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::VerifyUnitPowerFactors::unitPowerFactors"))) (kind featureTyping) (ordinal 0) (authored-target "UnitPowerFactor")
+      (outcome (status resolved) (target (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::UnitPowerFactor")))))
   )
   (query (document "memory://snapshot/measurement_references.md") (range (start 497 29) (end 497 39)) (probe (position 497 29))
     (reference (id (source (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::countQuantities"))) (kind featureTyping) (ordinal 0) (authored-target "CountValue")

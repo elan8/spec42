@@ -91,15 +91,9 @@ package ExpressionCoverage {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 10 4) (end 10 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 10 4) (end 10 28))
+        (range (start 10 20) (end 10 24))
       )
       (diagnostic
         (severity warning)
@@ -189,8 +183,12 @@ package ExpressionCoverage {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:7a9bb88d3c4b1c3ad264e9edd76f68423257a29ce0610bd33500ba6b555a25a3") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::items"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Item"))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::items"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Item")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -201,5 +199,9 @@ package ExpressionCoverage {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/coverage_expressions.md") (range (start 10 20) (end 10 24)) (probe (position 10 20))
+    (reference (id (source (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::items"))) (kind featureTyping) (ordinal 0) (authored-target "Item")
+      (outcome (status unresolved)))
+  )
 )
 ~~~

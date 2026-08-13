@@ -56,18 +56,6 @@ package MassRollup_2 {
         (source "parser")
         (range (start 9 2) (end 10 1))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 12 1) (end 12 41))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 12 1) (end 12 41))
-      )
     )
   )
 )
@@ -81,6 +69,7 @@ package MassRollup_2 {
     (declaration (id (node (document "memory://snapshot/mass_rollup_2.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "NumericalFunctions") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/mass_rollup_2.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/mass_rollup_2.md") (qualified-name "MassRollup_2::MassedThing"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/mass_rollup_2.md") (qualified-name "MassRollup_2::massedThings"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassedThing"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/mass_rollup_2.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
@@ -89,8 +78,12 @@ package MassRollup_2 {
     (reference (id (source (node (document "memory://snapshot/mass_rollup_2.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
       (authored-target "ISQ")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/mass_rollup_2.md") (qualified-name "MassRollup_2::massedThings"))) (kind featureTyping) (ordinal 0))
+      (authored-target "MassedThing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/mass_rollup_2.md") (qualified-name "MassRollup_2::MassedThing")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/mass_rollup_2.md") (qualified-name "MassRollup_2::massedThings"))) (target (node (document "memory://snapshot/mass_rollup_2.md") (qualified-name "MassRollup_2::MassedThing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/mass_rollup_2.md") (qualified-name "MassRollup_2::massedThings"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -106,6 +99,10 @@ package MassRollup_2 {
   (query (document "memory://snapshot/mass_rollup_2.md") (range (start 2 16) (end 2 22)) (probe (position 2 16))
     (reference (id (source (node (document "memory://snapshot/mass_rollup_2.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "ISQ")
       (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/mass_rollup_2.md") (range (start 12 23) (end 12 34)) (probe (position 12 23))
+    (reference (id (source (node (document "memory://snapshot/mass_rollup_2.md") (qualified-name "MassRollup_2::massedThings"))) (kind featureTyping) (ordinal 0) (authored-target "MassedThing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/mass_rollup_2.md") (qualified-name "MassRollup_2::MassedThing")))))
   )
 )
 ~~~

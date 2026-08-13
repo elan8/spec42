@@ -116,12 +116,6 @@ package 'Vehicle Decomposition - Updated' {
         (range (start 48 18) (end 48 21))
       )
       (diagnostic
-        (severity error)
-        (code "recovered_part_usage_body_element")
-        (source "parser")
-        (range (start 52 2) (end 53 1))
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
@@ -164,7 +158,7 @@ package 'Vehicle Decomposition - Updated' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:100f0fb7e6be61521ca58d898f11873a026a2df72b8b7eacca12ab5796e534f6") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:100f0fb7e6be61521ca58d898f11873a026a2df72b8b7eacca12ab5796e534f6") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/vehicle_decomposition_updated.md") (qualified-name "Vehicle Decomposition - Updated"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_decomposition_updated.md") (qualified-name "Vehicle Decomposition - Updated::Chassis Assembly"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -184,6 +178,7 @@ package 'Vehicle Decomposition - Updated' {
     (declaration (id (node (document "memory://snapshot/vehicle_decomposition_updated.md") (anonymous (kind part) (ordinal 1))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "w"))))
     (declaration (id (node (document "memory://snapshot/vehicle_decomposition_updated.md") (anonymous (kind part) (ordinal 0))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "cyl"))))
     (declaration (id (node (document "memory://snapshot/vehicle_decomposition_updated.md") (anonymous (kind part) (ordinal 0))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "lb"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_decomposition_updated.md") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::lugBolts"))) (kind ref) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_decomposition_updated.md") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "vehicle"))))
     (declaration (id (node (document "memory://snapshot/vehicle_decomposition_updated.md") (anonymous (kind part) (ordinal 0))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "chs"))))
     (declaration (id (node (document "memory://snapshot/vehicle_decomposition_updated.md") (anonymous (kind part) (ordinal 1))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "eng"))))

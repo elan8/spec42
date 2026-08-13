@@ -131,10 +131,16 @@ package 'For Loop Example' {
         (range (start 18 25) (end 18 34))
       )
       (diagnostic
-        (severity error)
-        (code "recovered_action_body_element")
-        (source "parser")
-        (range (start 19 2) (end 21 2))
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 19 29) (end 19 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_definition_member")
+        (source "semantic")
+        (range (start 19 47) (end 19 50))
       )
       (diagnostic
         (severity warning)
@@ -161,7 +167,7 @@ package 'For Loop Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b957cd70deb6bd168fa163de0ddf0ad5f384d7a9f75acd17822ae1ee819984ec") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:b957cd70deb6bd168fa163de0ddf0ad5f384d7a9f75acd17822ae1ee819984ec") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/20_assignment_example.md") (qualified-name "For Loop Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/20_assignment_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "SequenceFunctions") (import (shape namespace) (recursive false)))))
@@ -169,6 +175,7 @@ package 'For Loop Example' {
     (declaration (id (node (document "memory://snapshot/20_assignment_example.md") (qualified-name "For Loop Example::ComputeMotion::deltaT"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ISQ::time") (direction in))))
     (declaration (id (node (document "memory://snapshot/20_assignment_example.md") (qualified-name "For Loop Example::ComputeMotion::initialPosition"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ISQ::length") (direction in))))
     (declaration (id (node (document "memory://snapshot/20_assignment_example.md") (qualified-name "For Loop Example::ComputeMotion::initialSpeed"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ISQ::speed") (direction in))))
+    (declaration (id (node (document "memory://snapshot/20_assignment_example.md") (qualified-name "For Loop Example::ComputeMotion::positions"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ISQ::length") (direction out))))
     (declaration (id (node (document "memory://snapshot/20_assignment_example.md") (qualified-name "For Loop Example::ComputeMotion::powerProfile"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ISQ::power") (direction in))))
     (declaration (id (node (document "memory://snapshot/20_assignment_example.md") (qualified-name "For Loop Example::ComputeMotion::vehicleMass"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ISQ::mass") (direction in))))
     (declaration (id (node (document "memory://snapshot/20_assignment_example.md") (qualified-name "For Loop Example::StraightLineDynamics"))) (kind action-def) (membership (kind owning) (visibility default)))
@@ -192,6 +199,9 @@ package 'For Loop Example' {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/20_assignment_example.md") (qualified-name "For Loop Example::ComputeMotion::initialSpeed"))) (kind featureTyping) (ordinal 0))
       (authored-target "ISQ::speed")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/20_assignment_example.md") (qualified-name "For Loop Example::ComputeMotion::positions"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ISQ::length")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/20_assignment_example.md") (qualified-name "For Loop Example::ComputeMotion::powerProfile"))) (kind featureTyping) (ordinal 0))
       (authored-target "ISQ::power")
@@ -244,6 +254,10 @@ package 'For Loop Example' {
   )
   (query (document "memory://snapshot/20_assignment_example.md") (range (start 17 31) (end 17 41)) (probe (position 17 31))
     (reference (id (source (node (document "memory://snapshot/20_assignment_example.md") (qualified-name "For Loop Example::ComputeMotion::initialSpeed"))) (kind featureTyping) (ordinal 0) (authored-target "ISQ::speed")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/20_assignment_example.md") (range (start 19 29) (end 19 40)) (probe (position 19 29))
+    (reference (id (source (node (document "memory://snapshot/20_assignment_example.md") (qualified-name "For Loop Example::ComputeMotion::positions"))) (kind featureTyping) (ordinal 0) (authored-target "ISQ::length")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/20_assignment_example.md") (range (start 14 31) (end 14 41)) (probe (position 14 31))

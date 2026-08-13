@@ -16,15 +16,9 @@ feature f2 subsets do, step;
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 0 0) (end 0 21))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 0 0) (end 0 21))
+        (range (start 0 16) (end 0 20))
       )
       (diagnostic
         (severity warning)
@@ -45,10 +39,14 @@ feature f2 subsets do, step;
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:870cf7bf1d066adc36b27b6839d7bcafa39bd146446f9bf73557b640a5c403bc") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:870cf7bf1d066adc36b27b6839d7bcafa39bd146446f9bf73557b640a5c403bc") (contract-version "parser-owned-resolution-v1"))
   (declarations
+    (declaration (id (node (document "memory://snapshot/subsets_keyword_names.md") (qualified-name "s1"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "step"))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/subsets_keyword_names.md") (qualified-name "s1"))) (kind subsetting) (ordinal 0))
+      (authored-target "step")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -59,5 +57,9 @@ feature f2 subsets do, step;
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/subsets_keyword_names.md") (range (start 0 16) (end 0 20)) (probe (position 0 16))
+    (reference (id (source (node (document "memory://snapshot/subsets_keyword_names.md") (qualified-name "s1"))) (kind subsetting) (ordinal 0) (authored-target "step")
+      (outcome (status unresolved)))
+  )
 )
 ~~~

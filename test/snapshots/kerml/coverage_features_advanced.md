@@ -61,15 +61,9 @@ package FeatureAdvancedCoverage {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 6 4) (end 8 5))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_calc_definition_member")
         (source "semantic")
-        (range (start 6 4) (end 8 5))
+        (range (start 7 8) (end 7 29))
       )
       (diagnostic
         (severity warning)
@@ -174,6 +168,7 @@ package FeatureAdvancedCoverage {
     (declaration (id (node (document "memory://snapshot/coverage_features_advanced.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (membershipImport (reference "C") (import (shape membership) (recursive true)))))
     (declaration (id (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::C"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::MyPackage"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::fIn"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/coverage_features_advanced.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))

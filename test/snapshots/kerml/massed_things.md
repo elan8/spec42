@@ -44,15 +44,15 @@ package MassedThings {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 8 1) (end 11 2))
+        (code "unsupported_calc_definition_member")
+        (source "semantic")
+        (range (start 9 2) (end 9 50))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_calc_definition_member")
         (source "semantic")
-        (range (start 8 1) (end 11 2))
+        (range (start 10 2) (end 10 47))
       )
     )
   )
@@ -66,6 +66,7 @@ package MassedThings {
     (declaration (id (node (document "memory://snapshot/massed_things.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThing"))) (kind class-def) (membership (kind owning) (visibility public)))
+    (declaration (id (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThingAssembly"))) (kind kerml-classifier) (membership (kind owning) (visibility public)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/massed_things.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
