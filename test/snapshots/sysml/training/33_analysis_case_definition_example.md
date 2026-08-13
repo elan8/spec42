@@ -207,9 +207,21 @@ package 'Analysis Case Definition Example' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_analysis_case_definition_member")
+        (code "unsupported_action_usage_member")
         (source "semantic")
-        (range (start 49 2) (end 71 3))
+        (range (start 50 3) (end 50 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_usage_member")
+        (source "semantic")
+        (range (start 51 3) (end 51 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_usage_member")
+        (source "semantic")
+        (range (start 57 3) (end 70 4))
       )
       (diagnostic
         (severity warning)
@@ -244,6 +256,7 @@ package 'Analysis Case Definition Example' {
     (declaration (id (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::DistancePerVolumeValue"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "ScalarQuantityValue"))))
     (declaration (id (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis"))) (kind analysis-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis::scenario"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "WayPoint"))))
+    (declaration (id (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis::solveForPower"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::Vehicle::cargoMass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassValue"))))
     (declaration (id (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::Vehicle::driveTrainEfficiency"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real"))))

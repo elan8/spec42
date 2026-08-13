@@ -87,9 +87,9 @@ package '13a-Model Containment' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_requirement_definition_member")
+        (code "unresolved_import_target")
         (source "semantic")
-        (range (start 5 2) (end 5 42))
+        (range (start 5 16) (end 5 41))
       )
       (diagnostic
         (severity warning)
@@ -128,12 +128,13 @@ package '13a-Model Containment' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:51b9f2b846f0a5f90279a22aef7c274f6a3e850233ecc25eeb44e4f918280f1d") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:51b9f2b846f0a5f90279a22aef7c274f6a3e850233ecc25eeb44e4f918280f1d") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/13a_model_containment.md") (qualified-name "13a-Model Containment"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/13a_model_containment.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "2a-Parts Interconnection") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/13a_model_containment.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "8-Requirements") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/13a_model_containment.md") (qualified-name "13a-Model Containment::BodyAndInteriorRequirements"))) (kind requirement) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/13a_model_containment.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (membershipImport (reference "MassLimitationRequirement") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/13a_model_containment.md") (qualified-name "13a-Model Containment::PowerTrainRequirements"))) (kind requirement) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/13a_model_containment.md") (qualified-name "13a-Model Containment::Vehicle Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/13a_model_containment.md") (qualified-name "13a-Model Containment::Vehicle Model::Body&Interior"))) (kind package) (membership (kind owning) (visibility default)))
@@ -158,6 +159,9 @@ package '13a-Model Containment' {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/13a_model_containment.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
       (authored-target "8-Requirements")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/13a_model_containment.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+      (authored-target "MassLimitationRequirement")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/13a_model_containment.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
       (authored-target "BodyAndInteriorRequirements")
@@ -205,6 +209,10 @@ package '13a-Model Containment' {
   )
   (query (document "memory://snapshot/13a_model_containment.md") (range (start 2 16) (end 2 35)) (probe (position 2 16))
     (reference (id (source (node (document "memory://snapshot/13a_model_containment.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "8-Requirements")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/13a_model_containment.md") (range (start 5 16) (end 5 41)) (probe (position 5 16))
+    (reference (id (source (node (document "memory://snapshot/13a_model_containment.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "MassLimitationRequirement")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/13a_model_containment.md") (range (start 51 17) (end 51 44)) (probe (position 51 17))

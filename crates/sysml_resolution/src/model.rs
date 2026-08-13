@@ -1466,6 +1466,9 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::CalcUsage(calc_usage) => {
                         self.lower_calc_usage(document, Some(declaration), calc_usage)?;
                     }
+                    PartDefBodyElement::AliasDef(alias_def) => {
+                        self.lower_alias_def(document, Some(declaration), alias_def)?;
+                    }
                     PartDefBodyElement::Doc(_) | PartDefBodyElement::Comment(_) => {}
                     PartDefBodyElement::Annotation(_)
                     | PartDefBodyElement::MetadataAnnotation(_)
@@ -1488,8 +1491,7 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::UseCaseUsage(_)
                     | PartDefBodyElement::VerificationCaseUsage(_)
                     | PartDefBodyElement::FirstStmt(_)
-                    | PartDefBodyElement::Bind(_)
-                    | PartDefBodyElement::AliasDef(_) => self.push_unsupported(
+                    | PartDefBodyElement::Bind(_) => self.push_unsupported(
                         document,
                         UnsupportedFamily::PartDefinitionMember,
                         element.span.clone(),
@@ -1639,6 +1641,9 @@ impl SemanticModelBuilder {
                     PartUsageBodyElement::CalcUsage(calc_usage) => {
                         self.lower_calc_usage(document, Some(declaration), calc_usage)?;
                     }
+                    PartUsageBodyElement::AliasDef(alias_def) => {
+                        self.lower_alias_def(document, Some(declaration), alias_def)?;
+                    }
                     PartUsageBodyElement::Doc(_) => {}
                     PartUsageBodyElement::Annotation(_)
                     | PartUsageBodyElement::DefaultReferenceUsage(_)
@@ -1654,7 +1659,6 @@ impl SemanticModelBuilder {
                     | PartUsageBodyElement::MetadataKeywordUsage(_)
                     | PartUsageBodyElement::VariantUsage(_)
                     | PartUsageBodyElement::AssertConstraint(_)
-                    | PartUsageBodyElement::AliasDef(_)
                     | PartUsageBodyElement::IncludeUseCase(_)
                     | PartUsageBodyElement::UseCaseUsage(_)
                     | PartUsageBodyElement::VerificationCaseUsage(_) => self.push_unsupported(
@@ -2209,6 +2213,9 @@ impl SemanticModelBuilder {
                 ActionDefBodyElement::OccurrenceUsage(occurrence_usage) => {
                     self.lower_occurrence_usage(document, Some(owner), occurrence_usage)?;
                 }
+                ActionDefBodyElement::PartUsage(part_usage) => {
+                    self.lower_part_usage(document, Some(owner), part_usage)?;
+                }
                 ActionDefBodyElement::Doc(_) => {}
                 ActionDefBodyElement::InOutDecl(_)
                 | ActionDefBodyElement::Annotation(_)
@@ -2228,7 +2235,6 @@ impl SemanticModelBuilder {
                 | ActionDefBodyElement::WhileStmt(_)
                 | ActionDefBodyElement::LoopStmt(_)
                 | ActionDefBodyElement::IfStmt(_)
-                | ActionDefBodyElement::PartUsage(_)
                 | ActionDefBodyElement::AssertConstraint(_)
                 | ActionDefBodyElement::Assign(_)
                 | ActionDefBodyElement::ForLoop(_)
@@ -2320,6 +2326,9 @@ impl SemanticModelBuilder {
                 ActionUsageBodyElement::OccurrenceUsage(occurrence_usage) => {
                     self.lower_occurrence_usage(document, Some(owner), occurrence_usage)?;
                 }
+                ActionUsageBodyElement::PartUsage(part_usage) => {
+                    self.lower_part_usage(document, Some(owner), part_usage)?;
+                }
                 ActionUsageBodyElement::Doc(_) => {}
                 ActionUsageBodyElement::Annotation(_)
                 | ActionUsageBodyElement::MetadataAnnotation(_)
@@ -2338,7 +2347,6 @@ impl SemanticModelBuilder {
                 | ActionUsageBodyElement::WhileStmt(_)
                 | ActionUsageBodyElement::LoopStmt(_)
                 | ActionUsageBodyElement::IfStmt(_)
-                | ActionUsageBodyElement::PartUsage(_)
                 | ActionUsageBodyElement::AssertConstraint(_)
                 | ActionUsageBodyElement::Assign(_)
                 | ActionUsageBodyElement::ForLoop(_)
@@ -2628,12 +2636,17 @@ impl SemanticModelBuilder {
                 RequirementDefBodyElement::RequirementUsage(requirement) => {
                     self.lower_requirement_usage(document, Some(owner), requirement)?;
                 }
+                RequirementDefBodyElement::Import(import) => {
+                    self.lower_import(document, Some(owner), import)?;
+                }
+                RequirementDefBodyElement::Constraint(constraint) => {
+                    self.lower_constraint_usage(document, Some(owner), constraint)?;
+                }
                 RequirementDefBodyElement::Doc(_) => {}
                 RequirementDefBodyElement::Other(_)
                 | RequirementDefBodyElement::Annotation(_)
                 | RequirementDefBodyElement::MetadataAnnotation(_)
                 | RequirementDefBodyElement::MetadataKeywordUsage(_)
-                | RequirementDefBodyElement::Import(_)
                 | RequirementDefBodyElement::SubjectDecl(_)
                 | RequirementDefBodyElement::SubjectRef(_)
                 | RequirementDefBodyElement::RequirementActorDecl(_)
@@ -2642,7 +2655,6 @@ impl SemanticModelBuilder {
                 | RequirementDefBodyElement::VariantUsage(_)
                 | RequirementDefBodyElement::VerifyRequirement(_)
                 | RequirementDefBodyElement::RequireConstraint(_)
-                | RequirementDefBodyElement::Constraint(_)
                 | RequirementDefBodyElement::Frame(_)
                 | RequirementDefBodyElement::TextualRep(_) => {
                     self.push_unsupported(document, unsupported, element.span.clone())
@@ -3126,6 +3138,18 @@ impl SemanticModelBuilder {
                 UseCaseDefBodyElement::AnalysisCaseUsage(analysis_case_usage) => {
                     self.lower_analysis_case_usage(document, Some(owner), analysis_case_usage)?;
                 }
+                UseCaseDefBodyElement::ActionUsage(action_usage) => {
+                    self.lower_action_usage(document, Some(owner), action_usage)?;
+                }
+                UseCaseDefBodyElement::CalcUsage(calc_usage) => {
+                    self.lower_calc_usage(document, Some(owner), calc_usage)?;
+                }
+                UseCaseDefBodyElement::RequirementUsage(requirement_usage) => {
+                    self.lower_requirement_usage(document, Some(owner), requirement_usage)?;
+                }
+                UseCaseDefBodyElement::PartUsage(part_usage) => {
+                    self.lower_part_usage(document, Some(owner), part_usage)?;
+                }
                 UseCaseDefBodyElement::Doc(_) => {}
                 UseCaseDefBodyElement::Other(_)
                 | UseCaseDefBodyElement::Annotation(_)
@@ -3148,10 +3172,6 @@ impl SemanticModelBuilder {
                 | UseCaseDefBodyElement::Assign(_)
                 | UseCaseDefBodyElement::ForLoop(_)
                 | UseCaseDefBodyElement::ThenAction(_)
-                | UseCaseDefBodyElement::ActionUsage(_)
-                | UseCaseDefBodyElement::CalcUsage(_)
-                | UseCaseDefBodyElement::RequirementUsage(_)
-                | UseCaseDefBodyElement::PartUsage(_)
                 | UseCaseDefBodyElement::Expression(_)
                 | UseCaseDefBodyElement::FlowUsage(_) => {
                     self.push_unsupported(document, unsupported, element.span.clone())
@@ -3218,10 +3238,14 @@ impl SemanticModelBuilder {
                     PortDefBodyElement::PortUsage(port_usage) => {
                         self.lower_port_usage(document, Some(declaration), port_usage)?;
                     }
+                    PortDefBodyElement::ItemDef(item_def) => {
+                        self.lower_item_def(document, Some(declaration), item_def)?;
+                    }
+                    PortDefBodyElement::ItemUsage(item_usage) => {
+                        self.lower_item_usage(document, Some(declaration), item_usage)?;
+                    }
                     PortDefBodyElement::Doc(_) => {}
                     PortDefBodyElement::InOutDecl(_)
-                    | PortDefBodyElement::ItemDef(_)
-                    | PortDefBodyElement::ItemUsage(_)
                     | PortDefBodyElement::MetadataKeywordUsage(_)
                     | PortDefBodyElement::Other(_) => self.push_unsupported(
                         document,
@@ -3294,13 +3318,15 @@ impl SemanticModelBuilder {
                     PortBodyElement::PortUsage(port_usage) => {
                         self.lower_port_usage(document, Some(declaration), port_usage)?;
                     }
+                    PortBodyElement::ItemUsage(item_usage) => {
+                        self.lower_item_usage(document, Some(declaration), item_usage)?;
+                    }
                     PortBodyElement::Doc(_) => {}
-                    PortBodyElement::InOutDecl(_) | PortBodyElement::ItemUsage(_) => self
-                        .push_unsupported(
-                            document,
-                            UnsupportedFamily::PortUsageMember,
-                            element.span.clone(),
-                        ),
+                    PortBodyElement::InOutDecl(_) => self.push_unsupported(
+                        document,
+                        UnsupportedFamily::PortUsageMember,
+                        element.span.clone(),
+                    ),
                 }
             }
         }
@@ -4067,7 +4093,7 @@ impl SemanticModelBuilder {
     fn lower_constraint_def_body(
         &mut self,
         document: DocumentId,
-        _declaration: DeclarationId,
+        declaration: DeclarationId,
         body: &ConstraintDefBody,
     ) -> Result<(), ConstructionError> {
         if let ConstraintDefBody::Brace { elements } = body {
@@ -4076,11 +4102,13 @@ impl SemanticModelBuilder {
                     ConstraintDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span.clone());
                     }
+                    ConstraintDefBodyElement::Constraint(constraint) => {
+                        self.lower_constraint_usage(document, Some(declaration), constraint)?;
+                    }
                     ConstraintDefBodyElement::Doc(_) => {}
                     ConstraintDefBodyElement::InOutDecl(_)
                     | ConstraintDefBodyElement::MetadataAnnotation(_)
                     | ConstraintDefBodyElement::Expression(_)
-                    | ConstraintDefBodyElement::Constraint(_)
                     | ConstraintDefBodyElement::AttributeUsage(_)
                     | ConstraintDefBodyElement::Other(_) => self.push_unsupported(
                         document,
@@ -4197,7 +4225,7 @@ impl SemanticModelBuilder {
     fn lower_calc_def_body(
         &mut self,
         document: DocumentId,
-        _declaration: DeclarationId,
+        declaration: DeclarationId,
         body: &CalcDefBody,
     ) -> Result<(), ConstructionError> {
         if let CalcDefBody::Brace { elements } = body {
@@ -4206,14 +4234,20 @@ impl SemanticModelBuilder {
                     CalcDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span.clone());
                     }
+                    CalcDefBodyElement::CalcUsage(calc_usage) => {
+                        self.lower_calc_usage(document, Some(declaration), calc_usage)?;
+                    }
+                    CalcDefBodyElement::CalcDef(calc_def) => {
+                        self.lower_calc_def(document, Some(declaration), calc_def)?;
+                    }
+                    CalcDefBodyElement::PartUsage(part_usage) => {
+                        self.lower_part_usage(document, Some(declaration), part_usage)?;
+                    }
                     CalcDefBodyElement::Doc(_) => {}
                     CalcDefBodyElement::InOutDecl(_)
                     | CalcDefBodyElement::ReturnDecl(_)
                     | CalcDefBodyElement::MetadataAnnotation(_)
                     | CalcDefBodyElement::Expression(_)
-                    | CalcDefBodyElement::CalcUsage(_)
-                    | CalcDefBodyElement::CalcDef(_)
-                    | CalcDefBodyElement::PartUsage(_)
                     | CalcDefBodyElement::Other(_) => self.push_unsupported(
                         document,
                         UnsupportedFamily::CalcDefinitionMember,
@@ -6090,33 +6124,20 @@ mod tests {
     }
 
     #[test]
-    fn case_definition_member_nested_action_usage_stays_explicitly_unsupported() {
-        // Nested body constructs out of scope for this slice (e.g. `action` usages inside a
-        // `case def` body) must surface as an explicit unsupported diagnostic.
-        let request = crate::BuildRequest::new(
-            vec![crate::SourceInput::new(
-                "memory://test/enum.sysml",
-                "package Demo {\n\
-                 \tcase def Outer {\n\
-                 \t\taction inner;\n\
-                 \t}\n\
-                 }\n"
-                .to_string(),
-                crate::SourceKind::Workspace,
-            )],
-            crate::ConstructionSchedule::Sequential,
-            "test-contract-v1",
-        )
-        .unwrap();
-        let published = crate::build(request).unwrap();
-        let mut output = String::new();
-        published
-            .debug()
-            .write_diagnostics_sexpr(&mut output)
-            .unwrap();
+    fn case_definition_member_nested_action_usage_lowers_to_a_declaration() {
+        // A nested `action` usage inside a `case def` body dispatches through the
+        // `UseCaseDefBodyElement::ActionUsage` -> `lower_action_usage` wiring shared with
+        // `use case def`/`verification def` bodies (they all use `UseCaseDefBody`).
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcase def Outer {\n\
+             \t\taction inner;\n\
+             \t}\n\
+             }\n",
+        );
         assert!(
-            output.contains("unsupported_case_definition_member"),
-            "expected the nested action usage to surface as an explicit unsupported diagnostic, got:\n{output}"
+            output.contains("(qualified-name \"Demo::Outer::inner\"))) (kind action)"),
+            "expected an owned action usage declaration under the case def, got:\n{output}"
         );
     }
 
@@ -6159,35 +6180,20 @@ mod tests {
     }
 
     #[test]
-    fn verification_case_definition_member_nested_action_usage_stays_explicitly_unsupported() {
-        // `verification` usage lowering is deferred (UPSTREAM_PARSER_GAPS.md #5:
-        // `VerificationCaseUsage` silently drops parsed `:>`/`:>>` clauses, unlike
-        // `VerificationCaseDef`), so a nested body construct out of scope for this slice must
-        // surface as an explicit unsupported diagnostic.
-        let request = crate::BuildRequest::new(
-            vec![crate::SourceInput::new(
-                "memory://test/enum.sysml",
-                "package Demo {\n\
-                 \tverification def Outer {\n\
-                 \t\taction inner;\n\
-                 \t}\n\
-                 }\n"
-                .to_string(),
-                crate::SourceKind::Workspace,
-            )],
-            crate::ConstructionSchedule::Sequential,
-            "test-contract-v1",
-        )
-        .unwrap();
-        let published = crate::build(request).unwrap();
-        let mut output = String::new();
-        published
-            .debug()
-            .write_diagnostics_sexpr(&mut output)
-            .unwrap();
+    fn verification_case_definition_member_nested_action_usage_lowers_to_a_declaration() {
+        // Same `UseCaseDefBodyElement::ActionUsage` -> `lower_action_usage` wiring as
+        // `case_definition_member_nested_action_usage_lowers_to_a_declaration`, exercised
+        // through the `verification def` body shape.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tverification def Outer {\n\
+             \t\taction inner;\n\
+             \t}\n\
+             }\n",
+        );
         assert!(
-            output.contains("unsupported_verification_case_definition_member"),
-            "expected the nested action usage to surface as an explicit unsupported diagnostic, got:\n{output}"
+            output.contains("(qualified-name \"Demo::Outer::inner\"))) (kind action)"),
+            "expected an owned action usage declaration under the verification def, got:\n{output}"
         );
     }
 
@@ -6227,35 +6233,20 @@ mod tests {
     }
 
     #[test]
-    fn use_case_definition_member_nested_action_usage_stays_explicitly_unsupported() {
-        // `use case` usage lowering is deferred (UPSTREAM_PARSER_GAPS.md #5: `UseCaseUsage`
-        // silently drops parsed `:>`/`:>>` clauses, unlike `UseCaseDef`), so a nested body
-        // construct out of scope for this slice must surface as an explicit unsupported
-        // diagnostic.
-        let request = crate::BuildRequest::new(
-            vec![crate::SourceInput::new(
-                "memory://test/enum.sysml",
-                "package Demo {\n\
-                 \tuse case def Outer {\n\
-                 \t\taction inner;\n\
-                 \t}\n\
-                 }\n"
-                .to_string(),
-                crate::SourceKind::Workspace,
-            )],
-            crate::ConstructionSchedule::Sequential,
-            "test-contract-v1",
-        )
-        .unwrap();
-        let published = crate::build(request).unwrap();
-        let mut output = String::new();
-        published
-            .debug()
-            .write_diagnostics_sexpr(&mut output)
-            .unwrap();
+    fn use_case_definition_member_nested_action_usage_lowers_to_a_declaration() {
+        // Same `UseCaseDefBodyElement::ActionUsage` -> `lower_action_usage` wiring as
+        // `case_definition_member_nested_action_usage_lowers_to_a_declaration`, exercised
+        // through the `use case def` body shape.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tuse case def Outer {\n\
+             \t\taction inner;\n\
+             \t}\n\
+             }\n",
+        );
         assert!(
-            output.contains("unsupported_use_case_definition_member"),
-            "expected the nested action usage to surface as an explicit unsupported diagnostic, got:\n{output}"
+            output.contains("(qualified-name \"Demo::Outer::inner\"))) (kind action)"),
+            "expected an owned action usage declaration under the use case def, got:\n{output}"
         );
     }
 
@@ -6396,6 +6387,108 @@ mod tests {
                 "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
             ),
             "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_def_nested_inside_calc_def_lowers_to_a_declaration() {
+        // `CalcDefBodyElement::CalcDef`/`CalcUsage`/`PartUsage` dispatch into a `calc def`
+        // body's own already-existing `lower_calc_def`/`lower_calc_usage`/`lower_part_usage`
+        // functions, mirroring the same nesting already supported inside `part def` bodies.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcalc def Outer {\n\
+             \t\tcalc def Inner;\n\
+             \t\tcalc rollup : Inner;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Outer::Inner\"))) (kind calc-def)"),
+            "expected a nested calc-def declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Outer::rollup\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Outer::Inner\")))"
+            ),
+            "expected the nested calc usage's typing reference to Inner to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_usage_nested_inside_requirement_def_lowers_to_a_declaration() {
+        // `RequirementDefBodyElement::Constraint` dispatches into the already-existing
+        // `lower_constraint_usage`, mirroring the real Systems Library
+        // `RequirementCheck`/`RequirementConstraintCheck` shape (redefining
+        // `assumptions`/`constraints`).
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tconstraint def Base;\n\
+             \trequirement def Outer {\n\
+             \t\tconstraint assumptions : Base;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Outer::assumptions\"))) (kind constraint)"),
+            "expected a nested constraint usage declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Outer::assumptions\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected assumptions' typing reference to Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn alias_def_nested_inside_part_def_lowers_to_a_declaration() {
+        // `PartDefBodyElement::AliasDef`/`PartUsageBodyElement::AliasDef` dispatch into the
+        // already-existing `lower_alias_def` (previously only reachable at package scope).
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def P {\n\
+             \t\tport porig;\n\
+             \t\talias po for porig;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::P::po\"))) (kind alias)"),
+            "expected a nested alias declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind aliasBinding) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::P::po\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::P::porig\")))"
+            ),
+            "expected po's alias binding to porig to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn item_usage_nested_inside_port_def_lowers_to_a_declaration() {
+        // `PortDefBodyElement::ItemDef`/`ItemUsage` and `PortBodyElement::ItemUsage` dispatch
+        // into the already-existing `lower_item_def`/`lower_item_usage`. A `port def` body's
+        // item usage must carry an `in`/`out`/`inout` direction prefix (BNF `directed_item_usage`
+        // -- unlike a plain `port` usage body's undirected `item_usage`, see
+        // `PortBodyElement::ItemUsage`).
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \titem def Widget;\n\
+             \tport def P {\n\
+             \t\tin item w : Widget;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::P::w\"))) (kind item)"),
+            "expected a nested item usage declaration under the port def, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::P::w\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Widget\")))"
+            ),
+            "expected w's typing reference to Widget to resolve, got:\n{output}"
         );
     }
 

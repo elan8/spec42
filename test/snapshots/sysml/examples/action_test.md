@@ -152,12 +152,6 @@ package ActionTest {
         (severity warning)
         (code "unsupported_action_usage_member")
         (source "semantic")
-        (range (start 30 3) (end 30 19))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_action_usage_member")
-        (source "semantic")
         (range (start 32 2) (end 32 33))
       )
       (diagnostic
@@ -218,6 +212,7 @@ package ActionTest {
     (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a1"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2::aa"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2::aa::target"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2::snd"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2::snd2"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a::b"))) (kind action) (membership (kind feature) (visibility default)))
