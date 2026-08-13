@@ -21,7 +21,7 @@ use sysml_v2_parser_next::{
         QualifiedReferenceId, RootElement, Span, SubsettingKind, SubsettingRelationship,
         Visibility as ParserVisibility,
     },
-    ParsedDocument,
+    ParseError, ParsedDocument,
 };
 
 macro_rules! semantic_id {
@@ -59,7 +59,7 @@ enum ConstructionError {
     InvalidMembership,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 enum DeclarationKind {
     Namespace,
     Package,
@@ -153,6 +153,7 @@ struct RecoveryRecord {
 struct CanonicalDocument {
     identity: Box<str>,
     parsed: Arc<ParsedDocument>,
+    parse_errors: Box<[ParseError]>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -160,6 +161,7 @@ struct Declaration {
     document: DocumentId,
     owner: Option<DeclarationId>,
     name: Option<SymbolId>,
+    anonymous_ordinal: Option<u32>,
     kind: DeclarationKind,
     span: Span,
 }
@@ -182,6 +184,16 @@ struct AuthoredReference {
     import: Option<AuthoredImportFacts>,
     flags: RelationshipFlags,
     span: Span,
+}
+
+struct PendingReference {
+    source: DeclarationId,
+    kind: ReferenceKind,
+    document: DocumentId,
+    local: QualifiedReferenceId,
+    flags: RelationshipFlags,
+    span: Span,
+    import: Option<AuthoredImportFacts>,
 }
 
 #[derive(Debug)]
@@ -213,6 +225,8 @@ impl SemanticModelStorage {
 #[derive(Debug, Default)]
 struct SemanticModelBuilder {
     documents: Vec<CanonicalDocument>,
+    document_index: HashTable<DocumentId>,
+    document_hash_builder: RandomState,
     declarations: Vec<Declaration>,
     memberships: Vec<MembershipRecord>,
     references: Vec<AuthoredReference>,
@@ -220,6 +234,8 @@ struct SemanticModelBuilder {
     recovery: Vec<RecoveryRecord>,
     symbols: SymbolTableBuilder,
     paths: SymbolPathArenaBuilder,
+    path_scratch: Vec<SymbolId>,
+    next_anonymous_ordinals: BTreeMap<(DocumentId, Option<DeclarationId>, DeclarationKind), u32>,
     next_reference_ordinals: BTreeMap<(DeclarationId, ReferenceKind), u32>,
 }
 
@@ -228,13 +244,40 @@ impl SemanticModelBuilder {
         &mut self,
         identity: impl Into<Box<str>>,
         parsed: Arc<ParsedDocument>,
+        parse_errors: Vec<ParseError>,
     ) -> Result<DocumentId, ConstructionError> {
         let identity = identity.into();
-        if self.documents.iter().any(|item| item.identity == identity) {
+        let hash = self.document_hash_builder.hash_one(identity.as_ref());
+        if self
+            .document_index
+            .find(hash, |candidate| {
+                self.documents[candidate.index()].identity.as_ref() == identity.as_ref()
+            })
+            .is_some()
+        {
             return Err(ConstructionError::DuplicateDocumentIdentity);
         }
         let id = DocumentId::from_index(self.documents.len())?;
-        self.documents.push(CanonicalDocument { identity, parsed });
+        self.documents
+            .try_reserve(1)
+            .map_err(|_| ConstructionError::Capacity)?;
+        let documents = &self.documents;
+        let hash_builder = &self.document_hash_builder;
+        self.document_index
+            .try_reserve(1, |candidate| {
+                hash_builder.hash_one(documents[candidate.index()].identity.as_ref())
+            })
+            .map_err(|_| ConstructionError::Capacity)?;
+        self.documents.push(CanonicalDocument {
+            identity,
+            parsed,
+            parse_errors: parse_errors.into_boxed_slice(),
+        });
+        let documents = &self.documents;
+        let hash_builder = &self.document_hash_builder;
+        self.document_index.insert_unique(hash, id, |candidate| {
+            hash_builder.hash_one(documents[candidate.index()].identity.as_ref())
+        });
         Ok(id)
     }
 
@@ -242,6 +285,13 @@ impl SemanticModelBuilder {
         self.symbols.intern(value)
     }
 
+    fn intern_declared_name(&mut self, value: &str) -> Result<Option<SymbolId>, ConstructionError> {
+        (!value.is_empty())
+            .then(|| self.intern_name(value))
+            .transpose()
+    }
+
+    #[cfg(test)]
     fn push_declaration(
         &mut self,
         document: DocumentId,
@@ -272,10 +322,22 @@ impl SemanticModelBuilder {
             return Err(ConstructionError::InvalidIdentity);
         }
         let id = DeclarationId::from_index(self.declarations.len())?;
+        let anonymous_ordinal = if name.is_none() {
+            let ordinal = self
+                .next_anonymous_ordinals
+                .entry((document, owner, kind))
+                .or_insert(0);
+            let value = *ordinal;
+            *ordinal = ordinal.checked_add(1).ok_or(ConstructionError::Capacity)?;
+            Some(value)
+        } else {
+            None
+        };
         self.declarations.push(Declaration {
             document,
             owner,
             name,
+            anonymous_ordinal,
             kind,
             span,
         });
@@ -303,14 +365,17 @@ impl SemanticModelBuilder {
 
     fn push_reference(
         &mut self,
-        source: DeclarationId,
-        kind: ReferenceKind,
-        document: DocumentId,
-        local: QualifiedReferenceId,
-        flags: RelationshipFlags,
-        span: Span,
-        import: Option<AuthoredImportFacts>,
+        pending: PendingReference,
     ) -> Result<AuthoredReferenceId, ConstructionError> {
+        let PendingReference {
+            source,
+            kind,
+            document,
+            local,
+            flags,
+            span,
+            import,
+        } = pending;
         if source.index() >= self.declarations.len() || document.index() >= self.documents.len() {
             return Err(ConstructionError::InvalidParserReference);
         }
@@ -318,17 +383,23 @@ impl SemanticModelBuilder {
         let reference = parsed
             .qualified_reference(local)
             .ok_or(ConstructionError::InvalidParserReference)?;
-        let mut segments = Vec::new();
+        let mut segments = std::mem::take(&mut self.path_scratch);
+        segments.clear();
         segments
             .try_reserve(reference.segments.len())
             .map_err(|_| ConstructionError::Capacity)?;
-        for index in 0..reference.segments.len() {
-            let decoded = reference
-                .segment_decoded_text(index)
-                .ok_or(ConstructionError::InvalidParserReference)?;
-            segments.push(self.intern_name(decoded.as_ref())?);
-        }
-        let path = self.paths.push(&segments, reference.metadata.is_absolute)?;
+        let path = (|| {
+            for index in 0..reference.segments.len() {
+                let decoded = reference
+                    .segment_decoded_text(index)
+                    .ok_or(ConstructionError::InvalidParserReference)?;
+                segments.push(self.intern_name(decoded.as_ref())?);
+            }
+            self.paths.push(&segments, reference.metadata.is_absolute)
+        })();
+        segments.clear();
+        self.path_scratch = segments;
+        let path = path?;
         let ordinal = self
             .next_reference_ordinals
             .entry((source, kind))
@@ -477,6 +548,7 @@ impl SemanticModelBuilder {
     ) -> Result<Option<SymbolId>, ConstructionError> {
         identification
             .simple_name()
+            .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()
     }
@@ -880,15 +952,15 @@ impl SemanticModelBuilder {
             },
             recursive: flags.recursive,
         });
-        self.push_reference(
-            declaration,
+        self.push_reference(PendingReference {
+            source: declaration,
             kind,
             document,
-            node.value.target.reference,
+            local: node.value.target.reference,
             flags,
-            node.value.target.span.clone(),
+            span: node.value.target.span.clone(),
             import,
-        )?;
+        })?;
         Ok(())
     }
 
@@ -903,6 +975,7 @@ impl SemanticModelBuilder {
             .identification
             .name
             .as_deref()
+            .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
         let declaration = self.push_typed_declaration(
@@ -1026,12 +1099,12 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<PartUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_name(&node.value.name)?;
+        let name = self.intern_declared_name(&node.value.name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::PartUsage,
-            Some(name),
+            name,
             node.span.clone(),
         )?;
         self.push_membership(
@@ -1127,12 +1200,12 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<AttributeUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_name(&node.value.name)?;
+        let name = self.intern_declared_name(&node.value.name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::AttributeUsage,
-            Some(name),
+            name,
             node.span.clone(),
         )?;
         self.push_membership(
@@ -1172,12 +1245,12 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<AttributeDef>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_name(&node.value.name)?;
+        let name = self.intern_declared_name(&node.value.name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::AttributeDefinition,
-            Some(name),
+            name,
             node.span.clone(),
         )?;
         self.push_membership(
@@ -1255,18 +1328,18 @@ impl SemanticModelBuilder {
                 .metadata
                 .span
                 .clone();
-            self.push_reference(
+            self.push_reference(PendingReference {
                 source,
                 kind,
                 document,
-                target,
-                RelationshipFlags {
+                local: target,
+                flags: RelationshipFlags {
                     implied: relationship.value.is_implied,
                     ..RelationshipFlags::default()
                 },
                 span,
-                None,
-            )?;
+                import: None,
+            })?;
         }
         Ok(())
     }
@@ -1291,19 +1364,19 @@ impl SemanticModelBuilder {
                 .metadata
                 .span
                 .clone();
-            self.push_reference(
+            self.push_reference(PendingReference {
                 source,
                 kind,
                 document,
-                target,
-                RelationshipFlags {
+                local: target,
+                flags: RelationshipFlags {
                     conjugated: relationship.value.is_conjugated,
                     implied: relationship.value.is_implied,
                     ..RelationshipFlags::default()
                 },
                 span,
-                None,
-            )?;
+                import: None,
+            })?;
         }
         Ok(())
     }
@@ -1313,15 +1386,7 @@ impl SemanticModelBuilder {
         membership: &Membership,
         expected: ParserMembershipKind,
     ) -> Result<Visibility, ConstructionError> {
-        let actual = match membership.kind {
-            ParserMembershipKind::OwningMembership => ParserMembershipKind::OwningMembership,
-            ParserMembershipKind::FeatureMembership => ParserMembershipKind::FeatureMembership,
-            ParserMembershipKind::Import => ParserMembershipKind::Import,
-            ParserMembershipKind::Alias => ParserMembershipKind::Alias,
-            ParserMembershipKind::VariantMembership => ParserMembershipKind::VariantMembership,
-            ParserMembershipKind::ActorMembership => ParserMembershipKind::ActorMembership,
-        };
-        if actual != expected {
+        if membership.kind != expected {
             return Err(ConstructionError::InvalidMembership);
         }
         Ok(membership
@@ -1368,6 +1433,8 @@ impl SymbolPathArena {
 struct SymbolPathArenaBuilder {
     paths: Vec<SymbolPath>,
     segments: Vec<SymbolId>,
+    index: HashTable<SymbolPathId>,
+    hash_builder: RandomState,
 }
 
 impl SymbolPathArenaBuilder {
@@ -1379,6 +1446,14 @@ impl SymbolPathArenaBuilder {
         if segments.is_empty() {
             return Err(ConstructionError::InvalidParserReference);
         }
+        let hash = self.hash_builder.hash_one((rooted, segments));
+        if let Some(existing) = self.index.find(hash, |candidate| {
+            let path = self.paths[candidate.index()];
+            let end = (path.start + path.len) as usize;
+            path.rooted == rooted && self.segments[path.start as usize..end] == *segments
+        }) {
+            return Ok(*existing);
+        }
         let id = SymbolPathId::from_index(self.paths.len())?;
         let start = u32::try_from(self.segments.len()).map_err(|_| ConstructionError::Capacity)?;
         let len = u32::try_from(segments.len()).map_err(|_| ConstructionError::Capacity)?;
@@ -1389,8 +1464,26 @@ impl SymbolPathArenaBuilder {
         self.segments
             .try_reserve(segments.len())
             .map_err(|_| ConstructionError::Capacity)?;
+        let paths = &self.paths;
+        let stored_segments = &self.segments;
+        let hash_builder = &self.hash_builder;
+        self.index
+            .try_reserve(1, |candidate| {
+                let path = paths[candidate.index()];
+                let end = (path.start + path.len) as usize;
+                hash_builder.hash_one((path.rooted, &stored_segments[path.start as usize..end]))
+            })
+            .map_err(|_| ConstructionError::Capacity)?;
         self.segments.extend_from_slice(segments);
         self.paths.push(SymbolPath { start, len, rooted });
+        let paths = &self.paths;
+        let stored_segments = &self.segments;
+        let hash_builder = &self.hash_builder;
+        self.index.insert_unique(hash, id, |candidate| {
+            let path = paths[candidate.index()];
+            let end = (path.start + path.len) as usize;
+            hash_builder.hash_one((path.rooted, &stored_segments[path.start as usize..end]))
+        });
         Ok(id)
     }
 
@@ -1450,8 +1543,16 @@ impl SymbolTableBuilder {
         self.spans
             .try_reserve(1)
             .map_err(|_| ConstructionError::Capacity)?;
+        let bytes = &self.bytes;
+        let spans = &self.spans;
+        let hash_builder = &self.hash_builder;
         self.index
-            .try_reserve(1, |_| 0)
+            .try_reserve(1, |candidate| {
+                let (candidate_start, candidate_len) = spans[candidate.index()];
+                hash_builder.hash_one(
+                    &bytes[candidate_start as usize..(candidate_start + candidate_len) as usize],
+                )
+            })
             .map_err(|_| ConstructionError::Capacity)?;
 
         self.bytes.push_str(value);
@@ -1491,37 +1592,17 @@ pub(crate) enum BuildSchedule {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum CoordinatorError {
     DuplicateSourceIdentity,
-    ParseFailed,
     ConstructionFailed,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum CoordinatorIncomplete {
-    ParseRecovery,
-    UnsupportedSyntax,
-    NonConverged,
-}
-
-#[derive(Debug)]
-pub(crate) enum CoordinatorOutcome {
-    Complete(resolver::ResolvedSemanticModel),
-    Incomplete(CoordinatorIncomplete),
-}
-
 pub(crate) struct SemanticModelBuildCoordinator;
-
-pub(crate) fn write_resolved_debug(
-    model: &resolver::ResolvedSemanticModel,
-    output: &mut dyn std::fmt::Write,
-) -> std::fmt::Result {
-    model.write_debug_sexpr(output)
-}
 
 impl SemanticModelBuildCoordinator {
     pub(crate) fn build(
         mut sources: Vec<OwnedSourceRecord>,
         schedule: BuildSchedule,
-    ) -> Result<CoordinatorOutcome, CoordinatorError> {
+    ) -> Result<resolver::ResolvedSemanticModel, CoordinatorError> {
         sources.sort_unstable_by(|left, right| left.identity.cmp(&right.identity));
         if sources
             .windows(2)
@@ -1548,7 +1629,7 @@ impl SemanticModelBuildCoordinator {
         let mut documents = Vec::with_capacity(parsed.len());
         for (identity, parsed) in parsed {
             let document = builder
-                .admit_document(identity, Arc::new(parsed))
+                .admit_document(identity, Arc::new(parsed.document), parsed.errors)
                 .map_err(|_| CoordinatorError::DuplicateSourceIdentity)?;
             documents.push(document);
         }
@@ -1557,34 +1638,19 @@ impl SemanticModelBuildCoordinator {
                 .canonicalize_document(document)
                 .map_err(|_| CoordinatorError::ConstructionFailed)?;
         }
-        if !builder.recovery.is_empty() {
-            return Ok(CoordinatorOutcome::Incomplete(
-                CoordinatorIncomplete::ParseRecovery,
-            ));
-        }
-        if !builder.unsupported.is_empty() {
-            return Ok(CoordinatorOutcome::Incomplete(
-                CoordinatorIncomplete::UnsupportedSyntax,
-            ));
-        }
-        let model = builder
+        builder
             .freeze()
             .resolve()
-            .map_err(|_| CoordinatorError::ConstructionFailed)?;
-        if !model.is_converged() {
-            return Ok(CoordinatorOutcome::Incomplete(
-                CoordinatorIncomplete::NonConverged,
-            ));
-        }
-        Ok(CoordinatorOutcome::Complete(model))
+            .map_err(|_| CoordinatorError::ConstructionFailed)
     }
 
     fn parse_source(
         source: OwnedSourceRecord,
-    ) -> Result<(Box<str>, ParsedDocument), CoordinatorError> {
-        let parsed = sysml_v2_parser_next::parse_owned(source.content)
-            .map_err(|_| CoordinatorError::ParseFailed)?;
-        Ok((source.identity, parsed))
+    ) -> Result<(Box<str>, sysml_v2_parser_next::ParseResult), CoordinatorError> {
+        Ok((
+            source.identity,
+            sysml_v2_parser_next::parse_for_editor_owned(source.content),
+        ))
     }
 }
 
@@ -1609,7 +1675,9 @@ mod tests {
     fn canonicalization_assigns_dense_typed_slots_and_interns_names() {
         let mut builder = SemanticModelBuilder::default();
         let parsed = empty_document();
-        let document = builder.admit_document("model", parsed.clone()).unwrap();
+        let document = builder
+            .admit_document("model", parsed.clone(), Vec::new())
+            .unwrap();
         let first_name = builder.intern_name("Vehicle").unwrap();
         let second_name = builder.intern_name("Vehicle").unwrap();
         assert_eq!(first_name, second_name);
@@ -1630,6 +1698,112 @@ mod tests {
         assert_eq!(model.declaration(child).unwrap().owner, Some(root));
         assert_eq!(model.symbol(first_name), Some("Vehicle"));
         assert_eq!(model.symbols.spans.len(), 1);
+    }
+
+    #[test]
+    fn symbol_interning_survives_hash_table_growth() {
+        let mut symbols = SymbolTableBuilder::default();
+        let vehicle = symbols.intern("Vehicle").unwrap();
+        for index in 0..256 {
+            symbols.intern(&format!("Name{index}")).unwrap();
+        }
+
+        assert_eq!(symbols.intern("Vehicle").unwrap(), vehicle);
+        assert_eq!(symbols.len(), 257);
+    }
+
+    #[test]
+    fn semantic_paths_are_interned_across_arena_growth() {
+        let mut paths = SymbolPathArenaBuilder::default();
+        let vehicle = paths.push(&[SymbolId(1), SymbolId(2)], false).unwrap();
+        for index in 0..256 {
+            paths
+                .push(&[SymbolId(index), SymbolId(index + 1)], true)
+                .unwrap();
+        }
+
+        assert_eq!(
+            paths.push(&[SymbolId(1), SymbolId(2)], false).unwrap(),
+            vehicle
+        );
+        assert_ne!(
+            paths.push(&[SymbolId(1), SymbolId(2)], true).unwrap(),
+            vehicle
+        );
+    }
+
+    #[test]
+    fn document_identity_index_rejects_duplicates_after_growth_without_mutation() {
+        let parsed = empty_document();
+        let mut builder = SemanticModelBuilder::default();
+        for index in 0..256 {
+            builder
+                .admit_document(format!("model-{index}"), parsed.clone(), Vec::new())
+                .unwrap();
+        }
+        let before = builder.documents.len();
+
+        assert_eq!(
+            builder
+                .admit_document("model-0", parsed, Vec::new())
+                .unwrap_err(),
+            ConstructionError::DuplicateDocumentIdentity
+        );
+        assert_eq!(builder.documents.len(), before);
+    }
+
+    #[test]
+    fn anonymous_ordinals_are_owner_local_and_ignore_named_declarations() {
+        let parsed = empty_document();
+        let mut builder = SemanticModelBuilder::default();
+        let document = builder.admit_document("model", parsed, Vec::new()).unwrap();
+        let owner_name = builder.intern_name("Owner").unwrap();
+        let owner = builder
+            .push_typed_declaration(
+                document,
+                None,
+                DeclarationKind::Package,
+                Some(owner_name),
+                Span::dummy(),
+            )
+            .unwrap();
+        let first = builder
+            .push_typed_declaration(
+                document,
+                Some(owner),
+                DeclarationKind::Import,
+                None,
+                Span::dummy(),
+            )
+            .unwrap();
+        let named = builder.intern_name("Named").unwrap();
+        builder
+            .push_typed_declaration(
+                document,
+                Some(owner),
+                DeclarationKind::PartUsage,
+                Some(named),
+                Span::dummy(),
+            )
+            .unwrap();
+        let second = builder
+            .push_typed_declaration(
+                document,
+                Some(owner),
+                DeclarationKind::Import,
+                None,
+                Span::dummy(),
+            )
+            .unwrap();
+
+        assert_eq!(
+            builder.declarations[first.index()].anonymous_ordinal,
+            Some(0)
+        );
+        assert_eq!(
+            builder.declarations[second.index()].anonymous_ordinal,
+            Some(1)
+        );
     }
 
     #[test]

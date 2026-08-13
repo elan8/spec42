@@ -95,6 +95,95 @@ fn designated_consumers_use_the_query_facade_and_direct_model_dependencies_do_no
 }
 
 #[test]
+fn immutable_snapshot_runner_has_an_exact_graph_free_dependency_boundary() {
+    let root = repository_root();
+    let output = Command::new(env!("CARGO"))
+        .args(["metadata", "--format-version", "1", "--no-deps"])
+        .current_dir(&root)
+        .output()
+        .expect("run cargo metadata");
+    assert!(
+        output.status.success(),
+        "cargo metadata failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let metadata: Value = serde_json::from_slice(&output.stdout).expect("parse cargo metadata");
+    let packages = metadata["packages"].as_array().expect("packages array");
+    let snapshot = packages
+        .iter()
+        .find(|package| package["name"] == "spec42-snapshot")
+        .expect("snapshot package");
+    let query = snapshot["dependencies"]
+        .as_array()
+        .expect("snapshot dependencies")
+        .iter()
+        .find(|dependency| dependency["name"] == "sysml_query")
+        .expect("snapshot query dependency");
+    assert_eq!(query["uses_default_features"], false);
+    assert_eq!(
+        query["features"].as_array().expect("query features"),
+        &[Value::String("immutable-resolution".to_owned())]
+    );
+
+    let resolution = packages
+        .iter()
+        .find(|package| package["name"] == "sysml_resolution")
+        .expect("resolution package");
+    let actual_dependencies = resolution["dependencies"]
+        .as_array()
+        .expect("resolution dependencies")
+        .iter()
+        .map(|dependency| {
+            dependency["rename"]
+                .as_str()
+                .or_else(|| dependency["name"].as_str())
+                .expect("dependency name")
+                .to_owned()
+        })
+        .collect::<BTreeSet<_>>();
+    assert_eq!(
+        actual_dependencies,
+        BTreeSet::from([
+            "hashbrown".to_owned(),
+            "rayon".to_owned(),
+            "source_identity".to_owned(),
+            "sysml-v2-parser-next".to_owned(),
+        ]),
+        "the immutable resolution owner dependency boundary changed"
+    );
+
+    let tree = Command::new(env!("CARGO"))
+        .args(["tree", "-p", "spec42-snapshot", "-e", "normal"])
+        .current_dir(&root)
+        .output()
+        .expect("run cargo tree");
+    assert!(
+        tree.status.success(),
+        "cargo tree failed: {}",
+        String::from_utf8_lossy(&tree.stderr)
+    );
+    let tree = String::from_utf8(tree.stdout).expect("utf-8 cargo tree");
+    assert!(tree.contains("sysml_query"));
+    assert!(tree.contains("sysml_resolution"));
+    assert!(
+        !tree.contains("sysml_model"),
+        "legacy model reached snapshot runner:\n{tree}"
+    );
+    assert!(
+        !tree.contains("sysml_diagnostics"),
+        "legacy diagnostics reached snapshot runner:\n{tree}"
+    );
+
+    assert!(
+        !root
+            .join("crates/sysml_model/src/semantic/semantic_model_builder.rs")
+            .exists(),
+        "the parser-owned semantic builder must have exactly one owner"
+    );
+    assert!(root.join("crates/sysml_resolution/src/model.rs").exists());
+}
+
+#[test]
 fn query_facade_public_api_contains_no_raw_semantic_storage() {
     assert_source_tree_has_no_raw_semantic_storage(
         &repository_root().join("crates/sysml_query/src"),

@@ -10,7 +10,7 @@ use std::path::{Path, PathBuf};
 
 use clap::{Parser, Subcommand};
 use rayon::prelude::*;
-use sysml_query::{
+use sysml_query::resolved_slice::{
     build as build_published_model, BuildRequest, ConstructionStrategy, PublishedModel,
     SourceDocument as QuerySourceDocument, SourceKind,
 };
@@ -185,7 +185,7 @@ fn regenerate_snapshot(fixture: &str, path: &Path) -> Result<String, String> {
         .map(|document| {
             QuerySourceDocument::from_memory_path(
                 "snapshot",
-                &format!("snapshot/{}", document.name),
+                &document.name,
                 document.text.clone(),
                 SourceKind::Workspace,
             )
@@ -224,7 +224,7 @@ fn build_model(
     construction: ConstructionStrategy,
     path: &Path,
 ) -> Result<PublishedModel, String> {
-    let request = BuildRequest::evaluated(source_documents.to_vec(), construction)
+    let request = BuildRequest::resolved(source_documents.to_vec(), construction)
         .map_err(|error| format!("{}: invalid semantic input: {error}", path.display()))?;
     build_published_model(request)
         .map_err(|error| format!("{}: semantic build failed: {error}", path.display()))
@@ -288,25 +288,14 @@ fn render_semantic_model(model: &PublishedModel) -> Result<String, String> {
 
 fn render_diagnostics(
     model: &PublishedModel,
-    documents: &[SourceDocument],
-    source_documents: &[QuerySourceDocument],
+    _documents: &[SourceDocument],
+    _source_documents: &[QuerySourceDocument],
 ) -> Result<String, String> {
-    let mut rendered = String::from("(fixture-diagnostics\n");
-    for (document, source_document) in documents.iter().zip(source_documents) {
-        rendered.push_str(&format!("  (document {:?}\n", document.name));
-        let mut rendered_diagnostics = String::new();
-        model
-            .diagnostics()
-            .write_document_sexpr(source_document, &mut rendered_diagnostics)
-            .map_err(|error| format!("diagnostic rendering failed: {error}"))?;
-        for line in rendered_diagnostics.lines() {
-            rendered.push_str("    ");
-            rendered.push_str(line);
-            rendered.push('\n');
-        }
-        rendered.push_str("  )\n");
-    }
-    rendered.push(')');
+    let mut rendered = String::new();
+    model
+        .debug()
+        .write_diagnostics_sexpr(&mut rendered)
+        .map_err(|error| format!("diagnostic rendering failed: {error}"))?;
     Ok(rendered)
 }
 
@@ -360,7 +349,7 @@ fn replace_or_insert_section(fixture: &str, name: &str, replacement: &str) -> Op
         return Some(updated);
     }
     let insertion = fixture.find("\n# ").unwrap_or(fixture.len());
-    let section = format!("\n# {name}\n~~~sexpr\n{replacement}\n~~~\n");
+    let section = format!("\n# {name}\n~~~sexpr\n{replacement}\n~~~");
     let mut updated = String::with_capacity(fixture.len() + section.len());
     updated.push_str(&fixture[..insertion]);
     updated.push_str(&section);
@@ -428,19 +417,13 @@ fn replace_section(fixture: &str, name: &str, replacement: &str) -> Option<Strin
         .find("\n# ")
         .map_or(fixture.len(), |index| section_start + index);
     let section = &fixture[section_start..section_end];
-    let opening = section.find("~~~")?;
-    let after_opening = &section[opening + 3..];
-    let (_, body) = after_opening.split_once('\n')?;
-    let body_start = section_start + opening + 3 + (after_opening.len() - body.len());
-    let body_end = if body.starts_with("~~~") {
-        body_start
-    } else {
-        body_start + body.find("\n~~~")?
-    };
-    let mut updated = String::with_capacity(fixture.len() + replacement.len());
-    updated.push_str(&fixture[..body_start]);
+    fenced_block(section)?;
+    let mut updated = String::with_capacity(fixture.len() + replacement.len() + 14);
+    updated.push_str(&fixture[..section_start]);
+    updated.push_str("~~~sexpr\n");
     updated.push_str(replacement.trim_end_matches('\n'));
-    updated.push_str(&fixture[body_end..]);
+    updated.push_str("\n~~~");
+    updated.push_str(&fixture[section_end..]);
     Some(updated)
 }
 

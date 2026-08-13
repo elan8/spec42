@@ -7,11 +7,12 @@ state, resolution-fact collection, index handle, generic attribute map, or const
 semantic state. This first vertical slice does not yet move every consumer or physical query-index
 representation into this crate.
 
-The standalone snapshot pipeline and `workspace_session` publication owner are migrated consumers.
-Their manifests have no direct `sysml_model` or `sysml_diagnostics` dependency, so Rust cannot name
-either implementation crate through the transitive facade dependency. `workspace_session` stores
-only `Arc<PublishedModel>` and validates replacement identity and completeness through the typed
-publication service.
+The standalone snapshot pipeline now selects only the `immutable-resolution` facade feature. Its
+transitive dependency closure is `sysml_query -> sysml_resolution -> parser-next` and cannot reach
+`sysml_model` or `sysml_diagnostics`; unsupported syntax and recovery remain explicit incomplete
+publications rather than falling back. `workspace_session` stores only `Arc<PublishedModel>` and
+validates replacement identity and completeness through the existing typed publication service
+while the remaining production consumers migrate.
 
 The normal `sysml_query` test gate enforces the boundary in three ways:
 
@@ -29,11 +30,11 @@ finished architecture. `language_service`, `lsp_server`, `server`, `sysml_diagno
 no additions or stale entries. Each is removed when its complete vertical slice migrates—partial
 wrappers are not retained as a compatibility surface.
 
-The current `sysml_query -> sysml_diagnostics` dependency exists only to keep canonical diagnostic
-calculation and S-expression rendering behind the facade for the migrated snapshot runner.
-`sysml_diagnostics` remains in the transitional inventory because it still consumes model-owned
-diagnostic projections; this direction is not the finished ownership model and must disappear when
-diagnostic services migrate to the facade owner.
+The `legacy-model` facade feature still depends on `sysml_diagnostics` for production consumers that
+have not migrated. The immutable snapshot path instead receives parser, canonicalization, and
+resolution diagnostics from `sysml_resolution` and streams their canonical S-expression without
+exposing storage. Presentation-neutral typed diagnostics remain the intended shared contract for
+future CLI, LSP, Markdown, and HTML adapters.
 
 The next ownership step is a dependency-complete, owner-scoped construction seed from
 `sysml_model`. It must carry only the canonical typed inputs needed to build indexes, not expose a

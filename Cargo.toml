@@ -11,9 +11,11 @@ members = [
   "crates/lsp_server",
   "crates/kpar",
   "crates/server",
+  "crates/source_identity",
   "crates/sysml_diagnostics",
   "crates/sysml_model",
   "crates/sysml_query",
+  "crates/sysml_resolution",
   "crates/workspace",
   "crates/sysml_tokens",
   "crates/workspace_session",
@@ -40,6 +42,7 @@ thiserror = "2"
 clap = { version = "4", features = ["derive"] }
 petgraph = { version = "0.8", features = ["serde-1"] }
 sha2 = "0.10"
+blake3 = "1"
 sysml-v2-parser = { version = "0.54.0", features = ["serde"] }
 sysml-v2-parser-next = { git = "https://github.com/lukewilliamboswell/sysml-v2-parser.git", rev = "c40b544", package = "sysml-v2-parser", features = ["serde"] }
 ts-rs = { version = "11", features = ["serde-compat", "serde-json-impl"] }

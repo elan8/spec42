@@ -4,11 +4,17 @@
 command-line runner, not a Rust integration test and not an `insta` assertion layer.
 
 Each Markdown file is a test case. The runner reads its `# SOURCE` section, builds the opaque
-published model through `sysml_query`, and rewrites the owned `SMG`, `DIAGNOSTICS`, and
+parser-owned resolved publication through the immutable `sysml_query` facade, and rewrites the owned `SMG`, `DIAGNOSTICS`, and
 `NAVIGATION` sections. Its manifest has no direct semantic-model, diagnostics, or formatter
-implementation dependency. The facade streams canonical semantic, diagnostic, and navigation S-expressions
-through caller-provided writers; the runner cannot obtain graph nodes, resolution indexes, or fact
+implementation dependency, and its transitive dependency graph cannot reach the mutable model or
+legacy diagnostic crates. The facade streams canonical semantic, diagnostic, and navigation
+S-expressions through caller-provided writers; the runner cannot obtain graph nodes, resolution indexes, or fact
 collections and never rebuilds a mutable graph for validation.
+
+Unsupported semantic families and parser recovery do not fall back to another engine. They publish
+an explicitly incomplete model, stable typed diagnostics, and every supported fact recovered from
+the same parser-owned document. Their visible snapshots are the migration inventory for completing
+canonicalization; they must not be hidden by skips or converted into successful resolved facts.
 
 Each section has one responsibility. `SMG` records semantic identity, kind, ownership, typed facts,
 provenance, settled outcomes, candidates, and relationships. It does not repeat routine source
@@ -19,6 +25,7 @@ observed through those sections. This keeps formatting-only movement from obscur
 
 The canonical top-level section order is `META`, `SOURCE`, `DIAGNOSTICS`, `SMG`, `NAVIGATION`.
 `SOURCE` is authored; generated sections are rewritten to this order with one final newline.
+Every generated section uses a canonical `sexpr` fence.
 Only sections in this contract are retained during normalization. Unknown or future sections
 should be added to the explicit ordering table before they become part of the corpus contract.
 

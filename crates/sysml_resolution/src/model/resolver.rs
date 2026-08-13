@@ -7,9 +7,20 @@
 //! import barrier converges.
 
 use super::*;
-use crate::semantic::text_span::{TextPosition, TextRange};
 
 mod writer;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct TextPosition {
+    line: u32,
+    character: u32,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct TextRange {
+    start: TextPosition,
+    end: TextPosition,
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum ResolutionError {
@@ -255,6 +266,7 @@ struct ResolutionResults {
     outcomes: Box<[ResolutionStatus]>,
     ambiguous_candidates: Box<[DeclarationId]>,
     solver_status: SolverStatus,
+    #[cfg(test)]
     work: ResolutionWork,
 }
 
@@ -271,8 +283,6 @@ impl ResolutionResults {
 #[derive(Debug)]
 pub(crate) struct ResolvedSemanticModel {
     storage: SemanticModelStorage,
-    direct_names: NameIndex,
-    effective_imports: NameIndex,
     resolution: ResolutionResults,
     metadata: PublicationMetadata,
 }
@@ -285,6 +295,9 @@ enum PublicationPhase {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum PublicationCompleteness {
     Complete,
+    ParseRecovery,
+    UnsupportedSyntax,
+    NonConverged,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -295,10 +308,6 @@ struct PublicationMetadata {
 }
 
 impl ResolvedSemanticModel {
-    pub(super) fn is_converged(&self) -> bool {
-        matches!(self.resolution.solver_status, SolverStatus::Converged)
-    }
-
     fn diagnostic_records(&self) -> Result<Box<[DiagnosticRecord]>, ResolutionError> {
         let mut records = Vec::with_capacity(self.storage.references.len());
         for (index, reference) in self.storage.references.iter().enumerate() {
@@ -351,15 +360,13 @@ impl ResolvedSemanticModel {
         Ok(records.into_boxed_slice())
     }
 
-    pub(super) fn write_debug_sexpr(&self, output: &mut dyn std::fmt::Write) -> std::fmt::Result {
-        writer::write(self, output)
-    }
-
     pub(crate) fn write_semantic_sexpr(
         &self,
+        source_digest: &source_identity::RootDigest,
+        semantic_contract_version: &str,
         output: &mut dyn std::fmt::Write,
     ) -> std::fmt::Result {
-        writer::write_semantic(self, output)
+        writer::write_semantic(self, source_digest, semantic_contract_version, output)
     }
 
     pub(crate) fn write_navigation_sexpr(
@@ -387,36 +394,49 @@ fn document_range(
         .ok_or(ResolutionError::InvalidStorage)?
         .parsed;
     let range = parsed.range(span).ok_or(ResolutionError::InvalidStorage)?;
-    Ok(TextRange::new(
-        TextPosition::new(
-            range.start.line.saturating_sub(1),
-            u32::try_from(range.start.column.saturating_sub(1))
+    Ok(TextRange {
+        start: TextPosition {
+            line: range.start.line.saturating_sub(1),
+            character: u32::try_from(range.start.column.saturating_sub(1))
                 .map_err(|_| ResolutionError::Capacity)?,
-        ),
-        TextPosition::new(
-            range.end.line.saturating_sub(1),
-            u32::try_from(range.end.column.saturating_sub(1))
+        },
+        end: TextPosition {
+            line: range.end.line.saturating_sub(1),
+            character: u32::try_from(range.end.column.saturating_sub(1))
                 .map_err(|_| ResolutionError::Capacity)?,
-        ),
-    ))
+        },
+    })
 }
 
 impl SemanticModelStorage {
     pub(super) fn resolve(self) -> Result<ResolvedSemanticModel, ResolutionError> {
-        let (direct_names, effective_imports, resolution) = resolve_dense(
+        let has_recovery = self
+            .documents
+            .iter()
+            .any(|document| !document.parse_errors.is_empty())
+            || !self.recovery.is_empty();
+        let has_unsupported = !self.unsupported.is_empty();
+        let (_, _, resolution) = resolve_dense(
             &self.declarations,
             &self.memberships,
             &self.paths,
             &self.references,
         )?;
+        let completeness = if has_recovery {
+            PublicationCompleteness::ParseRecovery
+        } else if has_unsupported {
+            PublicationCompleteness::UnsupportedSyntax
+        } else if !matches!(resolution.solver_status, SolverStatus::Converged) {
+            PublicationCompleteness::NonConverged
+        } else {
+            PublicationCompleteness::Complete
+        };
         Ok(ResolvedSemanticModel {
             storage: self,
-            direct_names,
-            effective_imports,
             resolution,
             metadata: PublicationMetadata {
                 phase: PublicationPhase::Resolved,
-                completeness: PublicationCompleteness::Complete,
+                completeness,
                 has_evaluation: false,
             },
         })
@@ -525,15 +545,19 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 declarations,
                 paths,
                 reference,
-                &direct_names,
-                &exported_names,
-                Some(&effective_imports),
-                Some(&exported_imports),
                 supported_import_domain(reference).ok_or(ResolutionError::InvalidStorage)?,
-                &mut ambiguous_candidates,
-                &mut candidates,
-                &mut next_candidates,
-                &mut work,
+                ResolutionIndexes {
+                    direct_names: &direct_names,
+                    exported_names: &exported_names,
+                    effective_imports: Some(&effective_imports),
+                    exported_imports: Some(&exported_imports),
+                },
+                ResolutionScratch {
+                    ambiguous_candidates: &mut ambiguous_candidates,
+                    candidates: &mut candidates,
+                    next_candidates: &mut next_candidates,
+                    work: &mut work,
+                },
             )?;
         }
         let (next_effective_imports, next_exported_imports) = build_effective_import_indexes(
@@ -576,20 +600,27 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 declarations,
                 paths,
                 &references[index],
-                &direct_names,
-                &exported_names,
-                Some(&effective_imports),
-                Some(&exported_imports),
                 DeclarationDomain::Type,
-                &mut ambiguous_candidates,
-                &mut candidates,
-                &mut next_candidates,
-                &mut work,
+                ResolutionIndexes {
+                    direct_names: &direct_names,
+                    exported_names: &exported_names,
+                    effective_imports: Some(&effective_imports),
+                    exported_imports: Some(&exported_imports),
+                },
+                ResolutionScratch {
+                    ambiguous_candidates: &mut ambiguous_candidates,
+                    candidates: &mut candidates,
+                    next_candidates: &mut next_candidates,
+                    work: &mut work,
+                },
             )?;
         }
     }
-    work.effective_index_entries =
-        u64::try_from(effective_imports.candidates.len()).map_err(|_| ResolutionError::Capacity)?;
+    #[cfg(test)]
+    {
+        work.effective_index_entries = u64::try_from(effective_imports.candidates.len())
+            .map_err(|_| ResolutionError::Capacity)?;
+    }
 
     Ok((
         direct_names,
@@ -598,6 +629,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             outcomes: outcomes.into_boxed_slice(),
             ambiguous_candidates: ambiguous_candidates.into_boxed_slice(),
             solver_status,
+            #[cfg(test)]
             work,
         },
     ))
@@ -775,19 +807,27 @@ fn extend_import_entries(
     }
 }
 
+struct ResolutionIndexes<'a> {
+    direct_names: &'a NameIndex,
+    exported_names: &'a NameIndex,
+    effective_imports: Option<&'a NameIndex>,
+    exported_imports: Option<&'a NameIndex>,
+}
+
+struct ResolutionScratch<'a> {
+    ambiguous_candidates: &'a mut Vec<DeclarationId>,
+    candidates: &'a mut Vec<DeclarationId>,
+    next_candidates: &'a mut Vec<DeclarationId>,
+    work: &'a mut ResolutionWork,
+}
+
 fn resolve_reference<R: ResolutionReferenceFact>(
     declarations: &[Declaration],
     paths: &SymbolPathArena,
     reference: &R,
-    direct_names: &NameIndex,
-    exported_names: &NameIndex,
-    effective_imports: Option<&NameIndex>,
-    exported_imports: Option<&NameIndex>,
     domain: DeclarationDomain,
-    ambiguous_candidates: &mut Vec<DeclarationId>,
-    candidates: &mut Vec<DeclarationId>,
-    next_candidates: &mut Vec<DeclarationId>,
-    work: &mut ResolutionWork,
+    indexes: ResolutionIndexes<'_>,
+    scratch: ResolutionScratch<'_>,
 ) -> Result<ResolutionStatus, ResolutionError> {
     let (segments, rooted) = paths
         .get(reference.path())
@@ -795,45 +835,49 @@ fn resolve_reference<R: ResolutionReferenceFact>(
     let source = declarations
         .get(reference.source().index())
         .ok_or(ResolutionError::InvalidStorage)?;
-    candidates.clear();
-    next_candidates.clear();
+    scratch.candidates.clear();
+    scratch.next_candidates.clear();
     if rooted {
-        record_lookup(work)?;
-        candidates.extend_from_slice(exported_names.candidates(None, segments[0]));
+        record_lookup(scratch.work)?;
+        scratch
+            .candidates
+            .extend_from_slice(indexes.exported_names.candidates(None, segments[0]));
     } else {
         lookup_lexical_into(
             declarations,
-            direct_names,
-            effective_imports,
+            indexes.direct_names,
+            indexes.effective_imports,
             source.owner,
             segments[0],
-            candidates,
-            work,
+            scratch.candidates,
+            scratch.work,
         )?;
     }
 
     for segment in &segments[1..] {
-        next_candidates.clear();
-        for candidate in candidates.iter().copied() {
-            record_lookup(work)?;
-            let direct = exported_names.candidates(Some(candidate), *segment);
+        scratch.next_candidates.clear();
+        for candidate in scratch.candidates.iter().copied() {
+            record_lookup(scratch.work)?;
+            let direct = indexes.exported_names.candidates(Some(candidate), *segment);
             if !direct.is_empty() {
-                next_candidates.extend_from_slice(direct);
-            } else if let Some(imports) = exported_imports {
-                record_lookup(work)?;
-                next_candidates.extend_from_slice(imports.candidates(Some(candidate), *segment));
+                scratch.next_candidates.extend_from_slice(direct);
+            } else if let Some(imports) = indexes.exported_imports {
+                record_lookup(scratch.work)?;
+                scratch
+                    .next_candidates
+                    .extend_from_slice(imports.candidates(Some(candidate), *segment));
             }
         }
-        next_candidates.sort_unstable();
-        next_candidates.dedup();
-        std::mem::swap(candidates, next_candidates);
+        scratch.next_candidates.sort_unstable();
+        scratch.next_candidates.dedup();
+        std::mem::swap(scratch.candidates, scratch.next_candidates);
     }
-    candidates.retain(|candidate| {
+    scratch.candidates.retain(|candidate| {
         declarations
             .get(candidate.index())
             .is_some_and(|declaration| domain.accepts(declaration.kind))
     });
-    status_from_candidates(candidates, ambiguous_candidates)
+    status_from_candidates(scratch.candidates, scratch.ambiguous_candidates)
 }
 
 fn lookup_lexical_into(
@@ -887,7 +931,7 @@ fn status_from_candidates(
         [candidate] => Ok(ResolutionStatus::Resolved(*candidate)),
         _ => {
             let start = ambiguous_candidates.len();
-            ambiguous_candidates.extend_from_slice(&candidates);
+            ambiguous_candidates.extend_from_slice(candidates);
             Ok(ResolutionStatus::Ambiguous(CandidateRange::from_bounds(
                 start,
                 ambiguous_candidates.len(),
@@ -936,6 +980,7 @@ mod tests {
             document,
             owner,
             name,
+            anonymous_ordinal: name.is_none().then_some(0),
             kind,
             span: Span::dummy(),
         }

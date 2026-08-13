@@ -1004,12 +1004,14 @@ compatibility hook is added to production.
 
 ### 8.3 `SemanticModel` and persistent cache identity
 
-Scope correctness adds no path-derived identity dimension. The cache branch's `RootDigest` already
-commits all admitted source bytes, normalized identities, source roles, and library-root ordering;
-configuration identity commits scope-affecting policy. The new resolver does require:
+Scope correctness adds no path-derived identity dimension. The standalone `source_identity`
+crate is established with this resolution slice so its `RootDigest` commits all admitted source
+bytes, normalized identities, source roles, and library-root ordering before cache work consumes
+it; configuration identity commits scope-affecting policy. The new resolver does require:
 
 - a semantic contract version bump when integrated;
-- serialization of structural graph facts and canonical `ResolutionState` as one coherent artifact;
+- serialization of immutable authored semantic facts and canonical resolution outcomes as one
+  coherent artifact;
 - invariant validation that every outcome references admitted nodes and the matching authored
   reference site;
 - rebuilding disposable indexes after decode;
@@ -1120,13 +1122,16 @@ resolution, and consumer paths together.
   provenance, outcomes, candidates, and relationships without routine element/reference ranges;
   exact observable locations are owned by `DIAGNOSTICS` and `NAVIGATION`. Add an `SMG` span only
   when the span is itself a named semantic fact not covered by either location-sensitive section.
-- Compare sequential, parallel, forward/reverse replacement, and the old scoped path before its
-  deletion.
+- Compare sequential and parallel construction for every fixture before accepting owner output.
+  Do not retain the old scoped graph as a second oracle: the canonical snapshot diff is the review
+  surface for missing facts, changed outcomes, provenance, diagnostics, and navigation.
 - Build the corrected scope resolver as an isolated prototype using the target contracts.
 - Run every discovered semantic snapshot and focused multi-document cases.
-- Publish a fixture-by-fixture report classifying every output change as Pilot-backed correction,
-  existing defect preserved, or regression.
-- Stop if any change is unexplained. Do not begin the behavior cutover without this report.
+- Keep unsupported families and parse recovery explicit in publication completeness and canonical
+  diagnostics. Use those visible corpus diffs as the migration backlog; never skip them or route
+  them through the mutable graph.
+- Stop if a change cannot be explained by the typed parser input, canonicalization contract, or
+  resolver rules. Do not weaken snapshots to conceal a missing semantic fact.
 
 ### Step 2: contracts and immutable resolver core
 

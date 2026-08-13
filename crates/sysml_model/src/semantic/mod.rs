@@ -42,5 +42,3 @@ pub mod visualization_entry;
 pub mod visualization_workspace;
 pub mod workspace_graph;
 pub mod workspace_uri;
-
-pub(crate) mod semantic_model_builder;
