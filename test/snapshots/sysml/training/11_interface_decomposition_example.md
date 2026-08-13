@@ -35,12 +35,6 @@ package 'Interface Decomposition Example' {
   (document "memory://snapshot/11_interface_decomposition_example.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 8 1) (end 20 2))
-      )
-      (diagnostic
         (severity error)
         (code "recovered_interface_def_body_element")
         (source "parser")
@@ -51,6 +45,30 @@ package 'Interface Decomposition Example' {
         (code "recovery_cascade_suppressed")
         (source "parser")
         (range (start 9 2) (end 13 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_connection_definition_member")
+        (source "semantic")
+        (range (start 18 10) (end 18 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_connection_definition_member")
+        (source "semantic")
+        (range (start 18 28) (end 18 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_connection_definition_member")
+        (source "semantic")
+        (range (start 19 10) (end 19 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_connection_definition_member")
+        (source "semantic")
+        (range (start 19 29) (end 19 45))
       )
     )
   )
@@ -66,6 +84,7 @@ package 'Interface Decomposition Example' {
     (declaration (id (node (document "memory://snapshot/11_interface_decomposition_example.md") (qualified-name "Interface Decomposition Example::FaucetInlet"))) (kind port-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/11_interface_decomposition_example.md") (qualified-name "Interface Decomposition Example::Spigot"))) (kind port-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/11_interface_decomposition_example.md") (qualified-name "Interface Decomposition Example::SpigotBank"))) (kind port-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/11_interface_decomposition_example.md") (qualified-name "Interface Decomposition Example::WaterDelivery"))) (kind interface-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

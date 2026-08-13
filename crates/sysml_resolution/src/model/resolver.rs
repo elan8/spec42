@@ -1217,6 +1217,7 @@ impl DeclarationDomain {
                     | DeclarationKind::StateDefinition
                     | DeclarationKind::MetadataDefinition
                     | DeclarationKind::ConnectionDefinition
+                    | DeclarationKind::InterfaceDefinition
                     | DeclarationKind::OccurrenceDefinition
                     | DeclarationKind::AnalysisCaseDefinition
                     | DeclarationKind::Alias
@@ -2783,6 +2784,63 @@ mod tests {
     #[test]
     fn connection_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = connection_def_specialization_fixture();
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(0)),
+            Some(ResolutionStatus::Resolved(DeclarationId(1)))
+        );
+    }
+
+    fn interface_def_specialization_fixture() -> ResolverFixture {
+        let mut symbols = SymbolTableBuilder::default();
+        let demo_name = symbols.intern("Demo").unwrap();
+        let base_name = symbols.intern("Base").unwrap();
+        let derived_name = symbols.intern("Derived").unwrap();
+        let mut paths = SymbolPathArenaBuilder::default();
+        let base_path = paths.push(&[base_name], false).unwrap();
+
+        let demo = DeclarationId(0);
+        let derived = DeclarationId(2);
+        let declarations = vec![
+            declaration(
+                DocumentId(0),
+                None,
+                Some(demo_name),
+                DeclarationKind::Package,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(demo),
+                Some(base_name),
+                DeclarationKind::InterfaceDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(demo),
+                Some(derived_name),
+                DeclarationKind::InterfaceDefinition,
+            ),
+        ];
+        let memberships = memberships_for(&declarations, &[]);
+        let references = vec![TestReference {
+            source: derived,
+            kind: ReferenceKind::Subclassification,
+            path: base_path,
+            flags: RelationshipFlags::default(),
+        }];
+        let _symbols = symbols.freeze();
+        ResolverFixture {
+            declarations: declarations.into_boxed_slice(),
+            memberships,
+            paths: paths.freeze(),
+            references: references.into_boxed_slice(),
+        }
+    }
+
+    #[test]
+    fn interface_def_specialization_resolves_through_the_ancestor_fixed_point() {
+        let fixture = interface_def_specialization_fixture();
         let (_, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(

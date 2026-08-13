@@ -20,14 +20,15 @@ use sysml_v2_parser_next::{
         ConnectionDefBody, ConnectionDefBodyElement, ConnectionEnd,
         ConnectionUsageMember as ParserConnectionUsage, DefinitionBody, DefinitionBodyElement,
         EndDecl, EndIdentity, EnumDef, EnumerationBody, EnumerationUsage as ParserEnumerationUsage,
-        Expression, Import, ImportShape, ItemDef, ItemUsage as ParserItemUsage, LibraryPackage,
-        Membership, MembershipKind as ParserMembershipKind, MetadataDef,
-        MetadataUsage as ParserMetadataUsage, NamespaceDecl, Node, OccurrenceBodyElement,
-        OccurrenceDef, OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package,
-        PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage,
-        PartUsageBody, PartUsageBodyElement, PortBody, PortBodyElement, PortDef, PortDefBody,
-        PortDefBodyElement, PortUsage as ParserPortUsage, QualifiedIdentification,
-        QualifiedReferenceId, RequirementDef, RequirementDefBody, RequirementDefBodyElement,
+        Expression, Import, ImportShape, InterfaceDef, InterfaceDefBody, InterfaceDefBodyElement,
+        ItemDef, ItemUsage as ParserItemUsage, LibraryPackage, Membership,
+        MembershipKind as ParserMembershipKind, MetadataDef, MetadataUsage as ParserMetadataUsage,
+        NamespaceDecl, Node, OccurrenceBodyElement, OccurrenceDef,
+        OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package, PackageBody,
+        PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage, PartUsageBody,
+        PartUsageBodyElement, PortBody, PortBodyElement, PortDef, PortDefBody, PortDefBodyElement,
+        PortUsage as ParserPortUsage, QualifiedIdentification, QualifiedReferenceId,
+        RequirementDef, RequirementDefBody, RequirementDefBodyElement,
         RequirementUsage as ParserRequirementUsage, RootElement, Span, StateDef, StateDefBody,
         StateDefBodyElement, StateUsage as ParserStateUsage, SubsettingKind,
         SubsettingRelationship, UseCaseDefBody, UseCaseDefBodyElement,
@@ -181,6 +182,20 @@ enum DeclarationKind {
     /// UPSTREAM_PARSER_GAPS.md #5: `AnalysisCaseUsage` silently drops parsed `:>`/`:>>` clauses,
     /// unlike `AnalysisCaseDef`, which has full field parity).
     AnalysisCaseDefinition,
+    /// `interface def` (BNF InterfaceDefinition): a type whose owned members are attribute/item/
+    /// port/flow usages, nested `end`/`connect` connector structure, mirroring ConnectionDefinition
+    /// lowering (`InterfaceDefBody`/`InterfaceDefBodyElement` share the same `end`/`connect`
+    /// connector-end shape as `ConnectionDefBody`/`ConnectionDefBodyElement`, so `end` declarations
+    /// and `connect` statements reuse the same `ReferenceKind::ConnectorEnd` machinery). Verified
+    /// `InterfaceDef`'s `specializes: Option<Node<TypingRelationship>>` field carries full parity
+    /// with `ConnectionDef`/`ActionDef`/`OccurrenceDef`. `interface` usage lowering
+    /// (`DeclarationKind::InterfaceUsage`) is deferred: `ast::InterfaceUsage`'s three variants
+    /// (`TypedConnect`/`Connection`/`Declaration`) carry only a bare `interface_type:
+    /// Option<QualifiedReferenceId>` with no `subsets`/`redefines` fields at all, unlike the
+    /// structurally analogous `ConnectionUsageMember` (see UPSTREAM_PARSER_GAPS.md #6). Interface-
+    /// specific semantics beyond declaration/typing/ends (flow/protocol constraints) are out of
+    /// scope here.
+    InterfaceDefinition,
     Import,
     Alias,
 }
@@ -283,6 +298,11 @@ enum UnsupportedFamily {
     /// with `case`/`verification` case bodies in the typed AST, but this family name is scoped to
     /// `analysis def` specifically since `analysis` usage lowering is deferred.
     AnalysisCaseDefinitionMember,
+    /// `interface def` body members not modeled by this slice; shares the same `end`/`connect`/
+    /// attribute/item/port/flow member set as `ConnectionDefinitionMember`, kept as its own family
+    /// name so interface def diagnostics stay distinct from connection def ones at the same span
+    /// shape.
+    InterfaceDefinitionMember,
     ParserUnsupported,
 }
 
@@ -755,11 +775,9 @@ impl SemanticModelBuilder {
                 self.lower_attribute_usage(document, owner, node)?
             }
             PackageBodyElement::PortDef(node) => self.lower_port_def(document, owner, node)?,
-            PackageBodyElement::InterfaceDef(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::InterfaceDef(node) => {
+                self.lower_interface_def(document, owner, node)?
+            }
             PackageBodyElement::AliasDef(node) => self.lower_alias_def(document, owner, node)?,
             PackageBodyElement::AttributeDef(node) => {
                 self.lower_attribute_def(document, owner, node)?
@@ -1168,6 +1186,9 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::ConnectionDef(connection_def) => {
                         self.lower_connection_def(document, Some(declaration), connection_def)?;
                     }
+                    PartDefBodyElement::InterfaceDef(interface_def) => {
+                        self.lower_interface_def(document, Some(declaration), interface_def)?;
+                    }
                     PartDefBodyElement::Connection(connection_usage) => {
                         self.lower_connection_usage(document, Some(declaration), connection_usage)?;
                     }
@@ -1185,7 +1206,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::Other(_)
                     | PartDefBodyElement::DefaultReferenceUsage(_)
                     | PartDefBodyElement::Ref(_)
-                    | PartDefBodyElement::InterfaceDef(_)
                     | PartDefBodyElement::InterfaceUsage(_)
                     | PartDefBodyElement::Connect(_)
                     | PartDefBodyElement::FlowUsage(_)
@@ -2836,6 +2856,105 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
+    /// Lowers an `interface def` (BNF InterfaceDefinition), mirroring `lower_connection_def`:
+    /// ownership, membership, an optional `:>` specialization relationship (participates in the
+    /// shared Subclassification/FeatureTyping lexical lookup fixed point, see
+    /// `DeclarationDomain::Type` in resolver.rs), and owned attribute/item/port/flow members plus
+    /// connector-end structure via `lower_interface_body`, reusing the same `end`/`connect`
+    /// `ReferenceKind::ConnectorEnd` machinery `lower_connection_def` uses (interface ends are
+    /// semantically the same kind of fact). `interface` usage lowering is deferred -- see
+    /// `DeclarationKind::InterfaceDefinition`'s doc comment and UPSTREAM_PARSER_GAPS.md #6.
+    fn lower_interface_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<InterfaceDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::InterfaceDefinition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        self.lower_interface_body(document, declaration, &node.value.body)
+    }
+
+    /// Body walker for `interface def` bodies (`InterfaceDefBody`/`InterfaceDefBodyElement`),
+    /// mirroring `lower_connection_body`. `end` declarations and `connect` statements carry the
+    /// connector-end structure through the same `lower_end_decl`/`lower_connect_stmt` helpers
+    /// `connection def` uses; everything else beyond attribute/item/port members falls through to
+    /// `unsupported_interface_definition_member`.
+    fn lower_interface_body(
+        &mut self,
+        document: DocumentId,
+        declaration: DeclarationId,
+        body: &InterfaceDefBody,
+    ) -> Result<(), ConstructionError> {
+        if let InterfaceDefBody::Brace { elements } = body {
+            for element in elements {
+                match &element.value {
+                    InterfaceDefBodyElement::Error(error) => {
+                        self.push_recovery(document, error.span.clone());
+                    }
+                    InterfaceDefBodyElement::Doc(_) => {}
+                    InterfaceDefBodyElement::EndDecl(end_decl) => {
+                        self.lower_end_decl(document, declaration, end_decl)?;
+                    }
+                    InterfaceDefBodyElement::ConnectStmt(connect_stmt) => {
+                        self.lower_connect_stmt(document, declaration, connect_stmt)?;
+                    }
+                    InterfaceDefBodyElement::AttributeDef(attribute) => {
+                        self.lower_attribute_def(document, Some(declaration), attribute)?;
+                    }
+                    InterfaceDefBodyElement::AttributeUsage(attribute) => {
+                        self.lower_attribute_usage(document, Some(declaration), attribute)?;
+                    }
+                    InterfaceDefBodyElement::ItemDef(item_def) => {
+                        self.lower_item_def(document, Some(declaration), item_def)?;
+                    }
+                    InterfaceDefBodyElement::ItemUsage(item_usage) => {
+                        self.lower_item_usage(document, Some(declaration), item_usage)?;
+                    }
+                    InterfaceDefBodyElement::PortDef(port_def) => {
+                        self.lower_port_def(document, Some(declaration), port_def)?;
+                    }
+                    InterfaceDefBodyElement::PortUsage(port_usage) => {
+                        self.lower_port_usage(document, Some(declaration), port_usage)?;
+                    }
+                    InterfaceDefBodyElement::RefDecl(_) | InterfaceDefBodyElement::FlowUsage(_) => {
+                        self.push_unsupported(
+                            document,
+                            UnsupportedFamily::InterfaceDefinitionMember,
+                            element.span.clone(),
+                        )
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+
     /// Lowers an `occurrence def` (BNF OccurrenceDefinition), mirroring `lower_port_def`:
     /// ownership, membership, an optional `:>` specialization relationship, and owned
     /// attribute/item/part/nested-occurrence declarations. Occurrence-specific semantics
@@ -3807,6 +3926,67 @@ mod tests {
                 "(kind connectorEnd) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::bus\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::d2\")))"
             ),
             "expected bus's connector-end reference to d2 to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn interface_def_lowers_to_a_declaration() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tport def P;\n\
+             \tinterface def I {\n\
+             \t\tend end1 : P;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::I\"))) (kind interface-def)"),
+            "expected an interface-def declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::I::end1\"))) (kind connection)"),
+            "expected an owned end declaration under the interface def, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn interface_def_specializing_another_interface_def_resolves_its_specialization_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tinterface def Base;\n\
+             \tinterface def Derived :> Base;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn interface_def_connect_stmt_connector_end_references_resolve_to_their_targets() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart d1;\n\
+             \tpart d2;\n\
+             \tinterface def I {\n\
+             \t\tconnect d1 to d2;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind connectorEnd) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::I\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::d1\")))"
+            ),
+            "expected I's connector-end reference to d1 to resolve, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind connectorEnd) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::I\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::d2\")))"
+            ),
+            "expected I's connector-end reference to d2 to resolve, got:\n{output}"
         );
     }
 

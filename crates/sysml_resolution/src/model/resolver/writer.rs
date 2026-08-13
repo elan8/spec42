@@ -220,6 +220,7 @@ fn unsupported_code(family: UnsupportedFamily) -> &'static str {
         UnsupportedFamily::ActionUsageMember => "unsupported_action_usage_member",
         UnsupportedFamily::StateDefinitionMember => "unsupported_state_definition_member",
         UnsupportedFamily::ConnectionDefinitionMember => "unsupported_connection_definition_member",
+        UnsupportedFamily::InterfaceDefinitionMember => "unsupported_interface_definition_member",
         UnsupportedFamily::OccurrenceDefinitionMember => "unsupported_occurrence_definition_member",
         UnsupportedFamily::AnalysisCaseDefinitionMember => {
             "unsupported_analysis_case_definition_member"
@@ -715,6 +716,7 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::MetadataDefinition => "metadata-def",
         DeclarationKind::MetadataUsage => "metadata",
         DeclarationKind::ConnectionDefinition => "connection-def",
+        DeclarationKind::InterfaceDefinition => "interface-def",
         DeclarationKind::ConnectionUsage => "connection",
         DeclarationKind::OccurrenceDefinition => "occurrence-def",
         DeclarationKind::OccurrenceUsage => "occurrence",

@@ -160,6 +160,46 @@ entry should carry enough detail to file/update an upstream issue against
   shipping analysis/case usage declarations with unconditionally-absent subsetting/redefinition
   facts.
 
+### 6. `InterfaceUsage` has no `subsets`/`redefines` fields at all (unlike `ConnectionUsageMember`)
+
+- **Symptom:** `interface i : I :> baseI;` / `interface i :>> redefinedI;` package/definition/
+  usage-level interface usages parse successfully (no `unsupported_grammar_form`, no parser-level
+  error) but any `:>` subsetting / `:>>` redefinition clause is silently discarded before it ever
+  reaches `sysml_resolution`. `ast::InterfaceUsage` (crate `sysml-v2-parser`,
+  `src/ast/structure.rs`) is a three-variant enum (`TypedConnect`, `Connection`, `Declaration`),
+  and none of the three variants carry `subsets: Option<Node<SubsettingRelationship>>` /
+  `redefines: Option<Node<SubsettingRelationship>>` fields — each only has `interface_type:
+  Option<QualifiedReferenceId>`, a bare unstructured reference, not even a structured
+  `TypingRelationship` (unlike `ConnectionUsageMember::type_reference`, which is also a bare
+  `QualifiedReferenceId` but *does* carry separate `subsets`/`redefines: Option<Node<
+  SubsettingRelationship>>` fields alongside it). This is a genuine typed-AST gap, not a grammar/
+  tokenizing gap.
+- **Representative input:** `interface i : I :> baseInterface;` (pattern not currently exercised
+  by fixtures — discovered while verifying field parity ahead of lowering `interface def`/
+  `interface` usage declarations, see the commit adding `DeclarationKind::InterfaceDefinition`).
+- **Representative snapshots:** none yet (no fixture currently authors `:>`/`:>>` on an
+  `interface` usage — this is a latent gap, not one presently manifesting as a wrong snapshot),
+  but any future fixture doing so would silently drop the relationship.
+- **Impact:** blocks lowering `interface` usage declaration facts (`DeclarationKind::
+  InterfaceUsage`) with full parity to the other `*Usage` kinds, since the in-scope requirement
+  includes `:>`/`:>>` specialization resolving through the existing ancestor-closure fixed point
+  (same shape as `occurrence`/`connection` usage, see commits `798d7287`/`d0675e2c`) and the typed
+  AST currently offers no field to lower that relationship from for `interface` usage
+  specifically. `InterfaceDef` itself (the `def` form) is not blocked by this gap — its
+  `specializes: Option<Node<TypingRelationship>>` field has full parity with `ConnectionDef`/
+  `ActionDef`/`OccurrenceDef` — so this slice lands `interface def` lowering only (reusing the
+  same `ReferenceKind::ConnectorEnd` machinery `connection def` uses for its `end`/`connect`
+  structure, since `InterfaceDefBody`/`InterfaceDefBodyElement` share that shape) and defers
+  `interface` usage lowering until this is fixed upstream.
+- **Status:** blocking (usage side only). Needs an upstream `sysml-v2-parser` change adding
+  `subsets: Option<Node<SubsettingRelationship>>` and `redefines: Option<Node<
+  SubsettingRelationship>>` fields to each `ast::InterfaceUsage` variant (mirroring
+  `ConnectionUsageMember`), and ideally widening `interface_type` to a structured
+  `TypingRelationship` for full parity too. Not attempted here — out of scope for
+  `sysml_resolution`/`sysml_query`/`spec42-snapshot` to work around without either (a) re-parsing
+  the specialization clauses independently (duplicating parser logic, fragile) or (b) shipping
+  interface usage declarations with unconditionally-absent subsetting/redefinition facts.
+
 ## Resolved / not blocked (kept for history)
 
 - Alias declarations (`alias X for Y;`) — investigated as a possible parser gap, but the typed
