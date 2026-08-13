@@ -413,12 +413,6 @@ package 'Vehicle Analysis Demo' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 31 5) (end 31 19))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_port_definition_member")
         (source "semantic")
         (range (start 34 9) (end 34 29))
@@ -751,6 +745,7 @@ package 'Vehicle Analysis Demo' {
     (declaration (id (node (document "memory://snapshot/vehicle_analysis_demo.md") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel::highwayFuelEconomyRequirement"))) (kind requirement) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "FuelEconomyRequirement"))))
     (declaration (id (node (document "memory://snapshot/vehicle_analysis_demo.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "requiredFuelEconomy"))))
     (declaration (id (node (document "memory://snapshot/vehicle_analysis_demo.md") (qualified-name "Vehicle Analysis Demo::VehicleModel"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_analysis_demo.md") (qualified-name "Vehicle Analysis Demo::VehicleModel::Fuel"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_analysis_demo.md") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelPort"))) (kind port-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_analysis_demo.md") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelTank"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_analysis_demo.md") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelTank::fuelInPort"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "FuelPort") (conjugated true))))

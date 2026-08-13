@@ -80,12 +80,6 @@ package PartTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 12 1) (end 12 12))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_reference")
         (source "semantic")
         (range (start 16 33) (end 16 34))
@@ -221,6 +215,7 @@ package PartTest {
     (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::B::x::p"))) (kind port) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::C"))) (kind port-def) (membership (kind owning) (visibility private)))
     (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::C::c1"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "C"))))
+    (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::S"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::f"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "A"))))
     (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::p1"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "p2"))))
     (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::p2"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "p3"))))

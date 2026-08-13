@@ -70,9 +70,9 @@ package TimeVaryingAttribute {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 3 4) (end 5 5))
+        (range (start 4 28) (end 4 49))
       )
       (diagnostic
         (severity warning)
@@ -91,12 +91,6 @@ package TimeVaryingAttribute {
         (code "unsupported_reference")
         (source "semantic")
         (range (start 11 22) (end 11 44))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_definition_member")
-        (source "semantic")
-        (range (start 13 8) (end 13 31))
       )
       (diagnostic
         (severity warning)
@@ -133,15 +127,21 @@ package TimeVaryingAttribute {
   (declarations
     (declaration (id (node (document "memory://snapshot/time_varying_attribute.md") (qualified-name "TimeVaryingAttribute"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/time_varying_attribute.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SI::s") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/time_varying_attribute.md") (qualified-name "TimeVaryingAttribute::PwrCmd"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/time_varying_attribute.md") (qualified-name "TimeVaryingAttribute::PwrCmd::pwrLevel"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Integer"))))
     (declaration (id (node (document "memory://snapshot/time_varying_attribute.md") (qualified-name "TimeVaryingAttribute::Transport2"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/time_varying_attribute.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Time") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/time_varying_attribute.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "localClock::currentTime"))))
     (declaration (id (node (document "memory://snapshot/time_varying_attribute.md") (qualified-name "TimeVaryingAttribute::Transport2::elapseTime"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "ISQ::duration"))))
+    (declaration (id (node (document "memory://snapshot/time_varying_attribute.md") (qualified-name "TimeVaryingAttribute::Transport2::pwrCmd"))) (kind item) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "PwrCmd"))))
     (declaration (id (node (document "memory://snapshot/time_varying_attribute.md") (qualified-name "TimeVaryingAttribute::Transport2::startTime"))) (kind attribute) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/time_varying_attribute.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
       (authored-target "SI::s")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/time_varying_attribute.md") (qualified-name "TimeVaryingAttribute::PwrCmd::pwrLevel"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ScalarValues::Integer")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/time_varying_attribute.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
       (authored-target "Time")
@@ -152,8 +152,12 @@ package TimeVaryingAttribute {
     (reference (id (source (node (document "memory://snapshot/time_varying_attribute.md") (qualified-name "TimeVaryingAttribute::Transport2::elapseTime"))) (kind subsetting) (ordinal 0))
       (authored-target "ISQ::duration")
       (outcome (status unsupported)))
+    (reference (id (source (node (document "memory://snapshot/time_varying_attribute.md") (qualified-name "TimeVaryingAttribute::Transport2::pwrCmd"))) (kind featureTyping) (ordinal 0))
+      (authored-target "PwrCmd")
+      (outcome (status resolved) (target (node (document "memory://snapshot/time_varying_attribute.md") (qualified-name "TimeVaryingAttribute::PwrCmd")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/time_varying_attribute.md") (qualified-name "TimeVaryingAttribute::Transport2::pwrCmd"))) (target (node (document "memory://snapshot/time_varying_attribute.md") (qualified-name "TimeVaryingAttribute::PwrCmd"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/time_varying_attribute.md") (qualified-name "TimeVaryingAttribute::Transport2::pwrCmd"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -164,6 +168,10 @@ package TimeVaryingAttribute {
 (navigation
   (query (document "memory://snapshot/time_varying_attribute.md") (range (start 1 19) (end 1 24)) (probe (position 1 19))
     (reference (id (source (node (document "memory://snapshot/time_varying_attribute.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "SI::s")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/time_varying_attribute.md") (range (start 4 28) (end 4 49)) (probe (position 4 28))
+    (reference (id (source (node (document "memory://snapshot/time_varying_attribute.md") (qualified-name "TimeVaryingAttribute::PwrCmd::pwrLevel"))) (kind featureTyping) (ordinal 0) (authored-target "ScalarValues::Integer")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/time_varying_attribute.md") (range (start 8 23) (end 8 30)) (probe (position 8 23))
@@ -177,6 +185,10 @@ package TimeVaryingAttribute {
   (query (document "memory://snapshot/time_varying_attribute.md") (range (start 10 32) (end 10 45)) (probe (position 10 32))
     (reference (id (source (node (document "memory://snapshot/time_varying_attribute.md") (qualified-name "TimeVaryingAttribute::Transport2::elapseTime"))) (kind subsetting) (ordinal 0) (authored-target "ISQ::duration")
       (outcome (status unsupported)))
+  )
+  (query (document "memory://snapshot/time_varying_attribute.md") (range (start 13 24) (end 13 30)) (probe (position 13 24))
+    (reference (id (source (node (document "memory://snapshot/time_varying_attribute.md") (qualified-name "TimeVaryingAttribute::Transport2::pwrCmd"))) (kind featureTyping) (ordinal 0) (authored-target "PwrCmd")
+      (outcome (status resolved) (target (node (document "memory://snapshot/time_varying_attribute.md") (qualified-name "TimeVaryingAttribute::PwrCmd")))))
   )
 )
 ~~~

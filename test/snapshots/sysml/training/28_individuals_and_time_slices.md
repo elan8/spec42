@@ -45,15 +45,15 @@ package 'Individuals and Time Slices' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_specializes_reference")
         (source "semantic")
-        (range (start 3 1) (end 3 37))
+        (range (start 3 30) (end 3 36))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_specializes_reference")
         (source "semantic")
-        (range (start 4 1) (end 4 35))
+        (range (start 4 28) (end 4 34))
       )
       (diagnostic
         (severity warning)
@@ -72,10 +72,18 @@ package 'Individuals and Time Slices' {
   (declarations
     (declaration (id (node (document "memory://snapshot/28_individuals_and_time_slices.md") (qualified-name "Individuals and Time Slices"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/28_individuals_and_time_slices.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Individuals and Snapshots Example") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/28_individuals_and_time_slices.md") (qualified-name "Individuals and Time Slices::Alice"))) (kind item-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Person"))))
+    (declaration (id (node (document "memory://snapshot/28_individuals_and_time_slices.md") (qualified-name "Individuals and Time Slices::Bob"))) (kind item-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Person"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/28_individuals_and_time_slices.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
       (authored-target "Individuals and Snapshots Example")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/28_individuals_and_time_slices.md") (qualified-name "Individuals and Time Slices::Alice"))) (kind specialization) (ordinal 0))
+      (authored-target "Person")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/28_individuals_and_time_slices.md") (qualified-name "Individuals and Time Slices::Bob"))) (kind specialization) (ordinal 0))
+      (authored-target "Person")
       (outcome (status unresolved)))
   )
   (relationships
@@ -89,6 +97,14 @@ package 'Individuals and Time Slices' {
 (navigation
   (query (document "memory://snapshot/28_individuals_and_time_slices.md") (range (start 1 16) (end 1 54)) (probe (position 1 16))
     (reference (id (source (node (document "memory://snapshot/28_individuals_and_time_slices.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Individuals and Snapshots Example")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/28_individuals_and_time_slices.md") (range (start 3 30) (end 3 36)) (probe (position 3 30))
+    (reference (id (source (node (document "memory://snapshot/28_individuals_and_time_slices.md") (qualified-name "Individuals and Time Slices::Alice"))) (kind specialization) (ordinal 0) (authored-target "Person")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/28_individuals_and_time_slices.md") (range (start 4 28) (end 4 34)) (probe (position 4 28))
+    (reference (id (source (node (document "memory://snapshot/28_individuals_and_time_slices.md") (qualified-name "Individuals and Time Slices::Bob"))) (kind specialization) (ordinal 0) (authored-target "Person")
       (outcome (status unresolved)))
   )
 )

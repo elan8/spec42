@@ -46,24 +46,6 @@ package 'Messaging Example' {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 1 1) (end 1 16))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 2 1) (end 2 16))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 3 1) (end 3 18))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_attribute_member")
         (source "semantic")
         (range (start 6 2) (end 6 25))
@@ -114,6 +96,9 @@ package 'Messaging Example' {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:5d3cc1a64a4746f4f3f2ad75fe010be12e6751fdc0e69b332edbb9cb6c2ab8c7") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Image"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Picture"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Scene"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Show"))) (kind attribute-def) (membership (kind owning) (visibility default)))
   )
   (references

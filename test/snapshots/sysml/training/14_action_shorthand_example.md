@@ -41,24 +41,6 @@ package 'Action Shorthand Example' {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 1 1) (end 1 16))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 2 1) (end 2 16))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 3 1) (end 3 18))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
         (range (start 5 1) (end 5 58))
       )
       (diagnostic
@@ -89,6 +71,9 @@ package 'Action Shorthand Example' {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:6409babd991a20b892be47396abad82d5e8da9f8e41b377e6a10f72342e58bb0") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Image"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Picture"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Scene"))) (kind item-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

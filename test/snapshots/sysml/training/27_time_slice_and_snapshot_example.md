@@ -40,12 +40,6 @@ package 'Time Slice and Snapshot Example' {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 3 1) (end 3 17))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_part_definition_member")
         (source "semantic")
         (range (start 6 2) (end 6 21))
@@ -91,6 +85,7 @@ package 'Time Slice and Snapshot Example' {
   (declarations
     (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Date"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Person"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references

@@ -130,12 +130,6 @@ package CauseAndEffectExample {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 29 4) (end 29 11))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
         (range (start 31 4) (end 31 13))
       )
       (diagnostic
@@ -249,6 +243,7 @@ package CauseAndEffectExample {
     (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::Causer2"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::Effected1"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::Effected2"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::b"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::c"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::causer1"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Causer1"))))
     (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::causer2"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Causer2"))))

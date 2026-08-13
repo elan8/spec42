@@ -53,24 +53,6 @@ package 'Messaging Example' {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 1 1) (end 1 16))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 2 1) (end 2 16))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 3 1) (end 3 18))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_attribute_member")
         (source "semantic")
         (range (start 6 2) (end 6 25))
@@ -115,6 +97,9 @@ package 'Messaging Example' {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:feb91c879d2638e3bb574cfb56398fb3cc26ba87e69fea1960c2a020c15da8f3") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/21_messaging_with_ports.md") (qualified-name "Messaging Example"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/21_messaging_with_ports.md") (qualified-name "Messaging Example::Image"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/21_messaging_with_ports.md") (qualified-name "Messaging Example::Picture"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/21_messaging_with_ports.md") (qualified-name "Messaging Example::Scene"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/21_messaging_with_ports.md") (qualified-name "Messaging Example::Show"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/21_messaging_with_ports.md") (qualified-name "Messaging Example::camera"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/21_messaging_with_ports.md") (qualified-name "Messaging Example::camera::displayPort"))) (kind port) (membership (kind feature) (visibility default)))

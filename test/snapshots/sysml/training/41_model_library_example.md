@@ -108,15 +108,21 @@ library package 'Model Library Example' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_attribute_member")
         (source "semantic")
-        (range (start 27 1) (end 31 2))
+        (range (start 28 2) (end 28 28))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_attribute_member")
         (source "semantic")
-        (range (start 33 1) (end 33 40))
+        (range (start 29 2) (end 29 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 30 2) (end 30 40))
       )
     )
   )
@@ -130,6 +136,8 @@ library package 'Model Library Example' {
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "RiskMetadata::Level") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Scenario"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::scenarios"))) (kind item-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "Scenario"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/41_model_library_example.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
@@ -138,8 +146,12 @@ library package 'Model Library Example' {
     (reference (id (source (node (document "memory://snapshot/41_model_library_example.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0))
       (authored-target "RiskMetadata::Level")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::scenarios"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Scenario")
+      (outcome (status resolved) (target (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Scenario")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::scenarios"))) (target (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Scenario"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::scenarios"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -155,6 +167,10 @@ library package 'Model Library Example' {
   (query (document "memory://snapshot/41_model_library_example.md") (range (start 2 16) (end 2 35)) (probe (position 2 16))
     (reference (id (source (node (document "memory://snapshot/41_model_library_example.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0) (authored-target "RiskMetadata::Level")
       (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/41_model_library_example.md") (range (start 33 18) (end 33 26)) (probe (position 33 18))
+    (reference (id (source (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::scenarios"))) (kind featureTyping) (ordinal 0) (authored-target "Scenario")
+      (outcome (status resolved) (target (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Scenario")))))
   )
 )
 ~~~

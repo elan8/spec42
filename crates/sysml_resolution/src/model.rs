@@ -15,12 +15,13 @@ use hashbrown::HashTable;
 use sysml_v2_parser_next::{
     ast::{
         AliasDef, AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, EnumDef,
-        EnumerationBody, EnumerationUsage as ParserEnumerationUsage, Import, ImportShape,
-        LibraryPackage, Membership, MembershipKind as ParserMembershipKind, NamespaceDecl, Node,
-        Package, PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement,
-        PartUsage, PartUsageBody, PartUsageBodyElement, PortBody, PortBodyElement, PortDef,
-        PortDefBody, PortDefBodyElement, PortUsage as ParserPortUsage, QualifiedIdentification,
-        QualifiedReferenceId, RequirementDef, RequirementDefBody, RequirementDefBodyElement,
+        EnumerationBody, EnumerationUsage as ParserEnumerationUsage, Import, ImportShape, ItemDef,
+        ItemUsage as ParserItemUsage, LibraryPackage, Membership,
+        MembershipKind as ParserMembershipKind, NamespaceDecl, Node, Package, PackageBody,
+        PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage, PartUsageBody,
+        PartUsageBodyElement, PortBody, PortBodyElement, PortDef, PortDefBody, PortDefBodyElement,
+        PortUsage as ParserPortUsage, QualifiedIdentification, QualifiedReferenceId,
+        RequirementDef, RequirementDefBody, RequirementDefBodyElement,
         RequirementUsage as ParserRequirementUsage, RootElement, Span, SubsettingKind,
         SubsettingRelationship, Visibility as ParserVisibility,
     },
@@ -101,6 +102,13 @@ enum DeclarationKind {
     /// explicit `RelationshipFlags::conjugated` fact on the FeatureTyping/Subclassification
     /// reference rather than folded into the reference target itself.
     PortUsage,
+    /// `item def` (BNF ItemDefinition): a type whose owned members are attribute/enum/nested-item
+    /// usages, mirroring PartDefinition lowering. Item-specific semantics beyond ownership,
+    /// specialization, and owned-member structure are out of scope here.
+    ItemDefinition,
+    /// A package/definition/usage-level `item` feature member (BNF ItemUsage), e.g.
+    /// `item i : SomeItem;`. Mirrors PartUsage lowering.
+    ItemUsage,
     Import,
     Alias,
 }
@@ -702,11 +710,7 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::ItemDef(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::ItemDef(node) => self.lower_item_def(document, owner, node)?,
             PackageBodyElement::IndividualDef(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -872,11 +876,7 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::ItemUsage(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::ItemUsage(node) => self.lower_item_usage(document, owner, node)?,
             PackageBodyElement::PortUsage(node) => self.lower_port_usage(document, owner, node)?,
             PackageBodyElement::ConnectionUsage(node) => self.push_unsupported(
                 document,
@@ -1061,6 +1061,12 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::PortUsage(port_usage) => {
                         self.lower_port_usage(document, Some(declaration), port_usage)?;
                     }
+                    PartDefBodyElement::ItemDef(item_def) => {
+                        self.lower_item_def(document, Some(declaration), item_def)?;
+                    }
+                    PartDefBodyElement::ItemUsage(item_usage) => {
+                        self.lower_item_usage(document, Some(declaration), item_usage)?;
+                    }
                     PartDefBodyElement::Doc(_) | PartDefBodyElement::Comment(_) => {}
                     PartDefBodyElement::Annotation(_)
                     | PartDefBodyElement::MetadataAnnotation(_)
@@ -1068,8 +1074,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::Dependency(_)
                     | PartDefBodyElement::Other(_)
                     | PartDefBodyElement::DefaultReferenceUsage(_)
-                    | PartDefBodyElement::ItemDef(_)
-                    | PartDefBodyElement::ItemUsage(_)
                     | PartDefBodyElement::Ref(_)
                     | PartDefBodyElement::OccurrenceUsage(_)
                     | PartDefBodyElement::InterfaceDef(_)
@@ -1199,6 +1203,12 @@ impl SemanticModelBuilder {
                     PartUsageBodyElement::PortUsage(port_usage) => {
                         self.lower_port_usage(document, Some(declaration), port_usage)?;
                     }
+                    PartUsageBodyElement::ItemDef(item_def) => {
+                        self.lower_item_def(document, Some(declaration), item_def)?;
+                    }
+                    PartUsageBodyElement::ItemUsage(item_usage) => {
+                        self.lower_item_usage(document, Some(declaration), item_usage)?;
+                    }
                     PartUsageBodyElement::Doc(_) => {}
                     PartUsageBodyElement::Annotation(_)
                     | PartUsageBodyElement::DefaultReferenceUsage(_)
@@ -1228,8 +1238,6 @@ impl SemanticModelBuilder {
                     | PartUsageBodyElement::ConstraintDef(_)
                     | PartUsageBodyElement::ConstraintUsage(_)
                     | PartUsageBodyElement::CalcUsage(_)
-                    | PartUsageBodyElement::ItemDef(_)
-                    | PartUsageBodyElement::ItemUsage(_)
                     | PartUsageBodyElement::MetadataUsage(_)
                     | PartUsageBodyElement::AnalysisCaseDef(_)
                     | PartUsageBodyElement::AnalysisCaseUsage(_)
@@ -1476,6 +1484,100 @@ impl SemanticModelBuilder {
             })?;
         }
         Ok(())
+    }
+
+    /// Lowers an `item def` (BNF ItemDefinition), mirroring `lower_part_def`: ownership,
+    /// membership, and an optional `:>` specialization relationship. `ItemDef`'s body is a plain
+    /// `AttributeBody` (shared with `AttributeDef`/`AttributeUsage`), not a `PartDefBody`, so its
+    /// owned members are lowered through the existing `lower_attribute_body` rather than a
+    /// dedicated item-specific body walker.
+    fn lower_item_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ItemDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::ItemDefinition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        self.lower_attribute_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers a package/definition/usage-level `item` feature member (BNF ItemUsage), e.g.
+    /// `item i : SomeItem;`, mirroring `lower_part_usage`. `type_name` is a bare
+    /// `QualifiedReferenceId` (not a `TypingRelationship` node, like `ItemUsage::type_name`'s
+    /// `lower_enum_usage` counterpart), so its `FeatureTyping` reference is pushed directly rather
+    /// than through `lower_typing_relationship`. `ItemUsage`'s body is a plain `AttributeBody`
+    /// (see `lower_item_def`), so owned members are lowered through `lower_attribute_body`.
+    fn lower_item_usage(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ParserItemUsage>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::ItemUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(type_name) = node.value.type_name {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        self.lower_attribute_body(document, declaration, &node.value.body)
     }
 
     /// Lowers a `requirement def` (BNF RequirementDefinition), mirroring `lower_part_def`:
@@ -2533,6 +2635,63 @@ mod tests {
         assert!(
             !output.contains("(kind typing) (conjugated true)"),
             "did not expect the conjugated flag on an unconjugated port typing reference, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn item_def_lowers_to_a_declaration() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \titem def Widget {\n\
+             \t\tattribute mass : Real;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Widget\"))) (kind item-def)"),
+            "expected an item-def declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Widget::mass\"))) (kind attribute)"),
+            "expected an owned attribute declaration under the item def, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn item_def_specializing_another_item_def_resolves_its_specialization_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \titem def Base;\n\
+             \titem def Derived :> Base;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn item_usage_typed_by_an_item_def_resolves() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \titem def Base;\n\
+             \tpart def Holder {\n\
+             \t\titem w : Base;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Holder::w\"))) (kind item)"),
+            "expected an item usage declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Holder::w\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected w's typing reference to Base to resolve, got:\n{output}"
         );
     }
 

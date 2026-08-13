@@ -698,6 +698,8 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::RequirementUsage => "requirement",
         DeclarationKind::PortDefinition => "port-def",
         DeclarationKind::PortUsage => "port",
+        DeclarationKind::ItemDefinition => "item-def",
+        DeclarationKind::ItemUsage => "item",
     }
 }
 

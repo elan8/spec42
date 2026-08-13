@@ -36,24 +36,6 @@ package ProductSelection_N_ary_SysML {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 2 1) (end 2 23))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 3 1) (end 3 18))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 4 1) (end 4 18))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
         (range (start 7 1) (end 11 2))
       )
       (diagnostic
@@ -72,6 +54,9 @@ package ProductSelection_N_ary_SysML {
   (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:68fd1a01fb1408ea31d229e6126320f11767c33b7be4b5ea375dafb22680226d") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary_SysML"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary_SysML::Account"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary_SysML::Product"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary_SysML::ShoppingCart"))) (kind item-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

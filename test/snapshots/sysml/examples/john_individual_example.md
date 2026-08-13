@@ -72,27 +72,27 @@ package JohnIndividualExample {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 2 1) (end 16 2))
+        (range (start 8 18) (end 8 39))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_attribute_member")
         (source "semantic")
-        (range (start 18 1) (end 24 2))
+        (range (start 10 2) (end 15 3))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_attribute_member")
         (source "semantic")
-        (range (start 26 1) (end 33 2))
+        (range (start 32 2) (end 32 74))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_attribute_member")
         (source "semantic")
-        (range (start 35 1) (end 46 2))
+        (range (start 43 2) (end 45 5))
       )
       (diagnostic
         (severity error)
@@ -122,10 +122,26 @@ package JohnIndividualExample {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b21982bd258772fdc2c06901a8c859b8b5913deba876cd21a39a07c949854382") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Country"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::John"))) (kind item-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Person"))))
+    (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Person"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Person::age"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Natural"))))
+    (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStates"))) (kind item-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Country"))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::John"))) (kind specialization) (ordinal 0))
+      (authored-target "Person")
+      (outcome (status resolved) (target (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Person")))))
+    (reference (id (source (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Person::age"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ScalarValues::Natural")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStates"))) (kind specialization) (ordinal 0))
+      (authored-target "Country")
+      (outcome (status resolved) (target (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Country")))))
   )
   (relationships
+    (relationship (kind specialization) (source (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::John"))) (target (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Person"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::John"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStates"))) (target (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Country"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStates"))) (kind specialization) (ordinal 0)))
   )
   (evaluation
   )
@@ -134,5 +150,17 @@ package JohnIndividualExample {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/john_individual_example.md") (range (start 18 29) (end 18 35)) (probe (position 18 29))
+    (reference (id (source (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::John"))) (kind specialization) (ordinal 0) (authored-target "Person")
+      (outcome (status resolved) (target (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Person")))))
+  )
+  (query (document "memory://snapshot/john_individual_example.md") (range (start 8 18) (end 8 39)) (probe (position 8 18))
+    (reference (id (source (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Person::age"))) (kind featureTyping) (ordinal 0) (authored-target "ScalarValues::Natural")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/john_individual_example.md") (range (start 35 37) (end 35 44)) (probe (position 35 37))
+    (reference (id (source (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStates"))) (kind specialization) (ordinal 0) (authored-target "Country")
+      (outcome (status resolved) (target (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Country")))))
+  )
 )
 ~~~

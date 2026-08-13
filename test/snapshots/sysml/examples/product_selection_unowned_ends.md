@@ -50,21 +50,15 @@ package ProductSelection_UnownedEnds_SysML {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_attribute_member")
         (source "semantic")
-        (range (start 2 1) (end 2 24))
+        (range (start 4 2) (end 4 40))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_attribute_member")
         (source "semantic")
-        (range (start 3 1) (end 5 2))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 6 1) (end 8 2))
+        (range (start 7 2) (end 7 34))
       )
       (diagnostic
         (severity warning)
@@ -80,9 +74,33 @@ package ProductSelection_UnownedEnds_SysML {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_attribute_member")
         (source "semantic")
-        (range (start 22 1) (end 34 2))
+        (range (start 23 2) (end 23 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 24 2) (end 24 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 25 2) (end 25 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 27 2) (end 29 3))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 31 2) (end 33 3))
       )
     )
   )
@@ -94,6 +112,10 @@ package ProductSelection_UnownedEnds_SysML {
   (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:f2a4ce723da5119c047b6cc9820b6a1164487b0922762c1cf12974c0063f3197") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SelectionInfo"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart"))) (kind item-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

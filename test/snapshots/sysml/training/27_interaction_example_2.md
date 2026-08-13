@@ -55,24 +55,6 @@ package 'Interaction Example-2' {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 3 1) (end 3 19))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 4 1) (end 4 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 5 1) (end 5 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
         (range (start 7 1) (end 32 2))
       )
       (diagnostic
@@ -92,6 +74,9 @@ package 'Interaction Example-2' {
   (declarations
     (declaration (id (node (document "memory://snapshot/27_interaction_example_2.md") (qualified-name "Interaction Example-2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_interaction_example_2.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Event Occurrence Example") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/27_interaction_example_2.md") (qualified-name "Interaction Example-2::FuelCommand"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/27_interaction_example_2.md") (qualified-name "Interaction Example-2::SensedSpeed"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/27_interaction_example_2.md") (qualified-name "Interaction Example-2::SetSpeed"))) (kind item-def) (membership (kind owning) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/27_interaction_example_2.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))

@@ -218,12 +218,6 @@ standard library package StateSpaceRepresentation {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 35 4) (end 40 5))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
         (range (start 42 4) (end 56 5))
       )
       (diagnostic
@@ -291,6 +285,7 @@ standard library package StateSpaceRepresentation {
     (declaration (id (node (document "memory://snapshot/state_space_representation.md") (qualified-name "StateSpaceRepresentation::Output"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "VectorQuantityValue"))))
     (declaration (id (node (document "memory://snapshot/state_space_representation.md") (qualified-name "StateSpaceRepresentation::StateDerivative"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "VectorQuantityValue"))))
     (declaration (id (node (document "memory://snapshot/state_space_representation.md") (qualified-name "StateSpaceRepresentation::StateSpace"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "VectorQuantityValue"))))
+    (declaration (id (node (document "memory://snapshot/state_space_representation.md") (qualified-name "StateSpaceRepresentation::StateSpaceItem"))) (kind item-def) (membership (kind owning) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/state_space_representation.md") (anonymous (kind import) (ordinal 2))))) (kind namespaceImport) (ordinal 0))

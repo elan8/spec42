@@ -42,18 +42,6 @@ package 'Dependency Example' {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 13 2) (end 15 3))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 16 2) (end 18 3))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
         (range (start 21 1) (end 21 78))
       )
       (diagnostic
@@ -73,6 +61,8 @@ package 'Dependency Example' {
   (declarations
     (declaration (id (node (document "memory://snapshot/37_dependency_example.md") (qualified-name "Dependency Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/37_dependency_example.md") (qualified-name "Dependency Example::Software Design"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/37_dependency_example.md") (qualified-name "Dependency Example::Software Design::DataSchema"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/37_dependency_example.md") (qualified-name "Dependency Example::Software Design::MessageSchema"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/37_dependency_example.md") (qualified-name "Dependency Example::System Assembly"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/37_dependency_example.md") (qualified-name "Dependency Example::System Assembly::Computer Subsystem"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/37_dependency_example.md") (qualified-name "Dependency Example::System Assembly::Storage Subsystem"))) (kind part) (membership (kind feature) (visibility default)))

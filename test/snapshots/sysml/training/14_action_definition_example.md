@@ -36,24 +36,6 @@ package 'Action Definition Example' {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 1 1) (end 1 16))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 2 1) (end 2 16))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 3 1) (end 3 18))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
         (range (start 5 1) (end 5 58))
       )
       (diagnostic
@@ -78,6 +60,9 @@ package 'Action Definition Example' {
   (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:09ac2c25b2ccabae242821ffc66b9fef46f1dcfe1c7e2b0ff4222b33e9f10336") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::Image"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::Picture"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::Scene"))) (kind item-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

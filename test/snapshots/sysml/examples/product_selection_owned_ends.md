@@ -62,24 +62,6 @@ package ProductSelection_OwnedEnds_SysML {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 2 1) (end 2 24))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 3 1) (end 3 23))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 4 1) (end 4 18))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
         (range (start 7 1) (end 12 2))
       )
       (diagnostic
@@ -102,9 +84,33 @@ package ProductSelection_OwnedEnds_SysML {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_attribute_member")
         (source "semantic")
-        (range (start 32 1) (end 44 2))
+        (range (start 33 2) (end 33 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 34 2) (end 34 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 35 2) (end 35 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 37 2) (end 39 3))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 41 2) (end 43 3))
       )
     )
   )
@@ -116,6 +122,10 @@ package ProductSelection_OwnedEnds_SysML {
   (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:7c9673e92202057393274f21f1ea83af5b2885e93f1e41486a28f843024696f1") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/product_selection_owned_ends.md") (qualified-name "ProductSelection_OwnedEnds_SysML"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_owned_ends.md") (qualified-name "ProductSelection_OwnedEnds_SysML::OnlineCustomer"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_owned_ends.md") (qualified-name "ProductSelection_OwnedEnds_SysML::Product"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_owned_ends.md") (qualified-name "ProductSelection_OwnedEnds_SysML::SelectionInfo"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_owned_ends.md") (qualified-name "ProductSelection_OwnedEnds_SysML::ShoppingCart"))) (kind item-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

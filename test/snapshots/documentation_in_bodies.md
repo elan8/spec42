@@ -40,12 +40,6 @@ package DocTests {
 (fixture-diagnostics
   (document "memory://snapshot/documentation_in_bodies.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 21 4) (end 23 5))
-      )
     )
   )
 )
@@ -53,12 +47,13 @@ package DocTests {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:179775f22a464be7ba2dc441823cb6414b25e8568cf89ba186e3b8ffe59e2c5c") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:179775f22a464be7ba2dc441823cb6414b25e8568cf89ba186e3b8ffe59e2c5c") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Car"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "Vehicle"))))
     (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Color"))) (kind enum-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Color::red"))) (kind enum-literal) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Payload"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Speed"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Vehicle::speed"))) (kind attribute) (membership (kind feature) (visibility default)))

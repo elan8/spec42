@@ -33,12 +33,6 @@ abstract part def Container {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 2 0) (end 2 33))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_grammar_form")
         (source "parser")
         (range (start 4 0) (end 4 35))
@@ -79,12 +73,6 @@ abstract part def Container {
         (source "parser")
         (range (start 15 4) (end 16 4))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_definition_member")
-        (source "semantic")
-        (range (start 16 4) (end 16 34))
-      )
     )
   )
 )
@@ -96,10 +84,12 @@ abstract part def Container {
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "AbstractPort"))) (kind port-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "AbstractVehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "AbstractWidget"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container::InnerPart"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container::InnerPort"))) (kind port-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container::InnerWeight"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container::InnerWidget"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Weight"))) (kind attribute-def) (membership (kind owning) (visibility default)))
   )

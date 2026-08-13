@@ -211,12 +211,6 @@ package ServerSequenceRealization_3 {
         (range (start 27 25) (end 27 31))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_part_usage_member")
-        (source "semantic")
-        (range (start 28 3) (end 28 32))
-      )
-      (diagnostic
         (severity error)
         (code "recovered_port_body_element")
         (source "parser")
@@ -411,6 +405,7 @@ package ServerSequenceRealization_3 {
     (declaration (id (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::subscriptionPort"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "SubscriptionPort") (conjugated true))))
     (declaration (id (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::publicationPort"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "PublicationPort") (conjugated true))))
+    (declaration (id (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::somePublication"))) (kind item) (membership (kind feature) (visibility private)))
     (declaration (id (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::someTopic"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "String"))))
     (declaration (id (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::server_3"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::publicationPort"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "PublicationPort"))))

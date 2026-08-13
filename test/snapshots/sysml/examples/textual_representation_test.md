@@ -41,9 +41,15 @@ package TextualRepresentationTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 3 1) (end 9 2))
+        (range (start 4 18) (end 4 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 5 5) (end 8 6))
       )
       (diagnostic
         (severity warning)
@@ -62,10 +68,15 @@ package TextualRepresentationTest {
   (declarations
     (declaration (id (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/textual_representation_test.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::C"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::C::x"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/textual_representation_test.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
       (authored-target "ScalarValues::Real")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::C::x"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Real")
       (outcome (status unresolved)))
   )
   (relationships
@@ -79,6 +90,10 @@ package TextualRepresentationTest {
 (navigation
   (query (document "memory://snapshot/textual_representation_test.md") (range (start 1 16) (end 1 34)) (probe (position 1 16))
     (reference (id (source (node (document "memory://snapshot/textual_representation_test.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/textual_representation_test.md") (range (start 4 18) (end 4 22)) (probe (position 4 18))
+    (reference (id (source (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::C::x"))) (kind featureTyping) (ordinal 0) (authored-target "Real")
       (outcome (status unresolved)))
   )
 )

@@ -41,24 +41,6 @@ package 'Action Succession Example-1' {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 1 1) (end 1 16))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 2 1) (end 2 16))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 3 1) (end 3 18))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
         (range (start 5 1) (end 5 58))
       )
       (diagnostic
@@ -83,6 +65,9 @@ package 'Action Succession Example-1' {
   (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:d5673eaabcadc6ae55b994aad4e9a600c78efd7948dcd053da47adc42c9a7bf9") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::Image"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::Picture"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::Scene"))) (kind item-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

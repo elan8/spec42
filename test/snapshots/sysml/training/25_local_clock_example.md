@@ -51,18 +51,6 @@ package 'Local Clock Example' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 3 1) (end 3 16))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 4 1) (end 4 18))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_reference")
         (source "semantic")
         (range (start 7 11) (end 7 21))
@@ -90,10 +78,12 @@ package 'Local Clock Example' {
   (declarations
     (declaration (id (node (document "memory://snapshot/25_local_clock_example.md") (qualified-name "Local Clock Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/25_local_clock_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::String") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/25_local_clock_example.md") (qualified-name "Local Clock Example::Request"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/25_local_clock_example.md") (qualified-name "Local Clock Example::Server"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/25_local_clock_example.md") (anonymous (kind part) (ordinal 0))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "localClock"))))
     (declaration (id (node (document "memory://snapshot/25_local_clock_example.md") (qualified-name "Local Clock Example::Server::requestPort"))) (kind port) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/25_local_clock_example.md") (qualified-name "Local Clock Example::Server::today"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "String"))))
+    (declaration (id (node (document "memory://snapshot/25_local_clock_example.md") (qualified-name "Local Clock Example::Start"))) (kind item-def) (membership (kind owning) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/25_local_clock_example.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))

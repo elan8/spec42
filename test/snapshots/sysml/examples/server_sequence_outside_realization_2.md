@@ -128,12 +128,6 @@ package ServerSequenceOutsideRealization_2 {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
-        (source "semantic")
-        (range (start 13 3) (end 13 32))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_reference")
         (source "semantic")
         (range (start 17 7) (end 17 27))
@@ -275,6 +269,7 @@ package ServerSequenceOutsideRealization_2 {
     (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::producer_2"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "incomingTransferSort"))))
     (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::producer_2::publicationPort"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "PublicationPort") (conjugated true))))
+    (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::producer_2::somePublication"))) (kind item) (membership (kind feature) (visibility private)))
     (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::producer_2::someTopic"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "String"))))
     (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::server_2"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "incomingTransferSort"))))
