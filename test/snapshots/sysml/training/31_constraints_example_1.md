@@ -93,9 +93,15 @@ package 'Constraints Example-1' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_constraint_definition_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 17 19) (end 17 64))
+        (range (start 17 33) (end 17 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 17 46) (end 17 63))
       )
       (diagnostic
         (severity warning)
@@ -122,7 +128,7 @@ package 'Constraints Example-1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:d50d125f883743f717921c50b0052e1cbf4d08be7c570a166d5c129fd8788775") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d50d125f883743f717921c50b0052e1cbf4d08be7c570a166d5c129fd8788775") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/31_constraints_example_1.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false)))))
@@ -139,7 +145,7 @@ package 'Constraints Example-1' {
     (declaration (id (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::engine::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassValue"))))
     (declaration (id (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::massConstraint"))) (kind constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassConstraint"))))
     (declaration (id (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::massConstraint::massLimit"))) (kind parameter) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::massConstraint::partMasses"))) (kind parameter) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::massConstraint::partMasses"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "chassisMass")) (memberAccessOperand (reference "engine::mass")) (memberAccessOperand (reference "transmission::mass"))))
     (declaration (id (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::transmission"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Engine"))))
     (declaration (id (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::transmission::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassValue"))))
   )
@@ -180,6 +186,15 @@ package 'Constraints Example-1' {
     (reference (id (source (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::massConstraint"))) (kind featureTyping) (ordinal 0))
       (authored-target "MassConstraint")
       (outcome (status resolved) (target (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::MassConstraint")))))
+    (reference (id (source (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::massConstraint::partMasses"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "chassisMass")
+      (outcome (status resolved) (target (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::chassisMass")))))
+    (reference (id (source (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::massConstraint::partMasses"))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "engine::mass")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::massConstraint::partMasses"))) (kind memberAccessOperand) (ordinal 1))
+      (authored-target "transmission::mass")
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::transmission"))) (kind featureTyping) (ordinal 0))
       (authored-target "Engine")
       (outcome (status resolved) (target (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Engine")))))
@@ -190,6 +205,7 @@ package 'Constraints Example-1' {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::engine"))) (target (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::engine"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::massConstraint"))) (target (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::MassConstraint"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::massConstraint"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::massConstraint::partMasses"))) (target (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::chassisMass"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::massConstraint::partMasses"))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::transmission"))) (target (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::transmission"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
@@ -248,6 +264,18 @@ package 'Constraints Example-1' {
   (query (document "memory://snapshot/31_constraints_example_1.md") (range (start 16 30) (end 16 44)) (probe (position 16 30))
     (reference (id (source (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::massConstraint"))) (kind featureTyping) (ordinal 0) (authored-target "MassConstraint")
       (outcome (status resolved) (target (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::MassConstraint")))))
+  )
+  (query (document "memory://snapshot/31_constraints_example_1.md") (range (start 17 20) (end 17 31)) (probe (position 17 20))
+    (reference (id (source (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::massConstraint::partMasses"))) (kind expressionOperand) (ordinal 0) (authored-target "chassisMass")
+      (outcome (status resolved) (target (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::chassisMass")))))
+  )
+  (query (document "memory://snapshot/31_constraints_example_1.md") (range (start 17 33) (end 17 44)) (probe (position 17 33))
+    (reference (id (source (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::massConstraint::partMasses"))) (kind memberAccessOperand) (ordinal 0) (authored-target "engine::mass")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/31_constraints_example_1.md") (range (start 17 46) (end 17 63)) (probe (position 17 46))
+    (reference (id (source (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::massConstraint::partMasses"))) (kind memberAccessOperand) (ordinal 1) (authored-target "transmission::mass")
+      (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/31_constraints_example_1.md") (range (start 27 22) (end 27 28)) (probe (position 27 22))
     (reference (id (source (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::transmission"))) (kind featureTyping) (ordinal 0) (authored-target "Engine")

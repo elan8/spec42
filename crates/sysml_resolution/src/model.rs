@@ -1016,6 +1016,15 @@ enum EvalNode {
     /// values themselves are never read by `fold_eval_node_pending`, which always folds this node
     /// straight to `EvaluatedValue::NonConstant` regardless of its children's folded values,
     /// exactly as evaluating an invocation's function/constructor semantics is out of scope.
+    ///
+    /// Also reused, unchanged, for `Expression::Tuple` (`(a, b, c)`, e.g.
+    /// `quantityPowerFactors = (lengthPF, massPF, durationPF)`): a tuple has no callee to resolve,
+    /// but is otherwise identical in shape -- a plain `Vec<Node<Expression>>` of elements, each
+    /// recursed back into the same classifier/lowerer, with the tuple as a whole never evaluated as
+    /// a single scalar (folds to `NonConstant`, like an invocation). Reusing this variant rather
+    /// than adding a distinct `Tuple` one keeps the "one EvalNode shape per fold behavior" property:
+    /// nothing downstream (`fold_eval_node_pending`, `eval_node_is_pure_literal`) needs to
+    /// distinguish "called with args" from "grouped as a sequence" since both fold identically.
     Invocation(Vec<EvalNode>),
     /// A unary prefix `UnaryOp` (`-x` negation or `not x` logical negation, see
     /// `UnaryOperator::Minus`/`UnaryOperator::Not`) wrapping a single classified operand, built by
@@ -1333,6 +1342,13 @@ fn classify_constraint_node(node: &Expression, ordinal: &mut u32) -> Option<Eval
             }
             Some(EvalNode::Invocation(children))
         }
+        Expression::Tuple(items) => {
+            let mut children = Vec::with_capacity(items.len());
+            for item in items {
+                children.push(classify_constraint_node(&item.value, ordinal)?);
+            }
+            Some(EvalNode::Invocation(children))
+        }
         Expression::UnaryOp { op, operand } if is_unary_operator(op) => {
             let operand = classify_constraint_node(&operand.value, ordinal)?;
             Some(EvalNode::Unary(op.clone(), Box::new(operand)))
@@ -1380,6 +1396,13 @@ fn classify_calc_node(node: &Expression, ordinal: &mut u32) -> Option<EvalNode> 
             let mut children = Vec::with_capacity(args.len());
             for arg in args {
                 children.push(classify_calc_node(&arg.value, ordinal)?);
+            }
+            Some(EvalNode::Invocation(children))
+        }
+        Expression::Tuple(items) => {
+            let mut children = Vec::with_capacity(items.len());
+            for item in items {
+                children.push(classify_calc_node(&item.value, ordinal)?);
             }
             Some(EvalNode::Invocation(children))
         }
@@ -5071,6 +5094,12 @@ impl SemanticModelBuilder {
                 }
                 Ok(())
             }
+            Expression::Tuple(items) => {
+                for item in items {
+                    self.lower_constraint_expression(document, declaration, family, item)?;
+                }
+                Ok(())
+            }
             Expression::UnaryOp { op, operand } if is_unary_operator(op) => {
                 self.lower_constraint_expression(document, declaration, family, operand)
             }
@@ -5160,6 +5189,12 @@ impl SemanticModelBuilder {
                 self.push_invocation_callee_reference(document, declaration, *type_name)?;
                 for arg in args {
                     self.lower_calc_expression(document, declaration, family, &arg.value)?;
+                }
+                Ok(())
+            }
+            Expression::Tuple(items) => {
+                for item in items {
+                    self.lower_calc_expression(document, declaration, family, item)?;
                 }
                 Ok(())
             }
@@ -5285,6 +5320,12 @@ impl SemanticModelBuilder {
                 self.push_invocation_callee_reference(document, declaration, *type_name)?;
                 for arg in args {
                     self.lower_filter_expression(document, declaration, &arg.value)?;
+                }
+                Ok(())
+            }
+            Expression::Tuple(items) => {
+                for item in items {
+                    self.lower_filter_expression(document, declaration, item)?;
                 }
                 Ok(())
             }
@@ -12662,6 +12703,79 @@ mod tests {
                 "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
             ),
             "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn value_assignment_tuple_resolves_every_element_reference() {
+        // `Expression::Tuple` (`(a, b, c)`) reuses the Invocation-shaped reference-resolution
+        // slice: no callee, but every element recurses back into `lower_constraint_expression`
+        // exactly like an invocation argument, so all three feature references resolve.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute a : ScalarValues::Integer;\n\
+             \tattribute b : ScalarValues::Integer;\n\
+             \tattribute c : ScalarValues::Integer;\n\
+             \tattribute tuple = (a, b, c);\n\
+             }\n",
+        );
+        for (name, ordinal) in [("a", 0), ("b", 1), ("c", 2)] {
+            assert!(
+                output.contains(&format!(
+                    "(kind expressionOperand) (ordinal {ordinal}))\n      (authored-target \
+                     \"{name}\")\n      (outcome (status resolved) (target (node (document \
+                     \"memory://test/enum.sysml\") (qualified-name \"Demo::{name}\")))))"
+                )),
+                "expected tuple element `{name}` to resolve as an expressionOperand reference, \
+                 got:\n{output}"
+            );
+        }
+    }
+
+    #[test]
+    fn value_assignment_tuple_with_unresolvable_element_leaves_only_that_element_unresolved() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute a : ScalarValues::Integer;\n\
+             \tattribute tuple = (a, missing);\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind expressionOperand) (ordinal 0))\n      (authored-target \"a\")\n      \
+                 (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::a\")))))"
+            ),
+            "expected resolvable tuple element `a` to resolve, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind expressionOperand) (ordinal 1))\n      (authored-target \"missing\")\n      \
+                 (outcome (status unresolved))"
+            ),
+            "expected undeclared tuple element `missing` to stay explicitly unresolved (not \
+             fabricated), got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn value_assignment_tuple_of_literals_evaluates_to_non_constant() {
+        // A tuple never folds to a single scalar `EvaluatedValue` (see `EvalNode::Invocation`'s
+        // doc comment, reused unchanged for `Expression::Tuple`): even an all-literal tuple
+        // publishes `NonConstant`, matching the `Invocation`/`Constructor` precedent rather than
+        // fabricating an unmodeled composite-value representation.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute tuple = (1, 2, 3);\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::tuple\"))) (value (kind non-constant)))"
+            ),
+            "expected an all-literal tuple to publish NonConstant rather than a fabricated \
+             composite value, got:\n{output}"
         );
     }
 
