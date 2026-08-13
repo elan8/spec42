@@ -164,9 +164,9 @@ package '10b-Trade-off Among Alternative Configurations' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
+        (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 53 4) (end 56 5))
+        (range (start 55 15) (end 55 61))
       )
       (diagnostic
         (severity warning)
@@ -320,6 +320,7 @@ package '10b-Trade-off Among Alternative Configurations' {
     (declaration (id (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engineChoice"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "engine"))))
     (declaration (id (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::vehicle"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
     (declaration (id (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::vehicle::engine"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "engineChoice"))))
+    (declaration (id (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::vehicle::engine::engineSelectionRational"))) (kind constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "engine"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
@@ -409,6 +410,9 @@ package '10b-Trade-off Among Alternative Configurations' {
     (reference (id (source (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::vehicle::engine"))) (kind subsetting) (ordinal 0))
       (authored-target "engineChoice")
       (outcome (status resolved) (target (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engineChoice")))))
+    (reference (id (source (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::vehicle::engine::engineSelectionRational"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "engine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::vehicle::engine")))))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (anonymous (kind subject) (ordinal 0))))) (target (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::Engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (anonymous (kind subject) (ordinal 0))))) (kind featureTyping) (ordinal 0)))
@@ -423,6 +427,7 @@ package '10b-Trade-off Among Alternative Configurations' {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engineChoice"))) (target (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engineChoice"))) (kind subsetting) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::vehicle"))) (target (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::vehicle"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::vehicle::engine"))) (target (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engineChoice"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::vehicle::engine"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::vehicle::engine::engineSelectionRational"))) (target (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::vehicle::engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::vehicle::engine::engineSelectionRational"))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
   )
@@ -546,6 +551,10 @@ package '10b-Trade-off Among Alternative Configurations' {
   (query (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (range (start 52 21) (end 52 33)) (probe (position 52 21))
     (reference (id (source (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::vehicle::engine"))) (kind subsetting) (ordinal 0) (authored-target "engineChoice")
       (outcome (status resolved) (target (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engineChoice")))))
+  )
+  (query (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (range (start 55 5) (end 55 11)) (probe (position 55 5))
+    (reference (id (source (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::vehicle::engine::engineSelectionRational"))) (kind expressionOperand) (ordinal 0) (authored-target "engine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::vehicle::engine")))))
   )
 )
 ~~~

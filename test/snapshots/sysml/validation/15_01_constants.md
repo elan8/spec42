@@ -92,9 +92,9 @@ package '15_01-Constants' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
+        (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 22 9) (end 22 73))
+        (range (start 22 29) (end 22 44))
       )
       (diagnostic
         (severity warning)
@@ -104,9 +104,9 @@ package '15_01-Constants' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
+        (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 25 9) (end 25 74))
+        (range (start 25 29) (end 25 45))
       )
       (diagnostic
         (severity warning)
@@ -159,7 +159,9 @@ package '15_01-Constants' {
     (declaration (id (node (document "memory://snapshot/15_01_constants.md") (qualified-name "15_01-Constants::Global Context::nominal earth gravitational acceleration"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "AccelerationValue"))))
     (declaration (id (node (document "memory://snapshot/15_01_constants.md") (qualified-name "15_01-Constants::Mathematical Constants"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_01_constants.md") (qualified-name "15_01-Constants::Mathematical Constants::e"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "Real"))))
+    (declaration (id (node (document "memory://snapshot/15_01_constants.md") (anonymous (kind constraint) (ordinal 0))))) (kind constraint) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_01_constants.md") (qualified-name "15_01-Constants::Mathematical Constants::pi"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "Real"))))
+    (declaration (id (node (document "memory://snapshot/15_01_constants.md") (anonymous (kind constraint) (ordinal 0))))) (kind constraint) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_01_constants.md") (qualified-name "15_01-Constants::Model X Context"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_01_constants.md") (qualified-name "15_01-Constants::Model X Context::amplifier gain"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "DimensionOneValue"))))
   )

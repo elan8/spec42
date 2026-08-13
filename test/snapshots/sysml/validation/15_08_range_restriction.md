@@ -62,9 +62,9 @@ package '15_08-Range Restriction' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
+        (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 16 2) (end 16 65))
+        (range (start 16 22) (end 16 63))
       )
     )
   )
@@ -82,6 +82,7 @@ package '15_08-Range Restriction' {
     (declaration (id (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::HeadLightsTiltKnob"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::HeadLightsTiltKnob::headLightsTile"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "LightBeamTiltAngleValue"))))
     (declaration (id (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "PlaneAngleValue"))))
+    (declaration (id (node (document "memory://snapshot/15_08_range_restriction.md") (anonymous (kind constraint) (ordinal 0))))) (kind constraint) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "LightBeamTiltAngleValue")) (redefinition (reference "self"))))
   )
   (references

@@ -62,9 +62,9 @@ package 'Derivation Constraints' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
+        (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 6 2) (end 6 80))
+        (range (start 6 34) (end 6 79))
       )
       (diagnostic
         (severity warning)
@@ -133,6 +133,7 @@ package 'Derivation Constraints' {
     (declaration (id (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::Dynamics::initialSpeed"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "SpeedValue") (direction in))))
     (declaration (id (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::Dynamics::mass"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassValue") (direction in))))
     (declaration (id (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::vehicle1"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
+    (declaration (id (node (document "memory://snapshot/31_derivation_constraints.md") (anonymous (kind constraint) (ordinal 0))))) (kind constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "totalMass"))))
     (declaration (id (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::vehicle1::totalMass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassValue"))))
     (declaration (id (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::vehicle2"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
     (declaration (id (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::vehicle2::totalMass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassValue"))))
@@ -162,6 +163,9 @@ package 'Derivation Constraints' {
     (reference (id (source (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::vehicle1"))) (kind featureTyping) (ordinal 0))
       (authored-target "Vehicle")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/31_derivation_constraints.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "totalMass")
+      (outcome (status resolved) (target (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::vehicle1::totalMass")))))
     (reference (id (source (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::vehicle1::totalMass"))) (kind featureTyping) (ordinal 0))
       (authored-target "MassValue")
       (outcome (status unresolved)))
@@ -173,6 +177,7 @@ package 'Derivation Constraints' {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/31_derivation_constraints.md") (anonymous (kind constraint) (ordinal 0))))) (target (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::vehicle1::totalMass"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/31_derivation_constraints.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
   )
@@ -212,6 +217,10 @@ package 'Derivation Constraints' {
   (query (document "memory://snapshot/31_derivation_constraints.md") (range (start 4 17) (end 4 24)) (probe (position 4 17))
     (reference (id (source (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::vehicle1"))) (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
       (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/31_derivation_constraints.md") (range (start 6 21) (end 6 30)) (probe (position 6 21))
+    (reference (id (source (node (document "memory://snapshot/31_derivation_constraints.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "totalMass")
+      (outcome (status resolved) (target (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::vehicle1::totalMass")))))
   )
   (query (document "memory://snapshot/31_derivation_constraints.md") (range (start 5 24) (end 5 33)) (probe (position 5 24))
     (reference (id (source (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::vehicle1::totalMass"))) (kind featureTyping) (ordinal 0) (authored-target "MassValue")

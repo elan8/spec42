@@ -214,9 +214,9 @@ package VehicleVariabilityModel {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
+        (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 106 10) (end 109 11))
+        (range (start 107 14) (end 108 102))
       )
       (diagnostic
         (severity warning)
@@ -262,9 +262,9 @@ package VehicleVariabilityModel {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_action_usage_member")
+        (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 136 7) (end 143 8))
+        (range (start 137 11) (end 142 12))
       )
       (diagnostic
         (severity warning)
@@ -310,6 +310,7 @@ package VehicleVariabilityModel {
     (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "DesignModel") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ProvidePower"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind constraint) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::amplifyTorque"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "AmplifyTorque"))))
     (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::generateTorque"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "GenerateTorque"))))
     (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree"))) (kind package) (membership (kind owning) (visibility default)))
@@ -317,6 +318,7 @@ package VehicleVariabilityModel {
     (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::vehicleFamily"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "vehicle"))))
     (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 0))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "EngineChoices")) (redefinition (reference "engine"))))
     (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 1))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Transmission") (variation true)) (redefinition (reference "transmission")) (variant (reference "manualTransmission")) (variant (reference "automaticTransmission"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind constraint) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 2))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "sunroof"))))
     (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel"))) (kind package) (membership (kind owning) (visibility default)))

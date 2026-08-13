@@ -213,9 +213,9 @@ package 'Analysis Case Definition Example' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_action_usage_member")
+        (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 57 3) (end 70 4))
+        (range (start 58 4) (end 69 5))
       )
       (diagnostic
         (severity warning)
@@ -251,6 +251,7 @@ package 'Analysis Case Definition Example' {
     (declaration (id (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis"))) (kind analysis-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis::scenario"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "WayPoint"))))
     (declaration (id (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis::solveForPower"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/33_analysis_case_definition_example.md") (anonymous (kind constraint) (ordinal 0))))) (kind constraint) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis::solveForPower::acceleration"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "AccelerationValue") (direction out))))
     (declaration (id (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis::solveForPower::power"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "PowerValue") (direction out))))
     (declaration (id (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis::vehicle"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))

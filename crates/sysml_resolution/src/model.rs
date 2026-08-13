@@ -16,8 +16,8 @@ use sysml_v2_parser_next::{
     ast::{
         ActionDef, ActionDefBody, ActionDefBodyElement, ActionUsage as ParserActionUsage,
         ActionUsageBody, ActionUsageBodyElement, AliasDef, Allocate, AllocationDef,
-        AnalysisCaseDef, AnalysisCaseUsage as ParserAnalysisCaseUsage, AttributeBody,
-        AttributeBodyElement, AttributeDef, AttributeUsage, BinaryOperator, Bind,
+        AnalysisCaseDef, AnalysisCaseUsage as ParserAnalysisCaseUsage, AssertConstraintMember,
+        AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, BinaryOperator, Bind,
         BindingConnectorUsage, CalcDef, CalcDefBody, CalcDefBodyElement,
         CalcUsage as ParserCalcUsage, CaseDef, CaseUsage as ParserCaseUsage, ClassDef,
         ConcernUsage as ParserConcernUsage, ConnectStmt, ConnectionDef, ConnectionDefBody,
@@ -1946,11 +1946,19 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::AssertConstraint(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::AssertConstraint(node) => match owner {
+                Some(declaration) => self.lower_assert_constraint_member(
+                    document,
+                    declaration,
+                    UnsupportedFamily::PackageMember,
+                    node,
+                )?,
+                None => self.push_unsupported(
+                    document,
+                    UnsupportedFamily::PackageMember,
+                    node.span.clone(),
+                ),
+            },
             PackageBodyElement::KermlBareDeclaration(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -2299,6 +2307,13 @@ impl SemanticModelBuilder {
                             node,
                         )?;
                     }
+                    PartDefBodyElement::AssertConstraint(node) => self
+                        .lower_assert_constraint_member(
+                            document,
+                            declaration,
+                            UnsupportedFamily::PartDefinitionMember,
+                            node,
+                        )?,
                     PartDefBodyElement::Annotation(_)
                     | PartDefBodyElement::MetadataKeywordUsage(_)
                     | PartDefBodyElement::Dependency(_)
@@ -2308,7 +2323,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::Connect(_)
                     | PartDefBodyElement::FlowUsage(_)
                     | PartDefBodyElement::ExhibitState(_)
-                    | PartDefBodyElement::AssertConstraint(_)
                     | PartDefBodyElement::AllocationUsage(_)
                     | PartDefBodyElement::ViewpointUsage(_)
                     | PartDefBodyElement::RenderingUsage(_)
@@ -2510,6 +2524,13 @@ impl SemanticModelBuilder {
                             node,
                         )?;
                     }
+                    PartUsageBodyElement::AssertConstraint(node) => self
+                        .lower_assert_constraint_member(
+                            document,
+                            declaration,
+                            UnsupportedFamily::PartUsageMember,
+                            node,
+                        )?,
                     PartUsageBodyElement::Annotation(_)
                     | PartUsageBodyElement::DefaultReferenceUsage(_)
                     | PartUsageBodyElement::Ref(_)
@@ -2517,7 +2538,6 @@ impl SemanticModelBuilder {
                     | PartUsageBodyElement::FlowUsage(_)
                     | PartUsageBodyElement::SuccessionUsage(_)
                     | PartUsageBodyElement::MetadataKeywordUsage(_)
-                    | PartUsageBodyElement::AssertConstraint(_)
                     | PartUsageBodyElement::IncludeUseCase(_)
                     | PartUsageBodyElement::UseCaseUsage(_)
                     | PartUsageBodyElement::VerificationCaseUsage(_) => self.push_unsupported(
@@ -2669,9 +2689,15 @@ impl SemanticModelBuilder {
                 AttributeBodyElement::ItemUsage(item_usage) => {
                     self.lower_item_usage(document, Some(owner), item_usage)?;
                 }
+                AttributeBodyElement::AssertConstraint(node) => self
+                    .lower_assert_constraint_member(
+                        document,
+                        owner,
+                        UnsupportedFamily::AttributeMember,
+                        node,
+                    )?,
                 AttributeBodyElement::Connect(_)
                 | AttributeBodyElement::MetadataKeywordUsage(_)
-                | AttributeBodyElement::AssertConstraint(_)
                 | AttributeBodyElement::RefDecl(_)
                 | AttributeBodyElement::Other(_) => self.push_unsupported(
                     document,
@@ -3417,6 +3443,13 @@ impl SemanticModelBuilder {
                         node,
                     )?;
                 }
+                ActionDefBodyElement::AssertConstraint(node) => self
+                    .lower_assert_constraint_member(
+                        document,
+                        owner,
+                        UnsupportedFamily::ActionDefinitionMember,
+                        node,
+                    )?,
                 ActionDefBodyElement::Annotation(_)
                 | ActionDefBodyElement::MetadataKeywordUsage(_)
                 | ActionDefBodyElement::TextualRep(_)
@@ -3430,7 +3463,6 @@ impl SemanticModelBuilder {
                 | ActionDefBodyElement::WhileStmt(_)
                 | ActionDefBodyElement::LoopStmt(_)
                 | ActionDefBodyElement::IfStmt(_)
-                | ActionDefBodyElement::AssertConstraint(_)
                 | ActionDefBodyElement::Assign(_)
                 | ActionDefBodyElement::ForLoop(_)
                 | ActionDefBodyElement::ThenAction(_)
@@ -3542,6 +3574,13 @@ impl SemanticModelBuilder {
                 ActionUsageBodyElement::Bind(node) => {
                     self.lower_bind(document, owner, UnsupportedFamily::ActionUsageMember, node)?;
                 }
+                ActionUsageBodyElement::AssertConstraint(node) => self
+                    .lower_assert_constraint_member(
+                        document,
+                        owner,
+                        UnsupportedFamily::ActionUsageMember,
+                        node,
+                    )?,
                 ActionUsageBodyElement::Annotation(_)
                 | ActionUsageBodyElement::MetadataKeywordUsage(_)
                 | ActionUsageBodyElement::TextualRep(_)
@@ -3555,7 +3594,6 @@ impl SemanticModelBuilder {
                 | ActionUsageBodyElement::WhileStmt(_)
                 | ActionUsageBodyElement::LoopStmt(_)
                 | ActionUsageBodyElement::IfStmt(_)
-                | ActionUsageBodyElement::AssertConstraint(_)
                 | ActionUsageBodyElement::Assign(_)
                 | ActionUsageBodyElement::ForLoop(_)
                 | ActionUsageBodyElement::ThenAction(_)
@@ -5305,6 +5343,9 @@ impl SemanticModelBuilder {
                 UseCaseDefBodyElement::MetadataAnnotation(node) => {
                     self.lower_metadata_annotation(document, owner, node)?;
                 }
+                UseCaseDefBodyElement::AssertConstraint(node) => {
+                    self.lower_assert_constraint_member(document, owner, unsupported, node)?
+                }
                 UseCaseDefBodyElement::Other(_)
                 | UseCaseDefBodyElement::Annotation(_)
                 | UseCaseDefBodyElement::MetadataKeywordUsage(_)
@@ -5318,7 +5359,6 @@ impl SemanticModelBuilder {
                 | UseCaseDefBodyElement::ThenDone(_)
                 | UseCaseDefBodyElement::IncludeUseCase(_)
                 | UseCaseDefBodyElement::RefRedefinition(_)
-                | UseCaseDefBodyElement::AssertConstraint(_)
                 | UseCaseDefBodyElement::ReturnRef(_)
                 | UseCaseDefBodyElement::CaseReturnDecl(_)
                 | UseCaseDefBodyElement::Assign(_)
@@ -5649,8 +5689,14 @@ impl SemanticModelBuilder {
                     ConnectionDefBodyElement::OccurrenceUsage(occurrence_usage) => {
                         self.lower_occurrence_usage(document, Some(declaration), occurrence_usage)?;
                     }
+                    ConnectionDefBodyElement::AssertConstraint(node) => self
+                        .lower_assert_constraint_member(
+                            document,
+                            declaration,
+                            UnsupportedFamily::ConnectionDefinitionMember,
+                            node,
+                        )?,
                     ConnectionDefBodyElement::RefDecl(_)
-                    | ConnectionDefBodyElement::AssertConstraint(_)
                     | ConnectionDefBodyElement::SuccessionUsage(_) => self.push_unsupported(
                         document,
                         UnsupportedFamily::ConnectionDefinitionMember,
@@ -6362,6 +6408,78 @@ impl SemanticModelBuilder {
         self.lower_constraint_def_body(document, declaration, &node.value.body)
     }
 
+    /// Lowers `assert constraint { <boolExpr> }` / `assert constraint <name> : <ConstraintDef>
+    /// { ... }` (BNF `AssertConstraintMember`, `AssertConstraintUsage`): semantically an inline,
+    /// anonymous (or named) constraint usage introduced via `assert` rather than the bare
+    /// `constraint` keyword. Mirrors `lower_first_stmt`'s "anonymous nested declaration" pattern
+    /// (`Succession`) and reuses `lower_constraint_usage`'s typing + `lower_constraint_def_body`
+    /// wiring verbatim -- `AssertConstraintMember.body` is the exact same `ConstraintDefBody`
+    /// shape as `ConstraintDef`/`ConstraintUsage`, so the existing
+    /// `lower_constraint_expression`/`classify_constraint_expression` evaluation machinery (Slice
+    /// 1, `4ca42166`) applies unchanged.
+    ///
+    /// Deferred (falls through to `family`'s unsupported diagnostic):
+    /// - `assert not constraint ...` (`is_negated`): negation is a distinct semantic (the
+    ///   asserted truth value is the logical complement of the inner expression's evaluation) that
+    ///   the current evaluation-fact shape has no representation for yet.
+    /// - `assert <path> { ... }` shorthand (`target` set, no `constraint` keyword): references an
+    ///   existing constraint by path rather than declaring one inline; out of scope for this
+    ///   slice, which targets the `constraint`-keyword forms only.
+    fn lower_assert_constraint_member(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        node: &Node<AssertConstraintMember>,
+    ) -> Result<(), ConstructionError> {
+        if node.value.is_negated || node.value.target.is_some() {
+            self.push_unsupported(document, family, node.span.clone());
+            return Ok(());
+        }
+        let name = node
+            .value
+            .declaration_name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::ConstraintUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(type_name) = node.value.type_name {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        self.lower_constraint_def_body(document, declaration, &node.value.body)
+    }
+
     /// Lowers a `calc def` (BNF CalculationDefinition), mirroring `lower_action_def`: ownership,
     /// membership, an optional `:>` specialization relationship participating in the shared
     /// `DeclarationDomain::Type` fixed point. Resolved upstream in `0757de13`
@@ -6670,10 +6788,10 @@ impl SemanticModelBuilder {
     /// `flow def` bodies (also `DefinitionBodyElement::OccurrenceMember`): recognized owned
     /// members are attribute/part/item/nested-occurrence usages plus `end` declarations (lowered
     /// as connector-end references through the same `lower_end_decl`/`ReferenceKind::ConnectorEnd`
-    /// machinery `connection def`/`interface def` use); everything else -- `assert constraint`,
-    /// flow usages, succession usages, `satisfy`, `allocate`, `exhibit` state usages -- falls
-    /// through to `unsupported_occurrence_definition_member`. This is the genuinely out-of-scope
-    /// occurrence-specific surface for this slice.
+    /// machinery `connection def`/`interface def` use), plus `assert constraint` members
+    /// (`lower_assert_constraint_member`); everything else -- flow usages, succession usages,
+    /// `satisfy`, `allocate`, `exhibit` state usages -- falls through to
+    /// `unsupported_occurrence_definition_member`.
     fn lower_occurrence_body_element(
         &mut self,
         document: DocumentId,
@@ -6719,8 +6837,13 @@ impl SemanticModelBuilder {
                     node,
                 )?;
             }
+            OccurrenceBodyElement::AssertConstraint(node) => self.lower_assert_constraint_member(
+                document,
+                owner,
+                UnsupportedFamily::OccurrenceDefinitionMember,
+                node,
+            )?,
             OccurrenceBodyElement::Annotation(_)
-            | OccurrenceBodyElement::AssertConstraint(_)
             | OccurrenceBodyElement::Other(_)
             | OccurrenceBodyElement::FlowUsage(_)
             | OccurrenceBodyElement::SuccessionUsage(_) => self.push_unsupported(
@@ -8077,6 +8200,73 @@ mod tests {
                  (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean false)))"
             ),
             "expected `2 < 1` to fold to a published Boolean(false) evaluation fact, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn assert_constraint_literal_comparison_evaluates_to_boolean_true() {
+        // `assert constraint { <boolExpr> }` is semantically an anonymous constraint usage --
+        // reuses the exact same `lower_constraint_expression`/`classify_constraint_expression`
+        // evaluation machinery as `constraint def`/`constraint` (Slice 1, `4ca42166`).
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def P {\n\
+             \t\tassert constraint { 1 < 2 }\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(value (kind boolean) (boolean true)))"),
+            "expected `assert constraint {{ 1 < 2 }}` to fold to a published Boolean(true) \
+             evaluation fact, got:\n{output}"
+        );
+        assert!(
+            output.contains("(has-evaluation true)"),
+            "expected has-evaluation to flip true once a fact publishes, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn assert_constraint_operand_resolves_to_sibling_declaration() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def P {\n\
+             \t\tattribute x : ScalarValues::Integer;\n\
+             \t\tattribute y : ScalarValues::Integer;\n\
+             \t\tassert constraint { x > y }\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind expressionOperand) (ordinal 0))\n      (authored-target \"x\")\n      (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::P::x\")))))"
+            ),
+            "expected x to resolve to the sibling attribute declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind expressionOperand) (ordinal 1))\n      (authored-target \"y\")\n      (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::P::y\")))))"
+            ),
+            "expected y to resolve to the sibling attribute declaration, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn assert_constraint_typed_reference_form_resolves_its_type() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tconstraint def MassConstraint;\n\
+             \tpart def P {\n\
+             \t\tassert constraint massConstraint : MassConstraint;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind featureTyping) (ordinal 0))\n      (authored-target \"MassConstraint\")\n      (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::MassConstraint\")))))"
+            ),
+            "expected `assert constraint massConstraint : MassConstraint;` to resolve its type \
+             reference through the shared FeatureTyping fixed point, got:\n{output}"
         );
     }
 

@@ -195,9 +195,9 @@ package '7b-Variant Configurations' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
+        (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 93 3) (end 98 4))
+        (range (start 94 4) (end 97 47))
       )
       (diagnostic
         (severity warning)
@@ -219,9 +219,9 @@ package '7b-Variant Configurations' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
+        (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 113 3) (end 116 4))
+        (range (start 114 4) (end 115 116))
       )
       (diagnostic
         (severity warning)
@@ -249,9 +249,9 @@ package '7b-Variant Configurations' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
+        (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 124 7) (end 129 8))
+        (range (start 125 8) (end 128 80))
       )
       (diagnostic
         (severity warning)
@@ -318,7 +318,10 @@ package '7b-Variant Configurations' {
     (declaration (id (node (document "memory://snapshot/7b_variant_configurations.md") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "vehicle"))))
     (declaration (id (node (document "memory://snapshot/7b_variant_configurations.md") (anonymous (kind satisfy) (ordinal 0))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (satisfySource (reference "engineRqtChoice")) (satisfyTarget (reference "engineChoice"))))
     (declaration (id (node (document "memory://snapshot/7b_variant_configurations.md") (anonymous (kind part) (ordinal 0))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "rearAxleAssembly"))))
+    (declaration (id (node (document "memory://snapshot/7b_variant_configurations.md") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::::engine-wheel selection constraint"))) (kind constraint) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/7b_variant_configurations.md") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::::rearWheelChoice"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "rearWheels"))))
+    (declaration (id (node (document "memory://snapshot/7b_variant_configurations.md") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::engine choice constraint"))) (kind constraint) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/7b_variant_configurations.md") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::engine-transmission selection constraint"))) (kind constraint) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/7b_variant_configurations.md") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::engineChoice"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "engine"))))
     (declaration (id (node (document "memory://snapshot/7b_variant_configurations.md") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::engineRqtChoice"))) (kind requirement) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "EnginePerformanceRequirement"))))
     (declaration (id (node (document "memory://snapshot/7b_variant_configurations.md") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::transmissionChoice"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "transmission"))))

@@ -317,9 +317,9 @@ package VehicleGeometryAndCoordinateFrames {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_definition_member")
+        (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 52 2) (end 63 3))
+        (range (start 53 3) (end 63 2))
       )
       (diagnostic
         (severity warning)
@@ -625,6 +625,7 @@ package VehicleGeometryAndCoordinateFrames {
     (declaration (id (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (qualified-name "VehicleGeometryAndCoordinateFrames::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "SpatialItem"))))
     (declaration (id (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "SpatialItem"))))
     (declaration (id (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (anonymous (kind item) (ordinal 0))))) (kind item) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Cylinder")) (redefinition (reference "shape"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (anonymous (kind constraint) (ordinal 0))))) (kind constraint) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "radius"))))
     (declaration (id (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (anonymous (kind attribute) (ordinal 1))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "height"))))
     (declaration (id (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel::lbda"))) (kind attribute) (membership (kind feature) (visibility private)) (authored (membership (kind feature) (visibility private)) (relationships (featureTyping (reference "Real"))))

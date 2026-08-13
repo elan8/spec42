@@ -289,9 +289,9 @@ standard library package SpatialItems {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
+        (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 52 2) (end 59 3))
+        (range (start 58 3) (end 58 53))
       )
       (diagnostic
         (severity warning)
@@ -527,6 +527,7 @@ standard library package SpatialItems {
     (declaration (id (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::coordinateFrame"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ThreeDCoordinateFrame"))))
     (declaration (id (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::cunionNum"))) (kind attribute) (membership (kind feature) (visibility private)) (authored (membership (kind feature) (visibility private)) (relationships (featureTyping (reference "Natural"))))
     (declaration (id (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::originPoint"))) (kind item) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Point"))))
+    (declaration (id (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::originPointConstraint"))) (kind constraint) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::subSpatialItems"))) (kind item) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "SpatialItem"))))
     (declaration (id (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::subSpatialParts"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "SpatialItem")) (subsetting (reference "subSpatialItems")) (subsetting (reference "subparts"))))
   )

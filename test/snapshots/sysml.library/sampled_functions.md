@@ -210,9 +210,9 @@ standard library package SampledFunctions {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
+        (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 39 2) (end 43 3))
+        (range (start 41 3) (end 42 104))
       )
       (diagnostic
         (severity warning)
@@ -395,6 +395,7 @@ standard library package SampledFunctions {
     (declaration (id (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::SamplePair::domainValue"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "key"))))
     (declaration (id (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::SamplePair::rangeValue"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "val"))))
     (declaration (id (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::SampledFunction"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "OrderedMap"))))
+    (declaration (id (node (document "memory://snapshot/sampled_functions.md") (anonymous (kind constraint) (ordinal 0))))) (kind constraint) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::SampledFunction::samples"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "SamplePair")) (redefinition (reference "elements"))))
     (declaration (id (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear"))) (kind calc-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "Interpolate")) (expressionOperand (reference "private")) (expressionOperand (reference "attribute")) (expressionOperand (reference "domainValues")) (expressionOperand (reference "private")) (expressionOperand (reference "attribute")) (expressionOperand (reference "index")) (expressionOperand (reference "result"))))
     (declaration (id (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::Linear"))) (kind calc-def) (membership (kind owning) (visibility private)) (authored (membership (kind owning) (visibility private)) (relationships (expressionOperand (reference "private")) (expressionOperand (reference "attribute")) (expressionOperand (reference "f")) (expressionOperand (reference "result"))))

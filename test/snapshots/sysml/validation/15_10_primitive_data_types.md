@@ -144,12 +144,6 @@ package '15.10-Primitive Data Types' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 32 2) (end 32 32))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
         (range (start 35 16) (end 35 37))
@@ -179,7 +173,7 @@ package '15.10-Primitive Data Types' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:2c2a07b84438a39af18e23e05f6fee3f4692163c8b59c0fc9f23463df1ae7cf3") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:2c2a07b84438a39af18e23e05f6fee3f4692163c8b59c0fc9f23463df1ae7cf3") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Integer") (import (shape membership) (recursive false)))))
@@ -205,6 +199,7 @@ package '15.10-Primitive Data Types' {
     (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::SeverityEnum::warning"))) (kind enum-literal) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::UnsignedInteger"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Natural"))))
     (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::UnsignedReal"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Real"))))
+    (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (anonymous (kind constraint) (ordinal 0))))) (kind constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "x"))))
     (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::UnsignedReal::x"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real")) (redefinition (reference "self"))))
     (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::aperatureDiameter"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "DiameterChoice"))))
   )
@@ -245,6 +240,9 @@ package '15.10-Primitive Data Types' {
     (reference (id (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::UnsignedReal"))) (kind specialization) (ordinal 0))
       (authored-target "Real")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "x")
+      (outcome (status resolved) (target (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::UnsignedReal::x")))))
     (reference (id (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::UnsignedReal::x"))) (kind featureTyping) (ordinal 0))
       (authored-target "Real")
       (outcome (status unresolved)))
@@ -259,9 +257,11 @@ package '15.10-Primitive Data Types' {
     (relationship (kind typing) (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::ConditionLevel::associatedColor"))) (target (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::ConditionColor"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::ConditionLevel::associatedColor"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::DiameterChoice"))) (target (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::Diameter"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::DiameterChoice"))) (kind specialization) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::SeverityEnum"))) (target (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::ConditionLevel"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::SeverityEnum"))) (kind specialization) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (anonymous (kind constraint) (ordinal 0))))) (target (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::UnsignedReal::x"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::aperatureDiameter"))) (target (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::DiameterChoice"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::aperatureDiameter"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/15_10_primitive_data_types.md") (anonymous (kind constraint) (ordinal 0))))) (value (kind non-constant)))
   )
 )
 ~~~
@@ -315,6 +315,10 @@ package '15.10-Primitive Data Types' {
   (query (document "memory://snapshot/15_10_primitive_data_types.md") (range (start 26 31) (end 26 35)) (probe (position 26 31))
     (reference (id (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::UnsignedReal"))) (kind specialization) (ordinal 0) (authored-target "Real")
       (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/15_10_primitive_data_types.md") (range (start 32 22) (end 32 23)) (probe (position 32 22))
+    (reference (id (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "x")
+      (outcome (status resolved) (target (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::UnsignedReal::x")))))
   )
   (query (document "memory://snapshot/15_10_primitive_data_types.md") (range (start 31 15) (end 31 19)) (probe (position 31 15))
     (reference (id (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::UnsignedReal::x"))) (kind featureTyping) (ordinal 0) (authored-target "Real")

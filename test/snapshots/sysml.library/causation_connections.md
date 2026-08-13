@@ -126,9 +126,9 @@ standard library package CausationConnections {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_connection_definition_member")
+        (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 45 2) (end 48 3))
+        (range (start 47 3) (end 47 41))
       )
       (diagnostic
         (severity warning)
@@ -154,6 +154,7 @@ standard library package CausationConnections {
     (declaration (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Causation::theEffects"))) (kind connection) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation"))) (kind connection-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation::causes"))) (kind occurrence) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "participant")) (redefinition (reference "causes"))))
+    (declaration (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation::disjointCauseEffect"))) (kind constraint) (membership (kind feature) (visibility private)))
     (declaration (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation::effects"))) (kind occurrence) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "participant")) (redefinition (reference "effects"))))
     (declaration (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::causations"))) (kind connection-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "multicausations"))))
     (declaration (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::causes"))) (kind occurrence) (membership (kind feature) (visibility default)))
