@@ -65,9 +65,9 @@ package 'Decision Example' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_action_definition_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 13 2) (end 13 14))
+        (range (start 13 8) (end 13 13))
       )
       (diagnostic
         (severity warning)
@@ -131,6 +131,7 @@ package 'Decision Example' {
     (declaration (id (node (document "memory://snapshot/17_decision_example.md") (qualified-name "Decision Example::AddCharge"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/17_decision_example.md") (qualified-name "Decision Example::BatteryCharged"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/17_decision_example.md") (qualified-name "Decision Example::ChargeBattery"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/17_decision_example.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "start"))))
     (declaration (id (node (document "memory://snapshot/17_decision_example.md") (qualified-name "Decision Example::ChargeBattery::addCharge"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "AddCharge"))))
     (declaration (id (node (document "memory://snapshot/17_decision_example.md") (qualified-name "Decision Example::ChargeBattery::endCharging"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "EndCharging"))))
     (declaration (id (node (document "memory://snapshot/17_decision_example.md") (qualified-name "Decision Example::EndCharging"))) (kind action-def) (membership (kind owning) (visibility default)))
@@ -141,6 +142,9 @@ package 'Decision Example' {
   (references
     (reference (id (source (node (document "memory://snapshot/17_decision_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
       (authored-target "ScalarValues")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/17_decision_example.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0))
+      (authored-target "start")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/17_decision_example.md") (qualified-name "Decision Example::ChargeBattery::addCharge"))) (kind featureTyping) (ordinal 0))
       (authored-target "AddCharge")
@@ -162,6 +166,10 @@ package 'Decision Example' {
 (navigation
   (query (document "memory://snapshot/17_decision_example.md") (range (start 1 16) (end 1 31)) (probe (position 1 16))
     (reference (id (source (node (document "memory://snapshot/17_decision_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/17_decision_example.md") (range (start 13 8) (end 13 13)) (probe (position 13 8))
+    (reference (id (source (node (document "memory://snapshot/17_decision_example.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0) (authored-target "start")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/17_decision_example.md") (range (start 25 21) (end 25 30)) (probe (position 25 21))

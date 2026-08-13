@@ -581,6 +581,17 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             (reference.kind() == ReferenceKind::ConnectorEnd).then_some(index)
         })
         .collect();
+    // A succession end (`first`/`then` in a `FirstStmt`) can reference any owned action feature
+    // (not just a Type), exactly like a connector end, so `Succession` resolves against
+    // `DeclarationDomain::Any` alongside `ConnectorEnd` rather than joining the Subclassification/
+    // FeatureTyping `Type` domain passes; it does not read inherited scope either.
+    let succession_slots: Vec<usize> = references
+        .iter()
+        .enumerate()
+        .filter_map(|(index, reference)| {
+            (reference.kind() == ReferenceKind::Succession).then_some(index)
+        })
+        .collect();
     let mut work = ResolutionWork {
         direct_index_entries: u64::try_from(direct_names.candidates.len())
             .map_err(|_| ResolutionError::Capacity)?,
@@ -656,6 +667,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             .chain(&redefinition_slots)
             .chain(&alias_slots)
             .chain(&connector_end_slots)
+            .chain(&succession_slots)
             .copied()
         {
             outcomes[index] = ResolutionStatus::NonConverged;
@@ -718,6 +730,32 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         }
 
         for index in connector_end_slots.iter().copied() {
+            work.downstream_evaluations = work
+                .downstream_evaluations
+                .checked_add(1)
+                .ok_or(ResolutionError::Capacity)?;
+            outcomes[index] = resolve_reference(
+                declarations,
+                paths,
+                &references[index],
+                DeclarationDomain::Any,
+                ResolutionIndexes {
+                    direct_names: &direct_names,
+                    exported_names: &exported_names,
+                    effective_imports: Some(&effective_imports),
+                    exported_imports: Some(&exported_imports),
+                    inherited_names: None,
+                },
+                ResolutionScratch {
+                    ambiguous_candidates: &mut ambiguous_candidates,
+                    candidates: &mut candidates,
+                    next_candidates: &mut next_candidates,
+                    work: &mut work,
+                },
+            )?;
+        }
+
+        for index in succession_slots.iter().copied() {
             work.downstream_evaluations = work
                 .downstream_evaluations
                 .checked_add(1)
@@ -1343,7 +1381,8 @@ fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<D
         | ReferenceKind::Crosses
         | ReferenceKind::Intersects
         | ReferenceKind::AliasBinding
-        | ReferenceKind::ConnectorEnd => None,
+        | ReferenceKind::ConnectorEnd
+        | ReferenceKind::Succession => None,
     }
 }
 
@@ -1502,7 +1541,8 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::Crosses
             | ReferenceKind::Intersects
             | ReferenceKind::AliasBinding
-            | ReferenceKind::ConnectorEnd => {}
+            | ReferenceKind::ConnectorEnd
+            | ReferenceKind::Succession => {}
         }
     }
     Ok((

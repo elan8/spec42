@@ -313,6 +313,52 @@ mod tests {
         );
     }
 
+    /// A `first X then Y;` control-flow succession statement inside an `action def` body (BNF
+    /// `ActionDefBodyElement::FirstStmt`) must resolve both ends as `succession` relationships
+    /// against the two sibling owned action declarations, not fall through to
+    /// `unsupported_action_definition_member`.
+    #[test]
+    fn first_then_succession_inside_action_def_body_resolves_both_ends() {
+        let sexpr = semantic_sexpr_for(
+            "package P { action def ExecuteMission { action validateRoute; action startMission; first validateRoute then startMission; } }",
+        );
+        assert!(
+            sexpr.contains("(kind succession)"),
+            "expected a succession relationship kind, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_definition_member"),
+            "did not expect unsupported_action_definition_member, got: {sexpr}"
+        );
+        // Both ends resolve to their sibling declarations, not unresolved/unsupported.
+        assert!(
+            sexpr.matches("(kind succession)").count() >= 2,
+            "expected a succession reference for both the `first` and `then` ends, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("(status unresolved)")
+                || !sexpr.contains("succession"),
+            "did not expect an unresolved succession outcome for two declared siblings, got: {sexpr}"
+        );
+    }
+
+    /// A `first X then Y;` succession whose `then` target is not declared anywhere in the model
+    /// must stay an explicit unresolved reference fact, not a fabricated or guessed target.
+    #[test]
+    fn first_then_succession_unresolvable_target_stays_unresolved() {
+        let sexpr = semantic_sexpr_for(
+            "package P { action def ExecuteMission { action validateRoute; first validateRoute then missingAction; } }",
+        );
+        assert!(
+            sexpr.contains("(kind succession)"),
+            "expected a succession reference to be authored, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(status unresolved)"),
+            "expected the unresolvable `then` target to remain explicitly unresolved, got: {sexpr}"
+        );
+    }
+
     /// A nested `exhibit` state usage inside an `occurrence def`/usage body (BNF
     /// `OccurrenceBodyElement::StateUsage`, e.g. `exhibit vehicleStates.on;` from the OMG spec
     /// Annex's individuals/snapshots examples) must lower as its own `state` declaration via the

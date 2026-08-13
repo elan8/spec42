@@ -720,6 +720,7 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::ItemUsage => "item",
         DeclarationKind::ActionDefinition => "action-def",
         DeclarationKind::ActionUsage => "action",
+        DeclarationKind::Succession => "succession",
         DeclarationKind::StateDefinition => "state-def",
         DeclarationKind::StateUsage => "state",
         DeclarationKind::MetadataDefinition => "metadata-def",
@@ -784,6 +785,7 @@ fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::Intersects => "intersects",
         ReferenceKind::AliasBinding => "aliasBinding",
         ReferenceKind::ConnectorEnd => "connectorEnd",
+        ReferenceKind::Succession => "succession",
     }
 }
 
@@ -798,6 +800,7 @@ fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::Intersects => Some("intersects"),
         ReferenceKind::AliasBinding => Some("aliasBinding"),
         ReferenceKind::ConnectorEnd => Some("connectorEnd"),
+        ReferenceKind::Succession => Some("succession"),
         ReferenceKind::NamespaceImport
         | ReferenceKind::MembershipImport
         | ReferenceKind::FilterImport => None,

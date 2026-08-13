@@ -47,9 +47,9 @@ package 'Terminate Actions Example-1' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_action_definition_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 8 2) (end 8 14))
+        (range (start 8 8) (end 8 13))
       )
       (diagnostic
         (severity warning)
@@ -117,6 +117,7 @@ package 'Terminate Actions Example-1' {
     (declaration (id (node (document "memory://snapshot/19_terminate_actions_example_1.md") (qualified-name "Terminate Actions Example-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/19_terminate_actions_example_1.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Boolean") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/19_terminate_actions_example_1.md") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/19_terminate_actions_example_1.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "start"))))
     (declaration (id (node (document "memory://snapshot/19_terminate_actions_example_1.md") (qualified-name "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/19_terminate_actions_example_1.md") (qualified-name "Terminate Actions Example-1::MonitoredActivity::stop"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/19_terminate_actions_example_1.md") (qualified-name "Terminate Actions Example-1::MonitoredActivity::waitForTimeOut"))) (kind action) (membership (kind feature) (visibility default)))
@@ -127,6 +128,9 @@ package 'Terminate Actions Example-1' {
   (references
     (reference (id (source (node (document "memory://snapshot/19_terminate_actions_example_1.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
       (authored-target "ScalarValues::Boolean")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/19_terminate_actions_example_1.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0))
+      (authored-target "start")
       (outcome (status unresolved)))
   )
   (relationships
@@ -140,6 +144,10 @@ package 'Terminate Actions Example-1' {
 (navigation
   (query (document "memory://snapshot/19_terminate_actions_example_1.md") (range (start 1 16) (end 1 37)) (probe (position 1 16))
     (reference (id (source (node (document "memory://snapshot/19_terminate_actions_example_1.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Boolean")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/19_terminate_actions_example_1.md") (range (start 8 8) (end 8 13)) (probe (position 8 8))
+    (reference (id (source (node (document "memory://snapshot/19_terminate_actions_example_1.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0) (authored-target "start")
       (outcome (status unresolved)))
   )
 )

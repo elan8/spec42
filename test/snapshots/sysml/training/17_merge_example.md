@@ -55,9 +55,9 @@ package 'Merge Example' {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_action_usage_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 11 2) (end 11 14))
+        (range (start 11 8) (end 11 13))
       )
       (diagnostic
         (severity warning)
@@ -136,6 +136,7 @@ package 'Merge Example' {
     (declaration (id (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::Shoot::picture"))) (kind item) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Picture"))))
     (declaration (id (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::TakePicture"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::takePicture"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TakePicture"))))
+    (declaration (id (node (document "memory://snapshot/17_merge_example.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "start"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::Display::picture"))) (kind featureTyping) (ordinal 0))
@@ -156,6 +157,9 @@ package 'Merge Example' {
     (reference (id (source (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::takePicture"))) (kind featureTyping) (ordinal 0))
       (authored-target "TakePicture")
       (outcome (status resolved) (target (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::TakePicture")))))
+    (reference (id (source (node (document "memory://snapshot/17_merge_example.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0))
+      (authored-target "start")
+      (outcome (status unresolved)))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::Display::picture"))) (target (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::Picture"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::Display::picture"))) (kind featureTyping) (ordinal 0)))
@@ -195,6 +199,10 @@ package 'Merge Example' {
   (query (document "memory://snapshot/17_merge_example.md") (range (start 10 22) (end 10 33)) (probe (position 10 22))
     (reference (id (source (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::takePicture"))) (kind featureTyping) (ordinal 0) (authored-target "TakePicture")
       (outcome (status resolved) (target (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::TakePicture")))))
+  )
+  (query (document "memory://snapshot/17_merge_example.md") (range (start 11 8) (end 11 13)) (probe (position 11 8))
+    (reference (id (source (node (document "memory://snapshot/17_merge_example.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0) (authored-target "start")
+      (outcome (status unresolved)))
   )
 )
 ~~~

@@ -85,12 +85,6 @@ action def DecisionTest {
         (severity warning)
         (code "unsupported_action_definition_member")
         (source "semantic")
-        (range (start 19 1) (end 19 10))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_action_definition_member")
-        (source "semantic")
         (range (start 20 2) (end 20 25))
       )
     )
@@ -103,13 +97,18 @@ action def DecisionTest {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:040cf77bfeccd08e8998112b0cb9f03441d2a7e57bec5bd99dd79ad132370220") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/decision_test.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "A3"))))
     (declaration (id (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest::A1"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest::A2"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest::A3"))) (kind action) (membership (kind feature) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/decision_test.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0))
+      (authored-target "A3")
+      (outcome (status resolved) (target (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest::A3")))))
   )
   (relationships
+    (relationship (kind succession) (source (node (document "memory://snapshot/decision_test.md") (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest::A3"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/decision_test.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0)))
   )
   (evaluation
   )
@@ -118,5 +117,9 @@ action def DecisionTest {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/decision_test.md") (range (start 19 7) (end 19 9)) (probe (position 19 7))
+    (reference (id (source (node (document "memory://snapshot/decision_test.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0) (authored-target "A3")
+      (outcome (status resolved) (target (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest::A3")))))
+  )
 )
 ~~~

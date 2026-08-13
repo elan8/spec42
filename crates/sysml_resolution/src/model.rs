@@ -24,7 +24,7 @@ use sysml_v2_parser_next::{
         ConstraintDef, ConstraintDefBody, ConstraintDefBodyElement,
         ConstraintUsage as ParserConstraintUsage, DefinitionBody, DefinitionBodyElement, EndDecl,
         EndIdentity, EnumDef, EnumerationBody, EnumerationUsage as ParserEnumerationUsage,
-        Expression, FlowDef, Import, ImportShape, InterfaceDef, InterfaceDefBody,
+        Expression, FirstStmt, FlowDef, Import, ImportShape, InterfaceDef, InterfaceDefBody,
         InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement,
         ItemDef, ItemUsage as ParserItemUsage, LibraryPackage, Membership,
         MembershipKind as ParserMembershipKind, MetadataDef, MetadataUsage as ParserMetadataUsage,
@@ -134,6 +134,15 @@ enum DeclarationKind {
     /// `PartUsage`, `ActionUsage`'s typing is a structured `TypingRelationship` (not a bare
     /// `QualifiedReferenceId`).
     ActionUsage,
+    /// An anonymous succession feature synthesized for a `first X then Y;` control-flow
+    /// statement (BNF `FirstStmt`) found in an action def/usage body. Owned by the enclosing
+    /// action def/usage declaration (mirroring `EndDecl`'s nested `ConnectionUsage` children),
+    /// so its `first`/`then` `Succession` end references resolve against the owning action's own
+    /// scope -- where the sibling actions the statement connects are actually declared -- rather
+    /// than the action's enclosing scope (the shape `ConnectorEnd`'s inline `connect from ... to
+    /// ...;` uses, since a connector's endpoints are ordinarily declared alongside the connector
+    /// itself, not nested inside it).
+    Succession,
     /// `state def` (BNF StateDefinition): a type whose owned members are attribute/item/action/
     /// nested state usages, mirroring ActionDefinition lowering. State-machine-specific semantics
     /// (entry/do/exit action bindings, transitions, exclusive/parallel substates, history) are out
@@ -423,6 +432,19 @@ enum ReferenceKind {
     /// referential/multiplicity constraints (matching end types/multiplicities) are explicitly
     /// out of scope; this only resolves the authored reference itself.
     ConnectorEnd,
+    /// The authored source/target of a `first X then Y;` control-flow succession statement
+    /// inside an action def/usage body (`FirstStmt.first`/`FirstStmt.then`), resolved through
+    /// the same `DeclarationDomain::Any` lexical lookup as `ConnectorEnd`: a succession end can
+    /// reference any owned action feature, not just a Type. Mirrors `lower_connect_stmt`/
+    /// `lower_connector_end`'s two-references-from-owner shape: both the `first` and `then`
+    /// targets are authored `Succession` references sourced at the enclosing action def/usage
+    /// declaration, not at each other. Only a simple/qualified name (`Expression::FeatureRef`)
+    /// is resolved; any other expression shape (and the bare `start`/`done` pseudo-action
+    /// markers, which are ordinary identifier references that legitimately fail to resolve
+    /// because no such declaration is synthesized) is out of scope. `first start;`'s absent
+    /// `then` and a bare `then Y;` continuation statement (BNF `ThenAction`, a distinct AST
+    /// shape referencing an implicit predecessor) are likewise out of scope for this slice.
+    Succession,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -2216,6 +2238,14 @@ impl SemanticModelBuilder {
                 ActionDefBodyElement::PartUsage(part_usage) => {
                     self.lower_part_usage(document, Some(owner), part_usage)?;
                 }
+                ActionDefBodyElement::FirstStmt(first_stmt) => {
+                    self.lower_first_stmt(
+                        document,
+                        owner,
+                        UnsupportedFamily::ActionDefinitionMember,
+                        first_stmt,
+                    )?;
+                }
                 ActionDefBodyElement::Doc(_) => {}
                 ActionDefBodyElement::InOutDecl(_)
                 | ActionDefBodyElement::Annotation(_)
@@ -2226,7 +2256,6 @@ impl SemanticModelBuilder {
                 | ActionDefBodyElement::Perform(_)
                 | ActionDefBodyElement::Bind(_)
                 | ActionDefBodyElement::FlowUsage(_)
-                | ActionDefBodyElement::FirstStmt(_)
                 | ActionDefBodyElement::MergeStmt(_)
                 | ActionDefBodyElement::DecisionStmt(_)
                 | ActionDefBodyElement::JoinStmt(_)
@@ -2329,6 +2358,14 @@ impl SemanticModelBuilder {
                 ActionUsageBodyElement::PartUsage(part_usage) => {
                     self.lower_part_usage(document, Some(owner), part_usage)?;
                 }
+                ActionUsageBodyElement::FirstStmt(first_stmt) => {
+                    self.lower_first_stmt(
+                        document,
+                        owner,
+                        UnsupportedFamily::ActionUsageMember,
+                        first_stmt,
+                    )?;
+                }
                 ActionUsageBodyElement::Doc(_) => {}
                 ActionUsageBodyElement::Annotation(_)
                 | ActionUsageBodyElement::MetadataAnnotation(_)
@@ -2338,7 +2375,6 @@ impl SemanticModelBuilder {
                 | ActionUsageBodyElement::RefDecl(_)
                 | ActionUsageBodyElement::Bind(_)
                 | ActionUsageBodyElement::FlowUsage(_)
-                | ActionUsageBodyElement::FirstStmt(_)
                 | ActionUsageBodyElement::MergeStmt(_)
                 | ActionUsageBodyElement::DecisionStmt(_)
                 | ActionUsageBodyElement::JoinStmt(_)
@@ -2359,6 +2395,83 @@ impl SemanticModelBuilder {
                     element.span.clone(),
                 ),
             }
+        }
+        Ok(())
+    }
+
+    /// Lowers a `first X then Y;` control-flow succession statement (BNF `FirstStmt`) found
+    /// inside an action def/usage body as its own anonymous `DeclarationKind::Succession`
+    /// feature owned by the enclosing action def/usage `owner` declaration, mirroring
+    /// `lower_end_decl`'s nested-declaration shape: both ends are lowered as authored
+    /// `Succession` references sourced at this new anonymous declaration (not at `owner`
+    /// directly), so lexical lookup starts in `owner`'s own scope -- where `X`/`Y` are actually
+    /// declared as sibling actions -- rather than `owner`'s enclosing scope. The `first` end is
+    /// always lowered; the `then` end is `None` for the standalone initial-node marker
+    /// `first start;` (§6 G13), which is left as-is (no reference to lower). The named/typed
+    /// `succession` keyword prefix and any braced body content are out of scope.
+    fn lower_first_stmt(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        node: &Node<FirstStmt>,
+    ) -> Result<(), ConstructionError> {
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::Succession,
+            None,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        self.lower_succession_end(document, declaration, family, &node.value.first)?;
+        if let Some(then) = &node.value.then {
+            self.lower_succession_end(document, declaration, family, then)?;
+        }
+        Ok(())
+    }
+
+    /// Lowers one succession end (the `first` or `then` operand of a `FirstStmt`): its path
+    /// expression is a structured `Expression` (not a flattened string), so a simple/qualified
+    /// name (`Expression::FeatureRef`) resolves as an authored `Succession` reference through the
+    /// same shared lexical lookup as `ConnectorEnd`. A dotted feature-chain path
+    /// (`Expression::MemberAccess`) or any other expression shape -- including the bare `start`/
+    /// `done` pseudo-action markers, which parse as an ordinary `FeatureRef` that legitimately
+    /// fails to resolve because no such declaration is synthesized -- has no chained-feature-
+    /// access resolution anywhere in this pipeline yet, so only the `FeatureRef` shape is
+    /// resolved here; anything else is left as an explicit unsupported-member diagnostic.
+    fn lower_succession_end(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        node: &Node<Expression>,
+    ) -> Result<(), ConstructionError> {
+        match &node.value {
+            Expression::FeatureRef(target) => {
+                let span = self.documents[document.index()]
+                    .parsed
+                    .qualified_reference(*target)
+                    .ok_or(ConstructionError::InvalidParserReference)?
+                    .metadata
+                    .span
+                    .clone();
+                self.push_reference(PendingReference {
+                    source: owner,
+                    kind: ReferenceKind::Succession,
+                    document,
+                    local: *target,
+                    flags: RelationshipFlags::default(),
+                    span,
+                    import: None,
+                })?;
+            }
+            _ => self.push_unsupported(document, family, node.span.clone()),
         }
         Ok(())
     }
@@ -6606,8 +6719,12 @@ mod tests {
         );
     }
 
+    /// `first X then Y;` inside an action def body now lowers as a resolved `succession`
+    /// relationship (see `crate::tests::first_then_succession_inside_action_def_body_resolves_both_ends`
+    /// in `lib.rs` for the full assertion); it no longer falls through to the generic
+    /// unsupported-member diagnostic this test originally locked in per commit `f4ae83f7`.
     #[test]
-    fn first_then_succession_inside_an_action_def_still_surfaces_as_unsupported() {
+    fn first_then_succession_inside_an_action_def_no_longer_surfaces_as_unsupported() {
         let request = crate::BuildRequest::new(
             vec![crate::SourceInput::new(
                 "memory://test/enum.sysml",
@@ -6632,9 +6749,8 @@ mod tests {
             .write_diagnostics_sexpr(&mut output)
             .unwrap();
         assert!(
-            output.contains("unsupported_action_definition_member"),
-            "expected the first/then succession statement to surface as an explicit unsupported \
-             action-definition-member diagnostic, got:\n{output}"
+            !output.contains("unsupported_action_definition_member"),
+            "did not expect an unsupported action-definition-member diagnostic, got:\n{output}"
         );
     }
 
