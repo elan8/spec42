@@ -86,7 +86,7 @@ package 'Messaging Example' {
     (declaration (id (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::takePicture::shoot"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Shoot"))))
     (declaration (id (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::takePicture::shoot::image"))) (kind item) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::takePicture::shoot::picture"))) (kind item) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::takePicture::trigger"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::takePicture::trigger"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (acceptPayloadType (reference "Scene"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Focus::image"))) (kind featureTyping) (ordinal 0))
@@ -113,6 +113,9 @@ package 'Messaging Example' {
     (reference (id (source (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::takePicture::shoot"))) (kind featureTyping) (ordinal 0))
       (authored-target "Shoot")
       (outcome (status resolved) (target (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Shoot")))))
+    (reference (id (source (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::takePicture::trigger"))) (kind acceptPayloadType) (ordinal 0))
+      (authored-target "Scene")
+      (outcome (status resolved) (target (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Scene")))))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Focus::image"))) (target (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Image"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Focus::image"))) (kind featureTyping) (ordinal 0)))
@@ -123,6 +126,7 @@ package 'Messaging Example' {
     (relationship (kind typing) (source (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::takePicture"))) (target (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::TakePicture"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::takePicture"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::takePicture::focus"))) (target (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Focus"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::takePicture::focus"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::takePicture::shoot"))) (target (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Shoot"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::takePicture::shoot"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind acceptPayloadType) (source (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::takePicture::trigger"))) (target (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Scene"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::takePicture::trigger"))) (kind acceptPayloadType) (ordinal 0)))
   )
   (evaluation
   )
@@ -162,6 +166,10 @@ package 'Messaging Example' {
   (query (document "memory://snapshot/21_messaging_example.md") (range (start 25 22) (end 25 27)) (probe (position 25 22))
     (reference (id (source (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::takePicture::shoot"))) (kind featureTyping) (ordinal 0) (authored-target "Shoot")
       (outcome (status resolved) (target (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Shoot")))))
+  )
+  (query (document "memory://snapshot/21_messaging_example.md") (range (start 16 32) (end 16 37)) (probe (position 16 32))
+    (reference (id (source (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::takePicture::trigger"))) (kind acceptPayloadType) (ordinal 0) (authored-target "Scene")
+      (outcome (status resolved) (target (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Scene")))))
   )
 )
 ~~~

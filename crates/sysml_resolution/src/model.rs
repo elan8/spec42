@@ -26,8 +26,8 @@ use sysml_v2_parser_next::{
         ConstraintUsage as ParserConstraintUsage, DefinitionBody, DefinitionBodyElement,
         DefinitionPrefix, DoAction, EndDecl, EndIdentity, EntryAction, EnumDef, EnumerationBody,
         EnumerationUsage as ParserEnumerationUsage, ExitAction, Expression, FeatureValue,
-        FirstMergeBody, FirstMergeBodyElement, FirstStmt, FlowDef, Import, ImportShape, InOut,
-        InOutDecl, IncludeUseCase, InterfaceDef, InterfaceDefBody, InterfaceDefBodyElement,
+        FirstMergeBody, FirstMergeBodyElement, FirstStmt, FlowDef, FlowUsage, Import, ImportShape,
+        InOut, InOutDecl, IncludeUseCase, InterfaceDef, InterfaceDefBody, InterfaceDefBodyElement,
         InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement, ItemDef,
         ItemUsage as ParserItemUsage, LibraryPackage, Membership,
         MembershipKind as ParserMembershipKind, MetadataAnnotation, MetadataDef,
@@ -40,11 +40,11 @@ use sysml_v2_parser_next::{
         RefBodyElement, RefDecl, RelationshipBodyElement, RenderingDef, RenderingDefBody,
         RenderingDefBodyElement, RequirementDef, RequirementDefBody, RequirementDefBodyElement,
         RequirementUsage as ParserRequirementUsage, ReturnDecl, RootElement, Satisfy,
-        SatisfyViewMember, Span, StateDef, StateDefBody, StateDefBodyElement,
+        SatisfyViewMember, SendPayload, Span, StateDef, StateDefBody, StateDefBodyElement,
         StateUsage as ParserStateUsage, SubjectDecl, SubsettingKind, SubsettingRelationship,
-        ThenAction, ThenStmt, ThenTarget, Transition, TransitionAccept, TransitionEffect,
-        UseCaseDef, UseCaseDefBody, UseCaseDefBodyElement, VariantUsage, VerificationCaseDef,
-        ViewBody, ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement,
+        TerminateStmt, ThenAction, ThenStmt, ThenTarget, Transition, TransitionAccept,
+        TransitionEffect, UseCaseDef, UseCaseDefBody, UseCaseDefBodyElement, VariantUsage,
+        VerificationCaseDef, ViewBody, ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement,
         ViewUsage as ParserViewUsage, ViewpointDef, Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
@@ -538,6 +538,16 @@ enum DeclarationKind {
     /// Any` lexical lookup searches the action's own children (its sibling control-flow nodes),
     /// exactly like every other paired/single-operand control-flow reference kind.
     ThenContinuation,
+    /// An anonymous feature synthesized for a standalone `flow <source> to <target>;` statement
+    /// (BNF `FlowUsage`'s bare from/to shorthand, `ast::FlowUsage` with `name`/`type_name`/
+    /// `payload` all absent), found inside an action def/usage body. Mirrors `Bind`/`Allocate`'s
+    /// anonymous nested-declaration shape: `from`/`to` are lowered as authored `FlowSource`/
+    /// `FlowTarget` references sourced at this new declaration (not at `owner` directly), so
+    /// multiple `flow ...;` statements in the same body stay distinguishable. Deliberately narrow:
+    /// a named/typed flow usage or def (`flow f : T { ... }`) and the `of <payload>` clause remain
+    /// out of scope (see UPSTREAM_PARSER_GAPS.md #28's `subsets`/`redefines`/typed-end gap) --
+    /// only the bare two-operand statement form's `from`/`to` references are resolved here.
+    Flow,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -848,6 +858,44 @@ enum ReferenceKind {
     /// because no such declaration is synthesized, exactly like `Succession`'s `start`/`done`
     /// scope note.
     ThenTarget,
+    /// The authored `via <port>` clause found on an `accept`/`send` trigger or standalone
+    /// control-node statement (`TransitionAccept::{Shorthand,Payload,TimeTrigger}`'s shared `via`
+    /// operand, or `ast::ActionUsage.via`), resolved through the same `DeclarationDomain::Any`
+    /// lexical lookup as `TransitionTrigger`/`ExpressionOperand`: the targeted port/receiver can
+    /// be any owned feature, not just a Type. Sourced directly at the declaration the accept/send
+    /// belongs to (no anonymous nested-declaration scope shift, mirroring `ExpressionOperand`).
+    AcceptVia,
+    /// The authored `to <target>` clause of a standalone `send`-suffixed action usage
+    /// (`ast::ActionUsage.to`, e.g. `action snd2 send via this to aa.target;`), same shape and
+    /// scope as `AcceptVia`. The `then send <expr> to <target>;` shorthand form is a distinct AST
+    /// shape (`ThenTarget` has no `Send` variant at all -- see UPSTREAM_PARSER_GAPS.md) and is not
+    /// covered by this kind.
+    SendTarget,
+    /// The optional typed-payload type reference of a `TransitionAccept::Payload` trigger
+    /// (`PayloadClause.type_name`, e.g. `accept sig : SomeSignal`), resolved through the same
+    /// Subclassification/FeatureTyping `DeclarationDomain::Type` lexical lookup fixed point as
+    /// `FeatureTyping`: the payload names a type. Sourced directly at the declaration the accept
+    /// belongs to, same scope as `AcceptVia`.
+    AcceptPayloadType,
+    /// The optional target of a `terminate <target>;` body element (BNF `TerminateStmt`,
+    /// `ast::TerminateStmt.target`), resolved through the same `DeclarationDomain::Any` lexical
+    /// lookup as `Succession`/`SatisfySource`: the terminated node/action can be any owned
+    /// feature, not just a Type. Sourced directly at the enclosing action def/usage declaration
+    /// (no anonymous nested-declaration scope shift is needed -- unlike `Succession`, the target
+    /// is looked up in the terminate statement's own enclosing scope, where sibling action names
+    /// like `terminate c1;`'s `c1` are actually declared). The bare `terminate;` form (no target)
+    /// has nothing to resolve.
+    TerminateTarget,
+    /// The authored `source` operand (`from`) of a standalone `flow <source> to <target>;`
+    /// statement (BNF `FlowUsage.from`), resolved through the same `DeclarationDomain::Any`
+    /// lexical lookup as `AllocateSource`/`BindSource`: the flow source can be any owned feature,
+    /// including a dotted feature-chain (`aa.target`), not just a Type. Sourced at an anonymous
+    /// `DeclarationKind::Flow` feature owned by the enclosing action def/usage declaration,
+    /// mirroring `Allocate`/`Bind`'s nested-declaration shape.
+    FlowSource,
+    /// The authored `target` operand (`to`) of a standalone `flow <source> to <target>;`
+    /// statement (`FlowUsage.to`), same shape and scope as `FlowSource`.
+    FlowTarget,
 }
 
 /// The computed or explicit outcome of evaluating one supported constraint/calc expression
@@ -3975,11 +4023,21 @@ impl SemanticModelBuilder {
                         node,
                     )?;
                 }
+                ActionDefBodyElement::FlowUsage(node) => self.lower_flow_usage(
+                    document,
+                    owner,
+                    UnsupportedFamily::ActionDefinitionMember,
+                    node,
+                )?,
+                ActionDefBodyElement::TerminateStmt(node) => self.lower_terminate_stmt(
+                    document,
+                    owner,
+                    UnsupportedFamily::ActionDefinitionMember,
+                    node,
+                )?,
                 ActionDefBodyElement::Annotation(_)
                 | ActionDefBodyElement::MetadataKeywordUsage(_)
                 | ActionDefBodyElement::TextualRep(_)
-                | ActionDefBodyElement::FlowUsage(_)
-                | ActionDefBodyElement::TerminateStmt(_)
                 | ActionDefBodyElement::WhileStmt(_)
                 | ActionDefBodyElement::LoopStmt(_)
                 | ActionDefBodyElement::IfStmt(_)
@@ -4036,7 +4094,93 @@ impl SemanticModelBuilder {
         if let Some(relationship) = &node.value.redefines {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
+        self.lower_accept_send_clauses(document, declaration, node)?;
         self.lower_action_usage_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers the accept/send-suffix facts an `ActionUsage` may carry (BNF `AcceptParameterPart`/
+    /// `SenderReceiverPart`, GH-86): a standalone control-node statement's typed `accept name :
+    /// Type` payload (`ActionUsage.accept`), a `send`-suffixed usage's optional payload
+    /// (`ActionUsage.send`, either a typed-name clause like `accept`'s or a general expression
+    /// e.g. `send new Publish(...)`), and the optional trailing `via <port>`/`to <target>` clauses
+    /// shared by both forms. Only the payload TYPE reference (`AcceptPayloadType`) and the via/to
+    /// operand references (`AcceptVia`/`SendTarget`) are resolved; the payload's own declared NAME
+    /// is not a reference target (mirrors `InOutDecl`'s own scope boundary -- the name introduces a
+    /// binding, it does not reference one). Sourced directly at `declaration` (the `ActionUsage`'s
+    /// own declaration), not an anonymous nested one: unlike `Bind`/`Allocate`, each `ActionUsage`
+    /// already has its own unique declaration to source these facts at.
+    fn lower_accept_send_clauses(
+        &mut self,
+        document: DocumentId,
+        declaration: DeclarationId,
+        node: &Node<ParserActionUsage>,
+    ) -> Result<(), ConstructionError> {
+        let family = UnsupportedFamily::ActionUsageMember;
+        if let Some(clause) = &node.value.accept {
+            self.lower_payload_clause_type(document, declaration, clause)?;
+        }
+        if let Some(send) = &node.value.send {
+            match send {
+                SendPayload::Typed(clause) => {
+                    self.lower_payload_clause_type(document, declaration, clause)?;
+                }
+                SendPayload::Expression(expr) => {
+                    self.lower_constraint_expression(document, declaration, family, expr)?;
+                }
+            }
+        }
+        if let Some(via) = &node.value.via {
+            self.lower_satisfy_operand(
+                document,
+                declaration,
+                family,
+                ReferenceKind::AcceptVia,
+                via,
+            )?;
+        }
+        if let Some(to) = &node.value.to {
+            self.lower_satisfy_operand(
+                document,
+                declaration,
+                family,
+                ReferenceKind::SendTarget,
+                to,
+            )?;
+        }
+        Ok(())
+    }
+
+    /// Resolves a `PayloadClause`'s optional `: Type` suffix (`accept name : Type`/`send name :
+    /// Type`) as an `AcceptPayloadType` reference, resolved through the same
+    /// Subclassification/FeatureTyping `DeclarationDomain::Type` lexical lookup fixed point as
+    /// `FeatureTyping` -- the payload names a type, exactly like an ordinary parameter's type
+    /// annotation.
+    fn lower_payload_clause_type(
+        &mut self,
+        document: DocumentId,
+        declaration: DeclarationId,
+        clause: &sysml_v2_parser_next::ast::PayloadClause,
+    ) -> Result<(), ConstructionError> {
+        let Some(type_name) = clause.type_name else {
+            return Ok(());
+        };
+        let span = self.documents[document.index()]
+            .parsed
+            .qualified_reference(type_name)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span
+            .clone();
+        self.push_reference(PendingReference {
+            source: declaration,
+            kind: ReferenceKind::AcceptPayloadType,
+            document,
+            local: type_name,
+            flags: RelationshipFlags::default(),
+            span,
+            import: None,
+        })?;
+        Ok(())
     }
 
     /// Lowers the `ActionUsageBody` owned by an `action` usage (BNF `ActionUsageBodyElement`):
@@ -4151,11 +4295,21 @@ impl SemanticModelBuilder {
                         node,
                     )?;
                 }
+                ActionUsageBodyElement::FlowUsage(node) => self.lower_flow_usage(
+                    document,
+                    owner,
+                    UnsupportedFamily::ActionUsageMember,
+                    node,
+                )?,
+                ActionUsageBodyElement::TerminateStmt(node) => self.lower_terminate_stmt(
+                    document,
+                    owner,
+                    UnsupportedFamily::ActionUsageMember,
+                    node,
+                )?,
                 ActionUsageBodyElement::Annotation(_)
                 | ActionUsageBodyElement::MetadataKeywordUsage(_)
                 | ActionUsageBodyElement::TextualRep(_)
-                | ActionUsageBodyElement::FlowUsage(_)
-                | ActionUsageBodyElement::TerminateStmt(_)
                 | ActionUsageBodyElement::WhileStmt(_)
                 | ActionUsageBodyElement::LoopStmt(_)
                 | ActionUsageBodyElement::IfStmt(_)
@@ -4458,9 +4612,142 @@ impl SemanticModelBuilder {
                     expression,
                 )?;
             }
-            ThenTarget::Accept(_) => {
-                self.push_unsupported(document, family, node.span.clone());
+            ThenTarget::Accept(accept) => {
+                self.lower_then_accept(document, owner, family, accept)?;
             }
+        }
+        Ok(())
+    }
+
+    /// Lowers a `then accept ...;` shorthand trigger (BNF `ThenTarget::Accept`, `ast::
+    /// TransitionAccept`) -- the inline accept-trigger form reused unchanged from `Transition`'s
+    /// own `accept` clause, deliberately deferred by `39bd06fc`. Sourced directly at `owner` (the
+    /// enclosing action def/usage declaration), not an anonymous nested declaration: an accept
+    /// trigger's operand is looked up in the action's own enclosing scope (e.g. `accept sig after
+    /// ...;`'s `sig`, `accept when b.f;`'s `b`), not among the action's own children the way a
+    /// `Succession`/`Decide`/`Merge` end is. Dispatches on the three `TransitionAccept` shapes:
+    /// `Shorthand`'s expression and `TimeTrigger`'s (`at`/`when`/`after`) expression both reuse
+    /// `lower_constraint_expression` directly (picking up its `FeatureRef`/`MemberAccess`/
+    /// `Invocation`/`Constructor` dispatch, e.g. `accept at new Time::Iso8601DateTime(...)`'s
+    /// constructor callee/argument); `Payload`'s typed `: Type` suffix reuses
+    /// `lower_payload_clause_type`. Either shape's optional trailing `via <port>` clause resolves
+    /// as an `AcceptVia` reference through `lower_satisfy_operand`.
+    fn lower_then_accept(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        accept: &Node<TransitionAccept>,
+    ) -> Result<(), ConstructionError> {
+        match &accept.value {
+            TransitionAccept::Shorthand(expr, via) => {
+                self.lower_constraint_expression(document, owner, family, expr)?;
+                if let Some(via) = via {
+                    self.lower_satisfy_operand(
+                        document,
+                        owner,
+                        family,
+                        ReferenceKind::AcceptVia,
+                        via,
+                    )?;
+                }
+            }
+            TransitionAccept::TimeTrigger(_kind, expr) => {
+                self.lower_constraint_expression(document, owner, family, expr)?;
+            }
+            TransitionAccept::Payload(clause, via) => {
+                self.lower_payload_clause_type(document, owner, clause)?;
+                if let Some(via) = via {
+                    self.lower_satisfy_operand(
+                        document,
+                        owner,
+                        family,
+                        ReferenceKind::AcceptVia,
+                        via,
+                    )?;
+                }
+            }
+        }
+        Ok(())
+    }
+
+    /// Lowers a standalone `flow <source> to <target>;` body element (BNF `FlowUsage`'s bare
+    /// from/to shorthand, `ast::FlowUsage`) found inside an action def/usage body. Mirrors
+    /// `lower_allocate`/`lower_bind`: only the narrow, genuinely bare two-operand statement form
+    /// -- no declared `name`, no `: Type`, no `of <payload>` clause -- is lowered as an anonymous
+    /// `DeclarationKind::Flow` feature owned by `owner`, with `from`/`to` lowered as authored
+    /// `FlowSource`/`FlowTarget` references through the shared `lower_satisfy_operand`
+    /// `DeclarationDomain::Any` lexical lookup (so a dotted feature-chain end like `aa.target`
+    /// resolves via `Expression::MemberAccess`, exactly like `Bind`'s own operands). A named/typed
+    /// flow usage or definition is a structurally distinct declaration form already tracked as
+    /// deferred (see UPSTREAM_PARSER_GAPS.md #28) and falls through unchanged to the existing
+    /// unsupported-member diagnostic.
+    fn lower_flow_usage(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        node: &Node<FlowUsage>,
+    ) -> Result<(), ConstructionError> {
+        if node.value.name.is_some()
+            || node.value.type_name.is_some()
+            || node.value.payload.is_some()
+        {
+            self.push_unsupported(document, family, node.span.clone());
+            return Ok(());
+        }
+        let (Some(from), Some(to)) = (&node.value.from, &node.value.to) else {
+            self.push_unsupported(document, family, node.span.clone());
+            return Ok(());
+        };
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::Flow,
+            None,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        self.lower_satisfy_operand(
+            document,
+            declaration,
+            family,
+            ReferenceKind::FlowSource,
+            from,
+        )?;
+        self.lower_satisfy_operand(document, declaration, family, ReferenceKind::FlowTarget, to)?;
+        Ok(())
+    }
+
+    /// Lowers a `terminate <target>;`/bare `terminate;` body element (BNF `TerminateStmt`, `ast::
+    /// TerminateStmt`) found inside an action def/usage body. The optional `target` is resolved as
+    /// a `TerminateTarget` reference through the shared `lower_satisfy_operand`
+    /// `DeclarationDomain::Any` lexical lookup, sourced directly at `owner` (the enclosing action
+    /// def/usage declaration) -- unlike `Succession`/`Decide`, no anonymous nested-declaration
+    /// scope shift is needed because the terminated node/action is looked up in the terminate
+    /// statement's own enclosing scope, where sibling action names like `terminate c1;`'s `c1` are
+    /// actually declared. The bare `terminate;` form (no target) has nothing to resolve and is a
+    /// legitimate no-op, not an unsupported construct.
+    fn lower_terminate_stmt(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        node: &Node<TerminateStmt>,
+    ) -> Result<(), ConstructionError> {
+        if let Some(target) = &node.value.target {
+            self.lower_satisfy_operand(
+                document,
+                owner,
+                family,
+                ReferenceKind::TerminateTarget,
+                target,
+            )?;
         }
         Ok(())
     }

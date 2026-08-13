@@ -75,12 +75,6 @@ package 'Terminate Actions Example-1' {
         (source "semantic")
         (range (start 18 8) (end 18 17))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_action_definition_member")
-        (source "semantic")
-        (range (start 25 14) (end 25 24))
-      )
     )
   )
 )

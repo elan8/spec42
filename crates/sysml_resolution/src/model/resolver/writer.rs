@@ -845,6 +845,7 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::Fork => "fork",
         DeclarationKind::Join => "join",
         DeclarationKind::ThenContinuation => "then-continuation",
+        DeclarationKind::Flow => "flow",
     }
 }
 
@@ -908,6 +909,12 @@ fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::ForkInput => "forkInput",
         ReferenceKind::JoinInput => "joinInput",
         ReferenceKind::ThenTarget => "thenTarget",
+        ReferenceKind::AcceptVia => "acceptVia",
+        ReferenceKind::SendTarget => "sendTarget",
+        ReferenceKind::AcceptPayloadType => "acceptPayloadType",
+        ReferenceKind::TerminateTarget => "terminateTarget",
+        ReferenceKind::FlowSource => "flowSource",
+        ReferenceKind::FlowTarget => "flowTarget",
     }
 }
 
@@ -950,6 +957,12 @@ fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::ForkInput => Some("forkInput"),
         ReferenceKind::JoinInput => Some("joinInput"),
         ReferenceKind::ThenTarget => Some("thenTarget"),
+        ReferenceKind::AcceptVia => Some("acceptVia"),
+        ReferenceKind::SendTarget => Some("sendTarget"),
+        ReferenceKind::AcceptPayloadType => Some("acceptPayloadType"),
+        ReferenceKind::TerminateTarget => Some("terminateTarget"),
+        ReferenceKind::FlowSource => Some("flowSource"),
+        ReferenceKind::FlowTarget => Some("flowTarget"),
         ReferenceKind::NamespaceImport
         | ReferenceKind::MembershipImport
         | ReferenceKind::FilterImport => None,

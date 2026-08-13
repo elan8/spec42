@@ -654,4 +654,155 @@ mod tests {
             "expected the `then` target to resolve to its sibling action, got: {sexpr}"
         );
     }
+
+    /// A `then accept <sig>;` shorthand trigger (`ThenTarget::Accept`, `TransitionAccept::
+    /// Shorthand`) must resolve its expression operand through the same constraint-expression
+    /// machinery as an ordinary `accept`, not fall through to `unsupported_action_definition_member`.
+    #[test]
+    fn then_accept_shorthand_resolves_its_payload() {
+        let sexpr = semantic_sexpr_for(
+            "package P { attribute def Sig; action def A { then accept Sig; } }",
+        );
+        assert!(
+            sexpr.contains("(kind expressionOperand)"),
+            "expected an expressionOperand reference for the accept payload, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_definition_member"),
+            "did not expect unsupported_action_definition_member, got: {sexpr}"
+        );
+    }
+
+    /// A `then accept at <expr>;` time trigger whose expression is a `new Type(...)` invocation
+    /// must resolve the invocation callee through the existing `Expression::Invocation`/
+    /// `InvocationCallee` machinery (session `1c035232`), reused unchanged here.
+    #[test]
+    fn then_accept_at_time_trigger_resolves_invocation_callee() {
+        let sexpr = semantic_sexpr_for(
+            "package P { attribute def Time; action def A { then accept at new Time(); } }",
+        );
+        assert!(
+            sexpr.contains("(kind invocationCallee)"),
+            "expected an invocationCallee reference for the `new Time()` constructor, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_definition_member"),
+            "did not expect unsupported_action_definition_member, got: {sexpr}"
+        );
+    }
+
+    /// A `then accept when <boolExpr>;` change trigger must resolve its dotted feature-chain
+    /// operand as a `memberAccessOperand` reference, reusing the general `MemberAccess` machinery
+    /// (session `64318c70`) directly rather than duplicating it.
+    #[test]
+    fn then_accept_when_resolves_member_access_operand() {
+        let sexpr = semantic_sexpr_for(
+            "package P { action def A { action b { attribute f; } then accept when b.f; } }",
+        );
+        assert!(
+            sexpr.contains("(kind memberAccessOperand)"),
+            "expected a memberAccessOperand reference for `b.f`, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_definition_member"),
+            "did not expect unsupported_action_definition_member, got: {sexpr}"
+        );
+    }
+
+    /// A standalone `action <name> send via <source> to <target>;` action-usage shorthand (an
+    /// `ActionUsage` with `send`/`via`/`to` all set on the usage itself, distinct from the
+    /// `then send ...;` continuation form blocked by UPSTREAM_PARSER_GAPS.md Gap 30) must resolve
+    /// its `via`/`to` operands, mirroring satisfy/allocate/bind's two-operand pattern via
+    /// `lower_satisfy_operand`.
+    #[test]
+    fn send_action_usage_via_and_to_targets_resolve() {
+        let sexpr = semantic_sexpr_for(
+            "package P { action def A { action aa; action b; action snd2 send via aa to b; } }",
+        );
+        assert!(
+            sexpr.contains("(kind sendTarget)"),
+            "expected a sendTarget reference for the `to b` clause, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(kind acceptVia)"),
+            "expected an acceptVia reference for the `via aa` clause, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("(status unresolved)"),
+            "expected both the send usage's `via` and `to` targets to resolve, got: {sexpr}"
+        );
+    }
+
+    /// The `then send new S() to b;` continuation shorthand is a genuine parser gap (see
+    /// UPSTREAM_PARSER_GAPS.md Gap 30, `ThenTarget` has no `Send` variant): the parser itself
+    /// cannot represent it as a distinguishable `ThenAction` target, so it falls to parser-level
+    /// recovery rather than admitting a typed node `sysml_resolution` could silently mis-resolve.
+    #[test]
+    fn then_send_continuation_stays_unsupported_pending_gap_30() {
+        let sexpr = semantic_sexpr_for(
+            "package P { attribute def S; action def A { action b; then send new S() to b; } }",
+        );
+        assert!(
+            sexpr.contains("(completeness parse-recovery)"),
+            "expected `then send ...;` to remain a parser-recovery gap (Gap 30), got: {sexpr}"
+        );
+    }
+
+    /// A bare `flow <source> to <target>;` statement (distinct from a named/typed flow usage or
+    /// def) must lower as its own `DeclarationKind::Flow` feature with `from`/`to` resolved as
+    /// `memberAccessOperand` dotted feature-chain references, reusing
+    /// `resolve_member_access_reference` for both ends.
+    #[test]
+    fn bare_flow_stmt_resolves_source_and_target() {
+        let sexpr = semantic_sexpr_for(
+            "package P { action def A { action aa { out part target; } action snd { in receiver; } flow aa.target to snd.receiver; } }",
+        );
+        assert!(
+            sexpr.contains("(kind flow)"),
+            "expected a flow declaration, got: {sexpr}"
+        );
+        assert!(
+            sexpr.matches("(kind memberAccessOperand)").count() >= 2,
+            "expected both flow ends to resolve as memberAccessOperand references, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_definition_member"),
+            "did not expect unsupported_action_definition_member, got: {sexpr}"
+        );
+    }
+
+    /// `terminate <name>;` nested inside a `then action <name> { ... }` self-named action usage
+    /// (the representative fixture shape, e.g. `then action c1 { terminate c1; }`) must resolve
+    /// its target through the shared `DeclarationDomain::Any` lexical lookup, sourced directly at
+    /// the enclosing action usage's own declaration (not an anonymous nested one): the terminate
+    /// statement's own enclosing scope is the action usage's *parent*'s children, where its own
+    /// self-name is declared -- a genuine self-termination idiom.
+    #[test]
+    fn terminate_stmt_with_target_resolves() {
+        let sexpr =
+            semantic_sexpr_for("package P { action def A { then action c1 { terminate c1; } } }");
+        assert!(
+            sexpr.contains("(kind terminateTarget)"),
+            "expected a terminateTarget reference, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("(status unresolved)"),
+            "expected the terminate target to resolve to its enclosing self-named action, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_definition_member"),
+            "did not expect unsupported_action_definition_member, got: {sexpr}"
+        );
+    }
+
+    /// A bare `terminate;` (no target) has nothing to resolve and must not be flagged as
+    /// unsupported -- it is a legitimate no-op self-termination form, not a parser gap.
+    #[test]
+    fn bare_terminate_stmt_is_not_unsupported() {
+        let sexpr = semantic_sexpr_for("package P { action def A { terminate; } }");
+        assert!(
+            !sexpr.contains("unsupported_action_definition_member"),
+            "did not expect unsupported_action_definition_member, got: {sexpr}"
+        );
+    }
 }

@@ -703,6 +703,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 ReferenceKind::MetadataAnnotation
                     | ReferenceKind::FilterMetadataTest
                     | ReferenceKind::SatisfyViewpoint
+                    | ReferenceKind::AcceptPayloadType
             )
             .then_some(index)
         })
@@ -802,6 +803,11 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::ForkInput
                     | ReferenceKind::JoinInput
                     | ReferenceKind::ThenTarget
+                    | ReferenceKind::AcceptVia
+                    | ReferenceKind::SendTarget
+                    | ReferenceKind::TerminateTarget
+                    | ReferenceKind::FlowSource
+                    | ReferenceKind::FlowTarget
             )
             .then_some(index)
         })
@@ -1726,7 +1732,13 @@ fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<D
         | ReferenceKind::MergeInput
         | ReferenceKind::ForkInput
         | ReferenceKind::JoinInput
-        | ReferenceKind::ThenTarget => None,
+        | ReferenceKind::ThenTarget
+        | ReferenceKind::AcceptVia
+        | ReferenceKind::SendTarget
+        | ReferenceKind::AcceptPayloadType
+        | ReferenceKind::TerminateTarget
+        | ReferenceKind::FlowSource
+        | ReferenceKind::FlowTarget => None,
     }
 }
 
@@ -1913,7 +1925,13 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::MergeInput
             | ReferenceKind::ForkInput
             | ReferenceKind::JoinInput
-            | ReferenceKind::ThenTarget => {}
+            | ReferenceKind::ThenTarget
+            | ReferenceKind::AcceptVia
+            | ReferenceKind::SendTarget
+            | ReferenceKind::AcceptPayloadType
+            | ReferenceKind::TerminateTarget
+            | ReferenceKind::FlowSource
+            | ReferenceKind::FlowTarget => {}
         }
     }
     Ok((

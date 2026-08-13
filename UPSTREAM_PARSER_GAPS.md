@@ -306,6 +306,24 @@ entry should carry enough detail to file/update an upstream issue against
   `has_constraint_keyword`), filed upstream against `feat/gh-119-arena-backed-references`
   (elan8/sysml-v2-parser#121).
 
+- Gap 30. `ThenTarget` (`src/ast/behavior.rs`) has no `Send` variant: `then send <expr> to
+  <target>;` (a `then`-prefixed send shorthand, e.g. `then send new S() to b;` in `Simple Tests/
+  ActionTest.sysml`) does not parse into a distinguishable `ThenTarget::Send` case the way `then
+  merge`/`then fork`/`then decide` each get their own variant (`ThenTarget::{Merge,Fork,Decide}`).
+  Verified directly against the pinned `0757de13` checkout while wiring `ThenTarget::Accept`'s
+  sibling case: `enum ThenTarget { Action(Box<Node<ActionUsage>>), Perform(...), Merge(...),
+  Fork(...), Decide(...), Accept(Node<TransitionAccept>), Feature(Node<Expression>) }` -- no `Send`
+  arm exists at all. In practice `then send new S() to b;` is swallowed by the parser as
+  `ThenTarget::Feature`'s bare-expression fallback (or fails to parse the trailing `to b;` clause
+  cleanly), losing the `send`-suffixed action-usage shape (`ActionUsage.send`/`.to`) that a
+  standalone `action <name> send { ... }`/`action <name> send via <src> to <tgt>;` usage already
+  carries and that `sysml_resolution`'s `lower_accept_send_clauses` already resolves for the latter
+  two forms (see commits on `closing-the-gap`). Left routed through the existing
+  `unsupported_action_definition_member`/`unsupported_action_usage_member` fallback wherever a
+  `then send ...;` statement appears. Needs a `Send(Node<ActionUsage>)` (or equivalent structured)
+  variant added to `ThenTarget`, mirroring `Merge`/`Fork`/`Decide`'s own dedicated variants, filed
+  upstream against `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
 ## False-positive check (spec42-side surfacing bug?)
 Traced end-to-end for a diverse sample (Gap 15's `feature` case, Gap 17's `portion` case, Gap 22's
 `type`/`subset` case, and Gap 23's bare-identifier case) plus a repo-wide search:
